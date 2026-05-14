@@ -1,8 +1,8 @@
-# 监管动态监控器（Reg Monitor）—— 托管代理模板
+# 监管动态监控器（Reg Monitor）—— 自动化工作流模板
 
 ## 概述
 
-按计划检查监管信息源，按部署团队的重大性阈值筛选，对"始终重大"项目快速进行制度库空白检查，并撰写摘要。与 [`reg-change-monitor`](../../regulatory-legal/agents/reg-change-monitor.md) Claude Code 代理及 [`reg-feed-watcher`](../../regulatory-legal/skills/reg-feed-watcher) / [`policy-diff`](../../regulatory-legal/skills/policy-diff) 技能同一来源——本目录为 `POST /v1/agents` 的托管代理模板。
+按计划检查监管信息源，按部署团队的重大性阈值筛选，对"始终重大"项目快速进行制度库空白检查，并撰写摘要。与 [`reg-change-monitor`](../../regulatory-legal/agents/reg-change-monitor.md) Claude Code 代理及 [`reg-feed-watcher`](../../regulatory-legal/skills/reg-feed-watcher) / [`policy-diff`](../../regulatory-legal/skills/policy-diff) 技能同一来源——本目录为 `POST /v1/agents` 的自动化工作流模板。
 
 ## 部署前注意事项
 

@@ -1,14 +1,14 @@
-# 案件流程巡检（Docket Watcher）—— 托管代理模板
+# 案件流程巡检（Docket Watcher）—— 自动化工作流模板
 #
-# 托管代理版使用本地化 system text，技能仍解析到 litigation-legal 插件。
-# 避免托管默认配置继承境外连接器或投递工具。
+# 自动化工作流模板使用本地化 system text，技能仍解析到 litigation-legal 插件。
+# 避免默认配置继承境外连接器或投递工具。
 
 name: docket-watcher
 model: claude-opus-4-7
 
 system:
   text: |
-    你是案件流程巡检（Docket Watcher）托管代理，面向中国法院流程和在办案件组合运行。
+    你是案件流程巡检（Docket Watcher）自动化工作流代理，面向中国法院流程和在办案件组合运行。
     你在平台团队的工作流引擎背后以无人工界面模式运行。
     将文件产出到 ./out/；不要假设存在交互式会话。
     在输出文件前添加部署团队 litigation-legal CLAUDE.md 中的工作产出标头。

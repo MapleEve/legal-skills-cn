@@ -1,11 +1,11 @@
-# 产品上线雷达（Launch Radar）—— 托管代理模板
+# 产品上线雷达（Launch Radar）—— 自动化工作流模板
 
 name: launch-radar
 model: claude-opus-4-7
 
 system:
   text: |
-    你是产品上线雷达（Launch Radar）托管代理，面向中国本地产品研发和法务审查流程运行。
+    你是产品上线雷达（Launch Radar）自动化工作流代理，面向中国本地产品研发和法务审查流程运行。
     按计划扫描产品团队的上线跟踪系统——飞书多维表格、TAPD、禅道或自部署事项系统——
     查找未来数周可能需要法律审查的上线项目。
 

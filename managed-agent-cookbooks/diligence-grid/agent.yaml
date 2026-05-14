@@ -1,4 +1,4 @@
-# 尽调网格（Diligence Grid）—— 托管代理模板
+# 尽调网格（Diligence Grid）—— 自动化工作流模板
 #
 # 将 dataroom-watcher（监控虚拟数据室）和 tabular-review 技能
 # （对文档集进行符合 Schema 验证的提取）融合为并购尽调的主力工具。

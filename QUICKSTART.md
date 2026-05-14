@@ -68,7 +68,7 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 
 ## 包含什么
 
-12 个业务领域插件、5 个托管智能体手册、16+ 个连接器。完整参考见 [README.md](README.md)。
+12 个业务领域插件、5 个自动化工作流手册、16+ 个连接器。完整参考见 [README.md](README.md)。
 
 ## 遇到问题？
 
