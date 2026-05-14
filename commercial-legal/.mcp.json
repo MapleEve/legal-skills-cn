@@ -1,56 +1,55 @@
 {
   "mcpServers": {
-    "Ironclad": {
+    "合同生命周期管理": {
       "type": "http",
-      "url": "https://mcp.na1.ironcladapp.com/mcp",
-      "title": "Ironclad",
-      "description": "Search your contract repository and workflows using plain language — expiring MSAs, termination clauses, vendor agreements — scoped to your permissions."
+      "url": "TBD-待定中文数据源",
+      "title": "合同生命周期管理（CLM）",
+      "description": "以自然语言搜索合同库及审批流程——到期合同、解除条款、供应商协议等，范围限于用户权限内。"
     },
-    "DocuSign": {
+    "电子签章": {
       "type": "http",
-      "url": "https://mcp.docusign.com/mcp",
-      "title": "DocuSign",
-      "description": "Agreement search, status tracking, and signature workflows."
+      "url": "TBD-待定中文数据源",
+      "title": "电子签章",
+      "description": "合同签署状态追踪及签署流程管理。"
     },
-    "iManage": {
+    "文档管理": {
       "type": "http",
-      "url": "https://cloudimanage.com/mcp/work",
-      "title": "iManage",
-      "description": "Governed iManage content connected to Claude — documents stay in iManage, access is permission-bound and auditable."
+      "url": "TBD-待定中文数据源",
+      "title": "文档管理",
+      "description": "受控法律文档管理，文档留存在系统内，访问受权限约束且可审计。"
     },
-    "TopCounsel": {
+    "外部律师推荐": {
       "type": "http",
-      "url": "https://api.techgc.co/api/mcp/topcounsel",
-      "title": "TopCounsel",
-      "description": "Outside counsel recommendations from The L Suite — 5,000+ in-house counsel community sentiment, rankings, and expertise evidence."
+      "url": "TBD-待定中文数据源",
+      "title": "外部律师推荐",
+      "description": "基于中国法律行业社区评级的合作律所与律师推荐，含专业领域、排名及业绩证据。"
     },
-    "Definely": {
+    "合同结构分析": {
       "type": "http",
-      "url": "https://mcp.uk.definely.com/api/proxy/core-mcp",
-      "title": "Definely",
-      "description": "Live, deterministic access to contract structure — resolve definitions, validate cross-references, map dependencies, run structural diffs."
+      "url": "TBD-待定中文数据源",
+      "title": "合同结构分析",
+      "description": "合同结构实时分析——解析定义条款、校验交叉引用、映射条款依赖、执行结构差异比对。"
     },
-    "Slack": {
+    "企业微信": {
       "type": "http",
-      "url": "https://mcp.slack.com/mcp",
-      "title": "Slack",
-      "description": "Search messages, read channels, find discussions across your workspace."
+      "url": "TBD-待定中文数据源",
+      "title": "企业微信",
+      "description": "搜索消息、读取群聊、查找讨论记录。"
     },
-    "Google Drive": {
+    "企业网盘": {
       "type": "http",
-      "url": "https://drivemcp.googleapis.com/mcp/v1",
-      "title": "Google Drive",
-      "description": "Search, read, and fetch documents from Google Drive."
+      "url": "TBD-待定中文数据源",
+      "title": "企业网盘",
+      "description": "搜索、读取和获取企业网盘中的文档。"
     }
   },
   "recommendedCategories": [
-    "contract-management",
-    "e-signature",
-    "legal-document-management",
-    "email",
-    "documents",
-    "chat",
-    "contract-review",
-    "outside-counsel-network"
+    "合同管理",
+    "电子签章",
+    "法律文档管理",
+    "即时通讯",
+    "文档存储",
+    "合同审查",
+    "外部律师网络"
   ]
 }
