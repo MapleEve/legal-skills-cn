@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
-# Deploy a managed-agent template to POST /v1/agents.
+# Resolve a local automation workflow template to POST /v1/agents.
 #
 # Resolves manifest conveniences before posting:
 #   system: {file: ...}                  -> inlined string
@@ -79,7 +79,7 @@ upload_skill() {
   local resp id zip
   zip="$(mktemp -t skill).zip"
   (cd "$(dirname "$path")" && zip -qr "$zip" "$(basename "$path")")
-  # /v1/skills uses its own beta header and multipart, not the managed-agents JSON path
+  # /v1/skills uses its own beta header and multipart, not the agents JSON path
   resp=$(curl -sS "$API/v1/skills" \
     -H "x-api-key: $ANTHROPIC_API_KEY" \
     -H "anthropic-version: 2023-06-01" \

@@ -1,12 +1,14 @@
-# Managed-agent templates for legal
+# Local agent workflow cookbooks for legal
 
-Every agent in this repo ships **two ways**: as a Claude Code plugin you install today (see the vertical directories at repo root), and as a **Claude Managed Agent** template your platform team deploys behind your own workflow engine. **Same skills, localized managed-agent defaults — pick your surface.** Each directory below is a deploy manifest that references the skills from the matching plugin and carries managed-agent system text where the hosted workflow needs local connector defaults.
+`managed-agent-cookbooks/` is kept as a machine directory name for compatibility. The contents are **local scheduled task / local automation workflow** cookbook templates, not hosted/managed agent services. They are meant to run behind your own scheduler or workflow engine with your own connectors.
+
+Every agent in this repo ships **two ways**: as a Claude Code plugin you install today (see the vertical directories at repo root), and as a local agent workflow cookbook your platform team adapts for your own workflow engine. **Same skills, localized local-run defaults — pick your surface.** Each directory below is a local run manifest that references the skills from the matching plugin and carries system text with local connector defaults.
 
 These are **cookbooks, not products.** They are starting points. Adapt them to your document management system, your contract repository, your enterprise collaboration workspace, your notification routing, your review cadence. They will not work without that adaptation, and they are not supposed to.
 
-Run `../scripts/deploy-managed-agent.sh <slug>` to upload skills, create leaf workers, and `POST /v1/agents` with the resolved config. Each template ships with [`steering-examples.json`](./reg-monitor/steering-examples.json) and a per-agent README covering its security tier and handoffs.
+Run `../scripts/deploy-managed-agent.sh <slug>` to resolve the local workflow template, upload skills where your runtime requires it, create leaf workers, and prepare the `POST /v1/agents` config for your own orchestration layer. Each template ships with [`steering-examples.json`](./reg-monitor/steering-examples.json) and a per-agent README covering its security tier and handoffs.
 
-| Agent | Vertical plugin | What it watches | CMA steering event | Leaf workers |
+| Agent | Vertical plugin | What it watches | Steering event | Leaf workers |
 |---|---|---|---|---|
 | [`reg-monitor`](./reg-monitor/) | regulatory-legal | 国家法律法规数据库、国务院政策文件库、北大法宝/威科先行 | `Check feeds as-of <date>, materiality: <threshold>` | feed-reader · materiality-filter · **digest-writer** |
 | [`renewal-watcher`](./renewal-watcher/) | commercial-legal | 合同管理系统续约与解约期限 | `Scan renewals <X>–<Y> days out, flag playbook deviations` | repo-reader · deadline-calculator · **alert-writer** |

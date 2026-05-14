@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
-"""Reference event loop for cross-agent handoffs between managed agents.
+"""Reference event loop for cross-agent handoffs between local workflow agents.
 
 REFERENCE ONLY — replace with your firm's workflow engine (任务调度系统 TBD). This script shows the shape of the loop, not a
 production implementation.

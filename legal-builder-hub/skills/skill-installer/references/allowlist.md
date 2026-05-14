@@ -93,7 +93,7 @@ Intended for individual practitioners experimenting with community skills.
 
 ### `restrictive` (enterprise / firm deployments)
 
-Intended for firm-wide deployments, in-house legal teams with managed tooling,
+Intended for firm-wide deployments, in-house legal teams with centrally governed tooling,
 or any environment where the administrator is not the same person as the
 installer.
 

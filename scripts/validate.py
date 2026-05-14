@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
-"""Harness-side schema validation for managed-agent worker output.
+"""Harness-side schema validation for local workflow worker output.
 
 Usage: validate.py <output.json> <schema.json|schema.yaml>
 Exits 0 on valid, 1 on invalid (message to stderr).
