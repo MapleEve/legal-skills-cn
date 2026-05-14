@@ -1,17 +1,5 @@
 {
   "mcpServers": {
-    "yuandian": {
-      "type": "http",
-      "url": "${YUANDIAN_MCP_URL}",
-      "title": "YuanDian",
-      "description": "China legal research connector placeholder for statutes, regulations, cases, and legal source verification. Configure YUANDIAN_MCP_URL before use."
-    },
-    "pkulaw": {
-      "type": "http",
-      "url": "${PKULAW_MCP_URL}",
-      "title": "PKULaw",
-      "description": "China legal research connector placeholder for laws, regulations, judicial materials, and legal source verification. Configure PKULAW_MCP_URL before use."
-    },
     "Slack": {
       "type": "http",
       "url": "https://mcp.slack.com/mcp",
@@ -36,11 +24,23 @@
       "title": "TopCounsel",
       "description": "Outside counsel recommendations from The L Suite — 5,000+ in-house counsel community sentiment, rankings, and expertise evidence."
     },
+    "CourtListener": {
+      "type": "http",
+      "url": "https://mcp.courtlistener.com/",
+      "title": "CourtListener",
+      "description": "Free Law Project's legal research platform — millions of U.S. court opinions, PACER dockets, judge profiles, oral arguments, and citation verification."
+    },
     "Aurora": {
       "type": "http",
       "url": "https://mcp.ai.consilio.com",
       "title": "Aurora",
       "description": "Read-only Consilio ediscovery — find matters, list workspaces, full-text search, AI-powered cross-matter investigations, every record cited to source."
+    },
+    "Trellis": {
+      "type": "http",
+      "url": "https://mcp.trellis.law/anthropic",
+      "title": "Trellis",
+      "description": "The largest state trial court dataset in the U.S. — dockets, rulings, verdicts, filings, judge and opposing counsel analytics, expert witness vetting."
     }
   },
   "recommendedCategories": [
