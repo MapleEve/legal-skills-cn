@@ -1,8 +1,8 @@
 {
-  "name": "law-student",
+  "name": "法学生",
   "version": "1.0.2",
-  "description": "Drills Socratically, briefs cases, builds outlines, runs bar prep sessions tuned to your jurisdiction, grades IRAC practice, and plans the study schedule \u2014 without ever writing it for you.",
+  "description": "问答式案例研习、案例摘要、知识体系构建、法考训练（按报考地适配）、IRAC案例分析评分、学习计划制定——只引导思考，不替你写答案。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

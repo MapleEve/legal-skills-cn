@@ -1,8 +1,8 @@
 {
-  "name": "ai-governance-legal",
-  "version": "1.0.2",
-  "description": "Triages proposed AI use cases against your registry, runs impact assessments across the regimes in scope, reviews vendor AI terms for training-on-data and liability gaps, and keeps your AI policy current with practice.",
+  "name": "人工智能治理",
+  "version": "1.0.0",
+  "description": "按中国法框架对AI用例进行合规分诊：生成式AI服务合规、深度合成标注、算法备案、科技伦理审查、大模型安全评估。审查供应商AI条款（训练数据合规/模型变更通知/算法透明度/内容安全），保持AI治理政策与实务同步。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

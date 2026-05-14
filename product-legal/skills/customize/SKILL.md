@@ -1,98 +1,48 @@
 ---
-name: customize
+name: 配置定制
 description: >
-  Guided customization of your product counsel practice profile — change one
-  thing without re-running the whole cold-start interview. Adjust risk
-  calibration, escalation contacts, launch review framework, marketing
-  claims posture, or matter workspace paths. Use when the user says
-  "change my [thing]", "update my profile", "edit my framework", "retune
-  my calibration", or "customize".
-argument-hint: "[section name, or describe what you want to change]"
+  向导式定制您的产品法务实践配置——无需重新运行完整冷启动访谈即可修改单项内容。
+  可调整风险校准、升级联系人、产品上线审查框架、营销文案立场或事项工作区路径。
+  当用户说"修改我的[某项目]"、"更新配置"、"编辑框架"、"重新校准"或"定制"时使用。
+argument-hint: "[章节名称，或描述修改内容]"
 ---
 
-# /customize
+# /配置定制
 
-## When this runs
+## 触发场景
 
-The user typed `/product-legal:customize`. They want to change something
-in their product counsel profile — a risk calibration threshold, an
-escalation contact, a framework section — without re-running the whole
-cold-start interview and without hand-editing YAML.
+用户想修改产品法务配置中的某项内容——风险校准阈值、升级联系人、框架章节——无需重新运行完整冷启动访谈，也无需手动编辑。
 
-## What to do
+## 执行步骤
 
-1. **Read the config.** Read
-   `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md`
-   (and `~/.claude/plugins/config/claude-for-legal/company-profile.md` one
-   level up). If the plugin config does not exist or still contains
-   `[PLACEHOLDER]` values, say:
+1. **读取配置。** 读取实践配置（以及上级目录的 `company-profile.md`）。如插件配置不存在或含 `[PLACEHOLDER]` 值，提示先运行 `/product-legal:cold-start-interview`。
 
-   > You haven't run setup yet. Run `/product-legal:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+2. **展示可定制项目总览。** 按组列出：
+   - **公司/主体信息** — 名称、行业、管辖范围、阶段、执业类型、产品范围
+   - **产品上线审查流程** — 接收方式（飞书多维表格/TAPD/禅道等）、审查SLA、上线层级、PRD位置
+   - **审查框架** — 审查类别（隐私/个人信息保护、知识产权、数据安全/网络安全、《广告法》合规、《反不正当竞争法》、消费者保护、行业监管等）及深度
+   - **风险校准** — P0阻断/需要认真看/放行在本公司的标准及锚定示例（按中国监管环境校准）
+   - **营销文案** — 夸大宣称 vs. 事实支撑的立场、对比性宣称框架、最高级用语、《广告法》第9条极限词规则、AI功能宣称规则
+   - **人员** — 各业务线产品对接人、升级链路、营销对接人
+   - **工作流** — 事项工作区、上线雷达监控频率、上线审查模板
+   - **集成** — 飞书多维表格/TAPD/禅道/飞书/钉钉/文档存储状态、降级方案
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+3. **询问修改内容。** "您想调整什么？选择一个章节，或用您自己的话描述。"
 
-   - **Company / who you are** — name, industry, jurisdictions, stage, practice
-     setting, product surface area *(shared across all 12 plugins — changes
-     flow through `company-profile.md`)*
-   - **Launch review process** — intake (Jira / Linear / Asana / doc),
-     review SLA, launch tiering, PRD location
-   - **Review framework** — the categories you review launches against
-     (privacy, IP, safety, claims, regulatory, accessibility, security,
-     etc.) and the depth you go on each
-   - **Risk calibration** — what's P0 blocker / needs a real look / fine at
-     your company, with examples that anchor the labels
-   - **Marketing claims** — posture on puffery vs. substantiated, comparative
-     claims framing, superlatives, house rules for AI-feature claims
-   - **People** — product partners by surface, escalation chain (your
-     manager, GC, risk committee), marketing counterpart
-   - **Workflow** — matter workspaces, launch-radar watcher cadence, launch
-     review template
-   - **Integrations** — Jira / Linear / Asana / Slack / document storage
-     status, fallbacks
+4. **执行修改。** 展示当前值、询问新值、说明下游影响、确认、写入配置。
 
-3. **Ask what they want to change.**
+  示例：
+  - *P0阻断标准新增触发条件：* "`/上线审查` 现在会在检测到[新条件]时标注为P0阻断。"
+  - *修改升级审批人：* "所有涉及升级路由的技能将更新为新的审批链。"
+  - *审查框架新增类别：* "后续审查将包含[新类别]的检查项。"
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+5. **共享配置修改**写入 `company-profile.md`。
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+6. **收尾。** "完成。您的下一次输出将反映此变更。"
 
-   Examples:
-   - *Risk calibration tightening "fine" → "needs a real look" for a
-     pattern:* "`/triage` and `/launch-review` will start flagging this
-     pattern. Existing reviews stay as written; re-run if you want the new
-     posture applied."
-   - *New launch-review category:* "`/launch-review` will add a section for
-     this category. `/is-this-a-problem` will pattern-match it in triage."
-   - *Marketing claims posture tightening:* "`/check-claims` will flag more
-     language as needing substantiation or reframing."
+## 护栏规则
 
-5. **For shared-profile changes** (company name, industry, jurisdictions,
-   practice setting, stage): write to
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md` and note:
-
-   > This change affects all 12 plugins — any plugin that reads your
-   > jurisdiction footprint now sees [new value].
-
-6. **Close.**
-
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/product-legal:customize` anytime.
-
-## Guardrails
-
-- **Never delete a section.** If the user wants to "remove" a review
-  category, offer to mark it `[Not in scope — route elsewhere]` and name
-  the plugin / team that picks it up.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., AI-feature claims scrutiny on + no AI policy
-  commitments set in `/ai-governance-legal`; or "fast SLA" + "every
-  launch requires GC sign-off"), flag the tension.
-- **Flag guardrail degradation.** The `[review]` flag, source attribution
-  tags, and `[verify]` tags on cited regulations are load-bearing — do not
-  remove. The substantiation requirement on claims is the thing `/check-
-  claims` exists for; weakening it defeats the skill.
-- **One change at a time.** Don't re-ask the whole interview.
+- **绝不删除章节。** 如要"删除"，标注为 `[不在范围内 — 路由到别处]`。
+- **标注内部不一致。** 如修改导致配置矛盾（例如风险偏好进取 + 所有AI功能都需要法务总监审批），标注张力。
+- **标注护栏降级。** `[审核]` 标注、来源标注标签、法规援引上的 `[需核实]` 标签是承载性护栏——不可移除。
+- **每次只改一项。**

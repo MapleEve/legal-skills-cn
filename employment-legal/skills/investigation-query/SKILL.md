@@ -1,44 +1,51 @@
 ---
-name: investigation-query
+name: 调查查询
 description: >
-  Ask questions against an open investigation log — what witnesses said, where
-  accounts conflict, what gaps exist, what the strongest evidence is on each
-  issue. Use when the attorney needs to query the investigation record without
-  re-reading every entry.
-argument-hint: "[matter name] [question]"
+  针对开放调查日志提问——证人说了什么、哪些陈述存在矛盾、有什么证据缺口、
+  每个争议点上最强的证据是什么。当律师需要查询调查记录而不重读每个条目时使用。
+argument-hint: "[案件名称] [问题]"
 ---
 
-# /investigation-query
+# /调查查询
 
-Answers questions against the investigation log — what witnesses said,
-where accounts conflict, what gaps exist, what the strongest evidence is
-on each issue.
+针对调查日志回答问题——证人说了什么、哪些陈述存在矛盾、有什么证据缺口、每个争议点上最强的证据是什么。
 
-## Instructions
+## 指示
 
-1. Load the `internal-investigation` reference skill and run Mode 3 (Query).
-2. Always cite log entry IDs in the answer.
-3. If the log contains nothing relevant to the question, say so explicitly —
-   "I have not seen any information on [topic] in this investigation log
-   ([N] entries reviewed)" — and offer to flag it as a gap.
+1. 加载`内部调查`参考技能并运行模式3（查询）。
+2. 始终在答案中引用日志条目ID。
+3. 如果日志中没有与问题相关的内容，明确说明——"在此调查日志中（[N]条条目已审查）我未见任何关于[主题]的信息"——并提供将其标记为证据缺口。
+4. 标注证据的证明力等级（强/中/弱/需补强）。
 
-## Examples
+## 查询场景
+
+- 时间线重建：某人在某时间做了什么？
+- 陈述矛盾：不同证人对同一事实的陈述差异？
+- 证据缺口：还存在哪些待查事项？
+- 证据链完整性：能否形成完整的证据链？
+- 法律定性预判：现有证据是否足以支撑某法律结论？
+
+## 中国法实务查询维度
+
+- 是否满足劳动争议中用人单位举证责任的要求？（《劳动争议调解仲裁法》第6条：发生劳动争议，当事人对自己提出的主张，有责任提供证据。与争议事项有关的证据属于用人单位掌握管理的，用人单位应当提供；用人单位不提供的，应当承担不利后果）
+- 规章制度是否可作为依据？（是否经民主程序+公示+内容不违反法律）
+- 经济补偿/赔偿金的计算依据是否可查证？
+
+## 示例
 
 ```
-/employment-legal:investigation-query [matter name]
-What did the respondent say about the December team dinner?
+/employment-legal:调查查询 [案件名称]
+被调查对象对12月团建晚宴的陈述是什么？
 ```
 
 ```
-/employment-legal:investigation-query [matter name]
-Where do the complainant's and respondent's accounts conflict?
+/employment-legal:调查查询 [案件名称]
+投诉人和被投诉人的陈述在哪些关键事实上存在冲突？
 ```
 
 ```
-/employment-legal:investigation-query [matter name]
-What do we still need?
+/employment-legal:调查查询 [案件名称]
+我们目前最缺乏哪方面的证据？
 ```
 
-> Detailed log-query process, citation rules, and gap-flagging templates live
-> in the `internal-investigation` reference skill — load it before doing
-> substantive work.
+> 详细的日志查询过程、引用规则和证据缺口标记模板位于`内部调查`参考技能中——在做实质性工作之前加载它。

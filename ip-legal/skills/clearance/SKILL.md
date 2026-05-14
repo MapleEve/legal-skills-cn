@@ -1,497 +1,175 @@
 ---
-name: clearance
+name: 商标检索
 description: >
-  Trademark clearance first pass — knockout + similar-marks check producing a
-  flag list, not a clearance opinion. Use when a new mark is proposed, when
-  asked whether a mark is available or to run a knockout search, or when
-  assessing likelihood-of-confusion factors before a full professional search.
-  This skill never concludes a mark is clear.
-argument-hint: "[describe the proposed mark, goods/services, and jurisdictions — or just the mark and I'll ask]"
+  中国商标初步检索——基于先申请原则的国知局数据库排除性检索与近似商标判断。
+  当新商标被提议、被问及商标是否可注册、或需在正式代理委托前评估在先权利冲突时使用。
+  此技能绝不结论商标是可注册的。
+argument-hint: "[描述提议的商标要素、指定商品/服务和类别——或仅商标名我会询问]"
 ---
 
-# /clearance
+# /商标检索
 
-**This is a triage, not a clearance opinion.** A trademark clearance opinion
-requires a full professional search and registered trademark counsel's
-judgment. A "no obvious conflicts" result means the triage
-didn't find anything — it does not mean the mark is clear. Clients have been
-sued over marks that passed a knockout search.
+**这是初步检索，不是商标可注册性法律意见。** 最终可注册性判断需由执业商标代理人/律师在全面官方检索和个案近似审查后出具。"未发现明显在先障碍"结果仅意味着本初步检索未发现冲突——不代表商标必然可注册。国家知识产权局（CNIPA）的实质审查可能提出本检索未覆盖的驳回理由。
 
-## Instructions
+## 指示
 
-1. Read `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`. If it
-   contains `[PLACEHOLDER]`, stop and direct to `/ip-legal:cold-start-interview`.
-2. Follow the workflow below.
-3. Run intake (mark, goods/services, classes, jurisdictions, visual/stylization).
-4. Knockout check for intrinsic bars — generic, descriptive, deceptive,
-   geographic, surname, false connection, prohibited matter, functional.
-5. Similar-marks search against what's connected (Solve Intelligence, CourtListener, Descrybe, or whatever MCP is available). If nothing is
-   connected, say so in the output and proceed with the factor analysis only.
-6. Walk the applicable circuit's likelihood-of-confusion factors — du Pont /
-   Polaroid / Sleekcraft / other. Flag each; never conclude.
-7. Write the triage memo to the matter folder (if a matter is active) or the
-   practice outputs folder. Apply the work-product header per role.
-8. End with recommended next steps and the non-lawyer gate if the role is
-   non-lawyer.
+1. 加载执业画像配置。
+2. 运行信息收集——获取商标要素、指定商品/服务、使用意图。
+3. 确定商品/服务分类（基于尼斯分类中国版，共45类）。
+4. 运行国知局商标数据库排除性检索。
+5. 在具有相似性的商品/服务类别上运行在先商标近似检索。
+6. 按《商标审查及审理标准》进行音、形、义三要素近似判断。
+7. 撰写初步检索备忘录。
+8. 以下一步建议和非代理人/非律师关卡结束。
 
-This skill never concludes a mark is clear. If uncertain, flag — the attorney
-decides.
+**此技能绝不结论商标是可注册的。**
 
-## Examples
+## 中国商标法下的检索
 
-```
-/ip-legal:clearance "APEXLEAF for an outdoor apparel line, planned launch US + EU"
-```
+依据《中华人民共和国商标法》(2019年修正)及《商标审查及审理标准》：
 
-```
-/ip-legal:clearance
-```
+### 先申请原则（第31条）
+商标权授予最先申请者，而非最先使用者。在先使用未注册的商标（除驰名商标外）原则上不能对抗在后申请注册的商标。**检索时申请日为关键时点。**
 
-(And the skill will ask for the mark, goods, classes, and jurisdictions.)
+### 45类商品/服务分类
+基于《商标注册用商品和服务国际分类尼斯协定》的中国版本（《类似商品和服务区分表》）。检索需覆盖申请类别及交叉检索类别。
 
----
+### 绝对驳回理由——不得作为商标使用的标志（第10条）
+- 同中华人民共和国的国家名称、国旗、国徽、国歌、军旗、军徽、军歌、勋章等相同或者近似的
+- 同中央国家机关的名称、标志、所在地特定地点的名称或者标志性建筑物的名称、图形相同的
+- 带有民族歧视性的
+- 带有欺骗性，容易使公众对商品的质量等特点或者产地产生误认的
+- 有害于社会主义道德风尚或者有其他不良影响的
+- 县级以上行政区划的地名或者公众知晓的外国地名（有第二含义的除外）
 
-## THIS IS A FIRST PASS, NOT A CLEARANCE OPINION
+### 不得作为商标注册的标志（第11条）
+- 仅有本商品的通用名称、图形、型号的
+- 仅直接表示商品的质量、主要原料、功能、用途、重量、数量及其他特点的
+- 其他缺乏显著特征的
 
-**Say this at the top of every output. Do not drop it. Do not soften it.**
+**经使用取得显著特征并便于识别的，可以作为商标注册。**
 
-> **This is a first pass, not a clearance opinion.** A trademark clearance opinion
-> requires a full professional search (TESS, state registries, common law sources,
-> international registries, domain and social, trade dress and design marks where
-> relevant) and attorney judgment on likelihood of confusion, which depends on
-> factors a structured triage cannot fully assess. A "no obvious conflicts" result
-> from this skill means the triage didn't find anything — it does not mean the
-> mark is clear. Clients have been sued over marks that passed a knockout search.
-> A registered trademark attorney evaluates before anyone adopts, files, or
-> invests in this mark.
+### 三维标志的功能性禁止（第12条）
+仅由商品自身的性质产生的形状、为获得技术效果而需有的商品形状或者使商品具有实质性价值的形状，不得注册。
 
-This is the loudest guardrail in the plugin. Under-calling a conflict is a
-one-way door — a logo on trucks, a product launched, a TM application filed, all
-with a problem underneath. Over-calling is a two-way door — the attorney narrows
-the list in review. Stay on the two-way door side.
+### 近似商标审查
+CNIPA审查申请商标是否与在先申请或注册的商标构成相同或近似。**近似判断三要素**：
+- **音**：读音是否相同或近似（包括汉语拼音、方言读音）
+- **形**：字形（中文）、图形构图、整体外观是否近似
+- **义**：含义是否相同或近似
 
----
+### 在先权利冲突（第9条、第32条）
+- 不得与他人在先取得的合法权利相冲突，包括：在先注册商标、在先字号权、在先著作权、在先外观设计专利权、在先姓名权、在先肖像权等
+- 不得以不正当手段抢先注册他人已经使用并有一定影响的商标
 
-## Matter context
+### 三年不使用撤销（第49条第二款）
+注册商标没有正当理由连续三年不使用的，任何单位或者个人可以向CNIPA申请撤销该注册商标。检索出的障碍商标可能存在被撤销可能。
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/ip-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/ip-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+### 有效期与续展（第39-40条）
+- 注册商标有效期为10年，自核准注册之日起计算
+- 续展期：期满前12个月内办理
+- 宽限期：期满后6个月（需缴纳延迟费）
+- 每次续展有效期10年
 
----
+### 驰名商标保护（第13条）
+- 为相关公众所熟知的商标，持有人可请求驰名商标保护
+- 就相同或者类似商品申请注册的商标是复制、摹仿或者翻译他人未在中国注册的驰名商标，容易导致混淆的，不予注册并禁止使用
+- 就不相同或者不相类似商品申请注册的商标是复制、摹仿或者翻译他人已经在中国注册的驰名商标，误导公众，致使该驰名商标注册人的利益可能受到损害的，不予注册并禁止使用
 
-## Load the practice profile first
+## 检索流程
 
-Before running clearance, read `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`. Pull:
+### 步骤1：确定商标要素
+明确：商标文字/图形/组合、是否含颜色、是否含外文、是否指定声音商标等非传统商标。
 
-- **Role** from `## Who's using this` (lawyer vs. non-lawyer changes the work-product header and the non-lawyer gate below).
-- **Registered in** and **enforce where** from `## IP practice profile` and `## Enforcement posture` (default jurisdictions if the user doesn't specify).
-- **Integrations** from `## Available integrations` (CourtListener / Solve Intelligence / Descrybe — each determines what searches are available to run, what the fallback is, and what gets attributed in the output).
-- **Decision posture** from `## Decision posture on subjective legal calls` — this skill never concludes "not confusingly similar."
+### 步骤2：确定商品/服务分类
+按《类似商品和服务区分表》归类。需特别注意：
+- 跨类商品/服务需分别检索
+- 交叉检索：部分不同类别的商品/服务可能被判定为类似
 
-If `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md` contains `[PLACEHOLDER]` or `[Your Company Name]`, surface this bounce:
+### 步骤3：绝对理由检索
+在国知局数据库检索：通用名称/描述性/欺骗性/不良影响/地名/功能性等。
 
-> I notice you haven't configured your practice profile yet — that's how I tailor posture, jurisdictions, and approval chain to your practice.
->
-> **Two choices:**
-> - Run `/ip-legal:cold-start-interview` (2 minutes) to configure your profile, then I'll run this tailored to YOUR practice.
-> - Say **"provisional"** and I'll run this against generic defaults — US jurisdiction, middle risk appetite, lawyer role, no playbook — and tag every output `[PROVISIONAL — configure your profile for tailored output]` so you can see what I do before committing.
+### 步骤4：在先商标近似检索
+- 在指定类别及类似类别上检索相同商标
+- 检索近似商标（音/形/义）
+- 检索英文/拼音对应商标
+- 检索已公告但未注册的商标
 
-### Provisional mode
+### 步骤5：在先权利检索
+- 企业字号检索（尤其当商标与字号相同或近似时）
+- 域名检索
+- 外观设计专利检索
 
-If the user says "provisional," run the clearance normally using these generic defaults: middle risk appetite, lawyer role, US jurisdiction (USPTO + common-law), no playbook (do the full analysis rather than matching against a position list). Tag the reviewer note and every finding block with `[PROVISIONAL]`. At the end of the output, append:
+### 步骤6：近似判断
+按《商标审查及审理标准》进行音、形、义三要素综合分析：
+- 以相关公众的一般注意力为标准
+- 隔离比对（分别观察）与整体比对相结合
+- 考虑请求保护商标的显著性和知名度
 
-> "That was a generic run against default assumptions. Run `/ip-legal:cold-start-interview` to get output calibrated to YOUR practice — your playbook, your jurisdiction, your risk appetite. 2 minutes."
+## 输出格式
 
----
+以响亮护栏开始："本报告仅为初步商标检索结果，不构成商标可注册性法律意见。最终注册可行性判断需由执业商标代理人/律师在全面检索和个案分析后出具。"
 
-## Intake
-
-Ask once, in a single batch (don't drag out a quick job):
-
-> A few questions before I run the triage:
->
-> 1. **Proposed mark.** Exact spelling, any stylization, and whether it's a word mark, logo, or both.
-> 2. **Goods or services.** What's actually being sold or offered under this mark. A sentence or two — I'll map to international classes.
-> 3. **Classes.** If you already know the Nice classes, list them. Otherwise describe the goods/services and I'll suggest the likely classes and confirm with you before running the search.
-> 4. **Jurisdictions.** Where do you plan to use, register, or enforce? (US / EU / UK / Madrid / specific countries — I'll default to `Registered in` from your practice profile if you don't say.)
-> 5. **How it will appear in use.** Any taglines, adjacent product names, trade dress, or design elements that would show up with it in market.
-
-Wait for the answer. If the description is vague ("AI tool," "platform"), push once:
-
-> Give me the actual thing a customer sees — is it a consumer mobile app, enterprise API, physical product, service? The classes turn on this.
-
----
-
-## Knockout check
-
-Before any database search, run the intrinsic problems that kill a mark regardless
-of prior registrations. For each, assess plainly and flag. Do not rationalize away
-a clear issue.
-
-| Bar | What it means | Flag when |
-|---|---|---|
-| **Generic** | The term IS the category (e.g., "Soap" for soap) | The mark names what the thing is |
-| **Descriptive** | Directly describes a feature, function, quality, or ingredient | A consumer reads the mark and knows what the product does without imagination |
-| **Deceptive / deceptively misdescriptive** | Misrepresents a material feature | The mark suggests a quality the goods don't have and that quality would matter |
-| **Primarily geographically descriptive / deceptive** | Mark is primarily a place name and goods come from (or don't) that place | Mark = place + generic; or place + goods where customers would assume origin |
-| **Primarily merely a surname** | Mark is primarily a surname | Mark reads as someone's last name to the relevant consumer |
-| **False connection** | Mark falsely suggests connection with person, institution, national symbol | Mark invokes a specific identifiable person or institution |
-| **Prohibited matter** | Flags, coats of arms, insignia, specific prohibited categories | Mark contains a prohibited element |
-| **Functional (for design marks / trade dress)** | The feature is essential to use or affects cost/quality | Design mark — and the feature performs a function |
-
-Note on scandalous/immoral marks: after *Iancu v. Brunetti* (2019) and *Matal v.
-Tam* (2017), the USPTO no longer refuses registration on those bases. The
-surviving statutory bar in this zone is false connection under §2(a). Apply that;
-don't flag under the struck-down bars.
-
-**Output:** for each knockout category, either "no issue identified" or a
-specific flag with a one-line reason. Don't produce a blank table of passes.
-
----
-
-## Similar marks check
-
-The purpose here is to **find potentially confusingly similar prior marks**, not
-to decide whether confusion is likely. That is the attorney's call.
-
-### What the user has connected
-
-Read `## Available integrations` from `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`:
-
-- **If a trademark search connector is available** (Solve Intelligence,
-  Descrybe — or any MCP exposing TM-registry search): run a preliminary search
-  across the relevant classes and jurisdictions. Attribute every result to its
-  source. Note the date of the search and the scope (which registries, which
-  classes, exact-match vs. fuzzy, design search or not).
-- **If a legal research connector is available** (CourtListener for litigation for case law and TTAB decisions): sweep for reported disputes involving
-  the mark or a close variant. Same attribution rule.
-- **If no search connector is available:** say so, explicitly, in the output.
-  Do not infer results from model knowledge and present them as search findings.
-
-### Fallback when no database access exists
-
-Write out, in the output, this exact statement:
-
-> **No database search was run.** This triage did not hit TESS, Solve
-> Intelligence, Descrybe, CourtListener, state registries, Madrid/WIPO, or any
-> common law / unregistered-mark sources. A knockout or full search across those
-> databases is required before any conclusion about availability. The triage
-> below is limited to intrinsic-bar analysis and structured confusion factors
-> against marks the user has identified or that come up in the conversation.
-
-Then proceed — the intrinsic checks and the factors analysis are still useful,
-just labeled honestly.
-
-### For each similar mark found (or supplied)
-
-Capture:
-
-- **Mark** (exact characters, any stylization)
-- **Source** (TESS registration no., Madrid designation, state registry, case
-  citation, domain, social handle — whichever)
-- **Classes / goods-services description** from the register
-- **Owner**
-- **Status** (registered / pending / abandoned / cancelled — a dead mark is not a
-  bar but can be relevant to fame and to a predecessor's rights)
-- **First-use date if available**
-
-**Do not supplement silently.** If you cite a USPTO registration number, it came
-from the search you ran; if you describe a mark the user mentioned, say that.
-Never invent a registration and never "fill in" a detail the record doesn't
-support. If the search didn't return a first-use date, write "first-use date not
-available from search result" — do not guess.
-
-### Adjacent families sweep (required before concluding)
-
-A clearance that only checks exact and near-exact matches misses the marks a
-competitor adopted *because* yours was taken. Before concluding, identify 3–5
-adjacent word families the practitioner should also sweep, and ask the user to
-confirm or add to the list.
-
-Adjacent families are category-conventional substitutes a reasonable competitor
-would consider when the direct mark is unavailable. For a mark like
-`NEXUS HOME` in the smart-home hub space, the adjacent families include at
-minimum:
-
-- **Category synonyms** for NEXUS: `HUB`, `NEST`, `CORE`, `LINK`, `CONNECT`,
-  `BRIDGE`, `CENTRAL`, `GATEWAY`.
-- **Assistant-style names** in the same product category: `ALEXA`,
-  `ECHO`, `SIRI`, `GOOGLE HOME`, `CORTANA`, `HOMEY`, `HOMEBASE`.
-- **HOME / HOUSE / SMART variants**: `SMART HOME`, `HOUSEHOLD`, `HOUSE`,
-  `ABODE`, `CASA`, `DOM`.
-- **Phonetic twins** on the root: `NEXIS`, `NEKSUS`, `NEXXUS`, `NECTIS`,
-  `KNOXUS` (depending on how the word sits in the market).
-
-The skill should output an adjacent-families block in the Similar Marks section
-with a confirmation prompt:
-
-> **Adjacent families to sweep (please confirm or add):**
->
-> - [family 1 — e.g., HUB / NEST / LINK / CONNECT]
-> - [family 2 — e.g., ALEXA-style assistant names]
-> - [family 3 — e.g., HOME / HOUSE / SMART variants]
-> - [family 4 — phonetic twins on the root]
->
-> A clearance that only checks exact and near-exact matches misses the marks a
-> competitor adopted because yours was taken. Confirm this list is complete for
-> the category before I continue.
-
-> **When non-English-speaking jurisdictions are in scope,** the English-only phonetic sweep misses the most common source of cross-border conflicts. Add:
-> - **Translation equivalents.** The mark translated into the relevant languages. The EU's foreign-equivalents doctrine treats a translation as the same mark for confusion purposes.
-> - **Transliteration.** The mark written in the relevant script (Cyrillic, Chinese/Japanese/Korean, Arabic, Hangul, Thai). Phonetic equivalence across scripts is a recognized conflict basis.
-> - **Script variations.** Marks registered in a non-Latin script that sound like your mark when romanized.
->
-> If you can't perform cross-language analysis, say so: "Cross-language phonetic and translation-equivalent analysis not performed — this is the most common source of cross-border conflicts. A clearance search in [jurisdiction] should include it."
-
-If the practitioner has a connected TM search tool, re-run the sweep against
-each confirmed adjacent family (exact + phonetic + translation-of-foreign-equivalent
-where relevant) and add the results to the Similar Marks table with the
-`Adjacent family` source noted. If no connector is available, say so, and list
-the families as the explicit next-step input for a full professional search —
-do not silently skip the sweep.
-
----
-
-## Likelihood-of-confusion factors
-
-> **Confusion framework is jurisdiction-specific.** The US and EU assess likelihood of confusion differently. Don't apply the wrong one.
->
-> - **US (federal circuits):** Multi-factor tests (*du Pont*, *Polaroid*, *Sleekcraft*) — strength of the mark, similarity (sight/sound/meaning), proximity of goods, channels, buyer sophistication, actual confusion, intent.
-> - **EU (Art. 8(1)(b) EUTMR):** Global appreciation — all relevant factors assessed holistically through the eyes of the average consumer. Key differences: greater weight on phonetic similarity; translation equivalents as standard (the mark translated into EU languages); "likelihood of association" beyond source confusion; the distinctiveness of the earlier mark carries more weight.
-> - **UK (TMA 1994 §5(2)):** Follows the EU global appreciation approach post-Brexit but diverging case law. Check for UK-specific decisions.
-> - **Other jurisdictions:** If the intake includes a jurisdiction without a framework above, say: "I don't have [jurisdiction]'s confusion framework. Applying the US test would give you a wrong answer that looks right. Options: (a) I search for the applicable standard, (b) you route to a [jurisdiction] trademark specialist, (c) I note this jurisdiction is out of scope." Never silently apply US doctrine.
-
-The relevant circuit's test determines the factors to walk through. Cite the
-test that applies:
-
-- **TTAB / Federal Circuit:** *In re E. I. du Pont de Nemours & Co.*, 476 F.2d
-  1357 (C.C.P.A. 1973) (13 factors).
-- **Second Circuit:** *Polaroid Corp. v. Polarad Electronics Corp.*, 287 F.2d 492
-  (2d Cir. 1961) (8 factors).
-- **Ninth Circuit:** *AMF Inc. v. Sleekcraft Boats*, 599 F.2d 341 (9th Cir. 1979)
-  (8 factors).
-- **Other circuits:** walk through the circuit's named multi-factor test (e.g.,
-  *Frisch's Restaurants* in the Sixth Circuit, *Scotch Whisky Association* in the
-  Seventh, *Lapp* in the Third).
-
-Pick based on where the user plans to enforce (practice profile), the TTAB if
-the immediate forum is registration, or the primary commercial forum otherwise.
-Note your pick in the output.
-
-For each factor, produce a **flag**, not a verdict. Each factor should say what
-cuts each way and where the uncertainty is:
-
-- **Similarity of marks** (appearance, sound, meaning / connotation, commercial
-  impression). Sight-sound-meaning, considered together.
-- **Similarity of goods or services.** Not whether the goods are identical —
-  whether consumers would expect them to come from the same source.
-- **Channels of trade.** Where each side actually sells (or would sell). Same
-  stores? Same distribution? Same trade shows? Online-only?
-- **Sophistication of consumers.** Impulse buy at a gas station vs. considered
-  enterprise purchase changes the standard of care.
-- **Strength of prior mark found.** Fanciful / arbitrary / suggestive /
-  descriptive / generic, and fame evidence if any. A strong prior mark gets
-  wider protection.
-- **Intent.** Evidence of intent to trade on goodwill — a near-copy with similar
-  trade dress in an adjacent class is different from an independent coinage.
-- **Actual confusion.** Any evidence (misdirected inquiries, surveys, reviews,
-  social posts).
-- **Likelihood of expansion** (bridge-the-gap). Whether the senior user is
-  likely to expand into the junior's lane, and vice versa.
-
-Per the decision posture in `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`:
-
-- **Never conclude "not confusingly similar."**
-- If uncertain, write: "Similar marks found — confusion assessment required
-  before adoption." Or: "Factors cut both ways; attorney judgment required."
-- Clear space for "no similar marks found in the databases searched" is fine
-  *only* if a real search was run; see the no-search fallback above otherwise.
-
----
-
-## Recommended next steps
-
-Every clearance output ends with concrete next steps, bucketed by what the
-triage found:
-
-- **If knockout issues found:** reframe the mark, or accept the descriptiveness
-  bar and plan for secondary-meaning over time; route for attorney review before
-  adopting.
-- **If similar marks found in the databases searched:** attorney review is
-  required before adopting, filing, or marketing. Often the next step is a full
-  professional search to find everything the triage missed.
-- **If no similar marks found but no database search ran:** a full search is
-  required before adoption. Name the databases that need to be hit.
-- **If similar marks found and the senior mark is weak, old, in a different
-  class, or abandoned:** flag for attorney review — the triage will not make
-  this call.
-- **Always:** a full clearance opinion from registered trademark counsel, scaled
-  to the investment the mark will carry. A mark you'll put on a product line and
-  a Super Bowl ad carries more weight than a mark for a one-off pop-up.
-
----
-
-## Output format
-
-Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md` `## Outputs`.
-
+### 备忘录结构
 ```markdown
-[WORK-PRODUCT HEADER]
+# 商标初步检索备忘录：[商标名称]
 
-# Trademark Clearance — First Pass (NOT AN OPINION)
+**检索日期：** [日期]
+**商标要素：** [文字/图形/组合等]
+**指定类别：** [第X类 —— 商品/服务描述]
 
-**This is a first pass, not a clearance opinion.** A clearance opinion requires
-a full professional search and attorney judgment. A "no obvious conflicts"
-result here means the triage didn't find anything — it does not mean the mark
-is clear. A registered trademark attorney evaluates before anyone adopts, files,
-or invests in this mark.
+---
 
-**Triage result:** [GREEN / YELLOW / RED — one sentence why]
+## 底线
 
-## Proposed mark
+[一句话总结：是否存在明显在先障碍]
 
-- **Mark:** [exact text, stylization noted]
-- **Mark type:** [word / design / composite]
-- **Goods / services:** [description]
-- **Classes:** [Nice class numbers with one-line descriptions]
-- **Jurisdictions:** [US / EU / UK / Madrid / specific countries]
-- **Confusion test applied:** [du Pont / Polaroid / Sleekcraft / other — with the
-  reason it's the right one]
+---
 
-## Knockout issues
+## 检索范围
 
-| Bar | Flag | Note |
+| 数据库 | 检索策略 | 检索结果数 |
 |---|---|---|
-| Generic / descriptive / deceptive / geographic / surname / false connection / prohibited / functional | [none / flagged] | [one line if flagged] |
+| 国知局商标数据库 | [关键词/策略] | [数量] |
+| [商业数据库，如白兔/国方] | [关键词/策略] | [数量] |
 
-## Similar marks check
+---
 
-**Sources searched:** [registries and databases hit, with dates — or "no database
-search run; see scope note below."]
-**Scope:** [classes, jurisdictions, exact-vs-fuzzy, design search or not]
+## 绝对理由障碍
 
-**Adjacent families swept (confirmed with user):**
-- [family 1 — e.g., HUB / NEST / LINK / CONNECT / BRIDGE / GATEWAY]
-- [family 2 — e.g., ALEXA-style assistant names]
-- [family 3 — e.g., HOME / HOUSE / SMART variants]
-- [family 4 — phonetic twins on the root]
+[逐一排查第10-12条]
 
-*A clearance that only checks exact and near-exact matches misses the marks a
-competitor adopted because yours was taken. If any family was not swept (no
-connector, time not available), it is listed explicitly as a next-step input
-to the full professional search — not silently skipped.*
+---
 
-| Mark | Source | Classes / G&S | Owner | Status | First use | Note |
-|---|---|---|---|---|---|---|
-| [exact] | [registration no. / citation / URL] | [class list] | [owner from record] | [reg/pending/abandoned/cancelled] | [date or "not available"] | [why it matters — exact match / adjacent family] |
+## 在先商标冲突
 
-*If no search was run:* **No database search was run.** This triage did not hit
-TESS, Solve Intelligence, Descrybe, CourtListener, state registries,
-Madrid/WIPO, or any common law / unregistered-mark sources. A knockout or full
-search across those databases is required before any conclusion about availability.
+| 商标 | 注册号 | 类别 | 状态 | 近似分析 |
+|---|---|---|---|---|
+| [商标] | [号] | [类] | [状态] | [音/形/义分析] |
 
-## Confusion factors — flags for attorney review
+---
 
-For each of the factors under the test applied, a one-line flag noting what cuts
-each way.
+## 其他在先权利冲突
 
-| Factor | Flag | Direction |
-|---|---|---|
-| Similarity of marks (sight / sound / meaning / commercial impression) | [note] | [weighs toward / against conflict / mixed] |
-| Similarity of goods or services | [note] | [direction] |
-| Channels of trade | [note] | [direction] |
-| Consumer sophistication | [note] | [direction] |
-| Strength of prior mark | [note] | [direction] |
-| Intent | [note] | [direction] |
-| Actual confusion | [note or "no evidence surfaced"] | [direction] |
-| Likelihood of expansion / bridge-the-gap | [note] | [direction] |
+[字号/域名/外观设计等]
 
-**Conclusion on confusion:** *This skill does not conclude.* Either:
-- "Similar marks found; attorney confusion assessment required before adoption."
-- "No similar marks found in the databases searched; full clearance required
-  before adoption."
-- "Factors cut both ways; attorney judgment required."
+---
 
-## Recommended next steps
+## 综合评估
 
-- [specific next step 1 — e.g., "Full professional search across USPTO, state
-  registries, common law sources, EUIPO, and UK IPO before adoption"]
-- [specific next step 2 — e.g., "Design-around review of the `APEXLEAF` mark
-  in Class 25 if the intent is to proceed"]
-- [specific next step 3 — e.g., "Reframe the mark — current form is descriptive
-  and will require secondary meaning"]
-- [routing per `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md` —
-  trademark OC or in-house IP counsel named in the practice profile]
+[障碍汇总 + 可克服性分析（如三年不使用撤销可能性）]
 
-## Citation verification
+---
 
-Every case, registration number, statute, and database result in this memo must
-be verified against the authoritative source before relying on it. Registration
-numbers, class designations, and first-use dates are the most common sites of
-error. Do not cite a result you cannot open.
+## 下一步建议
+
+1. [ ] [建议行动 —— 如：调整商标要素 / 补充类检索 / 正式代理委托]
 ```
 
----
+## 此技能不做什么
 
-## Non-lawyer gate
-
-Before issuing the output, read `## Who's using this`. If the Role is Non-lawyer:
-
-> This output is a research triage, not legal advice. Adopting, filing, or
-> investing in this mark based on this triage alone has legal consequences —
-> including being sued for infringement over a mark that "passed" this check.
-> A registered trademark attorney needs to evaluate before you move.
->
-> Here's a brief to bring to an attorney — it'll cut the time the conversation
-> takes:
->
-> [Generate a 1-page summary: the proposed mark, the goods/services and classes,
-> the knockout issues (if any), the similar marks surfaced (if any), what was
-> and wasn't searched, and the three questions to ask the attorney.]
->
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent). The INTA (International Trademark Association)
-> maintains a member directory of registered trademark practitioners.
-
-Deliver the full triage memo alongside the brief. Do not withhold the analysis.
-
----
-
-## Output location
-
-If matter workspaces are enabled and a matter is active, write the output to
-`~/.claude/plugins/config/claude-for-legal/ip-legal/matters/<matter-slug>/outputs/clearance-<mark-slug>-YYYY-MM-DD.md`.
-Otherwise write to
-`~/.claude/plugins/config/claude-for-legal/ip-legal/outputs/clearance-<mark-slug>-YYYY-MM-DD.md`
-and surface the path to the user.
-
-Append a one-line entry to the matter's `history.md` if a matter is active.
-
----
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- **Conclude a mark is clear.** Ever. The loudest guardrail in the plugin.
-- **Substitute for TESS search, state-registry search, common-law search,
-  international search, watch-service check, or design-mark search.**
-- **File a trademark application.** Filing is an attorney task; this skill
-  informs the decision to file.
-- **Evaluate trade dress, trademark dilution, or famous-mark claims** beyond a
-  preliminary flag. Dilution under the TDRA requires a fame analysis this
-  skill does not attempt.
-- **Address foreign local-law bars** (e.g., phonetic similarity standards in
-  Japan, translation-of-foreign-equivalents in the EU) beyond flagging that
-  foreign analysis is required when a foreign jurisdiction is in scope.
-- **Quote outputs to customers, counterparties, or the press.** This is
-  internal research. Privileged if the header at the top applies.
-
----
-
-## Tone
-
-Crisp, concrete, honest about scope. The lawyer reading this output should know
-in ten seconds what the triage found, what it didn't, and what has to happen
-before anyone adopts the mark. No hedging prose. The guardrail at the top and
-the "this skill does not conclude" line on confusion do the scope work.
+- **绝不结论商标是可注册的。** 最响亮的护栏。
+- 不替代官方商标数据库检索、CNIPA实质审查或商标代理人的专业判断。
+- 不提交商标申请（向CNIPA的电子申请或纸件申请）。
+- 不评估商标淡化、未注册驰名商标的跨类保护范围。
+- 不处理非中国商标制度（马德里国际注册指定中国需单独分析）。

@@ -1,19 +1,18 @@
 ---
-name: form-generation
+name: 格式文书生成
 description: >
-  Reference: DEPRECATED — use `/draft` instead. This skill has been folded into
-  the draft skill, which handles practice-area document generation including
-  form population. Kept as a redirect for migration.
+  已废弃 — 请使用 `/法律文书代书` 代替。本技能已在v2重构中合并入代书技能，
+  后者处理包括起诉状、答辩状、申请书等所有法律援助文书的模板化初稿生成。
+  保留为迁移重定向。
 user-invocable: false
 ---
 
-# [DEPRECATED] Form Generation → see `/draft`
+# [已废弃] 格式文书生成 → 请参见 `/法律文书代书`
 
-This skill was folded into `skills/draft/` during the v2 rebuild. The `/draft`
-command handles first-draft generation for all clinic documents including form
-population (asylum applications, eviction answers, protective order petitions,
-etc.) with practice-area templates and jurisdiction-aware formatting.
+本技能在v2重构期间合并入 `skills/draft/`。`/法律文书代书` 技能现在处理
+所有中国法律援助诊所文书生成，包括格式文书（起诉状/答辩状/上诉状/申请书等）
+的模板化起草。请使用 `/legal-clinic:draft` 代替。
 
-**Use `/draft [document type]` instead.**
-
-See `skills/draft/SKILL.md` for the full workflow.
+废弃原因：格式文书填充（如填写法院提供的表格模板）与标准化文书起草（如起诉状、
+上诉状等）在中国法律援助实践中并无本质区别——二者均属《法律援助法》(2022)
+第25条规定的"代拟法律文书"服务形式，统一由一个技能处理更为高效。

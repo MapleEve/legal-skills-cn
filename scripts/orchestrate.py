@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Reference event loop for cross-agent handoffs between managed agents.
 
-REFERENCE ONLY — replace with your firm's workflow engine (Temporal, Airflow,
-Guidewire event bus). This script shows the shape of the loop, not a
+REFERENCE ONLY — replace with your firm's workflow engine (任务调度系统 TBD). This script shows the shape of the loop, not a
 production implementation.
 
 Security note: handoff requests are surfaced in the orchestrator's text output,
@@ -49,7 +48,11 @@ import anthropic
 import jsonschema
 
 ALLOWED_TARGETS = {
-    "reg-monitor", "renewal-watcher", "diligence-grid", "launch-radar", "docket-watcher",
+    "reg-monitor",
+    "renewal-watcher",
+    "diligence-grid",
+    "launch-radar",
+    "docket-watcher",
 }
 
 # Closed schema of permitted handoff intents. Parameters are typed and
@@ -67,37 +70,52 @@ HANDOFF_INTENTS: dict[str, dict] = {
         "required": ["channel", "report_path"],
         "properties": {
             # Slack channel IDs: C... (public), G... (private), D... (DM).
-            "channel":     {"type": "string", "maxLength": 32,
-                            "pattern": r"^[CGD][A-Z0-9]{8,}$"},
+            "channel": {
+                "type": "string",
+                "maxLength": 32,
+                "pattern": r"^[CGD][A-Z0-9]{8,}$",
+            },
             # Only files under ./out/ with safe names.
-            "report_path": {"type": "string", "maxLength": 256,
-                            "pattern": r"^\./out/[A-Za-z0-9_.-]+\.(md|json)$"},
+            "report_path": {
+                "type": "string",
+                "maxLength": 256,
+                "pattern": r"^\./out/[A-Za-z0-9_.-]+\.(md|json)$",
+            },
             # Optional descriptive context. Wrapped in data-frame when used.
-            "note":        {"type": "string", "maxLength": 500},
+            "note": {"type": "string", "maxLength": 500},
         },
     },
     "launch_review": {
         "required": ["ticket_id"],
         "properties": {
-            "ticket_id": {"type": "string", "maxLength": 64,
-                          "pattern": r"^[A-Z]{2,10}-[0-9]{1,7}$"},
-            "note":      {"type": "string", "maxLength": 500},
+            "ticket_id": {
+                "type": "string",
+                "maxLength": 64,
+                "pattern": r"^[A-Z]{2,10}-[0-9]{1,7}$",
+            },
+            "note": {"type": "string", "maxLength": 500},
         },
     },
     "deal_debrief": {
         "required": ["matter_id"],
         "properties": {
-            "matter_id": {"type": "string", "maxLength": 64,
-                          "pattern": r"^[A-Za-z0-9._/:#-]+$"},
-            "note":      {"type": "string", "maxLength": 500},
+            "matter_id": {
+                "type": "string",
+                "maxLength": 64,
+                "pattern": r"^[A-Za-z0-9._/:#-]+$",
+            },
+            "note": {"type": "string", "maxLength": 500},
         },
     },
     "playbook_monitor": {
         "required": [],
         "properties": {
-            "clause": {"type": "string", "maxLength": 80,
-                       "pattern": r"^[A-Za-z0-9._/-]+$"},
-            "note":   {"type": "string", "maxLength": 500},
+            "clause": {
+                "type": "string",
+                "maxLength": 80,
+                "pattern": r"^[A-Za-z0-9._/-]+$",
+            },
+            "note": {"type": "string", "maxLength": 500},
         },
     },
 }
@@ -134,17 +152,24 @@ HANDOFF_PAYLOAD_SCHEMA = {
         "params": {"type": "object"},
         # Legacy free-text context. Surfaced in the data-frame, never as the
         # steering prompt. Capped + sanitized before use.
-        "event":  {"type": "string", "maxLength": 2000},
+        "event": {"type": "string", "maxLength": 2000},
     },
 }
 
-HANDOFF_RE = re.compile(
-    r'\{"type":\s*"handoff_request".*?\}', re.DOTALL
-)
+HANDOFF_RE = re.compile(r'\{"type":\s*"handoff_request".*?\}', re.DOTALL)
 
 # Denylist for instruction-like phrasing. Low-assurance; see docstring.
-_DENY_PREFIX = ("#", ">", "---", "System:", "Assistant:", "Human:",
-                "Instructions:", "IMPORTANT:", "NOTE:")
+_DENY_PREFIX = (
+    "#",
+    ">",
+    "---",
+    "System:",
+    "Assistant:",
+    "Human:",
+    "Instructions:",
+    "IMPORTANT:",
+    "NOTE:",
+)
 _DENY_SUBSTR_RE = re.compile(
     r"ignore\s+previous|disregard|new\s+instructions",
     re.IGNORECASE,
@@ -218,6 +243,7 @@ def audit_log(record: dict) -> None:
     except OSError:
         # Audit failure must not break the loop; surface on stderr.
         import sys
+
         print(f"handoff-audit write failed: {record}", file=sys.stderr)
 
 
@@ -249,31 +275,56 @@ def extract_handoff(text: str, source_agent: str = "unknown") -> dict | None:
     try:
         obj = json.loads(raw)
     except json.JSONDecodeError:
-        audit_log({"source": source_agent, "result": "reject",
-                   "reason": "invalid_json", "raw_len": len(raw)})
+        audit_log(
+            {
+                "source": source_agent,
+                "result": "reject",
+                "reason": "invalid_json",
+                "raw_len": len(raw),
+            }
+        )
         return None
 
     target = obj.get("target_agent")
     payload = obj.get("payload")
     if target not in ALLOWED_TARGETS:
-        audit_log({"source": source_agent, "target": target,
-                   "result": "reject", "reason": "target_not_allowlisted",
-                   "raw_len": len(raw)})
+        audit_log(
+            {
+                "source": source_agent,
+                "target": target,
+                "result": "reject",
+                "reason": "target_not_allowlisted",
+                "raw_len": len(raw),
+            }
+        )
         return None
     try:
         jsonschema.validate(instance=payload, schema=HANDOFF_PAYLOAD_SCHEMA)
     except jsonschema.ValidationError as e:
-        audit_log({"source": source_agent, "target": target,
-                   "result": "reject", "reason": f"schema: {e.message}",
-                   "raw_len": len(raw)})
+        audit_log(
+            {
+                "source": source_agent,
+                "target": target,
+                "result": "reject",
+                "reason": f"schema: {e.message}",
+                "raw_len": len(raw),
+            }
+        )
         return None
 
     intent = payload["intent"]
     params = payload["params"]
     if not _validate_params(intent, params):
-        audit_log({"source": source_agent, "target": target, "intent": intent,
-                   "result": "reject", "reason": "params_schema",
-                   "raw_len": len(raw)})
+        audit_log(
+            {
+                "source": source_agent,
+                "target": target,
+                "intent": intent,
+                "result": "reject",
+                "reason": "params_schema",
+                "raw_len": len(raw),
+            }
+        )
         return None
 
     raw_event = payload.get("event", "") or ""
@@ -286,19 +337,22 @@ def extract_handoff(text: str, source_agent: str = "unknown") -> dict | None:
     class _Defaulted(dict):
         def __missing__(self, _key):  # noqa: D105 — small render shim
             return ""
+
     steering_input = HANDOFF_TEMPLATES[intent].format_map(_Defaulted(params))
     if sanitized_event:
         steering_input += "\n\n" + frame_handoff(source_agent, sanitized_event)
 
-    audit_log({
-        "source": source_agent,
-        "target": target,
-        "intent": intent,
-        "params_keys": sorted(params.keys()),
-        "raw_event_len": len(raw_event),
-        "sanitized_event_len": len(sanitized_event),
-        "result": "approve",
-    })
+    audit_log(
+        {
+            "source": source_agent,
+            "target": target,
+            "intent": intent,
+            "params_keys": sorted(params.keys()),
+            "raw_event_len": len(raw_event),
+            "sanitized_event_len": len(sanitized_event),
+            "result": "approve",
+        }
+    )
     return {
         "target_agent": target,
         "intent": intent,
@@ -307,8 +361,9 @@ def extract_handoff(text: str, source_agent: str = "unknown") -> dict | None:
     }
 
 
-def run(source_session_id: str, agent_ids: dict[str, str],
-        source_agent: str = "unknown") -> None:
+def run(
+    source_session_id: str, agent_ids: dict[str, str], source_agent: str = "unknown"
+) -> None:
     """agent_ids maps slug -> deployed CMA agent_id."""
     client = anthropic.Anthropic()
     # /v1/agents is a preview endpoint; SDK type stubs don't cover it yet.
@@ -322,9 +377,15 @@ def run(source_session_id: str, agent_ids: dict[str, str],
             target_slug = handoff["target_agent"]
             target_id = agent_ids.get(target_slug)
             if not target_id:
-                audit_log({"source": source_agent, "target": target_slug,
-                           "intent": handoff["intent"], "result": "reject",
-                           "reason": "no_deployed_agent_id"})
+                audit_log(
+                    {
+                        "source": source_agent,
+                        "target": target_slug,
+                        "intent": handoff["intent"],
+                        "result": "reject",
+                        "reason": "no_deployed_agent_id",
+                    }
+                )
                 continue
             client.beta.agents.sessions.steer(  # type: ignore[attr-defined]
                 agent_id=target_id,

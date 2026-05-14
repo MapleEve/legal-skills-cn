@@ -1,103 +1,51 @@
 ---
-name: customize
-description: >
-  Guided customization of your regulatory practice profile — change one thing
-  without re-running the whole cold-start interview. Adjust watched
-  regulators, policy library index, materiality threshold, gap response
-  process, feed configuration, or matter workspace paths. Use when the user
-  says "change my [thing]", "add a regulator", "update my watchlist", "edit
-  my threshold", or "customize".
-argument-hint: "[section name, or describe what you want to change]"
+name: 自定义配置
+description: 对监管执业档案进行引导式自定义 — 更改一项而不重新运行整个冷启动访谈。调整关注的监管机构、政策库索引、重大性标准、合规差距响应流程、动态源配置或事项工作区路径。当用户说"更改我的[某配置]"、"添加监管机构"、"更新关注清单"、"编辑阈值"或"自定义"时使用。
+argument-hint: "[章节名称，或描述你想更改的内容]"
 ---
 
-# /customize
+# 自定义配置
 
-## When this runs
+## 何时运行
 
-The user typed `/regulatory-legal:customize`. They want to change something
-in their regulatory profile — a watched regulator, a materiality threshold,
-a feed source — without re-running the whole cold-start interview and
-without hand-editing YAML.
+用户想更改执业档案中的某项内容 — 一个关注的监管机构、一项重大性标准、一个动态源来源 — 而不重新运行整个冷启动访谈，也不手动编辑配置文件。
 
-## What to do
+## 做什么
 
-1. **Read the config.** Read
-   `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md`
-   (and `~/.claude/plugins/config/claude-for-legal/company-profile.md` one
-   level up). If the plugin config does not exist or still contains
-   `[PLACEHOLDER]` values, say:
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` 及共享公司档案。如插件配置不存在或包含 `[PLACEHOLDER]` 值，提示先运行冷启动访谈。
 
-   > You haven't run setup yet. Run `/regulatory-legal:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+2. **展示可自定义的地图。** 按组列出档案中内容，附当前值的一行摘要：
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+   - **公司/你是谁** — 名称、行业、法域、执业设定
+   - **关注的监管机构** — 范围内的中国监管机构，标注"牵头"还是"监测"
+   - **政策库** — 库索引的内部政策及其路径和负责人
+   - **重大性标准** — 何时一项监管变化上升到 🔴红线 / 🟠重大 / 🟡值得审查 / 🟢例行了解
+   - **合规差距响应流程** — 初步筛选人、各类风险的响应SLA、下游负责人
+   - **动态源配置** — 监管机构动态源、北大法宝/威科先行连接器、检查频率
+   - **人员** — 合规负责人、政策负责人、征求意见决策人、升级链
+   - **工作流** — 事项工作区、合规差距追踪器、征求意见截止日期跟踪器
+   - **集成** — 北大法宝/威科先行/企业通讯工具/文档存储状态
 
-   - **Company / who you are** — name, industry, jurisdictions, stage, practice
-     setting *(shared across all 12 plugins — changes flow through
-     `company-profile.md`)*
-   - **Regulators we watch** — agencies / bodies / SROs / state regulators
-     in scope, and which are "leading" (most likely to drive policy
-     impact) vs. "monitor"
-   - **Policy library** — the internal policies the library indexes, path
-     to each, owner per policy
-   - **Materiality threshold** — when a regulatory change rises to
-     "notable" vs. "report" vs. "digest only"; how this threshold filters
-     `/watch` output
-   - **Gap response process** — who triages, SLA per severity, downstream
-     owners (policy, product, training)
-   - **Feed configuration** — regulator feeds, Thomson Reuters
-     connectors, cadence of the `/watch` sweep, digest channel
-   - **People** — regulatory counsel, policy owners, comment drafter,
-     escalation chain
-   - **Workflow** — matter workspaces, open gaps tracker, comment deadline
-     tracker, digest publication cadence
-   - **Integrations** — Thomson Reuters / Slack / document
-     storage status, fallbacks
+3. **询问想更改什么。**
 
-3. **Ask what they want to change.**
+   > 你想调整什么？选一个章节，或用你自己的话描述更改。
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+4. **进行更改。** 显示当前值，询问新值，说明下游影响，确认，写入配置。
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+   示例：
+   - *添加监管机构至关注清单：* "`监控` 将在下次运行时扫描此监管机构。"
+   - *调整重大性标准：* "`监控` 摘要将更聚焦 — 低于新阈值的项目将移出周报摘要但保持可搜索。"
+   - *新增政策加入库：* "`差异对比` 将纳入此政策。征求意见跟踪器将标记影响此政策的反馈意见。"
 
-   Examples:
-   - *Adding a regulator to the watchlist:* "`/watch` will sweep this
-     regulator on its next run. `/diff` will accept inputs from this
-     regulator's rulemaking feed."
-   - *Tightening materiality threshold:* "`/watch` digest will be
-     shorter — items below the new threshold will drop from the weekly
-     digest but stay searchable."
-   - *New policy added to the library:* "`/diff` will include this policy
-     when matching new rules against the library. The comment tracker
-     will tag comments affecting this policy."
+5. **对于共享档案更改**（公司名称、行业、法域、执业设定）：写入 `company-profile.md` 并注明影响所有插件。
 
-5. **For shared-profile changes** (company name, industry, jurisdictions,
-   practice setting, stage): write to
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md` and note:
+6. **结束。**
 
-   > This change affects all 12 plugins — any plugin that reads your
-   > jurisdiction footprint now sees [new value].
+   > 完成。你的下一次输出将反映更改。还有其他吗？
 
-6. **Close.**
+## 护栏
 
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/regulatory-legal:customize` anytime.
-
-## Guardrails
-
-- **Never delete a section.** If the user wants to "drop" a regulator,
-  offer to mark it `[Monitor only]` and explain that monitoring keeps the
-  feed in the archive but pulls it out of the active digest.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., regulator in scope + no jurisdiction in the footprint
-  that the regulator covers; or "weekly digest" + materiality threshold
-  that yields fewer than one item a quarter), flag the tension.
-- **Flag guardrail degradation.** `[verify]` tags on cited regulations,
-  source attribution on feed pulls, and the `[review]` flag on gap triage
-  are load-bearing — do not remove. Materiality threshold can be adjusted,
-  but lowering it below the point where the digest becomes noise is the
-  point — warn if that's the direction.
-- **One change at a time.** Don't re-ask the whole interview.
+- **绝不删除章节。** 如用户想"移除"一个监管机构，提供标记为 `[仅监测]` — 保留在存档中但移出活跃摘要。
+- **标记内部不一致。** 如更改导致档案不一致（如关注清单中的监管机构 + 但法域覆盖中无该机构所覆盖的区域），标记矛盾。
+- **标记护栏降级。** `[核实]` 标签、来源归属、`[审查]` 标记是承重的 — 不移除。
+- **一次一个更改。** 不重新问整个访谈。

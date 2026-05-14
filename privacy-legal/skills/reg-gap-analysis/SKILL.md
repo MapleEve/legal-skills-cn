@@ -1,184 +1,186 @@
 ---
-name: reg-gap-analysis
+name: 法规差距分析
 description: >
-  Diff a new or changed regulation against current privacy policy and practice —
-  outputs a gap list and a remediation plan with owners and dates. Use when a new
-  reg drops, the user asks "does [regulation] affect us", "gap analysis for
-  [state privacy law]", "compliance check against [reg]", or pastes regulatory text.
-argument-hint: "[regulation name, or paste reg text/summary]"
+  将新颁布或修订的法规与现行隐私政策/个人信息处理规则及实践进行差异比对——
+  输出差距清单和附有责任人与时限的整改计划。适用场景：新法规出台、
+  "[法规名称]对我们有影响吗"、"[某法规]的合规差距分析"、
+  "对照[某法规]进行合规检查"或粘贴法规文本。
+argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 ---
 
-# /reg-gap-analysis
+# /法规差距分析
 
-1. Load `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → privacy policy commitments, regulatory footprint, DSAR systems.
-2. Run the workflow below.
-3. Scope: does the regulation apply? (jurisdiction, thresholds, sector)
-4. Extract requirements → diff against current state → gap list.
-5. Remediation plan with owners, dates, prioritization.
-6. Save dated doc. Even "no gaps" gets documented.
-
-```
-/privacy-legal:reg-gap-analysis "Colorado Privacy Act"
-```
+1. 加载 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
+2. 按以下工作流执行。
+3. 范围确认：该法规是否适用？（管辖范围、适用门槛、行业排除）
+4. 提取实质性要求 → 与当前状态对比 → 差距清单。
+5. 输出附带责任人、日期、优先级的整改计划。
+6. 保存为带日期的文件。即使"无差距"也需要存档。
 
 ```
-/privacy-legal:reg-gap-analysis
-[paste guidance / reg text]
+/privacy-legal:法规差距分析 "《网络数据安全管理条例》"
+```
+
+```
+/privacy-legal:法规差距分析
+[粘贴指引/法规文本]
 ```
 
 ---
 
-# Regulation-to-Policy Gap Analysis
+# 法规到政策差距分析
 
-## Purpose
+## 事项上下文
 
-A state passes a new privacy law. The ICO issues new guidance. The CPPA finalizes regulations. Something moves — and now you need to know what, if anything, you have to change.
+**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `Enabled` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且无活跃事项，询问："这是哪个事项？运行 `/privacy-legal:事项工作区 switch <标识>` 或说 `执业级别`。"加载活跃事项的 `事项档案.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal/privacy-legal/事项/<事项标识>/`。除非 `跨事项上下文` 为 `on`，否则绝不读取其他事项的文件。
 
-This skill diffs the new requirement against what you currently do (per `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → Privacy policy commitments + the practices documented in PIAs) and produces a gap list with a remediation plan.
+---
 
-## Load current state
+## 目的
 
-Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`:
-- `## Privacy policy commitments` — what you've publicly promised
-- `## Regulatory footprint` — what already applies
-- `## DSAR process` → systems list — what you actually do operationally
+网信办发布新的指南。某地方人大通过新的数据条例。工信部发布新的行业管理规定。有新变化——现在需要知道要改什么（如果有的话）。
 
-If the regulation doesn't apply to you (wrong jurisdiction, below threshold, different sector), the gap analysis is one line: "Doesn't apply. Here's why: [reason]. No action needed."
+本技能将新要求与您当前的状态（根据 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺 + 个人信息保护影响评估中记录的实践）进行对比，生成附带整改计划的差距清单。
 
-## Workflow
+## 加载当前状态
 
-### Step 1: Scope the regulation
+读取 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`：
+- `## 隐私政策/个人信息处理规则承诺` —— 您公开承诺了什么
+- `## 监管覆盖范围` —— 已适用哪些制度
+- `## 权利请求处理流程` → 系统清单 —— 您实际操作上做了什么
 
-Before diffing, answer:
+如果法规对您不适用（管辖范围不对、低于适用门槛、不同行业），差距分析一句话："不适用。原因如下：[理由]。无需行动。"
 
-- **Does it apply?** Jurisdiction (do you have data subjects there?), threshold (revenue, user count, data volume), sector carve-outs
-- **When?** Effective date, enforcement date (often later), any phase-in
-- **What's actually new?** Many "new" state privacy laws are 90% CCPA with tweaks. Identify the delta from what you already comply with, not the full text.
+## 工作流
 
-### Step 2: Extract requirements
+### 第1步：法规范围确认
 
-Read the regulation (or summary/guidance). List every substantive requirement as a discrete item:
+对比前先回答：
 
-| # | Requirement | Citation | Category |
+- **是否适用？** 管辖范围（您在该法域有个人信息主体吗？）、适用门槛（收入、用户数量、数据量）、行业排除
+- **何时生效？** 生效日期、执法开始日期（通常更晚）、任何分阶段实施安排
+- **实际上有什么新的？** 许多法规是在已有框架基础上的增量调整。识别相对于您已合规内容的增量，而非全文。
+
+### 第2步：提取要求
+
+阅读法规（或摘要/指引）。将每项实质性要求列为独立条目：
+
+| # | 要求 | 条文引用 | 类别 |
 |---|---|---|---|
-| 1 | [requirement as stated] | [section] | [Notice / Rights / Security / Vendor / Other] |
+| 1 | [如实陈述的要求] | [条款] | [告知 / 权利 / 安全 / 受托处理者 / 告知同意 / 治理 / 其他] |
 
-**Categories:**
-- **Notice** — what you have to tell users (privacy policy content)
-- **Rights** — what users can ask for (DSAR-adjacent)
-- **Security** — technical/organizational measures
-- **Vendor** — what you have to flow down to processors
-- **Consent** — opt-in/opt-out mechanics
-- **Governance** — DPO, impact assessments, record-keeping
+**类别：**
+- **告知** —— 您必须告知个人信息主体的内容（隐私政策/个人信息处理规则内容）
+- **权利** —— 个人信息主体可请求的内容（与个人信息主体权利请求相关）
+- **安全** —— 技术/组织措施
+- **受托处理者** —— 须向受托处理者传递的义务
+- **告知同意** —— 选择进入/选择退出机制
+- **治理** —— 个人信息保护负责人、影响评估、记录保存
 
-### Step 3: Diff against current state
+### 第3步：与当前状态对比
 
-For each requirement:
+对每项要求：
 
 ```markdown
-### [Requirement #N]: [short name]
+### [要求#N]：[简短名称]
 
-**Regulation says:** [requirement, quoted or paraphrased]
+**法规说：** [引用或转述要求]
 
-**We currently:** [what the config CLAUDE.md / privacy policy / practice shows]
+**我们目前：** [配置 CLAUDE.md / 隐私政策/个人信息处理规则 / 实践显示的内容]
 
-**Gap:** [None | Partial | Full]
+**差距：** [无 / 部分 / 完全]
 
-**If partial/full gap — what's missing:** [specific]
+**如部分/完全差距——缺少什么：** [具体]
 
-**Effort to close:** [Policy update only | Product change | Vendor renegotiation |
-New process]
+**关闭差距所需工作量：** [仅政策更新 / 产品变更 / 受托处理者重新协商 / 新流程]
 
-**Risk of non-compliance:** [regulatory penalty range, enforcement likelihood,
-reputational]
+**不合规风险：** [处罚幅度、执法可能性、声誉影响]
 ```
 
-### Step 4: Prioritize
+### 第4步：排序
 
-Not every gap is equal. Sort by:
+并非每个差距同等重要。按以下排序：
 
-1. **Hard deadline with teeth** — effective date + active enforcement + real penalties
-2. **Effort-to-impact ratio** — policy language update is cheap; product rebuild is not
-3. **What you've already half-done** — if you're 80% there for GDPR, the state law delta may be small
+1. **有牙齿的硬性截止日期** —— 生效日期 + 活跃执法 + 真实处罚
+2. **工作量与影响比** —— 政策语言更新成本低；产品重构则不然
+3. **已做完80%的内容** —— 如果某领域已基本合规，新增部分可能很小
 
-### Step 5: Remediation plan
+### 第5步：整改计划
 
-Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` `## Outputs` (it differs by user role — see `## Who's using this`).
+在输出前添加来自 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` `## 输出` 的工作成果抬头（因用户角色不同——见 `## 使用人身份`）。
 
-> **Research-connector pre-flight.** Before emitting the remediation plan, check whether a legal research connector is reachable for this session — Westlaw, an EUR-Lex / regulator-site connector, or any firm-configured research MCP. Collect this into the reviewer note per CLAUDE.md `## Outputs`: if no connector returns results in Step 2 or the Common regulation categories research step (or none is configured at run time), record it in the **Sources:** line of the reviewer note — e.g., `not connected — cites from training knowledge; the highest-fabrication items in privacy gap analyses are new state-law effective dates, enforcement-begins dates, and article/section pinpoints — spot-check those first`. Per-citation `[model knowledge — verify]` tags remain inline. Do not emit a standalone banner above the output.
+> **法律检索连接器飞行前检查。** 在发出整改计划前，检查本会话是否可到达法律检索连接器——北大法宝、网信办官方网站连接器或律所配置的任何法律检索MCP工具。在审查人说明中按 CLAUDE.md `## 输出` 收集此信息：如果第2步或常见法规类别研究步骤中没有连接器返回结果（或运行时未配置），在审查人说明的 **来源:** 行中记录——例如：`未连接法律检索工具——引用来自模型知识；个人信息保护法规差距分析中虚构风险最高的项目是新法规生效日期、执法起始日期和条款款项精确定位——优先抽查这些。`每条引用的 `[模型知识——核实]` 标签保留在行内。不要在输出上方添加独立的提示横幅。
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs]
+[工作成果抬头——根据插件配置 ## 输出]
 
-## Remediation Plan: [Regulation name]
+## 整改计划：[法规名称]
 
-**Effective date:** [date]
-**Enforcement begins:** [date]
+**生效日期：** [日期]
+**执法起始：** [日期]
 
-### Must-do before enforcement
+### 执法前必须完成
 
-| Gap | Fix | Owner | Due | Status |
+| 差距 | 整改措施 | 责任人 | 截止日期 | 状态 |
 |---|---|---|---|---|
-| [gap] | [specific fix] | [name] | [date] | [ ] |
+| [差距] | [具体措施] | [姓名] | [日期] | [ ] |
 
-### Should-do (lower risk, not blocking)
+### 应该做（风险较低，不阻断）
 
-[same table]
+[同上表格]
 
-### Already compliant
+### 已合规
 
-[list of requirements where gap = None — useful for the "we're mostly fine" message]
+[列出差距=无的要求——对"我们基本没问题"的信息传递很有用]
 
-### Accepted gaps (risk-accepted, not fixing)
+### 已接受差距（接受风险，不整改）
 
-[if any — with documented rationale and who accepted the risk]
+[如有——附带文件记录的理由和接受风险的人]
 ```
 
-## Common regulation categories
+## 常见法规类别
 
-When scoping the delta, it helps to place the new regulation into a rough category and then research the specifics:
+在界定增量范围时，有助于将新法规归入大致类别后深入研究具体内容：
 
-- **Baseline data-protection / privacy law** — broad coverage of a jurisdiction's personal data practices
-- **Sector-specific overlay** — health, finance, children, education, employment, etc.
-- **AI-specific regime** — transparency, impact assessments, or governance for automated decision-making
-- **Data broker / ad-tech regime** — registration, opt-out, deletion mechanisms
-- **Breach-notification regime** — standalone or embedded in a broader law
-- **Cross-border transfer regime** — adequacy, mechanism, and assessment requirements
+- **基础个人信息保护法律** —— 涵盖某法域个人信息处理实践的广泛立法（如《个人信息保护法》）[通说]
+- **行业特定叠加** —— 健康医疗、金融、未成年人、教育、劳动用工等
+- **AI特定制度** —— 自动化决策的透明度、影响评估或治理要求（《个人信息保护法》第24条、《生成式AI服务管理暂行办法》及相关规定）[核实]
+- **个人信息出境机制** —— 安全评估、标准合同、认证要求（《个人信息保护法》第38-40条及相关配套文件）[通说]
+- **个人信息泄露通知制度** —— 《个人信息保护法》第57条、《数据安全法》第29条及相关规定[通说]
+- **数据安全制度** —— 数据分类分级、重要数据保护、安全审查等（《数据安全法》及相关配套规定）[通说]
 
-For each category relevant to the new regulation, **research the currently operative requirements** before drafting the gap analysis. Cite primary sources. Verify currency — new state laws come online each legislative session, and regulators issue interpretive guidance that shifts what "compliance" means for a given control. Flag uncertainty for attorney verification rather than assert a rule you haven't confirmed.
+对与新法规相关的每个类别，在起草差距分析前**研究当前有效的操作性要求**。引用一手来源。核实时效性——新的法律法规会出台，监管机构发布解释性指引会改变某个控制措施的"合规"含义。标注不确定性供律师核实，而非断言您未确认的规则。
 
-> **No silent supplement.** If a research query to the configured legal research tool (Westlaw, regulator databases, or firm platform) returns few or no results for a regulation, guidance document, or enforcement action, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [regime / topic]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against the issuing authority before relying, or (4) flag as unverified and stop. Which would you like?" A lawyer decides whether to accept lower-confidence sources.
+> **禁止静默补充。** 如果对已配置法律检索工具（北大法宝、网信办官方网站数据库或律所平台）的检索查询返回少量或零结果（针对某法规、指引文件或执法案例），报告已发现内容并停止。不得未经询问从网络搜索或模型知识填充空白。说："该检索从[工具]返回[N]条结果。关于[制度/议题]的覆盖似乎不足。选项：(1)扩大检索查询，(2)尝试其他检索工具，(3)网络搜索——结果将标注为`[网络搜索——请核实]`并在采信前应按发布机关核实，或(4)保留"待核实"标记并在此停止。您选择哪一个？"由律师决定是否接受较低可信度的来源。
 >
-> **Source attribution tiering.** Tag every citation in the gap analysis with its source. For model-knowledge citations, use one of three tiers rather than a single blanket "verify" tag:
+> **来源标注分级。** 将差距分析中的每条引用标出其来源。对于模型知识引用，使用三级标注而非单一"核实"标签：
 >
-> - `[settled]` — stable, well-known statutory and regulatory references unlikely to have changed (e.g., GDPR Art. 33, CCPA § 1798.100, FTC Act § 5). Still verify before filing, but lower priority.
-> - `[verify]` — model-knowledge citations that are real but should be verified: specific implementing regulations, agency guidance, case holdings, thresholds, effective dates, newly enacted state statutes.
-> - `[verify-pinpoint]` — pinpoint citations (specific subsection letters, volume/page numbers, paragraph numbers, regulatory subpart references) carry the highest fabrication risk and should ALWAYS be verified against a primary source.
+> - `[通说]` —— 稳定、公认的法律条文引用，不太可能变更（如《个保法》第44-50条、《数据安全法》第21条）。提交前仍需核实，但优先级较低。
+> - `[核实]` —— 模型知识引用确实存在但应核实：具体实施细则、网信办指引、执法案例、生效日期。
+> - `[核实-精确定位]` —— 精确定位引用（特定款项编号、段落编号、司法解释条款）具有最高虚构风险，应始终对照一手来源核实。
 >
-> Tool-retrieved citations keep their source tag (`[Westlaw]`, `[issuing authority site]`, or the MCP tool name); web-search citations remain `[web search — verify]`; user-supplied citations remain `[user provided]`. The tiering surfaces the real verification work — a reader who verifies everything verifies nothing. Never strip or collapse the tags.
+> 工具检索的引用保留其来源标签（`[北大法宝]`、`[网信办网站]`或MCP工具名称）；网络搜索引用保留`[网络搜索——请核实]`；用户提供的引用保留`[用户提供]`。分级标注让人看清真正的核实工作——什么都核等于什么都不核。永远不得剥离或折叠这些标签。
 
-## Integration with other skills
+## 与其他技能的集成
 
-**From PIA generation:** PIAs flag privacy policy inconsistencies → those feed here as known gaps.
+**来自个人信息保护影响评估生成：** 影响评估标记隐私政策/个人信息处理规则不一致 → 这些作为已知差距输入此处。
 
-**To the regulatory-legal plugin (if installed):** This skill is the manual version. The monitor plugin watches feeds and triggers this analysis automatically when something changes.
+## 输出
 
-## Output
+保存为带日期的markdown文件。整改计划表成为跟踪器——项目关闭时更新状态。
 
-Save as a dated markdown doc. The remediation plan table becomes a tracker — update status as items close.
+即使差距分析结论为"无差距，我们已合规"，仍应写出文件——它是您已经审查过的有用证据。
 
-If the gap analysis concludes "no gaps, we're compliant," still write the doc — it's useful evidence later that you looked.
+**以引用核实说明收尾：**
 
-**Close with a citation-verification note:**
+> 本输出中的引用由AI模型生成，未经一手来源核实。在依赖任何法律、法规、指引或执法案例之前，应通过法律检索工具（北大法宝、您的律所研究平台或发布机关的官方网站）核查其准确性和当前状态。AI生成的引用有时是虚构或错误引用的。每条引用上的来源标签（如`[网络搜索——请核实]`）显示其来源；`核实`标签具有更高虚构风险，应优先核查。
 
-> Citations in this output were generated by an AI model and have not been verified against a primary source. Before relying on any regulation, statute, guidance, or enforcement action, check it against a legal research tool (Westlaw, your firm's research platform, or the issuing authority's website) for accuracy and current status. AI-generated citations are sometimes fabricated or misquoted. Source tags on each citation (e.g., `[web search — verify]`) show where it came from; `verify` tags carry higher fabrication risk and should be checked first.
+## 以下一步决策树收尾
 
-## Close with the next-steps decision tree
+以 CLAUDE.md `## 输出` 中的下一步决策树收尾。将选项定制为本技能刚产出的内容——五个默认分支（起草X、升级、获取更多事实、观察等待、其他）为起点，非锁定。决策树即输出；律师选择。
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+## 本技能不做什么
 
-## What this skill does not do
-
-- It doesn't interpret ambiguous regulatory language authoritatively. When the reg is unclear, say so: "Section X could be read as [A] or [B]. [A] is the conservative read. Suggest outside counsel if this is material."
-- It doesn't track regulatory changes proactively. It runs when you point it at a change. For proactive monitoring, see the regulatory-legal plugin.
-- It doesn't implement fixes. It plans them.
+- 不权威解释模糊的法规语言。当法规确实不明确时，如实说明："第X条可解释为[A]或[B]。[A]为保守解读。如问题重大，建议寻求外部律师意见。"
+- 不主动跟踪法规变化。它只在您指向具体变化时运行。如需主动监控，参见监管跟踪集成方案。
+- 不实施方案。它规划方案。

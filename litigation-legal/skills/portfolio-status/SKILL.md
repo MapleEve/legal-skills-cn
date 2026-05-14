@@ -1,126 +1,176 @@
 ---
-name: portfolio-status
-description: Roll up the portfolio from _log.yaml — risk distribution, upcoming deadlines, stale matters, materiality totals, stage distribution, and flagged anomalies. Use when the user asks "where do we stand", "how many open matters", or wants a portfolio rollup or status across all active matters.
-argument-hint: "[--all | --risk=high | --stale]"
+name: 案件组合状态
+description: 从 _log.yaml 汇总律所案件组合——按案件类型/阶段/风险等级/承办律师分布、即将到来的截止日期、久未更新的案件、重大案件金额总计、收费方式分布及标注异常。适用场景：用户问"我们目前什么状况""有多少在办案件""案件盘一下"，或需要案件组合总览、合伙人会议准备或所有活跃案件的状态一览。
+argument-hint: "[--all | --risk=high | --stale | --type=诉讼 | --owner=张律师]"
 ---
 
-# /portfolio-status
+# /案件组合状态
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration (defines how to read the `risk:` field).
-2. Follow the workflow and reference below.
-3. Parse `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`. Filter closed matters by default (include with `--all`).
-4. Produce rollup: risk distribution, deadlines in next 14/30/60 days, matters with no update in >30 days, materiality totals, stage distribution.
-5. Flag anomalies — everything marked critical, overdue next_deadline, matters without outside counsel assigned where risk is medium or high.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准（定义如何理解 `risk:` 字段）。
+2. 遵循以下工作流程和参考。
+3. 解析 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`。默认过滤已结案件（用 `--all` 包含）。
+4. 产出汇总：风险分布、案件类型分布、14/30/60天内的截止日期、超过30天未更新的案件、重大案件金额总计、案件阶段分布、承办律师工作量分布、收费方式分布。
+5. 标注异常——所有标记为严重的、逾期截止日期、风险为中或高但未分配承办律师的案件、超期未结案件。
 
 ---
 
-# Portfolio Status
+# 案件组合状态
 
-## Purpose
+## 目的
 
-One read that answers: what do I own right now, what needs attention, and what's slipping? Output is scannable — designed for a counsel who has three minutes before their next call.
+一读知全局：律所/团队现在手头有什么案子、什么需要关注、什么在滑落？为合伙人会议、周报或下一次客户沟通前只有五分钟的律师设计。输出为可扫读。
 
-## Load context
+## 中国律所案件管理场景
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — source of truth
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (to interpret risk/materiality fields correctly)
+本技能覆盖中国律师事务所的案件组合管理需求：
 
-## Flags & filters
+- **案件类型维度**：诉讼（民事/行政/刑事）、仲裁（商事仲裁/劳动仲裁）、非诉（法律顾问/尽职调查/IPO/并购）、执行
+- **案件阶段维度**：洽谈/已委托未立案/立案/审理/调解/判决/上诉/执行/结案/归档
+- **风险维度**：按案件标的额、败诉风险、客户重要性综合评定
+- **承办团队维度**：合伙人/主办律师/协办律师/律师助理
+- **收费维度**：固定收费/计时收费/风险代理/半风险代理
+- **办案期限维度**：审理期限（简易程序3个月/普通程序6个月，可延长）、上诉期限（判决15天/裁定10天）、申请执行期限（2年）
 
-Default: active matters only (exclude `status: closed`).
+## 加载上下文
 
-Flags:
-- `--all` — include closed
-- `--risk=high` (or `critical` / `medium` / `low`) — filter by risk band
-- `--stale` — only matters with `last_updated` > 30 days
-- `--type=employment` — filter by matter type
-- `--owner=[name]` — filter by business/HR/comms owner
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 真实来源
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（用于正确解读风险/重大字段）
 
-## The rollup
+## 标志和过滤
+
+默认：仅活跃案件（排除 `status: 结案` 和 `status: 归档`）。
+
+标志：
+- `--all` —— 包含已结/归档
+- `--risk=high`（或 `critical` / `medium` / `low`）—— 按风险级别过滤
+- `--stale` —— 仅 `last_updated` > 30天的案件
+- `--type=诉讼`（或 `仲裁` / `非诉` / `执行`）—— 按案件类型过滤
+- `--type=民事`（或 `刑事` / `行政` / `商事仲裁` / `劳动仲裁`）—— 按细分类型过滤
+- `--owner=[姓名]` —— 按承办律师/合伙人过滤
+- `--stage=审理`（或 `立案` / `执行` / `结案`）—— 按案件阶段过滤
+
+## 汇总
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-# Portfolio Status — [today]
+# 案件组合状态 —— [今日]
 
-**Active matters:** [N]
-**Closed (ytd):** [N] *(shown only with --all)*
+**活跃案件：** [N]（其中诉讼[M]、仲裁[P]、非诉[Q]、执行[R]）
+**今年新收：** [N]
+**今年已结：** [N] *（仅 --all 时显示）*
+**累计标的总额：** [￥X]
 
 ---
 
-## By risk
+## 按风险等级
 
-| Risk | Count | Matters |
+| 风险 | 数量 | 案件 |
 |---|---|---|
-| Critical | [N] | [slugs] |
-| High | [N] | [slugs] |
-| Medium | [N] | [count only — expand with `--risk=medium`] |
-| Low | [N] | [count only] |
+| 严重 | [N] | [标识 —— 标的额 —— 简要案由] |
+| 高 | [N] | [标识] |
+| 中 | [N] | [仅数量——用 `--risk=medium` 展开] |
+| 低 | [N] | [仅数量] |
 
-## Upcoming deadlines
+## 按案件类型
 
-| Within | Matters |
+| 类型 | 数量 | 总标的额（中值）|
+|---|---|---|
+| 民事诉讼 | [N] | [￥X] |
+| 商事仲裁 | [N] | [￥X] |
+| 行政诉讼 | [N] | [￥X] |
+| 刑事诉讼 | [N] | — |
+| 劳动仲裁 | [N] | [￥X] |
+| 非诉专项 | [N] | [￥X] |
+| 执行案件 | [N] | [￥X] |
+
+## 按案件阶段
+
+| 阶段 | 数量 | 案件 |
+|---|---|---|
+| 已委托未立案 | [N] | [标识] |
+| 立案 | [N] | [...] |
+| 举证/证据交换 | [N] | [...] |
+| 审理 | [N] | [...] |
+| 调解 | [N] | [...] |
+| 等待判决 | [N] | [...] |
+| 上诉 | [N] | [...] |
+| 执行 | [N] | [...] |
+
+## 按承办律师（工作量分布）
+
+| 承办律师 | 活跃案件数 | 严重/高风险 | 总标的额（中值）|
+|---|---|---|---|
+| [姓名] | [N] | [N] | [￥X] |
+| ... | ... | ... | ... |
+
+## 按收费方式
+
+| 收费方式 | 数量 | 总标的额 |
+|---|---|---|
+| 固定收费 | [N] | [￥X] |
+| 计时收费 | [N] | [￥X] |
+| 风险代理 | [N] | [￥X] |
+| 半风险代理 | [N] | [￥X] |
+
+## 即将到来的截止日期
+
+| 时间范围 | 案件 |
 |---|---|
-| 14 days | [slug — deadline — brief] |
-| 15–30 days | [...] |
-| 31–60 days | [...] |
+| 14天内 | [标识 —— 截止日期 —— 事项（开庭/上诉/举证期限/诉讼时效）] |
+| 15–30天 | [...] |
+| 31–60天 | [...] |
 
-*Overdue `next_deadline` flagged separately below.*
-
-## Materiality
-
-| Category | Count | Total exposure (midpoint) |
-|---|---|---|
-| Reserved | [N] | [$X] |
-| Disclosed | [N] | [$X] |
-| Monitored | [N] | — |
-| None | [N] | — |
-
-## By stage
-
-[table: pleadings / discovery / dispositive motions / trial prep / settlement / appeal]
+*逾期的 `下一截止日期` 在下方单独标注。*
 
 ---
 
-## ⚠️ Anomalies & flags
+## 异常与标注 🔴
 
-- **Overdue deadlines:** [list slugs where next_deadline has passed]
-- **Stale (>30d no update):** [list]
-- **Conflicts unresolved:** [list slugs with `conflicts.status in [pending, not-run]`]
-- **Conflicts bypassed (override active):** [list slugs where `conflicts.override.by` is populated — permanent flag until manually cleared]
-- **High/critical risk without outside counsel:** [list]
-- **Reserved without last_updated in >60d:** [list] — reserve recalibration likely overdue
-- **Hold not issued on active litigation:** [list]
-- **Missing fields:** [slug → field]
+- **逾期截止日期：** [列出下一截止日期已过的标识 —— 截止日期和事项]
+- **久未更新（>30天无更新）：** [列出]
+- **利益冲突未解决：** [列出 conflicts.status 为 pending 或 not-run 的标识]
+- **利益冲突被绕过（替代审批生效中）：** [列出 conflicts.override.by 已填充的标识——在手动清除前为永久标注]
+- **高/严重风险但未分配主办律师：** [列出]
+- **超审限风险：** [列出审理期限即将届满或已超审限的诉讼/仲裁案件]
+- **诉讼时效/申请执行期限风险：** [列出即将届满的案件]
+- **风险代理案件但久未推进：** [列出] —— 风险代理案件投入与回报直接相关，须重点关注
+- **缺失字段：** [标识 → 字段]
 
 ---
 
-## Closing advice
+## 结语建议 🟡
 
-[One or two sentences on what to look at first, if anything stands out. Not boilerplate — only if something truly stands out.]
+[一两句话说明应首先关注什么，如有突出事项。非套话——仅当确有突出事项时。] 🔴 如存在逾期截止日期或高风险无主办律师案件，应首先标注。
 ```
 
-## Anomaly rules
+---
 
-These are the checks that make the skill useful rather than decorative:
+## 异常规则
 
-1. **Overdue deadline:** `next_deadline < today` and `status != closed`
-2. **Stale:** `last_updated < today - 30d` and `status != closed`
-3. **Conflicts unresolved:** `conflicts.status in [pending, not-run]` and `status != closed`
-3b. **Conflicts override active:** `conflicts.override.by != null` (never auto-clears)
-4. **High-risk uncovered:** `risk in [high, critical]` and `outside_counsel.firm == null`
-5. **Stale reserve:** `materiality == reserved` and `last_updated < today - 60d`
-6. **Hold gap:** `status in [threatened, active, discovery, trial, appeal]` and `legal_hold.issued == false` — preservation duty attaches at reasonable anticipation, so `threatened` matters are in scope.
-7. **Missing fields:** any required field null — `risk`, `materiality`, `status`, `opened`, `conflicts.status`
+这些是使技能有用而非装饰的检查项：
 
-## Close with the next-steps decision tree
+1. **逾期截止日期：** `下一截止日期 < 今天` 且 `status != 结案` 且 `status != 归档`
+2. **久未更新：** `last_updated < 今天 - 30天` 且 `status != 结案`
+3. **利益冲突未解决：** `conflicts.status in [pending, not-run]` 且 `status != 结案`
+4. **利益冲突替代审批生效：** `conflicts.override.by != null`（永不清除）
+5. **高风险无承办律师：** `risk in [high, critical]` 且 `承办律师.主办 == null`
+6. **超审限风险：** 审理中的案件，距立案日已超过简易程序3个月/普通程序6个月，或法院批准延长的期限即将届满
+7. **诉讼时效风险：** 洽谈阶段的潜在案件，距权利被侵害日即将满3年（《民法典》第188条）
+8. **申请执行期限风险：** 生效法律文书确定的履行期限届满后即将满2年（《民事诉讼法》第246条）
+9. **上诉期限风险：** 判决书/裁定书送达后即将满15天/10天，且未收到上诉指示
+10. **证据保全缺口：** `status in [已委托未立案, 立案, 举证, 审理, 上诉]` 且 `legal_hold.issued == false`
+11. **缺失字段：** 任何必填字段为空 —— `risk`、`case_type`、`status`、`opened`、`承办律师.主办`、`conflicts.status`
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+## 以下一步决策树收尾
 
-If the portfolio has more than ~10 matters, or any time the user asks: offer the dashboard (see CLAUDE.md `## Outputs → Dashboard offer for data-heavy outputs`). Shape the offer for this output — counts by risk tier, a timeline of upcoming deadlines, and a sortable matter ledger with status, conflicts check, and last-touched date.
+以 CLAUDE.md `## 输出` 中的下一步决策树收尾。将选项定制为本技能刚产出的内容——五个默认分支（起草X、升级、获取更多事实、观察等待、其他）为起点，非锁定。决策树即输出；律师选择。
 
-## What this skill does not do
+如案件组合超过约10个案件，或用户随时询问：提供看板（见 CLAUDE.md `## 输出 → 数据密集型输出的看板提供`）。为此输出定制看板内容——按风险等级计数、即将到来截止日期的时间线、以及带状态、利益冲突检查、承办律师和最后更新日期的可排序案件台账。
 
-- Make decisions. It surfaces what needs attention; the user decides priority.
-- Pretend precision it doesn't have. Exposure midpoints are rough and should be labeled so.
-- Replace a real MMS. This is a working-memory rollup, not a system of record.
+## 本技能不做什么
+
+- 不做决策。它标出需要关注的事项；用户决定优先级。
+- 不假装有精确数据。标的额中值是粗略估算，应如此标注。
+- 不替代律所案件管理系统。这是工作记忆汇总，非正式记录系统。
+- 不替代律所财务系统。收费金额和到账情况以财务系统为准。

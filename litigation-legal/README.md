@@ -1,158 +1,157 @@
-# Litigation Counsel Plugin
+# 争议解决插件
 
-In-house litigation counsel support for managing a portfolio of matters. Cold-start captures your risk calibration, dispute landscape, and house style — the frame every matter is triaged against. Uniform intake turns new matters into structured log entries and per-matter history files. Status rollups and deep-dive briefings read from the log.
+企业法务争议解决支持，用于管理诉讼/仲裁案件组。cold-start 记录你的风险校准、争议格局和律所风格——每个案件据此框架归类。统一立案将新案件转为结构化总账条目和逐案历史文件。案件状态汇总和深度简报从总账中读取数据。
 
-Built for counsel who own many matters at once, most of which are run by outside firms. This plugin is a thinking partner, not a matter management system. If you have LawVu / SimpleLegal / Onit, this does not replace them — it sits alongside, as your structured reasoning layer.
+为同时管理多个案件（其中多由外聘律所代理）的法务设计。本插件是思维伙伴，不是案件管理系统。如果你已经在用律所内部案件管理软件，这不替代它——它与它并行，作为你的结构化思辨层。
 
-**Every output is a draft for attorney review — cited, flagged, and gated — not a legal conclusion.** The plugin does the work: reads the documents, applies your playbook, finds the issues, drafts the memo. A lawyer reviews, verifies, and decides. Citations are tagged by source so you know which ones came from a research tool and which ones need checking. Privilege markers are applied conservatively so nothing waives by accident. Consequential actions — filing, sending, executing — are gated behind explicit confirmation.
+**每份输出均为供律师审阅的草稿——附引用、已标注、已设关卡——不是法律结论。** 插件做的是工作：阅读文件、运用你的操作手册、发现问题、起草备忘录。律师审阅、核实并决策。引用按来源标注，你知道哪些来自研究工具，哪些需要核实。保密标记偏保守，确保不会意外放弃保密保护。后果性行动——起诉、发送、签署——均需在明确确认后方可执行。
 
-## Prerequisites
+## 前置条件
 
-Several features reference Gmail and scheduled-tasks integrations. These require MCP servers configured in your environment — they are not bundled. Without them, outputs are written to files for manual sending:
+若干功能引用企业邮箱和定时任务集成。这些需要在你的环境中配置 MCP 服务器——它们不随插件打包提供。没有它们时，输出写入文件供手动发送：
 
-- **Gmail MCP** — `/oc-status` creates Gmail drafts if authenticated; otherwise falls back to markdown drafts in `oc-status/[YYYY-MM-DD]/[slug].md`.
-- **Scheduled-tasks MCP** — no automatic scheduling is shipped. Set a recurring calendar reminder to invoke weekly commands.
+- **企业邮箱 MCP** —— `/oc-status` 在已认证时创建邮件草稿；否则回退为 `oc-status/[YYYY-MM-DD]/[简称].md` 中的 Markdown 草稿。
+- **定时任务 MCP** —— 不附带任何自动排程。设置重复日历提醒来调用周度命令。
 
-The plugin runs end-to-end without either; the integrations are additive.
+插件在没有这两者的情况下端到端运行；集成是附加增强。
 
-## Who this is for
+## 适用角色
 
-| Role | Primary use |
+| 角色 | 主要用途 |
 |---|---|
-| **In-house litigation counsel** | All of it — intake, triage, status, history, briefings |
-| **Associate GC / Deputy GC** | Portfolio oversight, board reporting rollups |
-| **GC** | Quick status on the portfolio, deep dive on any one matter |
+| **企业争议解决法务** | 全部——立案、归类、状态、历史、简报 |
+| **法务副总监/法务总监助理** | 案件组全貌、董事会报告汇总 |
+| **法务总监** | 案件组快速状态查询、任一案件深度检索 |
 
-## First run: cold-start
+## 初次使用：cold-start
 
-The cold-start interview writes the *house* practice profile — persistent across every matter. Three pillars:
+cold-start 采访写入*律所*执业档案——跨所有案件持续有效。三大支柱：
 
-- **Risk calibration** — appetite, materiality thresholds, reserve/disclosure triggers, settlement authority, insurance profile, severity-likelihood matrix
-- **Landscape** — company, geographies, regulated status, dispute patterns, frequent adversaries, outside counsel bench, internal stakeholders
-- **House style** — board/audit committee memo format, reserve memo format, outside counsel directive style, privilege conventions, escalation norms
+- **风险校准** —— 偏好、重要性阈值、准备金/披露触发器、调解/和解权限、保险档案、严重程度-可能性矩阵
+- **案件格局** —— 公司、地域、受监管状态、争议模式、常遇对手、外聘律师库、内部利益相关方
+- **律所风格** —— 董事会/审计委员会备忘录格式、准备金备忘录格式、外聘律师指令风格、保密惯例、上报规范
 
-It offers sensible defaults at each step (e.g., a 3×3 severity-likelihood grid) and keeps everything freeform-editable. If you don't have a written framework yet, this is the thing that forces the articulation.
+每一步提供合理的默认值（如 3×3 严重程度-可能性矩阵），并保持一切可以自由编辑。如果你还没有书面框架，这是迫使其成文化的过程。
 
 ```
 /litigation-legal:cold-start-interview
 ```
 
-Your configuration is stored at `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` and survives plugin updates.
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`，插件更新后不丢失。
 
-## Commands
+## 命令
 
-| Command | Does |
+| 命令 | 功能 |
 |---|---|
-| `/litigation-legal:cold-start-interview` | Cold-start → writes house `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` |
-| `/litigation-legal:matter-intake` | Uniform intake → writes `matters/[slug]/` + appends to `_log.yaml` |
-| `/litigation-legal:portfolio-status` | Portfolio rollup — risk distribution, upcoming deadlines, stale matters |
-| `/litigation-legal:matter-briefing [slug]` | Deep briefing on one matter — read-ready before a GC or outside counsel call |
-| `/litigation-legal:matter-update [slug]` | Append a dated event to a matter's history; refresh the log's `last_updated` |
-| `/litigation-legal:matter-close [slug]` | Archive a matter out of the active portfolio (retained, not deleted) |
-| `/litigation-legal:demand-intake [title]` | Pre-drafting context gathering for a demand letter (payment / breach / C&D / employment separation / preservation) |
-| `/litigation-legal:demand-draft [slug]` | Draft the letter from intake — runs FRE 408 / privilege gate, outputs `.docx`, writes post-send checklist |
-| `/litigation-legal:demand-received [path]` | Triage an inbound demand letter — options analysis, portfolio cross-check, hand off to matter/demand-intake |
-| `/litigation-legal:subpoena-triage [path]` | Triage a subpoena — classify, scope/burden/privilege, objections framework, compliance plan |
-| `/litigation-legal:legal-hold [slug] [--issue/--refresh/--release/--status]` | Issue, refresh, release, or report holds — writes `.docx` + updates log |
-| `/litigation-legal:chronology [slug]` | Build or update a chronology from declared doc sources + uploads — tagged by significance per matter theory |
-| `/litigation-legal:oc-status` | Draft weekly OC status-request emails across the portfolio; Gmail drafts if MCP available |
-| `/litigation-legal:claim-chart` | Build or review an element chart — patent claim chart (infringement / invalidity / review) or civil element chart (any cause of action or defense) with gap detection |
+| `/litigation-legal:cold-start-interview` | Cold-start → 写入律所 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` |
+| `/litigation-legal:matter-intake` | 统一立案 → 写入 `matters/[简称]/` + 追加到 `_log.yaml` |
+| `/litigation-legal:portfolio-status` | 案件组汇总——风险分布、近期期限、停滞案件 |
+| `/litigation-legal:matter-briefing [简称]` | 单个案件深度简报——见法务总监或外聘律师前的速读材料 |
+| `/litigation-legal:matter-update [简称]` | 向案件历史追加一条日期标注的事件；刷新总账的 `last_updated` |
+| `/litigation-legal:matter-close [简称]` | 将案件归档移出活跃案件组（保留，非删除） |
+| `/litigation-legal:demand-intake [标题]` | 律师函起草前的背景收集（催款/违约/停止侵权/劳动关系解除/证据保全） |
+| `/litigation-legal:demand-draft [简称]` | 根据背景资料起草律师函——运行《民事诉讼法》第9条调解原则/保密审查，输出 `.docx`，写入发送后检查清单 |
+| `/litigation-legal:demand-received [路径]` | 分类审查来函律师函——选项分析、案件组交叉检索、移交案件/律师函立案 |
+| `/litigation-legal:subpoena-triage [路径]` | 分类审查法院传票/调查令——分类、范围/负担/保密审查、异议框架、配合方案 |
+| `/litigation-legal:legal-hold [简称] [--issue/--refresh/--release/--status]` | 签发、更新、解除或报告证据保全——写入 `.docx` + 更新总账 |
+| `/litigation-legal:chronology [简称]` | 从已声明的文档来源和上传材料中构建或更新大事记——按案件理论标注重要性 |
+| `/litigation-legal:oc-status` | 起草全案件组的周度外聘律师进度询问邮件；有 MCP 时生成邮箱草稿 |
+| `/litigation-legal:claim-chart` | 构建或审阅要件对照表——专利侵权/无效/审查或民事要件对照表（适用于任何诉讼请求或抗辩），含缺口检测 |
 
 ## Skills
 
-| Skill | Purpose |
+| Skill | 用途 |
 |---|---|
-| **cold-start-interview** | House practice profile — risk calibration, landscape, style |
-| **matter-intake** | Uniform intake questions; writes matter file + log row |
-| **portfolio-status** | Rollup across the log — risk, deadlines, staleness |
-| **matter-briefing** | Deep read of one matter from its file + history |
-| **matter-update** | Structured event append; updates `last_updated` in log |
-| **matter-close** | Archive semantics; captures outcome |
-| **demand-intake** | Adaptive context gathering for a demand letter — parties, facts, leverage, privilege filters |
-| **demand-draft** | FRE 408 / privilege gate, then drafts `.docx` with `[CITE:___]` placeholders; writes post-send checklist; offers matter creation |
-| **demand-received** | Triage an inbound demand — merit, options, portfolio cross-check |
-| **subpoena-triage** | Classify subpoena, analyze scope/burden/privilege, produce objections framework + compliance plan |
-| **legal-hold** | Issue / refresh / release / status-report on holds; writes `.docx` notice; updates log's `legal_hold` fields |
-| **chronology** | Extract dated events from declared doc sources + uploads; de-dupe; tag significance per matter theory |
-| **oc-status** | Weekly portfolio-wide OC status-request email drafter; markdown + Gmail drafts |
-| **claim-chart** | Patent claim chart (infringement / invalidity / review) or civil element chart (any cause of action or defense). Element-by-element mapping, every cell pin-cited, gap detection. Ships with a cause-of-action template library. |
+| **cold-start-interview** | 律所执业档案——风险校准、案件格局、风格 |
+| **matter-intake** | 统一立案问题；写入案件文件 + 总账行 |
+| **portfolio-status** | 全总账汇总——风险、期限、停滞案件 |
+| **matter-briefing** | 从案件文件和历史中深度读取一个案件 |
+| **matter-update** | 结构化事件追加；更新总账 `last_updated` |
+| **matter-close** | 归档语义；记录结果 |
+| **demand-intake** | 自适应律师函起草背景收集——当事人、事实、杠杆、保密筛选 |
+| **demand-draft** | 《民事诉讼法》第9条调解原则/保密审查关卡，然后起草 `.docx` 含 `[引证:___]` 占位符；写入发送后检查清单；提供案件创建设置 |
+| **demand-received** | 分类审查对方律师函——实体、选项、案件组交叉检索 |
+| **subpoena-triage** | 分类审查传票/调查令，分析范围/负担/保密，产出异议框架 + 配合方案 |
+| **legal-hold** | 证据保全的签发/更新/解除/状态报告；写入 `.docx` 通知；更新总账的 `legal_hold` 字段 |
+| **chronology** | 从已声明的文档来源和上传材料中提取含日期事件；去重；按案件理论标注重要性 |
+| **oc-status** | 周度全案件组外聘律师进度询问邮件起草器；Markdown + 邮箱草稿 |
+| **claim-chart** | 专利要件对照表（侵权/无效/审查）或民事要件对照表（适用于任何诉讼请求或抗辩）。逐要件对照，每格精准引用，缺口检测。附带诉讼请求模板库。 |
 
-## Interactive commands vs. scheduled agents
+## 交互命令 vs 定时 Agent
 
-The commands above run when you invoke them — for when you're working a matter. The agents below run on a schedule — for what moves while you're not looking:
+以上命令在你调用时运行——用于你正在处理案件时。以下 Agent 按计划运行——用于在你没盯着时发生的事：
 
-| Agent | What it watches | Default cadence |
+| Agent | 监控什么 | 默认频率 |
 |---|---|---|
-| **docket-watcher** | Court dockets for matters in the active portfolio — pulls new filings, computes candidate deadlines, cross-references each matter's history and deliverables | Weekly |
+| **案件流程巡检** | 活跃案件组中所有案件的法院流程——拉取新进展、推算候选期限、交叉比对每个案件的历史和交付物 | 每周 |
 
-## How the data is organized
+## 数据结构
 
 ```
 litigation-legal/
-├── CLAUDE.md                          # HOUSE practice profile — risk, landscape, style
+├── CLAUDE.md                          # 律所执业档案——风险、案件格局、风格
 ├── matters/
-│   ├── _log.yaml                      # the portfolio ledger (one entry per matter)
-│   └── [matter-slug]/
-│       ├── matter.md                  # matter-specific intake + theory + posture
-│       ├── history.md                 # append-only event log
-│       ├── chronology.md              # advocacy-facing timeline (on demand)
-│       └── legal-hold-v[N].docx       # hold notices (issue, refresh, release)
-├── demand-letters/                    # outbound demands
-│   └── [slug]/
+│   ├── _log.yaml                      # 案件组总账（每个案件一条）
+│   └── [案件简称]/
+│       ├── matter.md                  # 案件特有立案 + 理论 + 立场
+│       ├── history.md                 # 仅追加的事件日志
+│       ├── chronology.md              # 面向庭审的大事记（按需生成）
+│       └── 证据保全-v[N].docx          # 保全通知（签发、更新、解除）
+├── demand-letters/                    # 发出的律师函
+│   └── [简称]/
 │       ├── intake.md
 │       ├── draft-v1.docx
 │       └── checklist.md
-├── inbound/                           # incoming demands, subpoenas, regulator letters
-│   └── [slug]/
+├── inbound/                           # 收到的函件、传票、监管函
+│   └── [简称]/
 │       ├── incoming.[ext]
 │       ├── triage.md
-│       └── response-v1.docx           # if we respond
-└── oc-status/                         # weekly OC status-request drafts
+│       └── response-v1.docx           # 如有回复
+└── oc-status/                         # 周度外聘律师进度询问草稿
     └── [YYYY-MM-DD]/
         ├── _summary.md
-        └── [slug].md                  # one email per matter
+        └── [简称].md                  # 每个案件一封
 ```
 
-Separate folders because each has a distinct workflow. Matters get tracked in the portfolio; demand letters and inbound items may or may not rise to a matter; OC status drafts are periodic artifacts. When things relate, the `related_matters` field and cross-links in `matter.md` tie them together.
+独立文件夹因为各工作流不同。案件在案件组中追踪；律师函和来函可能升级为案件，也可能不升级；外聘律师进度草稿是周期性产物。当事项相关时，`related_matters` 字段和 `matter.md` 中的交叉链接将它们串联起来。
 
-The log is YAML because it's parseable by rollup skills. Per-matter files are markdown because that's where you read and edit. Both are checked into the folder as plain text — nothing proprietary.
+总账是 YAML 格式，因汇总 skill 可解析。逐案文件是 Markdown，因这是你阅读和编辑的地方。两者均以纯文本形式检入文件夹——无需专有格式。
 
-## Connectors and citation verification
+## 研究连接器与引文核实
 
-**Connect a research tool first — the citation guardrails depend on it.** Without one, every cite is tagged `[verify]` and the reviewer note above each deliverable records that sources weren't verified. The plugin works either way; it just does more of the verification for you when a research tool is connected.
+**首先连接研究工具——引文防护栏依赖于此。** 没有连接时，每条引文均标记 `[核实]`，每份交付物上方的审阅人提示块记录来源未经核实。插件两种方式都能工作；只是在连接了研究工具后，为你完成更多的核实工作。
 
-The legal research connectors in this plugin aren't just data sources — they're the difference between a verified citation and a citation you have to check. A citation retrieved through **CourtListener** (U.S. court opinions, PACER dockets, citation verification), **Trellis** (state trial court dataset — dockets, rulings, verdicts, judge and opposing counsel analytics), **Everlaw** (your eDiscovery projects), or **Aurora** (read-only Consilio ediscovery — every record cited to source) is tagged with its source and can be traced back. A citation from the model's knowledge or from web search is tagged `[verify]` or `[verify-pinpoint]` and should be checked against a primary source before anyone relies on it. The plugin tiers its citations so your verification time goes where it matters.
+本插件中的法律研究连接器不仅是数据源——它们是"已核实引文"与"需你核实的引文"之间的差别。通过**裁判文书网**（中国法院判决、全国案件进度、引文核实）、**北大法宝**（法律法规、司法案例、法学期刊）、**法信**（类案检索、法律观点、裁判规则）或**威科先行**（法律法规、案例、实务指南）检索到的引文标注其来源并可追溯。来自模型知识或网络搜索的引文标记 `[核实]` 或 `[核实精确位置]`，应在任何人依赖前对照原始来源核实。插件对引文分层标注，让你的核实时间花在关键处。
 
-## Integrations
+## 集成
 
-Ships with the general bucket of connectors in `.mcp.json`:
+在 `.mcp.json` 中附带通用连接器桶：
 
-- **Slack** — search messages, read channels, find discussions
-- **Google Drive** — search, read, and fetch documents
+- **企业即时通讯** —— 搜索消息、阅读频道、查找讨论
+- **Google Drive** —— 搜索、阅读和获取文档
 
-Designed to be useful with nothing connected. If/when you want to pull from Relativity, DISCO, CLMs, or email, integration skills can be added without changing the core architecture.
+设计为无任何连接时也可使用。如果/当你想从电子证据平台、CLM 或邮箱获取数据时，可添加集成 skill 而无需更改核心架构。
 
-## How it learns
+## 如何学习
 
-Your practice profile at `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. You can re-run setup, edit the file directly, or tell a skill to record a new position.
+你在 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 的执业档案不是静态的——随着你使用插件而不断改善。Skill 会在输出使用了应调整的默认值时告诉你。你可以重新运行设置、直接编辑文件、或告诉 skill 记录一个新立场。
 
-## Notes
+## 注意事项
 
-- Every skill reads from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` first. If your risk appetite changes or you bring on new outside counsel, update it — don't paper over it in individual matters.
-- `## Company profile` is the first section of `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` by convention. If you run other `-legal` plugins, you can copy it across rather than re-entering the same context.
-- `_log.yaml` is the source of truth for portfolio state. Keep it clean.
-- Matter history is append-only. If something was wrong, note the correction as a new entry — don't edit the past.
-- Closed matters stay in `_log.yaml` (searchable history). `/portfolio-status` filters them out of active rollups by default.
+- 每个 skill 首先读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`。如果你的风险偏好改变或引进了新的外聘律师，更新它——不要在个案中掩盖偏差。
+- `## 公司档案` 按惯例是 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 的第一节。如果你运行其他 `-legal` 插件，可以复制过去而无需重新输入相同的背景信息。
+- `_log.yaml` 是案件组状态的唯一数据源。保持整洁。
+- 案件历史仅追加。如果之前有误，以新条目方式注明更正——不要编辑过去。
+- 已结案件保留在 `_log.yaml` 中（可检索历史）。`/portfolio-status` 默认将其从活跃汇总中过滤出去。
 
-## Inline marker conventions
+## 行间标记约定
 
-Three markers appear in skill outputs and drafts. They are not disclaimers — they are action items:
+Skill 输出和草稿中出现三种标记。它们不是免责声明——它们是行动项：
 
-- `[CITE: specific cite needed]` — a legal authority placeholder. Counsel fills or confirms before sending.
-- `[VERIFY: specific fact]` — a factual assertion not yet confirmed to source. Counsel verifies before relying.
-- `[SME VERIFY: specific judgment call]` — a judgment (merit read, significance tag, objection strength, privilege status) that requires subject-matter expert review. SME = licensed attorney qualified in the relevant jurisdiction / area. Used liberally — anything judgment-heavy should carry this.
+- `[引证: 需要具体引注]` —— 法律依据占位符。律师在发送前填写或确认。
+- `[核实: 具体事实]` —— 尚未确认来源的事实主张。律师在依赖前核实。
+- `[专项核实: 具体判断]` —— 需要主题专家审查的判断（实体判断、重要性标签、异议强度、保密状态）。专项 = 在相关管辖地和领域中合格的执业律师。广泛使用——任何涉及判断的内容都应携带此项。
 
-A draft or triage with unresolved markers is not final, regardless of how polished it reads.
+一份含未解决标记的草稿或分类审查不是最终稿，无论它读起来多么精致。
 
-## Testing & QA
-
+## 测试与质量保障

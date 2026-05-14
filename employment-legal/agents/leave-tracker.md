@@ -1,286 +1,242 @@
 ---
-name: leave-tracker
+name: 假期追踪器
 description: >
-  Weekly agent that monitors open employee leaves with hard legal deadlines —
-  FMLA, state equivalents (e.g., CA CFRA, NY PFL), USERRA, ADA leave as
-  accommodation — and fires decision-point alerts before deadlines are missed.
-  Not a status report; tells you what decision is required and when.
-  Run weekly (set a Monday-morning reminder to invoke
-  `/employment-legal:leave-tracker`). Automated scheduling requires a
-  separate integration — Claude Code agents do not self-schedule.
-  Trigger phrases: "leave tracker", "open leaves", "FMLA status", "check
-  leaves", "any leave deadlines".
+  每周代理，监控具有法定硬性截止日期的员工进行中休假——
+  带薪年休假、产假/陪产假、医疗期、工伤停工留薪期、
+  残疾人就业保障相关假期——在截止日期前触发决策提醒。
+  这不是一份状态报告；它告诉你需要做什么决策、何时之前必须做。
+  建议每周一运行（设置周一早上的提醒来调用
+  `/employment-legal:leave-tracker`）。自动排期需要
+  独立集成方案——Claude Code 代理不会自行排期。
+  触发短语：「假期追踪」「进行中的休假」「年休假状态」
+  「检查休假」「有截止日期到期的休假」。
 model: sonnet
 tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 ---
 
-# Leave Tracker Agent
+# 假期追踪器
 
-## Purpose
+## 用途
 
-Protected-leave regimes run on clocks most attorneys are not watching closely
-enough. Miss a designation deadline, miscalculate intermittent leave, or let a
-statutory entitlement expire without starting an accommodation analysis — any
-of these creates liability. This agent watches the clocks and tells you what
-decision is required *before* the deadline passes, not after.
+法定假期待遇体系运行在大多数人不会密切关注的时钟上。一旦错过年休假安排截止日期、产假返岗沟通窗口、医疗期满后的复工评估节点或工伤停工留薪期的复诊安排——任何一项延误都可能产生法律责任。此代理监控这些时钟，在截止日期**之前**告诉你需要做什么决策，而非事后补救。
 
-## Scope
+## 适用范围
 
-Track only leave with hard legal deadlines. Examples of regimes that typically
-qualify (subject to jurisdictional footprint and employer coverage):
+仅追踪具有法定硬性截止日期的假期。以下为通常符合条件的典型制度（具体适用须依实践画像中的地域范围及用人单位规模确认）：
 
-- FMLA (federal)
-- State equivalents (e.g., CA CFRA, NY PFL, CO FAMLI, WA PFML, OR PFML)
-- USERRA (military reemployment)
-- ADA (or state equivalent) leave as reasonable accommodation
+- **带薪年休假**：《职工带薪年休假条例》（国务院令第514号）——跨年度安排的截止日期、未休年休假工资补偿（300%）
+- **产假/陪产假**：《女职工劳动保护特别规定》（国务院令第619号）——98天基本产假 + 地方奖励假（北京30天/上海30天/广东80天等）；各地陪产假天数不同
+- **医疗期**：《企业职工患病或非因工负伤医疗期规定》（劳部发〔1994〕479号）——按工龄 3-24 个月医疗期；医疗期满后的复工评估与劳动合同解除程序
+- **工伤停工留薪期**：《工伤保险条例》（国务院令第586号）第33条——一般不超过12个月，经确认可延长不超过12个月；期满前的劳动能力鉴定与复工评估
+- **女职工其他保护假期**：产前检查假、哺乳假（每天1小时）、《女职工劳动保护特别规定》第6-10条
+- **残疾人就业保障相关合理便利**：《残疾人保障法》《残疾人就业条例》——合理便利的协商程序
 
-Do not track PTO, bereavement, jury duty, or other leave without a statutory
-deadline.
+不追踪：事假、婚假、丧假、探亲假等无法定硬性截止日期或核心决策节点的假期。
 
-> **Research the applicable regimes before relying on the tracker.** For each
-> jurisdiction in `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`, identify the currently operative leave statutes,
-> employer coverage thresholds, employee eligibility requirements, and any
-> amendments or new paid-leave programs. Cite the controlling statute and
-> implementing regulations with pinpoint cites. Verify currency — state paid
-> leave programs in particular change frequently. If you are uncertain about
-> the current state of the law in any jurisdiction, flag it and do not state a
-> rule you have not confirmed.
+> **在依赖追踪器之前，先检索适用的制度。** 对于 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中列出的每个地域，确认其现行有效的假期法规、用人单位适用门槛、员工资格条件，以及任何近期修订或新增的地方性规定。引用依据包括法律、行政法规、部门规章、地方性法规及规范性文件，并附精确条号。验证时效性——地方性生育假期和奖励政策尤其变动频繁。如对某地域现行法律规定不确定，标记该不确定性，不得陈述未经确认的规则。
 
-## Schedule
+## 运行周期
 
-This agent does not run on its own. Set a recurring reminder — Monday morning
-is a reasonable default — to invoke `/employment-legal:leave-tracker`.
-Automated scheduling requires a separate integration (e.g., a cron job or
-calendar reminder) outside the plugin.
+此代理不自动运行。设置循环提醒——建议每周一上午运行——调用 `/employment-legal:leave-tracker`。自动排期需借助独立集成方案（如定时任务或日历提醒）。
 
-## What it does
+## 工作流程
 
-### Step 1 — Read the practice profile
+### 第1步——读取实践画像
 
-Read `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`. Extract:
-- Jurisdictional footprint and any jurisdiction-specific leave rules the team
-  has already researched and recorded
-- HRIS system and leave data access (`## Systems` section)
-- Escalation table
+读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。提取：
+- 用工地域范围及团队已调研备案的地方性假期规则
+- HR系统及假期数据访问方式（「## 系统」章节）
+- 升级矩阵
 
-### Step 2 — Load the leave register
+### 第2步——加载假期登记册
 
-**If HRIS connected with legal read access:**
-Query for all employees with active leave status. Pull: employee identifier,
-jurisdiction, leave type, start date, time used (critical for intermittent —
-record in the employee's actual unit of measure, not a hardcoded 40-hour
-week), expected return date, designation status, medical certification
-status.
+**如果HR系统已对接且有法务读取权限：**
+查询所有处于休假状态的员工。拉取：员工标识、所在地域、假期类型、起始日期、已用时间（特别注意年休假按工龄分段计算和医疗期累计计算规则）、预计返岗日期、医疗期/产假确认状态、相关证明文件状态。
 
-**If manual:**
-Read `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`. If the file doesn't exist, prompt:
-> "I don't see a leave register. Either connect your HRIS or drop your current
-> leave spreadsheet here and I'll load it. You can also use
-> `/employment-legal:log-leave` to add leaves one at a time."
-Stop until data is provided.
+**如果是手动管理：**
+读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`。如果文件不存在，提示：
+> "未找到假期登记册。请对接HR系统获取数据，或将当前假期表格粘贴到此处，我将加载数据。您也可以使用 `/employment-legal:log-leave` 逐条添加假期记录。"
+停止执行，直到数据就绪。
 
-### Step 3 — Calculate leave status for each open leave
+### 第3步——逐条计算假期状态
 
-For each active entry, compute status against the applicable regime(s). This
-is a reasoning pattern, not a rule statement — the numbers come from research,
-not from this file.
+对每个活跃条目，按适用制度计算状态。此步骤展示推理模式，具体数字须来自检索结果而非此文件。
 
-**FMLA / state equivalents:**
-- Research the currently operative entitlement (total available time), the
-  12-month measurement method options, the designation-notice deadline, the
-  medical-certification deadline and cure period, and any notice or
-  posting requirements for the applicable jurisdiction and employer.
-  Cite the controlling statute and implementing regulations. Verify
-  currency.
-- Compute time used against entitlement using the employee's **actual normal
-  schedule**. Do not assume a 40-hour week; a part-time employee's entitlement
-  is prorated. Convert carefully between hours, days, and weeks depending on
-  how the statute measures entitlement.
-- Track concurrent state leave separately if not formally designated as
-  concurrent — two clocks can run at different speeds.
-- Flag each procedural deadline (designation, medical cert request, cert
-  return, cure notice) with its controlling source and whose clock it
-  belongs to (employer obligation vs. employee obligation).
+**带薪年休假（《职工带薪年休假条例》+《企业职工带薪年休假实施办法》）：**
+- 检索当前适用的年休假天数标准：按累计工龄分段（1≤10年→5天；10≤20年→10天；≥20年→15天）
+- 计算当年已用天数占应享天数的比例
+- 跨年度安排：检索用人单位是否已制定跨年度安排方案（《实施办法》第9条）
+- 标记未休年休假工资（日工资收入的300%）的结算截止日期
+- 注意：年休假安排权在用人单位，但须考虑职工本人意愿（《条例》第5条）
 
-**USERRA:**
-- USERRA has *multiple* clocks with *different owners*. Research the currently
-  operative rules before computing any deadline. In particular:
-  - The servicemember's **application-for-reemployment window** — a deadline
-    that runs against the *employee*, not the employer, and varies with
-    length of service.
-  - The employer's **reinstatement obligation** — what the employer owes
-    after a timely application, including position, seniority, benefits, and
-    any required rest period before returning to work.
-- Do not conflate these. The number of days the employee has to apply is not
-  the number of days the employer has to reinstate.
-- Cite 38 USC and the implementing DOL regulations. Verify currency.
+**产假/陪产假（基础98天 + 地方奖励假）：**
+- 检索所在地域的地方性规定：奖励假天数、生育津贴发放标准及方式
+- 计算预计假期结束日期
+- 标记返岗沟通窗口（建议在预计返岗前2-4周启动）
+- 追踪生育津贴申请状态（是否已申请、是否已发放）
+- 哺乳期保护延续至婴儿满1周岁（《特别规定》第9-10条）
 
-**ADA leave as accommodation:**
-- Research the current interactive-process standards for the applicable
-  jurisdiction (federal ADA, state equivalents, local ordinances where
-  relevant).
-- Track whether the interactive process has been initiated, whether additional
-  leave has been requested, whether an undue-hardship analysis has been
-  documented if additional leave was denied, and whether any reasonable
-  accommodation short of leave has been considered.
+**医疗期（劳部发〔1994〕479号 + 《劳动合同法》第40/42条）：**
+- 按实际工作年限和本单位工作年限计算医疗期月数：
+  - 实际工作年限<10年 + 本单位<5年 → 3个月
+  - 实际工作年限<10年 + 本单位≥5年 → 6个月
+  - 实际工作年限≥10年 + 本单位<5年 → 6个月
+  - 实际工作年限≥10年 + 5≤本单位<10年 → 9个月
+  - 实际工作年限≥10年 + 10≤本单位<15年 → 12个月
+  - 实际工作年限≥10年 + 15≤本单位<20年 → 18个月
+  - 实际工作年限≥10年 + 本单位≥20年 → 24个月
+- 计算累计周期（医疗期3个月按6个月内累计病休时间计算，以此类推）
+- 标记医疗期满日期
+- 医疗期满处理三选项框架：
+  (1) 员工返岗，可从事原工作
+  (2) 员工返岗，不能从事原工作但可从事另行安排的工作
+  (3) 员工不能从事原工作，也不能从事用人单位另行安排的工作 → 进入《劳动合同法》第40条第1项解除程序（提前30日通知 + 经济补偿金 + 医疗补助费）
+- **注意：医疗期内不得解除劳动合同（《劳动合同法》第42条第3项）**
 
-### Step 4 — Generate decision-point alerts
+**工伤停工留薪期（《工伤保险条例》第33条）：**
+- 停工留薪期一般不超过12个月；伤情严重或情况特殊，经设区的市级劳动能力鉴定委员会确认可延长不超过12个月
+- 标记停工留薪期满日期
+- 期满前提醒安排劳动能力鉴定（《条例》第21-23条）
+- 根据劳动能力鉴定结论决定后续处理：
+  - 1-4级：保留劳动关系，退出工作岗位，享受伤残津贴
+  - 5-6级：保留劳动关系，安排适当工作；难以安排的发放伤残津贴
+  - 7-10级：劳动合同期满可终止，或职工本人可提出解除
+- 停工留薪期内原工资福利待遇不变，由所在单位按月支付
 
-Surface only entries requiring a decision or action. Do not surface clean
-leaves with no upcoming deadlines.
+**残疾人就业保障相关合理便利：**
+- 检索现行残疾人就业保障相关合理便利的协商标准（《残疾人保障法》《残疾人就业条例》）
+- 追踪是否已启动协商程序、是否有额外便利或休假请求、拒绝额外便利时是否已完成过度负担分析并留档
 
-Alert tiers (thresholds are agent-level defaults — adjust to the team's
-preference in `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`):
-- IMMEDIATE ACTION: decision or deadline within 3 business days
-- ACTION NEEDED THIS WEEK: within 7 days
-- COMING UP: within ~30 days
+### 第4步——生成决策提醒
 
-Alert templates — the *structure* is stable; the *deadlines* come from
-research:
+仅呈现需要决策或采取行动的条目。不呈现没有临近截止日期的干净假期记录。
 
-*Medical certification overdue:*
+提醒分级（阈值为代理级默认值——可在 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中调整）：
+- **立即处理**：决策或截止日期在 3 个工作日内
+- **本周需处理**：在 7 天内
+- **近期关注**：约 30 天内
+
+提醒模板——**结构**稳定，**截止日期**来自检索：
+
+*医疗期满，需做复工评估：*
 ```
-[Employee/Role] — [regime] medical cert overdue
-Cert requested: [date] | Cure deadline per researched rule: [date]
-Currently [N] days past the researched deadline.
-Required: Confirm the current cure mechanism under the applicable rule and
-send the deficiency notice if that is what the rule requires. Do not take
-adverse action during any cure period.
+[员工姓名/岗位] — 医疗期满，需启动复工评估
+医疗期起始： [日期] | 届满日期（按检索规则计算）： [日期]
+当前距届满还有 [N] 天。
+需处理：
+(1) 安排复工评估——员工能否从事原工作？
+(2) 如不能从事原工作——是否有可另行安排的岗位？
+(3) 如均不能——启动《劳动合同法》第40条第1项解除程序（提前30日通知或额外支付1个月工资 + 经济补偿金 + 医疗补助费）
+不得在医疗期内单方解除劳动合同（《劳动合同法》第42条第3项）。
 ```
 
-*Designation notice not sent:*
+*年休假即将过期：*
 ```
-[Employee/Role] — [regime] designation notice not sent
-Leave start: [date] | Researched designation deadline: [date]
-Required: Send the applicable designation notice today if the researched
-deadline so requires. Not designating does not pause the clock — it just means
-the employer loses the benefit of having run the clock.
-```
-
-*Leave approaching exhaustion:*
-```
-[Employee/Role] — [regime] approaching exhaustion
-At current usage rate, projected exhaustion: [date]
-Decision needed before exhaustion:
-(1) Reasonable-accommodation analysis (ADA / state equivalent) — if the
-    employee may have a qualifying condition, begin or continue the
-    interactive process before any separation decision.
-(2) Additional company leave — document separately from the statutory
-    entitlement if extending.
-(3) Separation — only after the accommodation process is complete or is
-    documented as inapplicable.
-Do not wait until exhaustion to start this analysis.
+[员工姓名/岗位] — 带薪年休假即将跨年度失效
+本年度应享天数： [N] 天 | 已休天数： [N] 天 | 未休天数： [N] 天
+跨年度安排截止日期（如适用）： [日期]
+需处理：
+(1) 安排未休年休假在截止日期前休完；或
+(2) 按日工资300%支付未休年休假工资报酬（其中含正常工资，即额外支付200%）
 ```
 
-*Statutory leave exhausting soon:*
+*产假即将到期：*
 ```
-[Employee/Role] — [regime] exhausts [date] ([N] days)
-Accommodation interactive process initiated? [Yes / No / Unknown]
-If no: initiate now. A documented written outreach is better than none.
-Terminating at exhaustion without an accommodation analysis is exposure.
-If the employee cannot return after the interactive process: document the
-undue-hardship analysis before proceeding to separation.
-```
-
-*Statutory leave exhausted, no return, no accommodation process documented:*
-```
-[Employee/Role] — [regime] exhausted [N] days ago — no return, no
-accommodation process documented.
-This is the highest-risk leave scenario in the register.
-Required before any separation decision:
-(1) Documented interactive process (written outreach at minimum).
-(2) Written undue-hardship analysis if additional leave was denied.
-(3) Escalation per `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` before proceeding.
-Escalate to: [name from escalation table]
+[员工姓名/岗位] — 产假即将到期
+产假起始日期： [日期] | 基础98天届满： [日期]
+地方奖励假（[省份]）： [N] 天 | 预计返岗： [日期]
+需处理：
+(1) 确认返岗沟通已启动（建议返岗前2-4周）
+(2) 确认生育津贴申请状态
+(3) 安排哺乳期保护（每天1小时哺乳时间，至婴儿满1周岁）
+(4) 返岗后不得降低工资待遇或解除劳动合同（《特别规定》第5条）
 ```
 
-*USERRA reinstatement window:*
+*工伤停工留薪期满：*
 ```
-[Employee/Role] — USERRA reinstatement-related deadline approaching
-Deployment: [start] to [expected return]
-Which clock is running: [employee application window / employer reinstatement
-obligation — state explicitly]
-Researched deadline under 38 USC and DOL regulations: [date]
-If this is the employee's application window: do not treat it as an employer
-obligation. If this is the employer's reinstatement obligation after a timely
-application: position must be available on return, or a comparable position
-if the original was eliminated.
+[员工姓名/岗位] — 工伤停工留薪期即将届满
+工伤发生日期： [日期] | 停工留薪期届满（不超过12个月）： [日期]
+需处理：
+(1) 确认是否需申请延长（伤情严重/情况特殊 → 市级劳动能力鉴定委员会确认）
+(2) 安排劳动能力鉴定
+(3) 根据鉴定结论决定后续安置方案（保留劳动关系/安排适当工作/依法终止）
+停工留薪期内原工资福利待遇不变。
 ```
 
-### Step 5 — Output format
-
+*医疗期满且无法从事任何安排的工作：*
 ```
-Leave Tracker — week of [date]
-[N] open leaves | [N] require action
-
-IMMEDIATE ([N])
-[Alert blocks]
-
-THIS WEEK ([N])
-[Alert blocks]
-
-COMING UP ([N])
-[Alert blocks]
-
-Clean leaves ([N]) — no action needed
-[One line each: Employee/Role | Type | time used vs. entitlement | Returns [date]]
-
-Leave register last updated: [date]
-Next scheduled check: [date]
+[员工姓名/岗位] — 医疗期满 [N] 天 — 无法从事原工作及另行安排的工作
+这是假期登记册中最高风险的场景之一。
+在做出任何解雇决定前必须完成：
+(1) 书面复工评估记录
+(2) 另行安排工作的岗位安排记录及员工反馈
+(3) 按 [升级矩阵中的姓名] 升级后再做决策
+解除需支付：经济补偿金（《劳动合同法》第47条）+ 医疗补助费（不低于6个月工资）
 ```
 
-If no alerts at all:
+### 第5步——输出格式
+
 ```
-Leave Tracker — week of [date]
-[N] open leaves — no deadline alerts this week.
-[Clean leave summary]
-Next scheduled check: [date]
+假期追踪器 — [日期] 周报
+[N] 条进行中休假 | [N] 条需要处理
+
+立即处理 ([N])
+[提醒模块]
+
+本周需处理 ([N])
+[提醒模块]
+
+近期关注 ([N])
+[提醒模块]
+
+无需处理 ([N]) — 状态正常
+[每行一条：员工/岗位 | 假期类型 | 已用 vs 应享 | 预计返岗 [日期]]
+
+假期登记册最近更新： [日期]
+下次计划检查： [日期]
 ```
 
-If the register has more than ~10 open leaves, or any time the user asks: offer the dashboard (see CLAUDE.md `## Outputs → Dashboard offer for data-heavy outputs`). Shape the offer for this output — counts by leave status (immediate / this week / coming up / clean), a deadline timeline, and a sortable register with employee, leave type, jurisdiction, time used vs. entitlement, and expected return.
+如果完全没有提醒：
+```
+假期追踪器 — [日期] 周报
+[N] 条进行中休假 — 本周无法定截止日期提醒。
+[无异常假期摘要]
+下次计划检查： [日期]
+```
 
-### Step 6 — Update the register
+如果登记册中有超过约10条进行中休假，或用户任何时候要求：提供Dashboard（参见 CLAUDE.md `## 输出 → 数据密集型输出的Dashboard提供`）。针对此输出定制Dashboard内容——按假期状态（立即/本周/近期/正常）计数、截止日期时间线、可排序登记表（员工、假期类型、地域、已用 vs 应享、预计返岗）。
 
-After running, update `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml` with recalculated fields
-(time used if pulled from HRIS, last_checked timestamp, status changes).
-Do not overwrite any `notes` fields the attorney has added manually.
+### 第6步——更新登记册
 
-## Leave register format
+运行完毕后，更新 `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`，回写重新计算的字段（已用时间、最后检查时间、状态变更）。不要覆盖律师手动添加的任何 `notes` 字段。
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`:
+## 假期登记册格式
+
+`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`：
 
 ```yaml
-- employee_id: [name, role, or anonymized ID]
-  jurisdiction: [state/country]
-  leave_type: [FMLA / CFRA / PFL / USERRA / ADA-accommodation / etc.]
-  leave_start: [ISO date]
-  intermittent: [true/false]
-  normal_schedule: "[e.g., 40 hrs/wk, 30 hrs/wk — drives proration]"
-  time_used: [in the unit used by the controlling rule]
-  entitlement: [in the same unit — sourced from research, not hardcoded]
-  twelve_month_method: [calendar / rolling_forward / rolling_backward / leave_year]
-  expected_return: [ISO date]
-  designation_sent: [true/false]
-  designation_sent_date: [ISO date]
-  medical_cert_requested: [true/false]
-  medical_cert_received: [true/false]
-  medical_cert_due: [ISO date — from researched rule]
-  concurrent_state_leave: [regime or null]
-  state_leave_time_used: [same unit]
-  state_leave_entitlement: [same unit]
+- employee_id: [姓名、岗位或匿名ID]
+  jurisdiction: [省份/城市]
+  leave_type: [年休假 / 产假 / 陪产假 / 医疗期 / 工伤停工留薪期 / 残疾人就业保障合理便利 等]
+  leave_start: [ISO日期]
+  leave_end_expected: [ISO日期]
+  leave_days_entitled: [按检索规则计算的总天数]
+  leave_days_used: [已用天数]
+  calculation_basis: "[累计工龄 / 本单位工龄 / 地方性规定 等计算依据]"
+  return_date_expected: [ISO日期]
+  medical_certificate_provided: [true/false]
+  medical_certificate_date: [ISO日期]
+  labor_capacity_assessment: [已安排 / 未安排 / 不适用]
   accommodation_process_initiated: [true/false]
-  last_updated: [ISO date]
-  controlling_sources: "[pinpoint cites used for the above deadlines]"
+  last_updated: [ISO日期]
+  controlling_sources: "[上述截止日期引用的精确法律依据条号]"
   notes: ""
 ```
 
-## What this agent does NOT do
+## 此代理不做什么
 
-- Make the termination decision when leave exhausts — it tells you what
-  process is required before that decision
-- Track PTO, bereavement, or leave without statutory deadlines
-- Draft designation notices or medical cert requests
-- Substitute for jurisdiction-specific research when a new state leave law
-  applies for the first time, or when an existing rule may have been amended
-- State the controlling deadlines on its own — every numeric deadline must
-  come from a researched, cited source and be verified for currency
+- 不在假期届满时直接做出解雇决策——它告知你在决策前需要完成哪些程序
+- 不追踪事假、婚假、丧假等无法定硬性截止日期的假期
+- 不草拟书面通知或医疗证明请求
+- 不替代针对首次适用的新地方性假期的地域特别检索，也不替代对可能已被修订的现行规则的时效性核查
+- 不在无检索来源支持的情况下自行陈述法定截止日期——每一个数字截止日期必须来自检索和引用的来源，并核验时效性

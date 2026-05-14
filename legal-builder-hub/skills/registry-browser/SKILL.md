@@ -1,82 +1,48 @@
 ---
-name: registry-browser
+name: 社区浏览
 description: >
-  Search watched registries for community legal skills, showing matches with
-  descriptions and offering to show the full SKILL.md before install. Use when
-  the user says "browse", "search skills", "find a skill for", "what's out
-  there for", or wants to add a new registry to the watchlist.
-argument-hint: "[search query]"
+  浏览中国法律技能社区注册表——搜索、筛选、查看技能详情。
+  发现适合您执业领域的新技能。当用户说"浏览技能"、"有什么可用的"、
+  "搜索技能"、"探索社区"或想发现新技能时使用。
+argument-hint: "[搜索词 或 --list-all 或 --category <类别>]"
 ---
 
-# /registry-browser
+# /社区浏览
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → watched registries.
-2. Use the workflow below.
-3. Search each registry. Show matches with descriptions.
-4. Offer to show full SKILL.md for any match.
+## 功能目的
 
----
+中国法律技能社区包含多个为不同执业领域构建的法律技能。本技能让用户浏览社区注册表、搜索匹配的技能、查看详情和评价。
 
-## Purpose
+社区面向中国法律实践场景，涵盖：商业合同、产品法务、AI治理、数据合规、知识产权、劳动法、争议解决等多个执业领域。
 
-Find skills across the watched registries. Search, preview, decide.
+## 操作流程
 
-## Load context
+1. 按标志路由：搜索、列表、按类别筛选。
+2. 显示匹配技能：名称、描述、类别、版本、评价。
+3. 用户可选择技能查看详情，然后安装。
 
-`~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → watched registries list.
+## 浏览视图
 
-## Workflow
+技能名称 | 类别 | 描述 | 评级 | 已安装？
 
-### Step 1: Fetch registry indexes
+## 分类体系
 
-For each watched registry:
+社区技能按中国法律执业领域分类，包括但不限于：
+- 商业合同（合同审查、谈判、管理）
+- 产品法务（产品上线审查、营销合规）
+- AI治理（AI合规、算法备案、科技伦理）
+- 数据合规（个人信息保护、数据安全）
+- 知识产权（商标、专利、著作权）
+- 劳动法（劳动合同、竞业限制）
+- 争议解决（诉讼、仲裁）
+- 公司治理（股权、并购、上市合规）
 
-- GitHub repos: fetch `skills/` directory listing and each `SKILL.md` frontmatter (name + description).
-- Marketplace-style registries: fetch the index.
+## 与技能安装器的集成
 
-Cache the index locally (`references/registry-cache.json`) so browsing is fast. Refresh cache if >7 days old or on request.
+选择技能后，提供运行 `/legal-builder-hub:skill-installer` 安装它。
 
-### Step 2: Search
+## 本技能不做的事
 
-Match query against skill names and descriptions. Simple keyword match is fine — these are small enough that fuzzy search is overkill.
-
-Also: browse by category if the registry organizes skills that way.
-
-### Step 3: Present matches
-
-```markdown
-## Search: "[query]"
-
-**Found [N] skills across [M] registries:**
-
-### [skill-name]
-**From:** [registry name]
-**Description:** [from frontmatter]
-[View full SKILL.md] [Install]
-
-### [skill-name]
-[...]
-```
-
-### Step 4: Preview
-
-On "view full SKILL.md": fetch and show the whole file. User reads it before deciding to install. No surprises.
-
-### Step 5: Add a registry
-
-If the user has a URL to a registry not in the watchlist:
-
-1. Fetch it, validate it's a skills repo (has `skills/` or `.claude-plugin/`)
-2. Show what's in it
-3. Add to `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → watched registries on confirmation
-
-## Default registries
-
-- **lpm-skills** — 14 legal project management skills. Practice-agnostic. Good starting point.
-- Space for others to be added as the ecosystem grows.
-
-## What this skill does not do
-
-- Install anything. It browses. skill-installer installs.
-- Rate or review skills. It shows you the SKILL.md; you judge.
-- Search the whole internet. Only watched registries.
+- 不自动安装技能
+- 不修改许可清单
+- 不推荐未经质量审查的社区技能

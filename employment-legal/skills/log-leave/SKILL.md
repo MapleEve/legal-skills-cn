@@ -1,59 +1,125 @@
 ---
-name: log-leave
+name: 记录假期
 description: >
-  Add a new leave to the leave register with the minimum information needed to
-  start tracking deadlines. Use when an employee goes on leave and you want the
-  tracker to watch designation, certification, and exhaustion clocks from day
-  one.
-argument-hint: "[describe the leave — employee/role, type, jurisdiction, start date]"
+  向假期登记册添加新假期，包含开始追踪法定截止日期所需的最低信息。
+  当员工开始休假、您希望追踪器从第一天开始监视各项法定截止时间时使用。
+argument-hint: "[描述假期——员工/角色、假期类型、管辖、开始日期]"
 ---
 
-# /log-leave
+# /记录假期
 
-Adds a new leave entry to `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml` with the minimum
-information needed to start tracking deadlines. Use when an employee goes on
-leave and you want the tracker to watch the clocks from day one.
+向`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`添加新假期条目，包含开始追踪法定截止日期所需的最低信息。当员工开始休假、您希望追踪器从第一天开始监视各项法定截止时间时使用。
 
-## Instructions
+## 指示
 
-1. Read `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → jurisdiction table and Systems section.
+1. 读取`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖表和系统部分。
 
-2. Ask all of the following in a single prompt — do not drip them one at a time:
+2. 在单一提示中询问所有以下内容——不要逐条滴灌：
 
-   > A few quick questions to set up leave tracking:
+   > 几个快速问题来设置假期追踪：
    >
-   > - Employee name or role (anonymized is fine)
-   > - Where do they work? (State — this determines which rules apply)
-   > - Leave type: FMLA / state leave (which state) / USERRA / ADA accommodation
-   > - Leave start date
-   > - Is this intermittent leave?
-   > - Expected return date (if known — leave blank if not)
-   > - Has the designation notice been sent? If yes, when?
-   > - Has medical certification been requested? If yes, when?
+   > - 员工姓名或唯一标识（匿名也可以，如"研发部张三"）
+   > - 入职日期（用于计算工龄→年假天数、医疗期）
+   > - 劳动合同履行地（省市——这决定适用哪些地方性规则：产假奖励天数、婚假天数、最低病假工资标准等）
+   > - 假期类型：年假 / 医疗期 / 产假 / 婚假 / 丧假 / 陪产假 / 探亲假 / 事假 / 工伤停工留薪期 / 其他
+   > - 假期开始日期
+   > - 预期返岗日期（如已知——不知则留空，按法定天数自动计算）
+   > - 这是间歇性休假吗？（如医疗期分次休、年假分次休）
+   > - 休假审批是否已发出？如果是，何时发出、审批人？
+   > - 特殊事项（如难产、多胞胎、特殊疾病等影响法定天数的因素）
 
-3. Using the jurisdiction table in `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`, look up the applicable leave
-   entitlement (hours/weeks) for this leave type in this jurisdiction.
+3. 根据CLAUDE.md中的管辖表，查找此管辖中此假期类型的适用法定权益（天数/周数/工资待遇）。
 
-4. Compute the first upcoming deadline based on the information provided:
-   - Designation not yet sent → deadline is 5 business days from leave start
-   - Med cert requested but not received → deadline is 15 days from request date
-   - Both sent and received → next deadline is at 75% exhaustion
+4. **自动计算关键截止日期：**
 
-5. Write a new entry to `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml` using the leave register
-   format from the leave-tracker agent. If the file doesn't exist, create it.
+   | 假期类型 | 需计算的截止日期 |
+   |---|---|
+   | 年假 | 自然年度结束时剩余未休天数、跨年结转截止（次年12月31日） |
+   | 医疗期 | 按工龄确定医疗期总月数和计算周期、医疗期满日期、医疗期满前返岗评估提醒 |
+   | 产假 | 98天基本产假届满日 + 地方奖励假（按管辖）+ 难产/多胞胎附加、返岗日期 |
+   | 婚假 | 法定3天+地方奖励、婚假有效期（部分企业规定领证后X个月内申请） |
+   | 陪产假 | 按管辖天数计算 |
+   | 工伤停工留薪期 | 按工伤认定和医嘱 |
 
-6. Confirm with a single line:
-   > "Logged. [Employee/Role] — [Leave type] — [Jurisdiction] — started [date].
-   > First deadline: [what it is and when]. Leave tracker will alert automatically."
+5. 使用假期登记册格式将新条目写入`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`。如果文件不存在，创建它。YAML格式：
 
-## Examples
+   ```yaml
+   entries:
+     - employee_id: "zhangsan-rd"
+       employee_name: "张工"
+       display_name: "研发部张三"  # 匿名显示用
+       hire_date: "2018-03-15"
+       jurisdiction: "北京"
+       leave_type: "医疗期"
+       start_date: "2025-01-10"
+       expected_return_date: "2025-04-09"  # 3个月医疗期
+       intermittent: false
+       approval_issued: false
+       approval_date: null
+       approver: null
+       special_notes: "严重健康状况，附医院诊断证明"
+       statutory_entitlement:
+         total_days: 90  # 3个月×30天
+         legal_basis: "《企业职工患病或非因工负伤医疗期规定》第3条（实际工龄<10年，本单位工龄≥5年→6个月？请核实）"
+       calculated_deadlines:
+         - type: "医疗期满"
+           date: "2025-04-09"
+           description: "3个月医疗期届满"
+         - type: "返岗评估提醒"
+           date: "2025-03-25"
+           description: "医疗期满前15天——安排返岗/调岗评估和沟通"
+       disease_wage_rate: "不低于北京市最低工资标准的80%"
+       status: "active"
+       created_at: "2025-01-10"
+       last_updated: "2025-01-10"
+   ```
+
+6. 用以下确认信息回复：
+
+   > "已记录。[员工姓名/标识]——[假期类型]——[管辖]——开始于[date]。"
+   >
+   > **法定权益：** [法定天数/期限]，法律依据：[引用]
+   > **关键截止日期：**
+   > - [截止日期1]：[事项]
+   > - [截止日期2]：[事项]
+   > **工资待遇：** [适用标准]
+   >
+   > 假期追踪器将自动在截止日期临近时发出提醒。运行 `/employment-legal:假期追踪` 随时查看所有活跃假期。
+
+## 示例
 
 ```
-/employment-legal:log-leave
+/employment-legal:记录假期
 ```
 
 ```
-/employment-legal:log-leave
-Sarah (Sr. Engineer, works in California) just started FMLA today for a
-serious health condition. Intermittent. No designation sent yet.
+/employment-legal:记录假期
+张工（高级工程师，2018年3月入职，在北京工作）今天因严重健康状况开始医疗期。
+实际工作年限8年，本单位工作年限7年。未发送审批通知。
+医院的诊断证明已经拿到了。
 ```
+
+```
+/employment-legal:记录假期
+李工（产品经理，2022年7月入职，在深圳工作）今年年假还一天没休，
+今天是12月15日，她申请了12月23日-27日休5天。审批已通过。
+```
+
+## 常见注意事项
+
+- **工龄计算**：累计工作年限跨单位的，需要确认员工前单位工作年限——影响年假天数和医疗期长短
+- **医疗期起算**：从病休第一天开始，在计算周期内累计计算（非连续计算，间歇性休假时特别注意）
+- **地方差异**：产假地方奖励天数、婚假天数、最低病假工资比例——必须按员工劳动合同履行地查询最新规定
+- **年假跨年安排**：年假一般不跨年度安排。如需跨年（如年底入职的新员工），最多延至次年12月31日
+- **"三期"女职工（孕期、产期、哺乳期）**：录入产假时注意标记三期保护期间的解雇保护（《劳动合同法》第42条）
+
+## 以下一步决策树结束
+
+以CLAUDE.md`## 输出`中的下一步决策树结束。
+
+## 此技能不做什么
+
+- 不替代HR系统的请假审批流程。本技能仅记录和追踪法定权利期限，不替代企业内部审批。
+- 不计算工资。计算工资待遇标准供参考，实际发放以薪资系统为准。
+- 不判断请假的合理性或真实性。仅记录信息，不核实医院证明真伪或请假理由。
+- 不处理劳动关系终止/解除后的假期结算。离职员工的假期结算属于独立流程。

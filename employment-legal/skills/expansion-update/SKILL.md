@@ -1,74 +1,75 @@
 ---
-name: expansion-update
+name: 扩张更新
 description: >
-  Update the status of an in-progress international expansion project —
-  recalculates what is now unblocked, flags anything overdue, and surfaces
-  the next priorities. Use when work has happened since the last session and
-  the expansion tracker needs to reflect the current state.
-argument-hint: "[country name]"
+  更新进行中的国内跨省/市扩张项目状态——重新计算现已解锁的事项、
+  标记逾期事项、揭示下一个优先事项。当上次会话后有工作进展、
+  需要反映最新状态时使用。
+argument-hint: "[省/市名称]"
 ---
 
-# /expansion-update
+# /扩张更新
 
-Returns to an open expansion tracker and updates item status based on what
-has happened since the last session. Recalculates what is now unblocked,
-flags anything overdue, and surfaces the next priorities.
+返回一个开放的扩张追踪器，基于上次会话后发生的情况更新事项状态。重新计算现已解锁的事项、标记逾期事项、揭示下一个优先事项。
 
-## Instructions
+## 指示
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`.
+1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。
 
-2. Identify the tracker file: `~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`. If it doesn't
-   exist, respond: "No expansion tracker found for [country]. Run
-   `/employment-legal:expansion-kickoff [country]` to start one."
+2. 识别追踪器文件：`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`。如果不存在，回应："未找到[省/市]的扩张追踪器。运行`/employment-legal:地域扩张启动 [省/市]`来开始一个。"
 
-3. Read the tracker. Show the current state:
+3. 读取追踪器。显示当前状态：
 
 ```
-[Country] Expansion — last updated [date]
-Open: [N] | In progress: [N] | Done: [N] | Blocked: [N]
+[省/市]扩张——上次更新[日期]
+开放：[N] | 进行中：[N] | 已完成：[N] | 阻塞：[N]
 
-Next priorities (open items with earliest due dates or highest-dependency):
-  [item] — owner: [owner]
-  [item] — owner: [owner]
-  [item] — owner: [owner]
+下一个优先事项（最早截止日或最高依赖的开放事项）：
+  [事项]——负责人：[owner]
+  [事项]——负责人：[owner]
+  [事项]——负责人：[owner]
 ```
 
-4. Ask for updates in a single prompt — do not ask about each item one by one:
+4. 在单一提示中请求更新——不要逐个询问每个事项：
 
-   > Which items have moved since we last looked? Tell me what's changed
-   > (e.g., "EOR decision made — going with Deel", "outside counsel engaged —
-   > call scheduled for Thursday", "PE analysis still open, waiting on tax").
-   > You can also add new items or change due dates.
+   > 自上次我们查看以来哪些事项有进展？告诉我发生了什么变化（例如，"已确认当地最低工资标准"、"社保代缴机构已选定——中智"、"劳动合同模板待当地律师审阅"）。您也可以添加新事项或更改截止日期。
 
-5. Apply updates to the tracker file. For any item newly marked `done`,
-   check whether it unblocks other items and flag those as now actionable.
+5. 应用更新到追踪器文件。对于任何新标记为`已完成`的事项，检查它是否解除了其他事项的阻塞并将这些标记为现在可行动。
 
-6. If any item has a due date that has passed and is still `open` or
-   `in-progress`, flag it:
+6. 如果任何事项的截止日已过且状态仍为`开放`或`进行中`，标记它：
 
 ```
-⚠️ Overdue: [item] — was due [date], owner: [owner]
+⚠️ 逾期：[事项]——原应到期[日期]，负责人：[owner]
 ```
 
-7. Write the updated tracker. Confirm:
+7. 写入更新后的追踪器。确认：
 
 ```
-Tracker updated — [N] items closed, [N] still open.
-Next priority: [top open item].
+追踪器已更新——[N]个事项已关闭，[N]个仍开放。
+下一个优先事项：[最优先开放事项]。
 ```
 
-## Examples
+## 中国扩张追踪器典型事项
+
+追踪器中的事项通常包括：
+
+- 目标省/市人社局法规调研（最低工资/社保/产假/公积金）
+- 当地劳动仲裁委/法院裁判倾向调研
+- 用工模式选择（直接雇佣/派遣/外包）
+- 劳动合同模板本地化
+- 规章制度补充起草
+- 社保/公积金开户
+- 当地外部劳动法律师聘请
+- HR本地招聘合规培训
+
+## 示例
 
 ```
-/employment-legal:expansion-update Germany
+/employment-legal:扩张更新 成都
 ```
 
 ```
-/employment-legal:expansion-update
-(will ask which country if multiple trackers exist)
+/employment-legal:扩张更新
+（如果存在多个追踪器，将询问哪个省/市）
 ```
 
-> Detailed tracker schema, item-status rules, and dependency logic live in the
-> `international-expansion` reference skill — load it before doing substantive
-> work.
+> 详细的追踪器模式、事项状态规则和依赖逻辑位于`地域扩张`参考技能中——在做实质性工作之前加载它。

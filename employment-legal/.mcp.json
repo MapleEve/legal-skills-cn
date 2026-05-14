@@ -1,16 +1,28 @@
 {
   "mcpServers": {
-    "Slack": {
+    "飞书": {
       "type": "http",
-      "url": "https://mcp.slack.com/mcp",
-      "title": "Slack",
-      "description": "Search messages, read channels, find discussions across your workspace."
+      "url": "TBD",
+      "title": "飞书",
+      "description": "搜索消息、读取群聊、查找工作区内的讨论内容。"
     },
-    "Google Drive": {
+    "企业微信": {
       "type": "http",
-      "url": "https://drivemcp.googleapis.com/mcp/v1",
-      "title": "Google Drive",
-      "description": "Search, read, and fetch documents from Google Drive."
+      "url": "TBD",
+      "title": "企业微信",
+      "description": "搜索消息、读取群聊、查找工作区内的讨论内容。"
+    },
+    "北大法宝": {
+      "type": "http",
+      "url": "TBD",
+      "title": "北大法宝",
+      "description": "检索法律法规、司法解释、裁判文书及行政处罚决定。"
+    },
+    "中国裁判文书网": {
+      "type": "http",
+      "url": "TBD",
+      "title": "中国裁判文书网",
+      "description": "检索全国各级人民法院已公开的裁判文书。"
     }
   },
   "recommendedCategories": [

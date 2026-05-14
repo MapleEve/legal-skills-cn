@@ -1,165 +1,150 @@
 ---
-name: exam-forecast
+name: 考试预测
 description: >
-  Analyze past exams from the same professor to surface patterns — subject
-  weighting, recurring issue-spot traps, favored hypo types, policy-vs-doctrine
-  mix — and forecast likely emphases for the upcoming exam. Use when the user
-  says "what's on the exam", "analyze past exams", "predict the exam", or
-  shares past exams.
-argument-hint: "[class name, with past exams shared or paths to them]"
+  分析同一老师的历年试卷以发现出题模式——科目权重、重复出现的考点陷阱、
+  偏好的案例分析类型、论述题vs.选择题配比——预测即将到来的考试的重点。
+  适用于中国法学期末考试和法律职业资格考试（法考）。
+  当用户说"考试会考什么"、"分析历年试卷"、"预测考试"或分享历年试卷时使用。
+argument-hint: "[课程名称，附带历年试卷或试卷路径]"
 ---
 
-# /exam-forecast
+# /考试预测
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → class, professor, exam format, syllabus.
-2. Apply the workflow below.
-3. Intake past exams (PDF, paste, or paths). Confirm sample size.
-4. Analyze each past exam: format, subject coverage, question style, fact-pattern density, recurring traps.
-5. Cross-exam pattern analysis — what's stable, what varies.
-6. Combine with current syllabus to produce forecast: subject weights, format, hobby horses, study emphasis.
-7. Write `~/.claude/plugins/config/claude-for-legal/law-student/exam-forecasts/[class]/forecast-[YYYY-MM-DD].md`. Framed as weighting heuristic, not prediction.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 课程、老师、考试格式、教学大纲。
+2. 使用以下工作流。
+3. 读取历年试卷（至少2-3份）。按考试类型和科目特征编码每个题目。
+4. 分析模式：知识点分布、题型偏好、案例分析风格、法条vs.理论配比。
+5. 对照教学大纲预测本年重点。
+6. 输出：预测报告含置信度标记。
 
 ---
 
-## Purpose
+## 中国法考试类型适配
 
-Every professor's exam has fingerprints. The same hypo structures recur. The same traps come back. The same subject ratios repeat. Students who have prior exams study smarter; students who don't, study harder. This skill analyzes the prior exams you have and surfaces the patterns.
+本技能适配两种主要考试类型：
 
-Not magic. A forecast, not a prediction. The skill cannot tell you what's on the exam — it can tell you what's been on past exams and what's likely to recur based on syllabus coverage.
+### 法学院期末考试
+- 题型：名词解释/简答题/论述题/案例分析/法条分析
+- 特点：因老师而异，同一科目不同老师的出题风格差异大
+- 重点关注：老师的学术研究方向、课堂重点强调的内容、教学大纲中的"了解/理解/掌握"分级
 
-## Confidence discipline
+### 法律职业资格考试（法考）
+- 题型：客观题（单选/多选/不定项）+ 主观题（案例分析/论述/法律文书）
+- 特点：全国统一命题，有稳定的考点分布规律
+- 重点关注：近3-5年真题的考点分布、新法/修订法的考察概率、当年法治热点
 
-- Pattern analysis (what subjects appeared, how many questions per topic, how often policy vs. rule-application) — confident where the exams are clearly in front of me.
-- Inference about likely emphasis on upcoming exam — `[UNCERTAIN]` is the default; these are forecasts, not certainties. Explicitly frame as "based on the [N] past exams you shared, [topic] appeared in [M]. Your upcoming exam may emphasize it, or the professor may rotate — use this as a weighting for review time, not a prediction."
-- If only 1-2 past exams are available, say so explicitly — any pattern inferred from 1 exam is noise.
-- If the professor is new (no past exams available), skill can't forecast. Say so; fall back to syllabus-based "these are the subjects covered" only.
+## 可信度准则
 
-## Load context
+基于老师真实试卷的分析有价值。基于口碑或刻板印象的"某老师喜欢X"是猜测——标记为 `[推测]`。
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, exam formats, syllabus if captured
-- User-provided past exams (PDF, pasted text, paths)
-- Optional: syllabus for the current class (for "what's been covered to date")
+对于法考，基于历年真题数据的分析可信度较高；基于培训机构的押题信息标记来源。
 
-**If the uploaded past exams have a professor's name, use it to match patterns** (same-professor exams are the highest-signal input). **If not, match on subject and structure.** Don't ask the user to type in the professor's name — use what's in the materials. If the user volunteers it in conversation that's fine; don't prompt for it.
+## 加载上下文
 
-## Workflow
+课程名称、老师姓名（法学院）/考试年份（法考）、考试格式、教学大纲、历年试卷。
 
-### Step 1: Intake
+## 分析工作流
 
-- Which class are we forecasting for?
-- How many past exams from this professor are available?
-- Are they from the same course, or different courses by the same professor?
-- Are any of them the take-home / open-book / different-format variants, vs. the typical format for your upcoming exam?
-- Syllabus for your current class?
+### 第1步：编码历年试卷
 
-If fewer than 3 past exams: flag as thin sample. Pattern inference is weaker.
-If exams are across different courses: some patterns transfer (question style, policy vs. doctrine ratio); subject-specific patterns don't.
+每份试卷：列出每个题目及覆盖的知识点、子知识点。构建知识点频率表。
 
-### Step 2: Read each past exam
+**法学院试卷编码维度：**
+- 知识点（对应教材章节）
+- 考察层次（记忆/理解/应用/分析/评价）
+- 题目分值
+- 是否涉及老师个人研究方向
 
-For each past exam:
+**法考试卷编码维度：**
+- 科目（民法/刑法/行政法/民诉/刑诉/商经知/理论法/三国法）
+- 子知识点
+- 《考试大纲》层级标注
+- 新法/修订法关联
 
-- Format (number of questions, length, time limit, open/closed book)
-- Subject coverage (which topics tested, in what proportion)
-- Question style (issue-spotter, single-issue deep, policy essay, short-answer MBE-style, mix)
-- Fact pattern density (fact-heavy hypos, sparse facts with doctrinal focus, or policy prompts with no facts)
-- Recurring traps (e.g., professor always hides the jurisdictional issue in an otherwise-clean fact pattern; professor always asks about the exception rather than the rule)
-- Policy vs. doctrine ratio
-- Unusual structures (essays + MBE hybrid, moot court scenario, etc.)
+### 第2步：识别模式
 
-### Step 3: Cross-exam pattern analysis
+- **知识点权重：**哪些知识点反复出现？各占多少比例？
+- **出题偏好：**老师/命题组偏好的考察角度（正向识别/反向排除/综合辨析）
+- **案例分析风格：**长复杂事实还是短直接问题？多问串联还是单问深入？
+- **法条vs.理论：**多少分直接考法条（法考特色），多少分考理论辨析？
+- **新法权重：**当年新实施或新修订的法律占了多少分？
+- **变化趋势：**最近2-3年是否有明显变化？（新老师接手/命题组成员调整/新法实施/大纲修订）
 
-Roll up what's consistent across exams:
+### 第3步：对照教学大纲
 
-**Stable patterns (appeared in most/all past exams):**
-- Subject weights (e.g., "consideration and modification account for 30% of exam points consistently")
-- Question style (e.g., "always one long issue-spotter + two short-answer hypos")
-- Professor hobby horses (e.g., "always tests third-party beneficiaries even when it's a minor topic in class")
+将模式与教学大纲对照：
+- 大纲上的每个知识点：历年考过吗？频率如何？
+- 如果某知识点在大纲上标注为"掌握"但从未考过——标记为今年可能的新考点
+- 如果某知识点在大纲上标注为"了解"但连年考——标记为事实上的重点
 
-**Variable patterns (appeared in some but not all):**
-- Policy essays (e.g., "appeared in 2 of 4 past exams — usually when the semester covered a policy-heavy topic late")
-- Open-book vs. closed-book differences
-- Take-home vs. in-class differences
+**法学核心课程知识点扫描（中国法学院14门核心课程）：**
+民法/刑法/行政法与行政诉讼法/民事诉讼法/刑事诉讼法/宪法/法理学/中国法制史/经济法/商法/知识产权法/国际法/国际私法/国际经济法
 
-**Absent patterns worth noting:**
-- Topics covered in class that have NEVER been tested in past exams — don't skip these, but don't weight them heavily either
-- Topics tested in past exams that aren't in your current syllabus — probably not coming back
+### 第4步：预测
 
-### Step 4: Forecast for the upcoming exam
+列出可能重点的优先级排序。标注每项预测的置信度：
 
-**Header — required, first line of the forecast, both in-chat and in the saved file.** Per plugin config `## Outputs`, every study output carries the verbatim study-notes header. The forecast is a study output. Do not omit, rephrase, or relocate the header. The header is not a disclaimer the student can ask to drop; it is the output's identity and prevents the forecast from being mistaken for a predicted exam or for legal advice:
+| 标签 | 含义 |
+|---|---|
+| `[高 — 每年都考]` | 核心考点，几乎每年必出 |
+| `[高 — 新法热点]` | 近年新实施/新修订法律的必考热点 |
+| `[中 — 隔年出现，今年轮到]` | 有一定规律，今年概率较大 |
+| `[中 — 老师学术重点]` | 与该老师研究方向高度相关 |
+| `[低 — 大纲新增]` | 当年大纲新增知识点，无历年数据 |
+| `[低 — 推测]` | 基于趋势推测，无常规律支撑 |
 
-```
-STUDY NOTES — NOT LEGAL ADVICE
-```
-
-Combine pattern analysis with current syllabus:
+## 输出格式
 
 ```markdown
-STUDY NOTES — NOT LEGAL ADVICE
+# 考试预测：[课程/科目] — [老师/年份] — [学期/考季]
 
-# Exam Forecast — [class / professor] — [date]
+**分析试卷数：** [N]（[年份范围]）
+**考试类型：** [法学院期末考试 / 法考客观题 / 法考主观题]
 
-**Past exams analyzed:** [N]
-**Sample confidence:** [thin (<3) / moderate (3-5) / strong (6+)]
-**Caveats:** [e.g., "one of the past exams was an open-book final; your upcoming is closed-book. Pattern transfer is partial."]
+## 知识点分布
 
----
+| 知识点 | 出现次数 | 占比 | 趋势 | 预测置信度 |
+|---|---|---|---|---|
+| [知识点] | X/Y | Z% | ↑/↓/→ | 高/中/低 |
 
-## Subject weighting (historical)
+## 最可能考点（按优先级排序）
 
-| Topic | Past exam weight (avg) | In current syllabus? | Forecast weight |
-|---|---|---|---|
-| [topic 1] | [%] | [yes/partial/no] | [heavier / stable / lighter] |
+1. [知识点] — 置信度：[高] — 理由：[每年必考/新法热点/今年尚未出现]
+2. [知识点] — 置信度：[中] — 理由：[隔年规律/老师研究方向]
+3. ...
 
-## Question-style forecast
+## 题型预警
 
-- **Format likely:** [X issue-spotters + Y short answers + Z policy, or similar]
-- **Fact-pattern density:** [fact-heavy / sparse / mixed]
-- **Call style:** [one broad call / multiple specific calls / bullet sub-parts]
+- 该老师/该科目偏好的题型和陷阱设计方法
+- 历年反复出现的易错点
 
-## Professor hobby horses to watch
+## 出题风格标签
 
-- [topic A] — appeared in [M of N] past exams. Weighted 3-5x its syllabus share.
-- [topic B] — [pattern]
-- [trap pattern] — e.g., "hides jurisdictional issue in otherwise-clean facts"
+- 法条型/理论型/混合型
+- 单一问/串连问
+- 传统考点/新法热点偏好
 
-## Topics covered this semester but rarely tested
+## 复习优先级建议
 
-[list — don't skip, but don't over-weight]
+### 第一优先级（几乎必考）
+[知识点列表]
 
-## Study emphasis recommendation
+### 第二优先级（大概率）
+[知识点列表]
 
-Based on past exam patterns AND current syllabus coverage:
-
-**Heavy:** [topics likely to anchor the exam — 40-50% of study time]
-**Moderate:** [supporting topics — 30-40%]
-**Sanity check:** [topics covered but historically under-represented — 10-20%, just in case]
-
-## [UNCERTAIN — framing]
-
-This forecast is derived from [N] past exams. Professors vary. Professors rotate. Topics that were emphasized in past years can be de-emphasized when the syllabus shifts. Treat this as a weighting heuristic for study time, not a prediction. The exam will include surprises.
+### 第三优先级（可能出，不要完全跳过）
+[知识点列表]
 ```
 
-### Step 5: Output location
+## 注意事项
 
-Write to `~/.claude/plugins/config/claude-for-legal/law-student/exam-forecasts/[class]/forecast-[YYYY-MM-DD].md`. Versioned — if the student gets another past exam mid-semester, re-run and append.
+这不是保证——老师/命题组可以随时改变模式。用来聚焦复习，不是用来跳过知识点。如果只有1-2份试卷的样本量，明确告知预测局限。
 
-## Integration
+**法考特别提醒：**法考客观题通过率并非100%，不要只依赖预测——知识点覆盖面依然是最稳妥的策略。
 
-- **outline-builder:** forecast weights feed into outline depth decisions — weight depth on heavy topics
-- **flashcards:** forecast-heavy topics get more cards generated
-- **bar-prep-questions:** irrelevant for bar prep (that has its own forecast model); exam-forecast is for class-specific finals
-- **irac-practice:** use forecast topics as the subject areas for IRAC practice hypos
+## 本技能不做的事
 
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- **Predict specific questions.** Past exams show patterns; they don't show you tomorrow's prompt.
-- **Work without past exams.** If you don't have prior exams from this professor, the skill can't forecast — it falls back to "here's what the syllabus covers, study that."
-- **Replace studying everything on the syllabus.** Forecast is weighting, not elimination. Skipping a topic because it's historically under-represented is how students get burned.
-- **Account for changes you don't know about.** If the professor has shifted focus this year (e.g., emphasized a new case in class lectures), the skill doesn't see that unless you tell it.
-- **Work reliably with 1-2 past exams.** Thin sample. Flag as such.
+- 不保证预测准确
+- 不建议只复习预测的知识点
+- 不基于口碑或道听途说做预测
+- 不提供法考培训机构的内部押题——那是他们的商业产品

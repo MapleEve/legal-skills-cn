@@ -1,31 +1,98 @@
 ---
-name: session
+name: 学习训练
 description: >
-  Run a focused N-question study session on a subject — MBE, essay, or
-  flashcards. Tracks performance and updates the study plan. Use when the
-  user says "run me 10 questions on [subject]", "do a session on [subject]",
-  "let's do 5 cards on [subject]", or wants to drill a fixed number of
-  questions and have the plan adapt.
-argument-hint: "<subject> <n> [--mbe | --essay | --flashcards]"
+  在某个法学科目上运行N道题的集中学习训练——客观题（选择题）、
+  主观题（案例分析/论述题）或闪卡。追踪表现并更新学习计划。
+  当用户说"给我出10道[科目]的题"、"做个[科目]的训练"、
+  "来5张[科目]的闪卡"或想训练固定数量的题目时使用。
+argument-hint: "<科目> <题数> [--客观题 | --主观题 | --闪卡]"
 ---
 
-# /session
+# /学习训练
 
-1. Parse `$ARGUMENTS` — subject and N. If missing, ask:
-   > What subject, and how many questions? (e.g., `Evidence 10` or `Contracts 5 --essay`.)
-2. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → jurisdiction, exam format, weak subjects.
-3. Load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists. Read `session_history` for this subject to weight subtopics toward where the student has been weak.
-4. Route by method flag:
-   - `--mbe` (default for bar prep subjects): load `bar-prep-questions` skill, run N MBE-style questions. Apply jurisdiction handling (see that skill's `## Jurisdiction handling`). Label each `[UBE/majority]` or `[state-specific]`.
-   - `--essay`: load `bar-prep-questions`, run N essay prompts. Grade per essay-mode rubric.
-   - `--flashcards`: load `flashcards` skill, run N cards in `--drill` mode.
-5. Run N questions one at a time. After each, explain right/wrong and flag rule-body when jurisdictions diverge.
-6. At session end, write session results:
-   - If `study-plan.yaml` exists: append to `session_history` per the schema in the `study-plan` skill.
-   - If not: write to `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml`.
-7. Report:
-   - Score: X/N (percentage)
-   - Missed: list with subtopic tags
-   - Weak subtopics this session
-   - Pattern vs. prior sessions on this subject (if history has 2+ prior)
-   - What the plan now recommends next
+1. 解析 `$ARGUMENTS` — 科目和题数。如缺失，询问：
+   > 什么科目，多少道题？（例：`民法 10` 或 `刑法 5 --主观题`。）
+
+2. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 考试类型、薄弱科目、学习风格。
+
+3. 如存在则加载学习计划。读取该科目的训练历史以加权薄弱子知识点。
+
+4. 按方法标志路由：
+   - `--客观题`（法考备考默认）：运行N道选择题（含单选/多选/不定项）。
+   - `--主观题`：运行N道案例分析/论述题。按主观题评分标准评估。
+   - `--闪卡`：加载闪卡技能，以刷题模式运行N张卡片。
+
+5. 逐题运行。每题后解释对/错，标注法条依据或知识点漏洞。
+
+6. 训练结束写入结果：
+   - 如学习计划存在：追加到训练历史。
+   - 如不存在：写入 `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml`。
+
+7. 报告完整结果。
+
+---
+
+## 中国法考试科目体系
+
+### 法考科目（8大门类）
+| 科目 | 常见子领域 |
+|---|---|
+| 民法 | 总则/物权/合同/人格权/婚姻家庭/继承/侵权责任 |
+| 刑法 | 总则（犯罪论/刑罚论）/分则（各罪名） |
+| 行政法与行政诉讼法 | 行政行为/行政复议/行政诉讼/国家赔偿 |
+| 民事诉讼法（含仲裁制度） | 程序/证据/执行/仲裁 |
+| 刑事诉讼法 | 程序/证据/强制措施/特别程序 |
+| 商经知 | 公司法/合伙企业法/破产法/票据法/保险法/竞争法/消费者法/劳动法/环境资源法/知识产权法 |
+| 理论法 | 法理学/宪法/中国法制史/司法制度和法律职业道德 |
+| 三国法 | 国际法/国际私法/国际经济法 |
+
+### 法学院核心课程（14门）
+法理学、宪法、中国法制史、行政法与行政诉讼法、刑法、刑事诉讼法、民法、民事诉讼法、经济法、商法、知识产权法、国际法、国际私法、国际经济法 + 各校特色选修
+
+## 输出格式
+
+每道题逐题处理，训练结束后总结：
+
+```markdown
+# 学习训练报告 — [科目] — [日期]
+
+**训练类型：** [客观题/主观题/闪卡]
+**训练题数：** [N]
+
+## 结果
+**得分：** X/N（Y%）
+**用时：** [如有记录]
+
+## 错题详情
+
+| 题号 | 知识点 | 错误类型 | 法条/知识点依据 |
+|---|---|---|---|
+| X | [具体知识点] | [概念混淆/法条记错/要件遗漏/逻辑错误] | [正确法条/知识点] |
+
+## 本次薄弱知识点
+- [知识点A] — [失分 X 题]
+- [知识点B] — [失分 Y 题]
+
+## 与历史对比
+[如有该科目先前训练记录：]
+- 上次得分：X/N → 本次：Y/N
+- 上次薄弱点：[...] → 本次：[对比]
+- 趋势：[进步/持平/退步]
+
+## 学习计划调整建议
+- 建议下周重点：[薄弱知识点]
+- 建议补充的训练量：[估算]
+```
+
+## 研习型 vs 讲解型
+
+在训练中使用学生偏好的交互模式：
+
+- **研习型学生（偏好被提问、不先给答案）：** 每道题先让学生自己思考作答，然后纠错和讲解。不做预先提示。
+- **讲解型学生（偏好先讲解再测试）：** 涉及新知识点时，先简短讲解核心法条/概念，再做题目。
+
+## 本技能不做的事
+
+- 不替代法考培训机构的全套题库
+- 不生成与真实法考真题完全相同的题目（版权风险）
+- 不在未有学习记录的情况下做空洞的"你要加油"

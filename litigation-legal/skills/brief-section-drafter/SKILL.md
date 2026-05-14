@@ -1,191 +1,300 @@
 ---
-name: brief-section-drafter
-description: Draft a brief section in house style, consistent with the case theory — every fact cited, every case checked, every argument tied to the theory. Use when the user says "draft the [section]", "write the statement of facts", "argument section on [issue]", or needs a first draft of a brief section.
-argument-hint: "[section \u2014 e.g., 'statement of facts', 'argument II']"
+name: 法律文书章节撰写
+description: 按律所风格撰写中国法院诉讼文书章节（代理词/答辩状/法律意见书）——每个事实有证据引用，每条法律主张有法条索引，每个论点紧扣争议焦点。适用场景：用户说"写代理词""草拟答辩状""关于某争议焦点的代理意见""写法律意见书"或需要撰写法院提交文书的章节初稿。
+argument-hint: "[章节类型——如'代理词/争议焦点一'、'答辩状/事实与理由']"
 ---
 
-# /brief-section-drafter
+# /法律文书章节撰写
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → case theory, house style.
-2. Follow the workflow and reference below.
-3. Draft in house format/tone/citation style. Consistent with theory.
-4. Output: draft section. Flag every place a fact or cite needs verification.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 案件策略、律所文书风格。
+2. 遵循以下工作流程和参考。
+3. 按律所格式/语气/引用风格起草。与案件策略保持一致。
+4. 输出：章节初稿。标注每处需要核实的事实或引用。
 
 ---
 
-# Brief Section Drafter
+# 法律文书章节撰写
 
-## Witness statements for England & Wales — PD 57AC
+## 目的
 
-If the user's jurisdiction includes England & Wales and they're asking for a trial witness statement for the Business & Property Courts (or any CPR-governed proceeding), PD 57AC applies. The statement must be in the witness's own words, must not contain argument, must identify the documents the witness used to refresh their memory, and must carry the required confirmation of compliance and the legal representative's certificate.
+一份好的中国法院诉讼文书应当围绕争议焦点组织论证、每项事实有证据编号引用、每条法律主张有具体法条索引、语言简洁且逻辑严密——中国法官审阅文书时关注的是"事实→证据→法条→结论"的完整链条。本技能产出初稿——强调*初稿*。由主办律师/合伙人修改定稿。
 
-**Drafting a narrative "as the witness" from a chronology, document set, or your account of the case is exactly what PD 57AC was designed to prevent.** Courts are actively sanctioning AI-assisted witness statement drafting. If you ask me to do it, I won't.
+## 中国法院常见诉讼文书类型
 
-What I WILL do: prepare question prompts to elicit the witness's actual recollection; capture and organize what the witness says (their words, not mine); generate the list of documents they were shown; run a PD 57AC compliance checklist against a statement they've drafted; draft the solicitor's certificate of compliance. I help you get the witness's evidence into the statement. I don't write the evidence.
-
-For US depositions, declarations, and affidavits: different rules, but the same discipline applies. A declaration in the declarant's voice that the declarant didn't write is a credibility problem at best.
-
-## Purpose
-
-A good brief section is consistent with the theory, cited to the record, written in house style, and checkable. This skill produces the first draft — emphasis on *draft*. Partner edits.
-
-## Written or oral?
-
-Ask before drafting: "Is this for a written submission or oral argument?" They are different crafts:
-
-- **Written:** thorough. Cover the points, develop the authority, anticipate the responses.
-- **Oral (rebuttal, closing, argument):** strategic. Pick the 3-4 points that matter most. Concede or ignore the weak ones. Lead with your strongest. A tribunal remembers the first two minutes and the last two. "Too thorough" for oral advocacy reads as unfocused. If you're responding to a multi-issue submission, tell the user which issues you'd press and which you'd let go — that's the draft of the strategy, not just the words.
-
-## Record fidelity — quotes and pinpoints
-
-Two rules that govern every citation and every quotation in advocacy drafting. The canonical statement lives in the plugin's `CLAUDE.md` shared guardrails; repeated here because this skill is the most common place the rule gets tested.
-
-**Verbatim quotes from the record must be verbatim.** Never put quotation marks around words attributed to opposing counsel, a witness, the court, or any record document unless you have the exact passage in front of you and can cite to it. A quote that's almost right is worse than a paraphrase — it misrepresents the record, it's sanctionable if filed, and it will be caught. When you want to characterize what someone said but can't find the exact words:
-
-- **Paraphrase without quotation marks**, attributing clearly: "Opposing counsel argued that X `[verify against record — Tr. p. __]`."
-- **Mark the placeholder:** `[verify exact quote — record cite pending]`
-- **Never fill the gap.** An invented quote, even one word, is a fabrication. The reviewer note must flag every `[verify exact quote]` in the output.
-
-Before citing any passage with quotation marks, have the source open. If you're working from memory or a summary, no quotation marks.
-
-**Pinpoint cites must support the whole proposition.** If the argument is "opposing counsel said X, Y, and Z" and you're citing one pinpoint, verify the pinpoint supports X AND Y AND Z. If it only supports Z, either (a) split the cite — "said X (Tr. p. 10), Y (Tr. p. 12), and Z (Tr. p. 15)" — or (b) narrow the proposition to what the pinpoint actually supports. A cite that supports part of a claim is how a tribunal catches you stretching. It's the single most common way a lawyer's credibility erodes in front of a court. This is the "misgrounded citation" failure mode: the cite exists, the passage exists, but the passage doesn't support the proposition as stated.
-
-## Candor about weak arguments
-
-When the law is against you, say so. When an argument is weak — the authority cuts the other way, the facts don't support it, the inference is a stretch — don't construct a shaky argument and present it as if it were solid. Flag it:
-
-> "This point is weak — [authority] cuts the other way. Consider whether to press it (here's how you'd frame it), concede and pivot to [stronger point], or drop it. `[review — strategic call]`."
-
-Asserting a weak argument without flagging it erodes the lawyer's credibility with the tribunal and creates a candor problem (MR 3.1 — a lawyer must have a basis in law and fact). The draft should make the lawyer smarter, not confident about a bad position.
-
-## Citation extraction coverage
-
-When this draft is cite-checked — by you, by another skill, or by a reviewer running through what you produced — the check must be exhaustive, not selective:
-
-1. **First pass: extract.** Read the whole document and build a list of every citation — cases, statutes, regulations, record cites, secondary authority. Report the count: "Found [N] citations."
-2. **Second pass: check.** Check each one against the source. Don't sample. Don't stop when you get tired.
-3. **Report coverage.** At the end: "Checked [N] of [M] citations. [K] could not be retrieved — verify manually. [J] confirmed. [I] flagged as potential miscitations. [H] flagged as misgrounded (cite exists but doesn't support the proposition)."
-4. **When source text is unavailable, say "could not check," never "confirmed."** A false positive ("this cite is fine" when you couldn't read the source) is worse than "couldn't check this one."
-5. **The hardest errors to catch are partial support.** A cite that backs part of a claim but not all of it. Read the proposition the brief makes, read what the source actually holds, and compare element by element.
-
-## Echo vs repeat
-
-Echo key framings; don't lift sentences. Consistency with prior submissions is good — it reinforces your theory of the case and makes the record coherent. But there's a line between echoing and repeating.
-
-- **Echo:** use the same key terms, the same framing of the central issue, the same characterization of the other side's theory.
-- **Don't:** lift whole sentences, re-use distinctive phrasings so often the tribunal notices, or repeat the same argument verbatim without advancing it.
-
-A rebuttal that sounds like a re-read of the opening loses ground. The draft should advance the argument, not restate it.
-
-## Load context
-
-`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → case theory, house style (citation format, structure, tone, length norms).
-
-**Conflicts gate — unbypassable.** Before drafting, check `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for the matter slug this skill is being invoked on. If the matter is not in `_log.yaml`, refuse and route:
-
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't draft substantive work product on a matter that hasn't been intaken — the conflicts check is the gate."
-
-Do not proceed on an unintaken matter. Intake is what runs conflicts, sets up `matter.md` / `history.md`, and writes the `_log.yaml` row this skill reads from. Skipping it produces work in an unmanaged location and bypasses the firm's conflicts discipline.
-
-## Workflow
-
-### Step 1: Which section?
-
-| Section | What it does | Inputs needed |
+| 文书类型 | 提交时机 | 结构特点 |
 |---|---|---|
-| Statement of facts | Tells the story, in our frame, cited to record | Chronology, key docs, depo cites |
-| Standard of review | Sets the bar the court applies | Procedural posture |
-| Argument | Makes the legal case | Issue, authorities, facts |
-| Conclusion | Asks for relief | What we want |
+| **起诉状** | 立案时提交 | 原告信息+被告信息+诉讼请求+事实与理由+证据清单 |
+| **答辩状** | 收到起诉状副本后15日内 | 被告信息+对原告诉讼请求和事实的逐项答辩+己方证据清单 |
+| **代理词** | 开庭审理后提交（庭后补充）或当庭提交 | 首部（法院名称+案由+代理人信息）→正文（按争议焦点组织代理意见）→尾部 |
+| **反诉状** | 法庭辩论终结前 | 反诉原告+反诉被告+反诉请求+事实与理由+证据清单 |
+| **上诉状** | 一审判决送达后15日内（判决）/10日内（裁定） | 上诉人+被上诉人+上诉请求+上诉理由（事实认定错误/法律适用错误/程序违法） |
+| **再审申请书** | 判决生效后6个月内 | 申请人+被申请人+再审请求+再审事由（《民诉法》第211条） |
+| **管辖权异议申请书** | 答辩期内 | 申请人+申请事项+事实与理由 |
+| **法律意见书** | 按需（非诉讼/专项） | 引言→事实概述→法律分析→结论与建议 |
 
-### Step 2: Theory check
+本技能覆盖上述各类型的撰写，重点为代理词和答辩状。
 
-Before writing: what does this section need to accomplish for the theory?
+## 立场意识
 
-- Statement of facts: Frame the story so our theory is the natural reading.
-- Argument: Connect the law to the facts in a way that supports the theory.
+文书起草天然有立场（原告/被告/第三人）。阅读 `## 立场`：
 
-If the section you're about to draft contradicts the theory — stop. Either the theory is wrong or the section approach is wrong. Flag it, don't paper over it.
+- **原告/申请人**：起诉状、代理词按诉讼请求展开论证
+- **被告/被申请人**：答辩状、代理词按抗辩逻辑组织
+- **两者兼有/因案而异**：按每次起草确认立场
 
-### Step 3: Draft in house style
+## 书面还是口头？
 
-**Research the forum's local rules and the judge's standing orders for length, formatting, citation, and filing requirements; don't rely on preferences. Cite primary sources (local rule number, standing order section) in the drafting notes. Verify currency — local rules change.**
+起草前询问："本章节用于书面提交还是口头辩论？"两者写法不同：
 
-Per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
+- **书面提交**（代理词/答辩状/法律意见书）：全面、完整。按争议焦点逐一展开，每项主张附证据引用和法律依据，预判对方反驳并回应。
+- **口头辩论**（庭审辩论要点）：精炼、有力。选择3-4个核心论点。以最强论点开篇。承认或放弃弱势论点。口头辩论中"太过全面"等于失去重点。
 
-- **Citation format:** Bluebook, ALWD, or local — match exactly. Signals, pincites, parentheticals per house practice, confirmed against the local rule.
-- **Structure:** How does this firm organize arguments? CRAC? Topic sentences first? Headings that argue vs. headings that describe?
-- **Tone:** Aggressive ("Defendants' argument is meritless") or measured ("The evidence does not support Defendants' position")? Match the seed brief.
-- **Length:** per the local rule / standing order — never relying on "what this judge usually wants" when the rule is checkable.
+## 案卷忠实度——引用和精确定位
 
-### Step 4: Cite everything
+代理词起草中每条引用和引文都适用两条规则。规范表述详见插件的 `CLAUDE.md` 共享护栏；此处重复因本技能是最常检验该规则的场景。
 
-Every fact → record cite (Bates, depo page:line, exhibit).
-Every legal proposition → case cite with pincite.
+**案卷逐字引文必须逐字准确。** 除非手头有准确段落可引用，否则绝不对归于对方、证人、法院或任何案卷文件的话语加引号。近似正确的引文比转述更糟——提交入卷后可能被追责。当你想描述某人所述但找不到原话时：
 
-**Marker discipline — use liberally:**
-- `[VERIFY: specific factual assertion]` — anything not confirmed against the record
-- `[UNCERTAIN: specific legal proposition]` — anything not confirmed against current authority
-- `[CITE NEEDED: specific cite — fact/rule believed but cite not yet pinned]`
+- **不加引号转述**，明确归属："对方主张X `[请核对案卷——庭审笔录第__页]`。"
+- **标记待补位置：** `[请核对原话——案卷引用待补]`
+- **绝不填补空白。** 杜撰的引文，哪怕一个字，都是伪造。审核说明必须标注输出中每处 `[请核对原话]`。
 
-A draft with unresolved markers is not final. The markers make the verification step explicit.
+**精确定位引用必须支撑整个命题。** 如果论点是"对方说了X、Y和Z"，而你只引用了一处精确定位，请核实该定位是否支撑X且Y且Z。如果只支撑Z，则拆分引用——"说了X（庭审笔录第10页）、Y（第12页）、Z（第15页）"。引用只支撑部分主张，是合议庭发现夸大其词的方式。
 
-**No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for an authority the draft needs, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [issue / holding]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave the `[CITE NEEDED]` marker and stop here. Which would you like?" A partner decides whether to accept lower-confidence sources; the skill does not decide for them.
+## 对弱势论点的坦诚
 
-**Source attribution.** Tag every citation in the draft with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the partner or senior associate supplied. Citations tagged `verify` carry higher fabrication risk than tool-retrieved citations and should be checked first. Never strip or collapse the tags — they are the reviewing attorney's fastest signal about which citations to Shepardize first before the brief is filed.
+当法律对某方不利时，坦诚说明。当某个论点薄弱——判例指向相反方向、事实不支持、推论牵强——不要构建摇摇欲坠的论点并当作稳固论点呈现。标注它：
 
-### Step 5: Output
+> "此论点薄弱——[裁判观点]指向相反方向。请考虑是否坚持（以下是表述方式），或放弃并转向[更强论点]。`[请审核——策略性判断]`"
 
-**Before the brief is filed (the consequential act — this skill drafts, but the gate runs at the filing step regardless of who triggers it):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+不加标注地主张薄弱论点，侵蚀代理人在法庭前的公信力。
 
-> Filing a brief has legal consequences — it becomes the record, binds the client on arguments and facts asserted, and a Rule 11 / equivalent certification attaches to signature. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+## 引用提取覆盖率
+
+当本篇初稿被引用核查时——由律师或其他技能逐篇审查：
+
+1. **第一遍：提取。** 通读全文，建立所有引用清单——法条、司法解释、参考案例、案卷引用、辅助法律依据。报告数量："发现[N]条引用。"
+2. **第二遍：核对。** 逐条核对来源。不可抽样，不可半途而废。
+3. **报告覆盖率。** 结尾："已核对[M]条引用中的[N]条。[K]条无法检索——需人工核实。[J]条确认。[I]条标注为可能误引。[H]条标注为引用不匹配（引用存在但内容不支撑命题）。"
+4. **来源文本不可获取时，说"无法核对"，永不说"已确认"。** 虚假的肯定（实际未读来源却说"引用无误"）比"未能核对此条"更糟。
+5. **最难捕捉的错误是部分支撑。** 引用支撑部分主张但不支撑全部。阅读文书所提命题，阅读来源实际裁判要旨，逐要素对比。
+
+## 呼应而非重复
+
+呼应关键表述；不要照搬句子。与先前提交文件保持一致是好的——它强化你的案件理论并使卷宗连贯。
+
+- **呼应：** 使用相同的争议焦点表述、相同的法律术语、相同的对方主张定性
+- **不要：** 照搬整句、逐字重复相同论点而不推进
+
+一份读起来像重读起诉状的答辩状会失去阵地。初稿应推进论点，而非重述。
+
+## 加载上下文
+
+`~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 案件策略、律所文书风格（引用格式、结构、语气、篇幅规范）。
+
+**利益冲突审查关——不可跳过。** 起草前，检查 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` 中本技能被调用所涉案件的标识。如果案件不在 `_log.yaml` 中，拒绝并路由：
+
+> "我在案件登记簿中未找到[案件标识]。请先执行 `/litigation-legal:案件立案`，这样利益冲突审查就会运行，案件工作空间也能建立。我不会在未立案的案件上起草实质性工作成果——利益冲突审查是入门关。"
+
+不得在未立案案件上继续。立案是运行利益冲突审查、建立 `案件档案.md`/`办案日志.md` 的环节。
+
+## 工作流程
+
+### 第1步：确定文书类型和章节
+
+| 文书类型 | 核心章节 | 所需材料 |
+|---|---|---|
+| 起诉状 | 诉讼请求 / 事实与理由 | 案件事实、证据目录、法条依据 |
+| 答辩状 | 答辩意见（逐项回应） / 事实与理由 | 起诉状、己方证据、抗辩法条依据 |
+| 代理词 | 代理意见（按争议焦点组织） | 庭审笔录、证据材料、法条与案例、争议焦点归纳 |
+| 上诉状 | 上诉请求 / 上诉理由 | 一审判决书、一审庭审笔录、新证据（如有） |
+| 法律意见书 | 引言 / 事实概述 / 法律分析 / 结论与建议 | 案件全部材料 |
+
+### 第2步：案件策略检验
+
+撰写前：本章节需完成什么？
+
+- 起诉状/答辩状：明确诉讼/抗辩框架
+- 代理词：围绕争议焦点论证，每个争议焦点对应一个论证段落
+- 上诉状：指出一审判决在事实认定/法律适用/程序上的错误
+
+如果你的论证与案件策略矛盾——停止。要么策略有误，要么章节思路有误。标注，不要掩饰。
+
+### 第3步：按律所风格起草
+
+根据 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`：
+
+- **引用格式：** 法条引用采用"《__法》第__条第__款"，司法解释采用全称+条款序号，参考案例采用"（20__）__民终__号"格式并附裁判要旨摘要
+- **结构：** 按争议焦点组织论证——每个焦点一节。标题为争议焦点本身，非论证性标题
+- **语气：** 法官导向——理性、逻辑严密、用事实和法律说话。代理词不是写给对方看的，是写给法官看的
+- **篇幅：** 适应法院接受范围——一审代理词通常3-8页，聚焦争议焦点而非面面俱到
+
+### 第4步：引用一切
+
+每项事实 → 证据编号引用（证据目录中的编号和页码）。
+每项法律命题 → 法条引用加具体条款号。
+参考案例 → 案号+法院名称+裁判要旨摘要。
+
+**标记纪律——大胆使用：**
+- `[待核实：具体事实主张]` —— 未经案卷确认的任何内容
+- `[不确定：具体法律命题]` —— 未经现行法律确认的任何内容
+- `[需补引用：具体引用——事实/规则确信但引用尚待确定]`
+
+有未解决标记的初稿不是终稿。
+
+**禁止静默补充。** 如果对已配置法律检索工具（北大法宝、裁判文书网）的检索查询返回少量或零结果，报告已发现内容并停止。不得未经询问从网络搜索或模型知识填充空白。说："该检索从[工具]返回[N]条结果。关于[议题]的覆盖似乎不足。选项：(1)扩大检索查询，(2)尝试其他检索工具，(3)网络搜索——结果将标注为`[网络搜索——请核实]`并应在采信前按一手来源核查，或(4)保留`[需补引用]`标记并在此停止。您选择哪一个？"由律师决定是否接受较低可信度的来源。
+
+**来源标注。** 将初稿中的每条引用标出其来源：`[北大法宝]`、`[裁判文书网]`；`[网络搜索——请核实]`；`[模型知识——核实]`；`[用户提供]`。标注为`[核实]`的引用比工具检索的引用具有更高的风险。
+
+### 第5步：输出
+
+**提交文书前（这是产生法律后果的行为——本技能是起草，但把关在提交环节运行）：** 读取 `CLAUDE.md` 中的 `## 使用人身份`。如果角色是非律师：
+
+> 提交诉讼文书具有法律后果——形成卷宗记录，就所主张的论点和事实约束当事人。您是否已与律师审查过？如果已审查，继续。如果未审查，以下是给律师的简要说明：
 >
-> [Generate a 1-page summary: the section drafted, the theory tie-in, authorities relied on, open `[VERIFY]` / `[UNCERTAIN]` / `[CITE NEEDED]` markers unresolved, what could go wrong (factual misstatement, unsupported citation, argument outside the theory), what to ask the attorney before filing.]
->
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> [生成1页摘要：已起草的章节、案件策略关联、法律依据、未解决的标记、可能出错之处、提交前应询问律师的问题。]
 
-Do not treat the draft as filing-ready without an explicit yes. Drafting itself does not require the gate — filing does.
+不得在未获得明确同意的情况下将初稿当作可提交状态。起草本身不需要把关——提交才需要。
 
-The section, in house style, with markers inline.
+输出：按律所风格的章节初稿，带有内嵌标记。
 
-Preface (not in the brief — a note to the reviewing attorney):
+前言（不在文书正文中——给审查律师的说明）：
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-## Drafting Notes — [Section] — [date]
+## 起草说明 —— [文书类型/章节] —— [日期]
 
-**Theory tie-in:** [How this section supports the case theory]
-**Authorities relied on:** [list — all need Shepardizing]
-**Record cites to verify:** [N] flagged inline
-**Open questions for the partner:** [anything the draft assumes that should be confirmed]
-**Length:** [words/pages vs. house norm]
+**案件策略关联：** [本章节如何支撑案件策略]
+**所依据的法律根据：** [清单——全部需要核实]
+**待核实的案卷引用：** [N]条内嵌标注
+**给主办律师的待决问题：** [初稿假设但需确认的事项]
+**篇幅：** [字数 vs. 规范]
 
 ---
 
-**Cite check before filing.** Citations in this draft were generated by an AI model and have not been verified against a primary source. Run every case, statute, and regulation through Westlaw, CourtListener, or your firm's research platform for accuracy, good-law status, and subsequent history. Fabricated or misquoted citations in filed briefs have resulted in Rule 11 sanctions.
+**提交前引用核查。** 本初稿中的引用由AI模型生成，未经一手来源核实。通过北大法宝、裁判文书网或律所检索平台逐条核查法条、案例的准确性、现行有效性。提交文书中出现错误引用可能导致法院训诫。
 
-**Draft only — not a filing.** Filing this section initiates (or participates in) a proceeding and carries Rule 11 / Rule 3.3 exposure. A licensed attorney reviews, edits, and takes professional responsibility before it goes on the docket. Do not file unreviewed.
+**仅为初稿——非正式提交。** 执业律师审查、修改并承担专业责任后方可纳入卷宗。不得提交未经审查的文本。
 ```
 
-## Statement of facts specifics
+## 起诉状专项
 
-The statement of facts is advocacy through selection and sequence, not argument.
+```
+民事起诉状
 
-- Chronological unless there's a reason not to be
-- **Every fact in the statement of facts must cite to the record — a page and line reference, a docket entry, an exhibit.** "Or conceded" is not a substitute for a record cite. If the fact is established by a concession or stipulation, cite the stipulation document or the hearing transcript where the concession was made.
-- Frame through selection: which facts lead, which get one line, which get omitted (if not necessary and not helpful)
-- No argument. "The contract unambiguously required X" is argument. "The contract stated 'X.'" is fact.
+原告：[姓名/名称]、[性别]、[出生日期]、[民族]、
+住所地：[地址]、联系电话：[电话]
+[法人：名称、统一社会信用代码、住所地、法定代表人]
+委托代理人：[姓名]、[律所名称]律师
 
-## Argument section specifics
+被告：[同上格式]
 
-- Lead with the rule, not the facts (usually — house style may differ)
-- One argument per section. If it's really two arguments, it's two sections.
-- Address the other side's best counterargument. Don't hide from it — a brief that ignores the obvious counter is a brief the judge doesn't trust.
-- Parentheticals earn their space. If a parenthetical doesn't add something the cite alone doesn't, cut it.
+诉讼请求：
+1. [具体请求]
+2. [诉讼费用由被告承担]
 
-## What this skill does not do
+事实与理由：
+[按时间顺序陈述事实，每段一个事实，附证据引用]
+[法律依据：引用具体法条论证诉讼请求的正当性]
 
-- Produce a final brief. It produces a draft. Every cite needs verification, every argument needs a partner's eyes.
-- Decide strategy. If there are two ways to argue the issue, flag both and let the partner choose.
-- File anything. Ever.
+此致
+[__人民法院]
+
+附：
+1. 证据清单及证据副本N份
+2. 起诉状副本N份
+
+具状人：（签名/盖章）
+委托代理人：（签名）
+年  月  日
+```
+
+## 答辩状专项
+
+```
+民事答辩状
+
+答辩人：[姓名/名称]、[住所地]、[联系电话]
+委托代理人：[姓名]、[律所名称]律师
+
+因原告[名称]诉答辩人[案由]一案（案号：（20__）__民初__号），现提出答辩如下：
+
+一、关于原告陈述的事实
+[逐项回应原告在起诉状中陈述的事实——承认哪些、否认哪些、哪些部分不完整]
+
+二、关于原告的诉讼请求
+[逐项回应原告诉讼请求——是否成立及理由]
+
+三、答辩人认为
+[答辩人版本的事实 + 法律依据]
+
+此致
+[__人民法院]
+
+附：证据清单及证据副本
+
+答辩人：（签名/盖章）
+委托代理人：（签名）
+年  月  日
+```
+
+## 代理词专项
+
+代理词是律师在庭审后（或当庭）向法庭提交的核心诉讼文书，是中国律师最重要的战场文书。
+
+**代理词标准结构：**
+
+```
+代理词
+
+[__人民法院]：
+
+    贵院受理的[原告名称]诉[被告名称][案由]纠纷一案（案号：（20__）__民初__号），
+本所接受[委托人（原告/被告）之名称]的委托，指派本律师担任其在本案中的委托代理人。
+本律师根据庭前证据交换和庭审情况，围绕贵院归纳的争议焦点，现发表代理意见如下：
+
+[如法院已归纳争议焦点，按争议焦点逐一论述]
+[如法院尚未归纳，自行归纳争议焦点并逐一论述]
+
+一、关于争议焦点一：[标题]
+
+[核心论点——一句话开头]
+
+    （一）[分论点一]
+    [事实陈述]。[参见证据X（案卷第__页）]
+    [法律论证]。[依据《__法》第__条]
+    [反驳对方观点]。[对方主张__，但__]
+
+    （二）[分论点二]
+    [同上结构]
+
+二、关于争议焦点二：[标题]
+[同上结构]
+
+[如有补充论点可增设]
+
+综上，本律师认为：[总结]. 请求贵院[裁判请求]。
+
+此致
+[__人民法院]
+
+委托代理人：[律师姓名] 律师
+[律所名称]
+年  月  日
+```
+
+**代理词撰写原则（法官导向）：**
+
+1. **开门见山** —— 每个争议焦点首句即为已方核心论点
+2. **事实先行，法律紧随** —— 先讲清楚事实（是什么），再引用法律（为什么）
+3. **证据引用精确** —— "证据3（合同第4.2条，案卷第28页）"而不是"相关证据"
+4. **法条引用具体** —— "《民法典》第577条"而不是"依据相关法律规定"
+5. **回应对方最有力的反驳** —— 不要回避。忽略对方核心论点的代理词，法官不会信任
+6. **简洁直接** —— 法官审阅代理词是寻找"双方主张是什么，为什么"。不相关的背景信息会分散注意力
+
+## 本技能不做什么
+
+- 不产出最终法律文书。只产出初稿。每条引用需核实，每个论点需律师审阅。
+- 不决定策略。如果有两种论证方式，标注两者，让律师选择。
+- 永不提交任何文件。

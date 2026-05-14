@@ -1,90 +1,101 @@
 ---
-name: comments
-description: Review open NPRM comment periods, log decisions, track deadlines. Use when an NPRM has a comment window open and you need to surface deadlines, decide whether to file, or record a filing / not-filing / waived decision (--decide CMT-ID).
-argument-hint: "[optional: --decide CMT-ID]"
+name: 征求意见
+description: 关注行政法规/部门规章/规范性文件征求意见稿 → 分析对企业影响 → 起草反馈意见 → 提交 → 跟踪最终版本。依据《行政法规制定程序条例》《规章制定程序条例》，公开征求意见期限一般不少于30日。当征求意见稿的征求意见窗口开放、需提示截止日期、决定是否提交反馈意见或记录决策时使用（--decide CMT-ID）。
+argument-hint: "[可选: --decide CMT-ID]"
 ---
 
-# /comments
+# 征求意见
 
-## Purpose
+## 中国法规征求意见制度背景
 
-NPRMs have deadlines. The decision to file a comment or not is an attorney
-call — but the deadline disappearing without a logged decision is the risk.
-This skill surfaces open comment periods and records decisions.
+依据《行政法规制定程序条例》和《规章制定程序条例》，行政法规和部门规章在审议通过前，应当向社会公开征求意见（一般不少于30日）。规范性文件虽无强制公开征求意见要求，但实践中行政机关常主动公开征求意见。
 
-## Load context
+流程：
+```
+起草部门形成征求意见稿 → 公布征求意见稿 + 说明 → 公开征求意见(>=30日)
+→ 汇总反馈意见 → 审议 → 公布 → 施行
+```
 
-`~/.claude/plugins/config/claude-for-legal/regulatory-legal/comment-tracker.yaml` → all tracked NPRMs and their status.
-`~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → default comment decision owner.
+本技能帮助企业在此窗口期内评估影响、决定是否提交反馈意见并追踪。
 
-## Default view — open comment periods
+---
+
+## 目的
+
+征求意见稿有截止日期。决定是否提交反馈意见是法务/合规部门的职责 — 但截止日期在没有记录决策的情况下消失才是风险。本技能展示开放的公开征求意见期并记录决策。
+
+## 加载上下文
+
+- `~/.claude/plugins/config/claude-for-legal/regulatory-legal/comment-tracker.yaml` → 所有跟踪的征求意见稿及其状态
+- `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → 默认征求意见决策负责人
+
+## 默认视图 — 公开征求意见期
 
 ```markdown
-## Comment Period Tracker — [date]
+## 征求意见期跟踪 — [日期]
 
-### ⏰ Deadline in <14 days
+### ⏰ 截止日期 <14天
 
-| ID | Regulation | Deadline | Days left | Decision | Owner |
-|---|---|---|---|---|---|
-| CMT-001 | [name] | [date] | [N] | Undecided | [owner] |
+| ID | 法规名称 | 征求意见机关 | 截止日期 | 剩余天数 | 决策 | 负责人 |
+|---|---|---|---|---|---|---|
+| CMT-001 | [名称（征求意见稿）] | [机关] | [日期] | [N] | 未决定 | [负责人] |
 
-### 🟡 Open (>14 days)
+### 🟡 开放中 (>14天)
 
-[same table]
+[同上表格]
 
-### Recently decided
+### 最近已决策
 
-| ID | Regulation | Decision | Rationale |
-|---|---|---|---|
-| CMT-002 | [name] | Not filing | [reason] |
-
----
-
-**Total open:** [N]  **Undecided with deadline <30 days:** [N]
+| ID | 法规名称 | 决策 | 理由 | 决策人/日期 |
+|---|---|---|---|---|
+| CMT-002 | [名称] | 不提交 | [与企业业务模式不相关] | [姓名]/[日期] |
 ```
 
-## Log a decision
+## 记录决策
 
 ```
-/regulatory-legal:comments --decide CMT-001
-Decision: [filing / not-filing / waived]
-Rationale: "[brief — e.g., 'Rule doesn't apply to our model' or 'Filing comment on Section 3']"
+/征求意见 --decide CMT-001
+决策：[提交反馈意见 / 不提交 / 通过行业协会提交 / 联合其他企业提交]
+理由："[简述]"
 ```
 
-Updates tracker. If decision is "filing": prompt for filing deadline reminder
-(comment deadline minus 5 business days for internal review).
+更新跟踪器。如决策为"提交反馈意见"：提示设置内部起草截止日期（公开征求意见截止日期前至少5个工作日用于内部审查和审批）。
 
-## Notifications
+## 反馈意见起草指引
 
-On first detection of an NPRM (populated by reg-feed-watcher): Slack DM to
-comment decision owner if Slack MCP is configured and `owner_slack` is set.
+中国法规征求意见反馈意见通常包含：
+1. **反馈单位信息** — 企业名称、统一社会信用代码、联系人、联系方式
+2. **总体意见** — 对法规整体的看法
+3. **逐条修改建议** — 条款号、现行表述、建议修改为、理由
+4. **其他建议** — 非具体条款层面的建议
 
-Reminder at 14 days before deadline if decision is still "undecided."
-Reminder at 3 days before deadline if still undecided — elevated urgency.
+可通过以下渠道提交：
+- 机关官网在线提交
+- 电子邮件（征求意见通知中指定）
+- 信函邮寄
+- 行业协会汇总提交
 
-## Consequential-action gate (submit a regulatory comment / respond to a regulator)
+## 通知
 
-**Before logging a decision as "filing" — and always before producing a comment letter or regulator-response draft for submission:** Read `## Who's using this` in ~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md. If the Role is **Non-lawyer**:
+- 首次检测到征求意见稿时：如企业通讯工具已配置，通知征求意见决策负责人
+- 截止日期前14天：如决策仍为"未决定"，发送提醒
+- 截止日期前3天：提高紧迫程度
 
-> Submitting a comment or response to a regulator has legal consequences. It's a public statement of the company's position, it's on the record in the rulemaking or enforcement matter, and positions taken here bind the company and can be used against it in subsequent proceedings. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> - The rulemaking or inquiry (regulator, docket, deadline)
-> - What the proposed comment/response says and on what sections
-> - Open questions and what's unresolved
-> - What could go wrong (adverse admissions, inconsistent prior positions, coordination-of-comment concerns with trade associations)
-> - What to ask the attorney (should we file at all; should we file jointly through a trade group; are there positions we should not take)
->
-> If you need to find a lawyer: your professional regulator's referral service is the fastest starting point (state bar in the US; SRA/Bar Standards Board in England & Wales; Law Society in Scotland/NI/Ireland/Canada/Australia; or your jurisdiction's equivalent).
+## 法律后果关卡
 
-Do not log a "filing" decision or produce a submission-ready draft past this gate without an explicit yes. Tracking views, deadline reminders, and "not-filing / waived" decisions do not require the gate.
+**在将决策记录为"提交反馈意见"之前，或产出反馈意见书草案之前：** 读取 CLAUDE.md 中的 `## 谁在使用`。如角色为**非法务人员**：
 
----
+> 向监管机构提交反馈意见具有法律后果。这是企业立场的公开声明，记录在法规制定档案中。此处所采取的立场约束企业，并可在此后的合规检查或程序中被引用。你是否已与法务/合规部门审查过？
 
-## What this skill does not do
+在未获得明确确认前，不记录"提交"决策，不产出可提交的草案。
 
-- Draft the comment letter. That is a separate attorney task.
-- Make the filing decision. It tracks the decision; the attorney makes it.
-- Monitor post-comment activity. Once a decision is filed, this tracker's job
-  is done — follow the rulemaking through `/regulatory-legal:reg-feed-watcher`.
+## 与其他技能的交互
 
-> The `comment-decision` `gap_type` semantics, the per-send Slack confirmation rule, and the comment-tracker.yaml schema live in the **gap-surfacer** reference skill — load it before doing substantive work.
+- **上游输入：** 来自 `监管动态源监控器`（自动检测和记录征求意见稿）
+- **关联技能：** `政策差异对比` 可对征求意见稿做预判分析；如需提交反馈意见，起草完成后可路由至内部审查流程
+
+## 本技能不做的事
+
+- 起草反馈意见书正文。反馈意见的逐条分析由法务/合规部门完成。
+- 做出提交决策。跟踪决策；法务/合规部门做出决策。
+- 追踪反馈意见提交后法规制定进程。内容通过 `监管动态源监控器` 跟踪。

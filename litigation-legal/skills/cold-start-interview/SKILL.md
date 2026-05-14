@@ -1,514 +1,330 @@
 ---
-name: cold-start-interview
-description: House cold-start for the litigation plugin — branches by role (in-house, firm associate, solo) and side (plaintiff, defense, both), captures risk calibration, landscape, and house style, and writes the practice profile CLAUDE.md. Use on a fresh install, when the user wants to set up or redo the practice profile, or to re-check available integrations.
+name: 冷启动面谈
+description: 中国民事诉讼插件的冷启动——按角色（企业法务、律所律师、独立执业）和立场（原告、被告、两者兼有）分支，记录风险校准、场景和律所风格，写入执业画像 CLAUDE.md。适用场景：新安装、用户想设置或重做执业画像，或重新检查可用集成。
 argument-hint: "[--redo | --check-integrations]"
 ---
 
-# /cold-start-interview
+# /冷启动面谈
 
-1. Check `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If already populated and no `--redo`, ask before overwriting.
-2. Follow the workflow and reference below.
-3. Run Part 0 (role, side, integration check). The interview branches by role and side.
-   - **Role** routes the practice profile structure: **in-house** (portfolio of matters, outside counsel oversight, reserve methodology, board/audit reporting), **firm associate** (case work — matter context, case theory and pivot fact, seed brief in house style, eDiscovery/priv-log setup), or **solo** (caseload + contingency or retainer economics + client expectations + SOL tracking, then the case-theory and brief-style sections).
-   - **Side** routes calibration vocabulary: **plaintiff** (asserting, case value, contingency, SOL cliff), **defense** (responding, exposure, reserves where applicable, insurance tender), or **both/varies** (captures a default and lets per-matter skills re-ask).
+1. 检查 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`。如已填充且无 `--redo`，覆盖前先确认。
+2. 遵循以下工作流程和参考。
+3. 运行第0部分（角色、立场、集成检查）。面谈按角色和立场分支。
+   - **角色** 路由执业画像结构：**企业法务**（案件组合、外聘律师监管、预计负债方法、董事会/审计委员会报告），**律所律师**（案件工作——案件背景、案件理论和争议焦点、律所风格范例文书、电子举证/保密审查清单设置），或**独立执业**（案件量+风险代理或固定收费经济+客户预期+诉讼时效追踪，然后是案件理论和文书风格章节）。
+   - **立场** 路由校准词汇：**原告**（起诉状、主张请求、案件价值、诉讼时效悬崖），**被告**（应诉、答辩状、敞口、预计负债、保险通知），或**两者兼有/因案而异**（记录默认值，让各案件技能重新询问）。
+4. 浏览空白处。如果用户没有明确的风险框架或报告阈值，标注并提出现在理顺或留 `[待补]` 以后填写。
+5. 写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`。标注日期。
+6. 定稿前与用户确认："这是我记录的内容——有什么不对吗？"
 
-   After Part 0, walk the sections that match the selected role. Do not run the in-house path for solo users — reserves, ASC 450, and board-memo framing are not the right frame for a solo practice. Offer defaults; capture freeform overrides. Ask for seed documents at each section (non-pushy; note that sharing sharpens every downstream skill).
-4. Surface gaps. If the user doesn't have an articulated risk framework or reporting threshold, note it and offer to think through it now or leave `[PLACEHOLDER]` to fill later.
-5. Migration: if a populated CLAUDE.md (no `[PLACEHOLDER]` markers) exists at `~/.claude/plugins/cache/claude-for-legal/litigation-legal/*/CLAUDE.md` but not at the config path, copy it to the config path and show the user what was migrated.
-6. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. Date the footer.
-7. Confirm with the user before finalizing: "Here's what I captured — anything wrong?"
+## 标志
 
-## Flags
-
-- `--redo` — re-run the full interview and overwrite `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
-- `--check-integrations` — re-scan available MCP connectors and refresh the `## Available integrations` table in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` without re-running the full interview. Use after setting up a new connector (DMS, document storage, Gmail, scheduled-tasks, CLM).
-
-When probing: only report ✓ if an MCP tool call actually succeeded. Configured-but-untested connectors should be marked ⚪ with a one-line how-to for confirming. Never report ✓ based on `.mcp.json` declarations alone — that misleads users into thinking something is wired up when it isn't.
+- `--redo` —— 重新运行完整面谈，覆盖 CLAUDE.md。
+- `--check-integrations` —— 重新扫描可用MCP连接器并刷新 `## 可用集成` 表。
 
 ---
 
-# Cold-Start Interview: Litigation
+# 冷启动面谈：中国民事诉讼
 
-## Purpose
+## 目的
 
-Every matter intake, every chronology build, every brief draft, every status rollup reads from this file. If the frame isn't captured, the plugin makes weaker triage calls and the user has to think from scratch each time. This interview fills the frame once so everything downstream gets sharper.
+每次案件立案、每次案件简报、每次法律文书初稿、每次状态汇总都读取此文件。如果框架未记录，插件会做出较弱的分诊判断，用户每次都要从头思考。本次面谈一次性填写框架，使后续一切更精准。
 
-The plugin serves three distinct litigation roles — in-house counsel managing a portfolio of matters, firm associates doing the underlying brief / deposition / discovery work, and solo practitioners running a caseload directly. The vocabulary is different for each, and the interview branches to match. Solo practitioners do not get the in-house path compressed — they get a dedicated solo path (caseload, contingency or retainer economics, client expectations) plus the brief / case-theory sections that apply to anyone who drafts.
+插件服务于三种不同的中国民事诉讼角色——管理案件组合的企业法务、负责具体文书/举证/出庭工作的律所律师，以及直接管理案件量的独立执业律师。词汇各有不同，面谈依此分支。
 
-The interview also asks which side the user mostly represents — plaintiff (asserting claims), defense (responding to claims), both, or varies by matter. Risk calibration, demand-letter posture, discovery stance, and chronology framing all differ by side, and the practice profile carries the default so downstream skills don't have to ask every time.
+中国民事诉讼程序：立案（法院审查受理）→ 举证（法院指定期限）→ 庭前会议（证据交换+争议焦点整理）→ 开庭（法庭调查+法庭辩论）→ 调解/判决 → 上诉（二审）→ 再审。无陪审团制度、无庭外取证（deposition）、无证据开示动议（discovery motions）、无美国联邦证据规则（FRE）。法官主导庭审全过程。
 
-**Tone:** socratic, not checklist. If the user doesn't have a written framework, this is often the thing that forces articulation. Lean into that. Don't rush past gaps — name them, offer to think through, allow "leave for later."
+面谈还询问用户主要代理哪方——原告（主张诉请）、被告（应诉）、两者兼有或因案而异。风险校准、律师函姿态、举证姿态均因立场而异，执业画像携带默认值，使下游技能无需每次询问。
 
-## Cold-start check
+**语气：** 苏格拉底式对话，非勾选清单。如果用户没有书面框架，这往往是迫使表达的时刻。不要匆匆掠过空白——标注出来，提出理顺，允许"以后再补"。
 
-Read `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
-- **Does not exist** → start the interview.
-- **Contains `<!-- SETUP PAUSED AT: -->`** → greet the user and offer to resume from that section.
-- **Contains `[PLACEHOLDER]` markers but no pause comment** → the template was never completed; offer to start fresh or resume from wherever the placeholders begin.
-- **Populated (no placeholders, no pause comment)** → already configured; skip unless `--redo`.
+## 冷启动检查
 
-The template structure lives at `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md` — use it as the section scaffold. Write the completed practice profile to the config path, creating parent directories as needed. If a CLAUDE.md exists at the old cache path `~/.claude/plugins/cache/claude-for-legal/litigation-legal/*/CLAUDE.md` but not here, copy it forward.
+读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`：
+- **不存在** → 开始面谈。
+- **含 `<!-- 设置暂停于： -->`** → 问候用户并提议从该章节恢复。
+- **含 `[待补]` 标记但无暂停注释** → 模板未完成；提议重新开始或从有占位符的地方恢复。
+- **已填充（无占位符、无暂停注释）** → 已配置；跳过除非 `--redo`。
 
-## Check for the shared company profile
+## 检查共享公司画像
 
-Look for `~/.claude/plugins/config/claude-for-legal/company-profile.md`.
+查找 `~/.claude/plugins/config/claude-for-legal/company-profile.md`。
 
-- **If it exists:** Read it. Show a one-line confirmation: "You're [name], [practice setting], at [company], [industry], operating in [jurisdictions]. Right? (Or say 'update' to change the shared profile.)" If confirmed, skip the company questions — go straight to the plugin-specific ones.
-- **If it doesn't exist:** You'll be the first plugin this user set up. After the orientation and fork, ask the company questions and write them to the shared profile (per the template at `references/company-profile-template.md` in the plugin root), then continue with the plugin-specific questions. Tell the user: "I've saved your company profile — the other legal plugins will read it and skip these questions."
+- **如存在：** 读取。显示一行确认。如确认，跳过公司问题——直接进入插件专属问题。
+- **如不存在：** 你将是该用户设置的第一个插件。在引导和分流后，询问公司问题并写入共享画像，然后继续插件专属问题。告诉用户："我已保存您的公司画像——其他法律插件将读取并跳过这些问题。"
 
-The company questions that belong in the shared profile (and should NOT be re-asked if it exists): practice setting, company name, industry, what-you-sell, size, jurisdictions, regulators, risk appetite, escalation names. The plugin-specific questions (playbook positions, review framework, house style, supervision model, etc.) stay per-plugin.
+## 面谈开始前
 
-## Install scope check
+以分流前言开篇。保持3-4短行。先问快速/完整。
 
-Before the orientation, if you notice the working directory is inside a project (not the user's home directory), flag it. Say once:
-
-> **Heads up — it looks like this plugin may be project-scoped, which means I can only read files in [current directory]. If you'll want me to read documents from elsewhere (Downloads, Documents, Dropbox), install user-scoped instead — see QUICKSTART.md. You can continue with project scope, but you'll need to move files into this folder.**
-
-Ask the user to confirm before proceeding: continue with project scope, or pause to reinstall user-scoped. If the working directory *is* the user's home directory, skip this check silently.
-
-## Before the interview starts
-
-Open with the fork-first preamble. Keep it to 3-4 short lines. Ask quick-or-full before anything else.
-
-> **`litigation-legal` is for people who work litigation — managing a portfolio of matters in-house, drafting briefs and doing discovery at a firm, or both as a solo practitioner.** Not your area? `/legal-builder-hub:related-skills-surfacer`.
+> **`litigation-legal` 服务于从事中国民事诉讼工作的人——企业法务管理案件组合、律所起草起诉状/答辩状/代理词并出庭、或两者兼顾的独立执业律师。** 非您领域？`/legal-builder-hub:related-skills-surfacer`。
 >
-> **2 minutes** gets you your role (in-house / firm-associate / solo), practice setting, side default (plaintiff / defense), and active matter count, plus working defaults for risk calibration, house brief style, and privilege conventions. **15 minutes** adds your real severity × likelihood bands, settlement-authority ladder (in-house) or fee economics (solo), outside-counsel roster, house brief style from a seed brief, privilege-log format, demand-letter templates, and landscape notes.
+> **2分钟** 完成您的角色（企业法务/律所律师/独立执业）、执业场景、默认立场（原告/被告）和活跃案件数，外加风险校准、律所文书风格和保密惯例的工作默认值。**15分钟** 增加真实的严重性 x 可能性区间、调解/和解权限阶梯（企业法务）或收费经济（独立执业）、外聘律师名册、从范例文书中提取的律所风格、保密审查清单格式、律师函模板和场景说明。
 >
-> Quick or full? (Upgrade any time with `/cold-start-interview --full`.)
+> 快速还是完整？
 
-**Quick start path:** ask only Part 0 (role, practice setting, integrations) and the path branch. Write the config with `[DEFAULT]` markers on everything else. Close with: "Done. You can start using the commands now. I've used sensible defaults for risk calibration, house style, and case-theory scaffolding. When a skill's output feels off, that's usually a default you should tune — it'll tell you which. Run `/litigation-legal:cold-start-interview --full` anytime to do the whole interview, or `/litigation-legal:cold-start-interview --redo <section>` to re-do one part."
+**快速启动路径：** 仅询问第0部分和路径分支。在其余内容上写 `[默认]` 标记。结束时说："完成。您现在可以使用命令。我使用了风险校准、律所风格和案件理论框架的合理默认值。当技能输出感觉不对时，通常是应调整的默认值——输出会告诉您哪一个。随时运行完整面谈。"
 
-**Full setup path:** the existing interview flow below. After the user picks, give the fuller orientation described next, then proceed to Part 0.
+**完整设置路径：** 下文现有面谈流程。
 
-## After the user picks quick or full
+## 用户选择快速或完整后
 
-Give the fuller orientation. One paragraph, in your own voice:
+给出更完整的引导。一段话，用你自己的声音。然后是新画像说明。
 
-> "This plugin maintains: your practice profile (risk calibration, privilege conventions, house style), a matter ledger (`_log.yaml`), per-matter files (chronology, hold notices, histories, priv logs), and a work-product archive. It supports litigation work whether you're in-house managing a portfolio, a firm associate drafting briefs and depo outlines, or a solo practitioner doing both. It learns which role you're in, your risk calibration or case theory, your dispute landscape or production setup, your house conventions, and writes them into a plain-text file the plugin reads from every time. Everything you answer can be changed later."
+## 面谈节奏
 
-Then the fresh-profile note:
+- **假定答案存在某处。** 当问题要求的信息可能在别处已记录——公司简介、手册、升级矩阵、风格指南、管辖法院列表、案件组合——在让用户凭记忆输入前，先提示提供链接或粘贴。"粘贴链接或文件，或给我简要版"是任何超过一句话内容的默认请求。
+- **每轮提问不超过2-3个可回答提示**，含子项计数。一个含5个子项的问题是5个问题。
+- **对需要打字回答的问题，提出问题后等待。** 说："这个问题需要打字回答——我等您。"
+- **对有文件上传需求的问题：** "粘贴内容、分享文件路径，或者说'跳过'。如跳过，我会在您的执业画像中标出空白，以便后续填写。"然后实际等待。
+- **写入执业画像前：** 审查每个已记录答案。列出任何被跳过、以占位符回答或产生矛盾的问题。说："在我写入您的执业画像前，以下内容仍然开放：[列表]。想现在填写，还是留为占位符？"然后等待。
+- **永不得**写入有静默空白的执业画像。每个 `[待补]` 应是用户主动选择跳过，而非被滚动错过的问题。
+- **暂停和恢复。** 事先告诉用户："如需停止，说'暂停'，我会保存进度。再次运行 `/litigation-legal:冷启动面谈` 将继续。"
 
-> "Setup builds a fresh professional profile from your answers. It does not read your personal Claude history, other conversations, or your home-directory CLAUDE.md. If I notice relevant information in our conversation context — e.g., you mentioned your company or matter earlier — I'll ask before using it. Nothing personal gets folded into your practice configuration unless you type it or approve it."
+## 第0部分：使用人身份+角色路由
 
-Then: "Ready? A few quick questions first."
+### 使用人身份？
 
-**Why this matters** (offer if the user pushes back on the time cost). Every matter intake, every portfolio status, every brief draft reads from the configuration this interview writes. A generic configuration gives generic output — a default risk matrix, a default citation style, a generic priv-log format. Telling the plugin the actual severity bands, the actual settlement authority ladder, the actual brief structure is what makes the difference between "a litigation AI tool" and "a tool that triages and drafts the way you do." Especially load-bearing: the pivot fact (if firm-side) and the seed documents.
-
-Draw the practice profile only from the user's typed answers and documents they upload during the interview. Do not read `~/CLAUDE.md` or pull practice facts from ambient context. If something relevant is already visible in this conversation, ask before using it.
-
-## Interview pacing
-
-- **Assume the answer exists somewhere.** When a question asks for information that's probably written down somewhere — company description, playbook, escalation matrix, style guide, handbook, jurisdiction list, matter portfolio — prompt for a link or a paste before asking the user to type it from memory. "Paste a link or a doc, or give me the short version" is the default ask for anything that's more than a sentence. An interviewer who makes people re-type what they've already written has failed the first job of an interviewer.
-
-**Pause for real answers.** Some questions have quick tap-through answers. Others need the user to type something, describe something, or upload an exemplar (board memo, hold template, demand letter, risk memo, case theory memo, seed brief). When a question needs more than a quick tap:
-
-- **Batch size — count subparts.** "Never ask more than 2-3 questions in one turn" means 2-3 *answerable prompts*, counting subparts. One question with 5 subparts is 5 questions. The test: can the user answer without scrolling? If the questions don't fit on one screen, it's too many. Prefer structured tap-through questions where possible — they don't require scrolling or typing.
-- **Ask the question and wait.** Say explicitly: "This one needs a typed answer — I'll wait." Do not move to the next question until the user responds. This matters most for the theory section (firm-associate path) — do not paraphrase a half-answer and push on.
-- **For seed-document uploads:** "Paste the contents, share a file path, or say 'skip for now.' If you skip, I'll flag the gap in your practice profile so you can fill it later." Then actually wait.
-- **Before writing the practice profile:** review every captured answer. List any questions that were skipped, answered with placeholders, or produced a contradiction. Say: "Before I write your practice profile, here's what's still open: [list]. Want to fill any of these now, or leave them as placeholders?" Then wait.
-- **Never** write a practice profile with silent gaps. Every `[PLACEHOLDER]` should be a deliberate choice the user made to skip, not a question that scrolled past. The `LIMITED DATA` footer is for seed-document thinness only — not for questions the interview never actually asked.
-- **Pause and resume.** Tell the user up front: "If you need to stop, say 'pause' (or 'stop', or 'let me come back to this') and I'll save your progress. Run `/litigation-legal:cold-start-interview` again later and I'll pick up where you left off." When the user pauses, write a partial configuration with a `<!-- SETUP PAUSED AT: [section name] — run /litigation-legal:cold-start-interview to resume -->` comment at the top and `[PENDING]` markers (distinct from `[PLACEHOLDER]`) on unanswered fields. When setup re-runs and finds a paused config, greet: "Welcome back. You paused at [section]. Your earlier answers are saved. Pick up where we left off, or start over?" Do not re-ask questions already answered.
-
-**Verify user-stated legal facts as they come up in setup.** When the user answers an interview question with a specific rule citation, statute number, case name, deadline, threshold, jurisdiction, or registration number — and it's something you can sanity-check — do the check before writing it into the configuration. If what they said conflicts with your understanding or with something they've pasted, surface it: "You said the threshold is X; my understanding is Y — can you confirm which goes in the profile? `[premise flagged — verify]`" A wrong fact written into CLAUDE.md propagates into every future output; catching it here is one of the highest-leverage moments in the product.
-
-## Part 0: Who's using this + role routing
-
-### Who's using this?
-
-> Who'll be using this plugin day to day? (This feeds the work-product header on every matter briefing, chronology, priv log, and demand draft — lawyer outputs get the privilege header, non-lawyer outputs get the "research notes, review with counsel" header.)
+> 谁将日常使用本插件？（这为每次案件简报、办案日志、举证清单和律师函草稿提供工作成果抬头——律师产出使用保密抬头，非律师产出使用"研究笔记，请与律师审查"抬头。）
 >
-> 1. **Lawyer or legal professional** — attorney, paralegal, legal ops working under attorney oversight.
-> 2. **Non-lawyer with attorney access** — founder, business lead, contracts manager, HR, procurement; you have an in-house or outside attorney you can consult.
-> 3. **Non-lawyer without regular attorney access** — you're handling this yourself.
+> 1. **律师或法律专业人士** —— 执业律师、律师助理、在律师监督下工作的法务运营。
+> 2. **有律师可咨询的非律师** —— 创始人、业务主管、合同经理、HR、采购；您有内部或外部律师可咨询。
+> 3. **无常规律师可咨询的非律师** —— 您自己处理。
 
-If the answer is 2 or 3, say this once (don't repeat it on every output):
+如答案为2或3，说一次（不在每次输出中重复）：
 
-> You can use every feature here — research, review, drafting, tracking. Two things change in how I work:
+> 您可以使用这里的每项功能。两个事项会改变我的工作方式：
 >
-> 1. **I'll frame outputs as research for attorney review, not as verdicts.** Instead of "GREEN — sign it," you'll get "here's what I found and here are the questions to ask before you sign." That's more useful than a green light you can't be sure of.
-> 2. **I'll pause before steps that have legal consequences** — sending a demand, responding to a subpoena, issuing or releasing a legal hold, filing a brief, submitting a privilege log, designating documents in discovery, closing a matter, accepting a settlement. I'll ask whether you've reviewed with an attorney, and I'll put together a short brief so the conversation with them is fast.
+> 1. **我会将输出框架为供律师审查的研究，而非定论。** 您得到的是"我发现的内容和签署前应问的问题"，而非"绿色——签吧"。
+> 2. **我会在具有法律后果的步骤前暂停** —— 发送律师函、签署起诉状/答辩状、接受调解/和解、提交证据清单、上诉、申请执行、结案。我会问您是否已与律师审查过，并汇总一份简要说明以便与律师的对话高效。
+
+如答案为3，补充：
+
+> 如需在贵司法管辖区寻找执业律师：中华全国律师协会或地方律师协会是最快的起点。
+
+### 角色（分支问题——尽早询问）
+
+> **您如何从事中国民事诉讼工作？**
 >
-> This isn't a disclaimer. It's the plugin knowing the difference between what it's good at — research, organization, structure — and licensed legal judgment about your specific situation, which a tool can't give you. A few hours of a lawyer's time at the right moment is usually cheaper than the mistake.
-
-If the answer is 3, add:
-
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent). Many offer free or low-cost initial consultations.
-
-### Role (the branching question — ask early)
-
-> **How do you work litigation?** (This determines which pillars of the interview run — in-house gets reserves and board memos, firm-associate gets case theory and seed briefs, solo gets caseload economics plus the firm-associate brief work. It also sets defaults for /matter-intake, /portfolio-status, /oc-status, and every other skill's vocabulary.)
+> **(a) 企业法务管理案件组合** —— 案件、外聘律师、截止日期、律师函、证据保全、财产保全。您同时拥有许多案件，多数由外聘律所承办。关注预计负债、董事会报告。
 >
-> **(a) In-house managing a portfolio** — matters, outside counsel, deadlines, demands, holds. You own many matters at once, most of which are run by outside firms. Status rollups and board memos are part of your job.
+> **(b) 在律所起草法律文书、做举证、出庭代理** —— 您是负责实际产出工作成果的律师或律师助理。一或少数几个案件，从立案到上诉全程深入处理。起草起诉状/答辩状/代理词/上诉状。
 >
-> **(b) At a firm doing brief drafting, discovery, deposition prep, document review** — you're the associate or paralegal responsible for actually producing the work product. One or a few matters, deep on each.
+> **(c) 独立执业/小型律所运营案件量** —— 您立案、分诊、提供咨询并代理出庭。没有上级合伙人；没有企业法务的预计负债/董事会备忘录层。经济是风险代理或固定收费。
+
+记录答案为 `## 角色` 下（`企业法务 | 律所律师 | 独立执业 | 其他`）。
+
+### 您主要代理哪方？
+
+> **您主要代理哪方？**
 >
-> **(c) Solo / small firm running a caseload** — you intake, triage, advise, and draft. No partner above you; no in-house reserve / board-memo layer. Economics are contingency or retainer, not billable hours to a large client.
+> **(a) 原告/申请人** —— 您为个人或企业提起诉请。律师函是您起草并发送的主张。证据收集是进攻性的。诉讼时效是您需要应对的悬崖（3年，最长20年）。
 >
-> **(d) Something else** — describe in a sentence.
-
-Record the answer in the practice profile's `## Role` section at the top (`in-house | firm-associate | solo | other`). Downstream skills read this to pick defaults (e.g., chronology mode, which commands are primary, which vocabulary to use).
-
-**Branching rules for the rest of this interview:**
-
-- `in-house` → run the **In-house path** (Pillars 1–3 below). Skip the firm-associate and solo sections.
-- `firm-associate` → run the **Firm-associate path** (Parts A–D below). Skip the in-house portfolio / OC / board-memo questions and the solo caseload / economics questions.
-- `solo` → run the dedicated **Solo path** (Sections S1–S3 below) — caseload, client expectations, contingency or retainer economics, office management — **then** run the Firm-associate path (Parts A–D) because solo practitioners still write briefs and work cases. Do NOT run the In-house path — reserves, ASC 450, board memos, and settlement-authority ladders up to a GC are not the right frame for a solo practice.
-- `other` → ask for a one-sentence description, then pick the closest branch.
-
-### Which side do you mostly represent?
-
-Ask this right after the role question. It's load-bearing for risk-calibration framing, demand-letter posture, discovery stance, and the way chronologies are built.
-
-> **Which side do you mostly represent?** (This feeds /demand-draft, /demand-received, /subpoena-triage, /chronology, and /claim-chart — plaintiff framing treats demand letters as assertions and discovery as offensive, defense framing treats them as received and responsive.)
+> **(b) 被告/被申请人** —— 您为个人或企业抗辩。律师函是收到后分诊的。答辩期仅15天。敞口被评估、预计（企业法务）和通知保险（如适用）。
 >
-> **(a) Plaintiff / claimant** — you bring claims for individuals or businesses. Demand letters are assertions you draft and send. Discovery is offensive. Statute of limitations is a cliff you work against. Economics are often contingency.
+> **(c) 两者兼有** —— 您的执业定期包含两者。询问默认值（原告或被告）。
 >
-> **(b) Defense / respondent** — you defend businesses or individuals against claims. Demand letters are received and triaged. Discovery is defensive. Exposure is assessed, reserved (in-house), tendered to insurance (where applicable).
+> **(d) 因案而异** —— 无强默认；每个案件都会被询问。
+
+记录在 `## 立场` 下。
+
+### 执业场景
+
+> 哪项最能描述您的执业场景？
 >
-> **(c) Both** — your practice regularly includes both. Ask for a default (plaintiff or defense); individual skills will ask per-matter when it matters.
->
-> **(d) Varies by matter** — no strong default; every matter gets asked.
+> 1. **独立执业律师** 2. **小型律所（2-10人）** 3. **中型律所** 4. **大型律所** 5. **企业法务** 6. **政府/事业单位** 7. **法律援助** 8. **其他**
 
-Record under `## Side` in the practice profile (`plaintiff | defense | both [default plaintiff/defense] | varies`). Branching rules for calibration that follows:
+### 主要执业区域
 
-- **Plaintiff:** risk calibration is about case value, contingency economics, client expectations, statute of limitations exposure. Demand letters are the assertion. Discovery is offensive. Settlement-authority conversations are with the client, not a GC/board. (For firm-associate plaintiff-side: partner review replaces GC escalation.)
-- **Defense:** risk calibration is about exposure, reserves (in-house only), settlement authority, insurance coverage. Demand letters are received and triaged. Discovery is defensive — responding, asserting privilege, narrowing.
-- **Both / varies:** the interview captures the default and the skills (`demand-draft`, `subpoena-triage`, `matter-intake`, `chronology`, `claim-chart`) ask per-matter when the side changes the output.
+> 您主要在哪些省份/城市的法院出庭？（中国民事诉讼地域管辖规则——一般由被告住所地或合同履行地法院管辖，但约定管辖、专属管辖可能变更。）
 
-### Practice setting
+### 连接了什么？
 
-> Which best describes where you're practicing?
->
-> 1. **Solo practitioner**
-> 2. **Small firm (2–10)**
-> 3. **Midsize firm**
-> 4. **Large firm / Am Law**
-> 5. **In-house** (company legal department)
-> 6. **Government**
-> 7. **Legal aid**
-> 8. **Clinic**
-> 9. **Other**
+> 本插件可配合：文件存储（本地云盘）、邮件、日程任务。让我检查您配置了哪些连接器。此外，您是否有以下中国法律数据工具的访问权限：裁判文书网、北大法宝、威科先行、律商联讯、无讼、OpenLaw？
 
-This refines escalation / supervision language in the practice profile:
+**检查实际连接而非仅配置状态。** 对每个连接器：
 
-- **Solo / small without hierarchy (1, 2):** Reframe authority-ladder questions as "when do you call in outside counsel or a colleague for a second opinion." Escalation maps to *consult* not *route for approval*.
-- **Midsize / large firm / in-house / government (3, 4, 5, 6):** Ask the full escalation chain, authority ladder, and internal-contacts table.
-- **Legal aid / clinic (7, 8):** Route toward the supervision model — supervising attorney of record, sign-off chain, review-queue mechanics.
-- **Other (9):** Ask for a one-sentence description, then pick the closest branch.
+- 如可测试连接，仅在实际成功响应时报告 ✓。
+- 如无法测试，报告 "已配置但未验证——打开您的MCP设置确认"。
+- 永不得仅基于配置报告 ✓。
 
-**Practices that don't fit the boxes.** If the user's practice doesn't match the options above (international arbitration, public international law, amicus-only, academic consulting, pro bono panel, tribal court, military justice, maritime, or anything else the standard categories assume away), offer: "It sounds like your practice doesn't fit my usual categories. Tell me about it in your own words — what you do, who for, what jurisdictions and forums, what the work looks like — and I'll build your profile from that instead of forcing you into boxes that don't fit. I'll skip or adapt the questions that don't apply." Then build the profile from the free-form description, flagging which template fields were filled, adapted, or left empty because they don't apply. A profile built from a forced fit is worse than a sparse profile built from what's actually true.
-
-### What's connected?
-
-> This plugin can work with: DMS (iManage), document storage (Google Drive, SharePoint, Box), Gmail, scheduled-tasks, CLM (Ironclad), eDiscovery (Everlaw, Relativity, DISCO, Aurora), legal research (CourtListener, Descrybe, Trellis), outside-counsel recommendations (TopCounsel). Let me check which connectors you have configured — features that need them will work, and features that don't will fall back gracefully instead of failing silently.
-
-**Check what's actually connected, not what's configured.** A connector listed in `.mcp.json` is *available*. A connector that's actually responding is *connected*. These are different, and confusing them destroys trust. For each connector this plugin uses:
-
-- If you can test the connection (call a simple MCP tool like a list or search), report ✓ only on a successful response.
-- If you can't test (no way to probe from here), report ⚪ "configured but not verified — open your MCP settings to confirm" with a one-line how-to.
-- Never report ✓ based on configuration alone.
-
-For connectors that show as not connected, tell the user how to connect. Example phrasing: "Box isn't connected. In Claude Cowork: Settings → Connectors → Add → Box → sign in. In Claude Code: add the Box MCP to your config or via `/mcp`. This plugin works without it — you'll paste documents instead of pulling them — but connecting it makes document pulls automatic."
-
-Then report findings in this form:
-
-> - ✓ [Integration] — connected (tested)
-> - ⚪ [Integration] — configured but not verified. Open your MCP settings to confirm.
-> - ✗ [Integration] — not found. [Feature] will fall back to [manual alternative]. [How to connect.]
-
-You don't need all of these. Core features work with file access alone.
-
-Write a `## Role`, `## Who's using this`, and `## Available integrations` section into the plugin config immediately after the opening. Add `## Outputs` with the work-product header rule per the CLAUDE.md template.
+立即写入 `## 角色`、`## 使用人身份` 和 `## 可用集成` 章节。
 
 ---
 
-## In-house path (role == `in-house`)
+## 企业法务路径（role == `企业法务`）
 
-*Skip this whole section if the user's role is `firm-associate` or `solo`.*
+*如用户角色为 `律所律师` 或 `独立执业`，跳过整个章节。*
 
-> I want to capture the frame you triage matters against — your risk calibration, the dispute landscape, and how you write. Once, so every matter intake reads from it. I'll offer defaults where there are reasonable ones. You can accept, edit, or leave blank to come back to.
->
-> I'll also ask for seed documents along the way — prior board memos, reserve memos, litigation hold templates, exemplar demand letters, a sample risk memo. Ten to twenty total across the interview is the target. Anything below ten and I'll flag the practice profile as LIMITED DATA in the footer — skills will still run, but their outputs will be thinner because they're matching on weaker patterns. Templates-first: if you upload an exemplar, I'll read it and only ask about gaps rather than walking the full structure from scratch.
+### 支柱1——风险校准
 
-### Pillar 0 — Company profile
+**风险偏好（2分钟）** —— 一句话，贵司如何看待诉讼？倾向于快速和解还是坚持诉讼到底？
 
-Team-level context. If another `-legal` plugin already has a `## Company profile` block populated, copy it here rather than re-enter.
+**严重性 x 可能性（3-5分钟）** —— 提供默认3x3。严重性区间（金额和非金额触发条件——如吊销执照、禁止市场准入等）。可能性区间。
 
-- Org / legal entity
-- Industry
-- Public / private / subsidiary
-- Regulated status
-- Core jurisdictions (operational + frequent-fora)
-- Headcount + legal team size
-- Key internal contacts (GC, CFO, HR lead, Comms, CISO, Board lit/audit chair) — names + when to loop in
-- This counsel's name and reporting line
+**重要性阈值（2-3分钟）** —— 预计负债触发（"很可能"且金额可合理估计时计提预计负债）、披露触发、董事会/审计委员会、仅法总级别。
 
-### Pillar 1 — Risk calibration
+**调解/和解权限（1-2分钟）** —— 金额阶梯（什么金额需要什么级别审批），特殊例外。
 
-> Before the structured questions: do you have an existing risk-calibration memo, a reserve-policy document, or an outside-counsel billing-guidelines doc I can read? Paste the contents, share file paths, or say 'no' and I'll walk the pillar question by question. If you share one, I'll extract the severity bands, materiality thresholds, and authority ladder and only ask about gaps.
+**平实升级（1分钟）。** 直接询问：
 
-If not:
+> 当案件需要超出您权限的事项时——超出区间的和解方案、您无法单独回应的律师函、需要法总的证据保全决定——向谁汇报？给我名字、角色或"我自己决定"。
 
-**Risk appetite (2 min)** — in a sentence, how does this company approach litigation? (This feeds /matter-briefing and /portfolio-status — sets how conservative or aggressive every matter briefing is when calling a matter's risk tier.)
+**保险画像（1-2分钟）** —— 有效保单（诉讼保险、董监高责任险等）、承保人、限额、免赔额、通知协议。
 
-**Severity × likelihood (3–5 min)** — offer the default 3×3. Severity bands (dollar and non-dollar triggers). Likelihood bands. If unarticulated: "Fair. A lot of counsel don't. Want to sketch now, or leave the default?"
+### 支柱2——场景
 
-**Materiality thresholds (2–3 min)** — reserve trigger, disclosure trigger, board/audit committee, GC-only escalation. *Seed doc opportunity:* reserve memo template or disclosure checklist.
+- 业务背景（30秒）——一段话说明公司做什么以及最常见的被诉/起诉场景。
+- 争议模式（2-3分钟）——案件类型、频率、态势。常见案由：合同纠纷/劳动纠纷/知识产权/侵权/公司纠纷？
+- 常见对手（1-2分钟）——经常在对面看到的重复参与者（竞争对手、前员工、供应商、客户）。
+- 外聘律师阵容（2-3分钟）——律所、主办合伙人、案件类型、费率姿态、聘用函状态。
+- 常见受案法院（30秒）——经常出庭的法院。
+- 文件存储（2-3分钟）——案件文件存放位置、默认文件夹模式、如何与外聘律师共享。
+- 利益冲突审查（1-2分钟）——法务部如何检查外聘律所是否存在利益冲突。
 
-**Settlement authority (1–2 min)** — dollar ladder, special carve-outs (structural relief requires board regardless of dollar).
+### 支柱3——律所风格
 
-**Plain-English escalation (1 min).** Ask directly:
-
-> When a matter needs something above your authority — a settlement offer above your band, a demand you can't answer alone, a hold decision that needs the GC — who does that go to? Give me a name, a role, or "I decide myself."
-
-(Solo practitioners: "I decide myself" is the right answer; the question still matters for the record. If you loop in outside counsel for second opinions, name the firm.)
-
-**Insurance profile (1–2 min)** — lines in force (D&O, EPL, Cyber, GL/E&O), carriers, limits, retentions, tendering protocol.
-
-**Offer:** "If you didn't upload a risk-calibration memo, want me to write your risk calibration and authority ladder up as a standalone memo you can share and maintain?"
-
-### Pillar 2 — Landscape
-
-*Company profile lives in Pillar 0. Landscape is litigation-specific.*
-
-- Business context (30 sec) — one-paragraph on what we do and why we get sued.
-- Dispute patterns (2–3 min) — matter types, frequency, posture.
-- Frequent adversaries (1–2 min).
-- Outside counsel bench (2–3 min) — firms, lead partners, matter type, rate posture, engagement letter status. *Seed doc:* outside counsel guidelines. (This feeds /oc-status — the skill later drafts weekly status requests to these firms.)
-- Frequent fora (30 sec).
-- Document storage (2–3 min) — where matter docs live (filesystem, Drive, SharePoint, Box, Gmail, CLM, DMS, eDiscovery), default matter folder pattern, how docs get shared with OC.
-- Conflicts clearance (1–2 min) — how this shop runs conflicts; who does it; hard block on intake or parallel.
-
-### Pillar 3 — House style
-
-> Before the structured questions: do you have a house-style guide, a template board memo, a hold-notice template, or exemplar demand letters I can read? Paste the contents, share file paths, or say 'no' and I'll walk the questions.
-
-If not:
-
-- Board / audit committee memo (2 min) — format, tone, cadence. *Seed doc:* recent board memo (redacted fine).
-- Reserve memo — format and approver. *Seed doc:* sample reserve memo.
-- Outside counsel directives — email format, cadence, budget posture.
-- Privilege conventions — marking; default subjective-call posture (mark and flag); review mechanic (inline / queue / both). (This feeds /privilege-log-review — the skill applies your marking rules and review mechanic on every priv-log pass.)
-- Legal hold — template, issuance protocol, refresh cadence. *Seed doc:* hold template. (This feeds /legal-hold — the skill issues, refreshes, and releases holds using your house template.)
-- Escalation — channel norms, subject-line convention.
-- Demand-letter practice — *not asked here.* Demand posture (tone, time limits, marking, signer) is set per matter, not per practice. `/litigation-legal:demand-intake` and `/litigation-legal:demand-draft` will ask when they need it — those calls depend on the relationship, the amount, and whether litigation is likely, and a practice-level default tends to mis-calibrate the specific letter. What the setup interview *does* want here: insurance-tender timing (who you notify and when, before sending) and materiality threshold for matter creation (below $X, record only; above, create a matter). Those are practice-level.
-
-**Offer:** "If you didn't upload a house-style guide or templates, want me to write your house-style rules up as a standalone style memo?"
+- 董事会/审计委员会备忘录（2分钟）——格式、语气、频率。
+- 预计负债备忘录——格式和审批人。
+- 外聘律师指令——邮件格式、频率、预算姿态。
+- 保密惯例——标注；默认主观判断姿态（标注并标识）。
+- 证据保全/财产保全——模板、发出协议、刷新频率。
+- 升级——渠道规范、邮件主题惯例。
+- 律师函惯例——*此处不询问。* 律师函姿态（语气、时限、标注、签署人）按案件设定，非按执业设定。
 
 ---
 
-## Solo path (role == `solo`)
+## 独立执业路径（role == `独立执业`）
 
-*Skip this whole section if the user's role is `in-house` or `firm-associate`. Solo users run this path **and** the Firm-associate path that follows.*
+*如用户角色为 `企业法务` 或 `律所律师`，跳过整个章节。独立执业用户运行本路径**和**后续律所律师路径。*
 
-> Solo practice is its own frame — caseload, client expectations, retainer or contingency economics, office management. The in-house world (ASC 450 reserves, board memos, outside-counsel oversight, settlement-authority ladders up to a GC) doesn't apply here, and I'm not going to pretend it does. The firm-world reserves questions don't apply either. What I need from you is the shape of your actual caseload and how you run your practice.
->
-> A few seed documents help — a prior demand letter, a retainer agreement, a client-update email you'd be willing to share as an exemplar. Anything we can learn from saves a round trip later.
+### S1节——执业形态和案件量
 
-### Section S1 — Practice shape and caseload
+- **案件量大小** —— 当前大约多少活跃案件？多少算太多？
+- **案件结构** —— 大致的原告vs被告比例、执业领域（合同/劳动/知识产权/婚姻家庭/刑事等）。
+- **管辖法院** —— 主要执业省份和法院层级（基层/中级/高级）。
+- **典型案件期限** —— 一审普通程序6个月审限；简易程序3个月。您案件中实际从立案到判决的典型时间？
+- **容量标识** —— 是否会停止接案？如何判断超容？
 
-- **Caseload size** — roughly how many active matters do you carry at once? What's too many?
-- **Matter mix** — rough percentages: plaintiff vs defense, practice areas (e.g., PI, family, employment, small business disputes, landlord/tenant). No need to be precise; a sentence is enough.
-- **Jurisdictions** — the state(s) and courts you primarily practice in. Include federal if relevant.
-- **Typical case duration** — weeks, months, years? Useful for downstream skills to scale effort and deadline horizons.
-- **Capacity flags** — is there a point where you stop accepting cases? How do you know you're over capacity?
+### S2节——客户预期和经济
 
-### Section S2 — Client expectations and economics
+**收费结构（主要驱动因素）。**
 
-*This replaces what the in-house path calls "risk calibration / reserve methodology / settlement authority ladder." Solos don't run reserves and don't escalate to a GC; the same decisions show up as client-facing economics.*
+中国律师收费方式：
+- **固定收费**：哪些案件类型，费用区间。
+- **小时计费**：小时费率，标准预付，律所账户机制。
+- **风险代理**：注意——《律师服务收费管理办法》第11条禁止部分案件类型（婚姻继承/社会保险/赡养费等）采用风险代理；第12条禁止刑事诉讼、行政诉讼、国家赔偿案件采用风险代理。民事案件风险代理最高收费比例限制。标准百分比？诉前vs诉后？
+- **混合**：基础费+风险代理。描述混合情况。
 
-**Fee structure (the main driver).** Pick the one that fits most of your work:
+**客户预期。**
 
-- **Contingency** (default assumption for plaintiff-side PI, employment, consumer): what's your standard percentage? Pre-suit vs post-suit? What's the cost advance posture — client, firm, hybrid? At what exposure do you stop taking a case on contingency?
-- **Hourly / retainer**: hourly rate, standard retainer, trust-account mechanics.
-- **Flat fee**: which matter types, and the fee range.
-- **Mixed**: describe the mix.
+- 多久更新一次客户案件状态？
+- 以什么形式更新？
+- 对与客户的和解讨论默认姿态？
 
-**Client expectations (2 min).** Ask directly:
+**敞口/案件价值判断（原告方）。** 快速判断案件是否值得接的心理框架是什么？（胜诉可能性、诉讼成本、执行可能性）
 
-- How often do you update clients on their matters (weekly, monthly, event-based)?
-- What form do updates take — phone call, email, letter, client portal?
-- What's your default posture on settlement conversations with the client (aggressive push to settle, let the client drive, case-dependent)?
+**何时寻求帮助。** 独立执业没有上级，但多数人有人可咨询——共同代理、导师、地方律协委员会。向谁寻求第二意见？
 
-**Exposure / case-value read (plaintiff-side).** What's your quick mental framework for deciding a case is worth taking? Examples: "liability clear, damages > $50K, statute has a year or more, client credible" — no judgment on the specifics; just capture yours.
+### S3节——办公室管理和场景
 
-**Exposure read (defense-side solo — less common but possible).** What's your mental model of acceptable exposure vs reportable to client? Solo defense is usually for individuals or small businesses without an insurance layer — capture how you actually think about it.
+- **诉讼时效追踪** —— 如何追踪各案件的诉讼时效截止日？（3年诉讼时效——必须主动追踪）
+- **案件管理软件** —— 用什么工具？（律所ERP/钉钉/企微/飞书/专用软件？）
+- **文件存储** —— 文件实际放在哪里？
+- **常见受案法院** —— 实际出庭的法院。
+- **常见对立方/律师** —— 经常在对面看到的重复参与者。
+- **共同代理/转介绍律师阵容** —— 为超出舒适区的案件与谁合作？
+- **利益冲突审查** —— 如何在独立执业中运转利益冲突？（小所尤其重要——可能不小心代理双方熟人）
 
-**When you call for help.** Solos don't have a GC or a partner above them, but most have someone — co-counsel, a mentor, a local listserv, a bar committee. Who do you call for a second opinion, and on what kinds of matters?
+### 独立执业律所风格
 
-> Give me a name, a role, or "nobody — I decide on my own."
+- **客户更新** —— 格式、语气、频率。
+- **委托代理合同模板** —— 是否已有固定模板？
+- **授权委托书模板** —— 一般代理还是特别授权？
+- **保密惯例** —— 标注；审查机制。
+- **证据保全** —— 即便对独立执业，预期诉讼时的保全很重要。
+- **律师函惯例** —— *此处不询问。*
 
-**Client updates in writing (1 min).** *Seed doc opportunity:* a recent client update email or letter (redacted). This is the solo equivalent of an in-house board memo — it's how you communicate status to your stakeholder. If the user shares one, read it and extract the structure and tone for the house-style section.
-
-### Section S3 — Office management and landscape
-
-*Skip any question where the answer is obvious from earlier context.*
-
-- **Statute of limitations tracking** — how do you track SOL cutoffs across the caseload? (Calendar, case-management software, a paper docket, memory — whatever's real.) This is the solo equivalent of the in-house "materiality / reserve trigger" because missing a SOL is the failure mode that ends a solo career.
-- **Case management software** — Clio, MyCase, PracticePanther, Smokeball, Rocket Matter, paper files, spreadsheets, other.
-- **Document storage** — Google Drive, Dropbox, OneDrive, local filesystem, the case-management tool's storage. Where do matter documents actually live?
-- **Frequent fora** — courts you actually appear in.
-- **Frequent adverse parties / counsel** — repeat players you regularly see on the other side.
-- **Bench of co-counsel / referral attorneys** — who do you associate in for cases outside your comfort zone? Who refers out to you?
-- **Conflicts clearance** — how do you run conflicts? A solo's version is usually informal (memory + a client list check), which is fine — capture what it is.
-
-### Solo house style
-
-Skip the board-memo / reserve-memo / outside-counsel-directive questions entirely. Solo house style is:
-
-- **Client update** — format, tone, cadence. *Seed doc:* a recent update letter or email.
-- **Retainer / engagement agreement** — template. *Seed doc:* the exemplar (redacted fine).
-- **Privilege conventions** — marking; review mechanic.
-- **Legal hold** — even for a solo, preservation matters when litigation is anticipated. Template, if any. *Seed doc:* hold notice if issued.
-- **Demand-letter practice** — *not asked here.* Demand posture (tone, time limits, marking, signer) is set per matter, not per practice — the solo equivalent of "who signs" answers itself (you), and tone/marking/timing depend on the specific dispute. `/litigation-legal:demand-intake` will ask when it drafts.
-
-**Offer:** "If you didn't upload a client-update exemplar or retainer, want me to write your house-style rules up as a standalone memo you can reuse?"
-
-After Section S3, continue to the **Firm-associate path** below. Solo practitioners write briefs, build chronologies, and prep depositions like firm associates do — the case-theory and seed-brief work applies.
+S3节后，继续至下方**律所律师路径**。
 
 ---
 
-## Firm-associate path (role == `firm-associate` or `solo`)
+## 律所律师路径（role == `律所律师` 或 `独立执业`）
 
-> Before I touch a document, I need the theory. What's our story? What's theirs? What does the case turn on? Then I need to see how your firm writes — a brief you're proud of — so my drafts don't look like they came from somewhere else.
+### A部分：案件（2分钟）
 
-### Part A: The matter (2 min)
+- 案件名称、委托人、案号、受理法院
+- 己方立场（原告/被告/上诉人/被上诉人）
+- 合伙人和主办律师（独立执业/无层级的小律所跳过）
+- 阶段（立案、举证、庭前会议、等待开庭、等待判决、上诉、执行）
+- 即将到来的关键日期（举证期限截止日、开庭日、宣判日、上诉期截止日）
 
-- Matter name, client, case number, court
-- Our side (plaintiff / defendant)
-- Partner and senior associate (skip if solo / small without hierarchy)
-- Stage (pleadings, discovery, summary judgment, trial prep)
-- Key dates coming up
+### B部分：案件理论——此为一切（3-4分钟）
 
-### Part B: The theory — this is everything (3–4 min)
+> 告诉我己方案件理论。不是起诉状——是故事。如果用两句话告诉法官为何己方应赢，那是什么？
 
-> Tell me our theory of the case. Not the complaint — the story. If you had to tell a jury why we win in two sentences, what are they?
+- 己方理论（一段）——中国法官主导模式中，案件理论是引导法官心证的核心
+- 对方理论（一段）——预判对方可能的论点
+- **争议焦点** —— 案件决定性的关键事实和法律争议
+- 对己方有利的关键事实
+- 对己方不利的关键事实（令人担忧的事实）
+- 最重要的法律争议——哪条法条或司法解释的解释和适用是决定性因素？
 
-- Our theory in a paragraph
-- Their theory in a paragraph (know the other side)
-- **The pivot fact** — the fact the case turns on
-- Key facts for us
-- Key facts against us (the ones you're worried about)
-- The legal issue that matters most
+### C部分：种子文件（3-4分钟）
 
-### Part C: Seed documents (3–4 min)
-
-> Two things:
+> 两件事：
 >
-> 1. **The case theory memo**, if one exists. If the theory lives in someone's head and not on paper, that's fine — we just captured it above.
->
-> 2. **A prior brief in house style.** Not from this case — any case. The best one you've got. I'll learn your citation style, structure, tone, how you organize arguments. (This feeds /brief-section-drafter — every future brief section gets drafted in your extracted citation format, heading structure, and tone, not a generic template.)
+> 1. **案件理论备忘录**，如有。
+> 2. **一份律所风格的既往法律文书。** 不限本案——任何案件。最好的那份。我将学习您的文书结构、论证风格、引用格式、法条援引方式。
 
-**From the brief:** citation format (Bluebook, ALWD, local rules), section structure, heading conventions, tone (aggressive / measured), length norms.
+中国法律文书类型：起诉状、答辩状、代理词、上诉状、再审申请书、管辖权异议申请书、财产保全申请书、证据保全申请书——不同文书有不同的格式和语气。
 
-### Part D: Document review setup (1–2 min)
+### D部分：举证准备设置（1-2分钟）
 
-> Before the questions: do you have a privilege-log format, a chronology format, or a review-protocol doc I can read? Paste the contents, share file paths, or say 'no' and I'll ask one at a time.
-
-If not:
-- eDiscovery platform (Everlaw, Relativity, DISCO, Aurora)
-- Review protocol — coding categories, who makes priv calls
-- Privilege log format
-- Key custodians and date range
-
-**Offer:** "If you didn't upload a priv-log or chronology format, want me to write your review protocol and priv-log format up as a standalone reference you can share with a review team?"
+- 证据整理方式（按时间线/按争议焦点/按证据类型）
+- 证据目录格式（编号+证据名称+证明目的+页码）
+- 证人安排（是否申请证人出庭？证人名单格式？）
+- 关键证据类型（书证/物证/电子证据/证人证言/鉴定意见/勘验笔录）
 
 ---
 
-## Before writing — re-read
+## 写入前——重读
 
-Before committing the plugin config, re-read every captured answer in order. This catches three categories of mistake:
+在提交插件配置前，按顺序重读每个已记录答案。这捕捉三类错误：
 
-1. **Contradictions between answers** — e.g., user said "fight everything" in risk appetite and "settle quickly" in demand-letter default. Surface both, ask which governs.
-2. **Drifted specifics** — names, dates, thresholds that changed between sections. Confirm the final value.
-3. **Skipped gaps worth naming** — sections left blank that the user might want to complete now rather than via `--redo`.
+1. 答案之间的矛盾
+2. 漂移的具体细节——在各节之间变化的名字、日期、阈值。
+3. 值得标注的被跳过的空白
 
-Also: if the role is `firm-associate`, double-check that the pivot fact and the seed brief were captured. These are load-bearing. If either is missing, name it explicitly before writing.
+## 写入执业画像
 
-## Writing the practice profile
+将完成的执业画像写入插件配置。按角色分节把关：
 
-Write the completed practice profile to the plugin config, using the template at `${CLAUDE_PLUGIN_ROOT}/CLAUDE.md` as the section scaffold. Fill every section captured; leave `[PLACEHOLDER]` for sections the user skipped. Date the footer.
+- `企业法务` → 完整企业法务结构。
+- `律所律师` → 律所结构（案件理论、争议焦点、合伙人审查、范例文书）。省略预计负债/董事会备忘录部分。
+- `独立执业` → 独立执业结构（案件量、收费结构、客户预期、诉讼时效追踪）**加**律所律师部分。完全省略企业法务部分。
 
-**Section gating by role:**
+**有限数据标记：** 如面谈中分享的种子文件少于10份，在顶部加 `> 有限数据` 注释。
 
-- `in-house` → full in-house structure (Company profile, Risk calibration with ASC 450 / reserve / board-memo rows, Outside counsel bench, Board/audit committee memo). Omit or mark N/A for solo-only sections (fee structure, retainer, contingency).
-- `firm-associate` → firm-world structure (case theory, pivot fact, partner review, seed brief). Omit reserve / board-memo / ASC 450 sections; omit solo fee / retainer sections.
-- `solo` → solo structure (caseload, fee structure, client expectations, SOL tracking, retainer or contingency, office management) **plus** the firm-associate sections (case theory, seed brief). Omit in-house reserve / ASC 450 / board-memo / settlement-authority-ladder-to-GC sections entirely — they are not the right frame for a solo practice and including them as placeholders adds noise rather than structure.
+## 写完后
 
-Where a template section carries in-house-only vocabulary ("ASC 450 reserves", "board / audit committee memo"), either omit the section for non-in-house roles or translate the vocabulary into the equivalent solo or firm-associate concept. Solo equivalent of "board memo" is "client update letter." Solo equivalent of "reserve methodology" is "case-value read" (plaintiff) or "exposure read" (defense). Do not carry the accounting-standard language into a solo profile.
+**展示本插件的能力。** 关闭前，提供：
 
-**LIMITED DATA flag:** if fewer than 10 seed documents were shared across the interview, add a `> LIMITED DATA` note at the top (under the written-on date): "This practice profile was written from [N] seed documents and interview answers. Downstream skills will operate but outputs will be thinner until more exemplars are added. Re-run `/cold-start-interview --redo` after collecting more templates to sharpen calibration."
+> **想看看我能帮什么吗？**
 
-## Gap surfacing
+如是，展示量身定制的清单：
 
-After the interview, before writing, summarize and **wait for an answer**:
-
-> Here's what I captured. Gaps I noticed:
-> - [list any skipped sections, placeholders left blank, questions where the user said "come back later"]
+> **以下是我在中国民事诉讼执业中的优势：**
 >
-> Want to fill any of these now, or leave them as placeholders? You can also fill them later via `/litigation-legal:cold-start-interview --redo` or by editing the plugin config directly. This one is worth thinking about before I write: [name the most important gap and why].
+> - **新案件立案** —— 统一立案问题（含利益冲突检索提醒），写入案件档案和办案日志，追加到案件组合登记簿。试试：`/litigation-legal:案件立案`
+> - **分诊收到的律师函** —— 选项分析、诉讼时效审查、案件组合交叉检查、如升级则转立案。试试：`/litigation-legal:收到律师函`
+> - **起草律师函** —— 保密关、律所抬头+案号+委托声明格式、发送后核查清单、案件创建提议。试试：`/litigation-legal:起草律师函`
+> - **准备举证和庭前证据交换** —— 证据目录+证据材料+质证提纲，关联案件理论。试试：`/litigation-legal:举证准备`
+> - **发出或更新证据保全/财产保全通知** —— 起草保全申请书、更新日志、安排刷新。试试：`/litigation-legal:保全`
+> - **案件组合汇总** —— 风险分布、临近截止日期（举证期限/开庭日/上诉期）、跨活跃组合的陈旧案件。试试：`/litigation-legal:案件组合概况`
 
-Do not proceed to writing until the user answers.
+## 本技能不做什么
 
-## After writing
-
-**Show what this plugin can do.** Before closing, offer:
-
-> **Want to see what I can help with?**
-
-If yes, show this tailored list (not a generic template — these are the concrete things this plugin does best):
-
-> **Here's what I'm good at in litigation practice:**
->
-> - **Intake a new matter** — e.g., "Uniform intake questions, writes matter.md + history.md, appends to the portfolio log." Try: `/litigation-legal:matter-intake`
-> - **Triage an inbound demand** — e.g., "Options analysis, portfolio cross-check, handoff to matter intake if it graduates." Try: `/litigation-legal:demand-received`
-> - **Draft a demand letter** — e.g., "Privilege / FRE 408 gate, .docx output, post-send checklist, matter-creation offer." Try: `/litigation-legal:demand-draft`
-> - **Build a deposition outline** — e.g., "Docs + topics + impeachment + exhibits, tied to case theory." Try: `/litigation-legal:deposition-prep`
-> - **Issue or refresh a legal hold** — e.g., "Draft the hold memo, update the log, schedule a refresh." Try: `/litigation-legal:legal-hold`
-> - **Portfolio rollup** — e.g., "Risk distribution, upcoming deadlines, stale matters across the active portfolio." Try: `/litigation-legal:portfolio-status`
->
-> **My suggestion for your first one:** Run `/portfolio-status` — it shows you at a glance where the portfolio sits, and it's zero-input to try. Or tell me what's on your plate and I'll pick.
-
-This solves the cold-start problem (the supervisor doesn't know what to do first) and the value-prop problem (they don't know what the plugin can do) in one offer. Make the list specific. Skip this step if the supervisor already named a concrete first task during the interview.
-
-
-- If `in-house`: "The in-house practice profile is now written. Every matter intake will read from it. Want to run `/litigation-legal:matter-intake` on your most live matter to see it in action?"
-- If `firm-associate`: "Here's the theory as I captured it. Read the pivot fact — did I get it right? What's the next deadline? Let's start there."
-- If `solo`: "Your solo practice profile is written — caseload shape, fee economics, how you run the office — plus the case-theory and brief-style work for a live matter. Want to run `/litigation-legal:matter-intake` on your most live matter and see what the intake looks like with your configuration?"
-
-### Close with the "you can change anything later" note
-
-> "Your practice profile is at `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — a plain text file you can read and edit directly. Anything you answered can be changed:
->
-> - Edit the file directly for a quick change
-> - Run `/litigation-legal:cold-start-interview --redo` for a full re-interview
-> - Run `/litigation-legal:cold-start-interview --new-matter` to reuse the practice profile on a new matter (firm-associate / solo)
-> - Run `/litigation-legal:cold-start-interview --check-integrations` to re-check what's connected
->
-> The sections people adjust most: for in-house, the **severity × likelihood thresholds** and the **outside counsel bench**; for firm associate, the **case theory** (especially the pivot fact) and the **house brief style** extracted from the seed brief; for solo, the **fee structure** (contingency percentage or hourly rate) and the **side default** (plaintiff / defense) — a wrong default there skews every demand-letter and chronology output. When an output feels off, the fix is usually here."
-
-### Before your first matter
-
-**Connect a research tool.** Without one, I'll flag every citation as unverified — with one, I verify them against a current database. In Cowork: Settings → Connectors. In Claude Code: authorize when a skill prompts you.
-
-<!-- COLLATERAL LINKS: when onboarding collateral exists, add here:
-     "Want a walkthrough? [Watch the 3-minute intro](URL) or [read the getting-started guide](URL)." -->
-
-### Your practice profile learns
-
-After writing the practice profile, close with this note:
-
-> **Your practice profile learns.** It gets better as you use the plugins:
->
-> - When a skill's output feels off, that's usually a position to tune. The output will tell you which one.
-> - You can always say "update my playbook to prefer X" or "change my escalation threshold to Y" and the relevant skill will write the change.
-> - Run `/cold-start-interview --redo <section>` to re-interview one part, or edit the config file directly.
->
-> Ten minutes of setup gets you a working profile. A month of use gets you one that reads like you wrote it yourself.
-
-## What this skill does not do
-
-- Decide the framework for the user. Defaults are starting points; the user's judgment is the actual content.
-- Pretend gaps aren't there. Better to leave `[PLACEHOLDER]` honestly than to invent a threshold.
-- Fight the user. If they say "I don't have that yet," note it and move on.
-- Read personal `~/CLAUDE.md` or other ambient context without asking.
+- 不替用户决定框架。默认值是起点；用户的判断才是实际内容。
+- 不假装空白不存在。诚实地留 `[待补]` 比发明阈值更好。
+- 不与用户争论。如用户说"我还没有那个"，标注并继续。
+- 不读取个人 CLAUDE.md 或其他环境语境。
+- 不提供中国法律咨询。本技能收集执业层面配置信息；实体法律问题需由执业律师处理。

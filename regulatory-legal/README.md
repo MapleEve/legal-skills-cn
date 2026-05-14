@@ -1,75 +1,88 @@
-# Regulatory Counsel Plugin
+# 政府监管法务插件
 
-Watches regulatory feeds, diffs new regulations against your policy library, surfaces gaps. Learns your materiality threshold so it doesn't alert on every commissioner's speech. Wired for Thomson Reuters Regulatory Intelligence and CourtListener.
+监控监管动态来源，将新法规/规章/规范性文件与政策合规文件库进行差异比对，呈现合规差距。学习你的"重大性"门槛，不会对每位部委领导的每次讲话都发出提示。基于国务院政策文件库和中国政府网架构。
 
-**Every output is a draft for attorney review — cited, flagged, and gated — not a legal conclusion.** The plugin does the work: reads the documents, applies your playbook, finds the issues, drafts the memo. A lawyer reviews, verifies, and decides. Citations are tagged by source so you know which ones came from a research tool and which ones need checking. Privilege markers are applied conservatively so nothing waives by accident. Consequential actions — filing, sending, executing — are gated behind explicit confirmation.
+**每份输出均为供律师审查的草稿 —— 有引用标注、有标记项、有门槛控制 —— 并非法律结论。** 插件做的是工作：阅读文件、运用你的立场文档、发现问题、草拟备忘录。由律师审查、核实、决定。引用标注来源，让你知道哪些来自检索工具、哪些需要核查。保密标注保守应用，不会意外放弃。重大行动 —— 提交文件、发送函件、执行操作 —— 均需经明示确认才可执行。
 
-## Who this is for
+## 适用对象
 
-| Role | Primary workflows |
+| 角色 | 主要工作流 |
 |---|---|
-| **Compliance / regulatory counsel** | Watchlist maintenance, gap triage, policy update coordination |
-| **Privacy / product counsel** | Receives filtered alerts relevant to their area |
-| **GC** | Escalation recipient for material gaps with deadlines |
+| **合规/监管法务** | 监控清单维护、差距分流、政策更新协调 |
+| **隐私/产品法务** | 接收与其领域相关的筛选后提示 |
+| **法总** | 具有期限的重大差距的升级接收人 |
 
-## First run: cold-start
+## 首次运行：首次访谈
 
-Asks which regulators you watch, connects your policy document folder, learns what "material" means to you. Builds a watchlist and indexes your policy library.
+询问你关注的监管机构、连接政策文件文件夹、了解对你而言"重大"意味着什么。建立监控清单并索引政策文件库。
 
 ```
 /regulatory-legal:cold-start-interview
 ```
 
-## Skills
+## 技能
 
-| Skill | Does |
+| 技能 | 功能 |
 |---|---|
-| `/regulatory-legal:cold-start-interview` | Cold-start: watchlist + policy index + materiality threshold |
-| `/regulatory-legal:reg-feed-watcher` | Check feeds now, report what's new |
-| `/regulatory-legal:policy-diff [reg]` | Diff a specific reg change against policy library |
-| `/regulatory-legal:gaps` | Open gaps tracker — what's been flagged and not yet closed |
-| `/regulatory-legal:comments` | Review open NPRM comment periods, log decisions, track deadlines |
-| `/regulatory-legal:policy-redraft` | Proposed marked-up policy redraft that closes a gap — a first draft for internal review, not a direct edit to source documents |
-| `/regulatory-legal:matter-workspace` | Manage matter workspaces (multi-client private practice only) — new, list, switch, close, none |
-| **gap-surfacer** *(reference)* | Shared gap- and comment-tracker framework loaded by `/gaps` and `/comments` |
+| `/regulatory-legal:cold-start-interview` | 首次访谈：监控清单 + 政策文件索引 + 重大性门槛设置 |
+| `/regulatory-legal:reg-feed-watcher` | 立即检查监管动态，报告最新变化 |
+| `/regulatory-legal:policy-diff [监管变化]` | 将特定监管变化与政策文件库逐一对比 |
+| `/regulatory-legal:gaps` | 合规差距追踪 —— 已标注但尚未消除的项目 |
+| `/regulatory-legal:comments` | 审查公开征求意见中的法规/规章征求意见稿，记录决策，追踪意见提交期限 |
+| `/regulatory-legal:policy-redraft` | 消除某项合规差距的修改建议稿 —— 供内部审查的初稿，非对原始文档的直接编辑 |
+| `/regulatory-legal:matter-workspace` | 管理事项工作区（仅限多客户私人执业场景）—— 新建、列表、切换、关闭、取消 |
+| **gap-surfacer** *(参考)* | `/gaps` 和 `/comments` 加载的共享差距和意见追踪框架 |
 
-## Interactive skills vs. scheduled agents
+## 交互技能 vs 定时智能体
 
-The skills above run when you invoke them — for when you're working a matter. The agents below run on a schedule — for what moves while you're not looking:
+上述技能在你调用时运行 —— 用于处理某个事项。下列智能体按计划定时运行 —— 监控你不留意时的变化：
 
-| Agent | What it watches | Default cadence |
+| 智能体 | 监控内容 | 默认频率 |
 |---|---|---|
-| **reg-change-monitor** | Regulatory feeds — filters by the materiality threshold learned at cold-start and posts a digest that's signal, not noise | Weekly (daily if the regulatory environment is active) |
+| **reg-change-monitor** | 监管动态来源 —— 过滤首次访谈中学到的重大性门槛，输出非噪音的监管简报 | 每周（监管环境活跃时为每日） |
 
-## Connectors and citation verification
+## 检索渠道与引用核验
 
-**Connect a research tool first — the citation guardrails depend on it.** Without one, every cite is tagged `[verify]` and the reviewer note above each deliverable records that sources weren't verified. The plugin works either way; it just does more of the verification for you when a research tool is connected.
+**先连接检索工具 —— 引用护栏依赖于此。** 没有检索工具时，每条引用均标注 `[请核实]`。
 
-The legal research connectors in this plugin aren't just data sources — they're the difference between a verified citation and a citation you have to check. A citation retrieved through a connected research tool is tagged with its source and can be traced back. A citation from the model's knowledge or from web search is tagged `[verify]` or `[verify-pinpoint]` and should be checked against a primary source before anyone relies on it. The plugin tiers its citations so your verification time goes where it matters.
+建议连接的中国监管检索资源：
+- **国家法律法规数据库 (flk.npc.gov.cn)** —— 全国人大官方法律法规数据库
+- **国务院政策文件库 (www.gov.cn)** —— 国务院公报、行政法规、政策文件
+- **各部委官网** —— 市场监管总局、网信办、证监会、金融监管总局、药监局等
+- **中国政府网微信公众号** —— 政策发布通知
+- **中国裁判文书网** —— 行政执法诉讼案例
 
-## Integrations
+## 集成
 
-Ships with the general bucket of connectors in `.mcp.json`:
+本插件附带 `.mcp.json` 中的通用连接器配置：
 
-- **Slack** — search messages, read channels, find discussions
-- **Google Drive** — search, read, and fetch documents
+- **飞书/企业微信/钉钉** —— 消息搜索、频道读取、信息推送
+- **文档存储** —— 搜索、读取和获取文件
 
-Thomson Reuters Regulatory Intelligence connector can be added when partner URLs are available. Direct regulator RSS/email as fallback.
+直接监管来源（国务院政策文件库RSS、各部委官网）作为回退方案。
 
-## Prerequisites
+## 前置条件
 
-Owner notifications (gap assignments, due-date reminders, NPRM alerts) require a Slack MCP server in your environment. Without one, the gap tracker and comment tracker still work — notifications just won't post, and the skills will flag ungated items in the status report instead.
+责任人通知（差距分配、到期提醒、征求意见期提示）需要消息推送服务。没有时，差距追踪器和意见追踪器仍可运作 —— 只是通知不推送，技能将在状态报告中将未提醒事项另行标注。
 
-## How it learns
+## 插件如何持续学习
 
-Your practice profile at `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. The `reg-change-monitor` agent watches the regulatory feeds and flags changes against your policy library. You can re-run setup, edit the file directly, or tell a skill to record a new position.
+`~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` 中的执业画像并非一成不变 —— 随着你使用插件而不断完善。当技能输出使用了应调整的默认值时，技能会告知你。`reg-change-monitor` 智能体监控监管动态来源并对照政策文件库标注变化。你可以重新运行配置、直接编辑文件，或告知某技能记录新的立场。
 
-## Notes
+## 关键提示
 
-- Materiality filtering is the value. Everything is "technically a regulatory change" — the plugin learns what actually matters here.
-- Policy diff compares against indexed policies. If the policy library isn't connected, diffs run against what you paste.
-- This is the automated version of privacy-legal's `reg-gap-analysis`. Pair them: this one watches, that one deep-dives.
+- 重大性过滤是本插件的价值所在。一切在技术上都是"监管变化" —— 插件学的是什么在此处实际上算重大。
+- 政策差异对比是与已索引的政策文件进行的。若政策文件库未连接，则基于你粘贴的内容进行对比。
+- 这是 privacy-legal 中 `reg-gap-analysis` 的自动化版本。两者搭配：本插件负责监控，privacy-legal 负责深度分析。
 
-## Configuration
+## 中国监管动态获取来源
 
-Your configuration is stored at `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` and survives plugin updates — you only run setup once.
+- **国家法律法规数据库：** flk.npc.gov.cn —— 全国人大及其常委会制定法律的官方数据库
+- **国务院政策文件库：** www.gov.cn —— 国务院行政法规、规范性文件、部门规章
+- **中国政府网微信公众号：** 政策发布通知
+- **各部委官网：** 市场监管总局、网信办（cac.gov.cn）、证监会（csrc.gov.cn）、金融监管总局、药监局等
+- 本插件已系统性地将美国监管概念替换为中国监管体系：Federal Register → 中国政府网/各部委官网 | eCFR → 国家法律法规数据库 | SEC/FTC/ICO → 市场监管总局/网信办/证监会/金融监管总局/药监局 | NPRM → 行政法规/部门规章/规范性文件征求意见稿 | comment period → 公开征求意见期
+
+## 配置
+
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` 且不受插件更新影响 —— 配置只需运行一次。

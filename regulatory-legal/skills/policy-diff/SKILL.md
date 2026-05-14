@@ -1,205 +1,170 @@
 ---
-name: policy-diff
-description: Diff a specific regulatory change against the indexed policy library. Use when a reg has changed and you need to know which policies it touches and what the gap is, when the user says "diff this reg against our policies", "which policy does this affect", or "gap analysis", or when reg-feed-watcher hands off a material item.
-argument-hint: "[reg name, or paste reg text/summary]"
+name: 政策差异对比
+description: 将一项监管变化（新颁布法律/行政法规/部门规章/规范性文件）与企业现行内部政策/合规手册进行逐条比对，识别差距，形成差距清单和整改计划。当用户说"把这个新规和我们的政策对比"、"这项法规影响哪些政策"、"合规差距分析"时使用。
+argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 ---
 
-# /policy-diff
+# 政策差异对比
 
-1. Load `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → policy library index.
-2. Use the workflow below.
-3. Extract requirements from the reg. Match to indexed policies.
-4. Output: per-requirement gap analysis, which policy needs updating.
+## 中国监管背景
+
+本技能在中国法律层级体系下运行：
+
+```
+法律（全国人大及其常委会）→ 行政法规（国务院）→ 地方性法规 → 部门规章 → 规范性文件 → 司法解释
+```
+
+法规制定流程（《行政法规制定程序条例》《规章制定程序条例》）：
+立项 → 起草 → 公开征求意见（>=30日）→ 审议 → 公布 → 施行
+
+企业合规管理框架（国资委《中央企业合规管理办法》）：
+合规义务识别 → 合规风险评估 → 合规整改 → 合规报告 → 持续监控
+
+本技能处于"合规义务识别→合规风险评估"的衔接环节。
 
 ---
 
-## Matter context
+## 目的
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/regulatory-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/regulatory-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+新法规颁布。企业有现行内部政策和合规手册。本技能逐条比对"法规现在要求什么"与"企业政策说了什么"，找出合规差距。
 
----
+## 加载上下文
 
-## Purpose
+`~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → 政策库索引（政策、位置、负责人）。
 
-A reg changed. You have policies. This skill finds which policies the change touches and what the gap is between "what the reg now requires" and "what the policy says."
+## 工作流
 
-## Load context
+### 步骤1：确认法规状态
 
-`~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → policy library index (policies, locations, owners).
+对比前，确认该法规已生效且为现行有效版本：
 
-## Scope integrity
+1. 通过国务院政策文件库/国家法律法规数据库核实法规状态
+2. 确认未被修订、废止或暂停适用
+3. 记录核实结果
 
-If the user asks you to exclude a policy section, requirement, or category from the diff:
+如无法核实法规状态，在输出页眉之上发出：
 
-1. Do it — the user owns the scope.
-2. But flag it, loudly and permanently: "⚠️ SCOPE LIMITATION: Section [X] excluded at user request. This diff does not reflect the full policy. Gaps in the excluded area are NOT identified." Above the header, carried to every downstream artifact.
-3. Hand the flag to `gap-surfacer`: "This diff was scope-limited. Do not represent it as a complete compliance picture." Include the scope-limitation banner verbatim on any gap tracker entry derived from this diff.
-4. Note what the exclusion means: "Excluding vendor management means the diff will show 'no policy addresses vendor management' — which is worse than showing the gap."
+> `⚠️ 法规状态未核实 — 无法确认此法规为现行有效版本。在通过国家法律法规数据库或外部律师确认前，勿将以下任何合规日期视为具有约束力。`
 
-A compliance artifact built on an undisclosed scope exclusion looks like concealment in discovery. The flag is the difference between "we scoped the review" and "we hid the problem."
+### 步骤2：提取新要求
 
-## Workflow
+读取法规文本，列出每个独立的新增或变更要求：
 
-### Step 0: Verify rule status before you diff
-
-Before diffing a rule against policy, confirm the rule is actually in force. Red flags that the rule may not be in force:
-
-- The applicability/compliance date has passed by more than 30 days but you have no confirmation it wasn't delayed
-- The rule is more than 12 months old
-- The rule is a politically contentious final rule (major rulemakings are frequently challenged)
-
-When you see a red flag, check (via research MCP, web search if enabled, or the Federal Register docket) for: delays, stays, injunctions, rescission proposals, vacatur, or amendments. If you can check and the rule is confirmed in force, proceed. If you cannot verify (no tools connected), emit this banner ABOVE the header, before any content:
-
-> `⚠️ RULE STATUS UNVERIFIED — I could not confirm this rule is currently in force. Final rules are frequently stayed, enjoined, delayed, or rescinded after publication. Do not treat any compliance date below as binding until you confirm the rule's status at the Federal Register docket or with outside counsel.`
-
-Tag every due date in the output: `[due date per published rule — status unverified]`.
-
-Rule-status uncertainty travels downstream. When handing off a gap to `gap-surfacer`, mark the item `status_verified: false` so it never gets routed to an Overdue bucket on the strength of a published date alone.
-
-### Step 1: Extract the new requirements
-
-**No silent supplement.** If the regulatory change text is partial or ambiguous and the fuller rule isn't available from the indexed source, stop and ask. Do NOT fill the gap from web search or model knowledge without asking. Say: "I have [what you have]. To extract requirements accurately I'd need [what's missing]. Options: (1) paste the full text, (2) point me at the primary source, (3) search the web for the rule — results will be tagged `[web search — verify]` and should be checked against the issuing authority before relying, or (4) stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources; Claude does not decide for them.
-
-**Source attribution.** Tag every citation — the regulatory citation, any cross-references, any policy excerpts — with where it came from: `[<regulator or research tool>]` for items retrieved from a primary source, policy library, or MCP; `[web search — verify]` for items pulled from web search; `[model knowledge — verify]` for items recalled from the model's training data; `[user provided]` for items pasted in by the user. Items tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags in the output.
-
-Read the regulatory change. List each discrete new or changed requirement:
-
-| # | Requirement | Effective | Citation |
+| # | 要求 | 生效日期 | 引用（条/款/项） |
 |---|---|---|---|
-| 1 | [what it requires] | [date] | [section] |
+| 1 | [具体要求] | [日期] | [第X条第Y款] |
 
-Be specific. "Enhanced disclosure requirements" is not a requirement. "Must disclose X in Y format at Z point in the flow" is.
+要求必须具体。"加强数据安全保护"不是要求；"在处理个人信息前获得用户单独同意"才是。
 
-### Step 2: Map to policies
+### 步骤3：映射至现行政策
 
-For each requirement, which indexed policy is closest?
+对每个要求，匹配企业现行政策：
 
-- Direct hit: policy explicitly covers this topic
-- Indirect: policy covers a related topic, this is a new sub-issue
-- No match: no policy addresses this — gap is "policy doesn't exist"
+- **直接命中：** 政策明确涵盖此主题
+- **间接：** 政策涉及相关主题，此为新的子要求
+- **无匹配：** 没有政策涉及此要求 — 需起草新政策
 
-### Step 3: Diff
+### 步骤4：逐条差异对比
 
-For each direct or indirect hit, read the policy and compare:
+对每个直接或间接命中，读取政策并对比：
 
 ```markdown
-### Requirement [N]: [name]
+### 要求 [N]：[名称]
 
-**New rule requires:** [requirement]
+**新规要求：** [要求内容]
+**引用：** [第X条第Y款]
 
-**Our policy ([name], last updated [date]) says:**
-> "[relevant excerpt]"
+**现行政策（[政策名称]，最后修订 [日期]）规定：**
+> "[相关摘录]"
 
-**Gap:** [None — policy already covers this | Partial — policy addresses X but not Y | Full — policy contradicts or doesn't address]
+**合规差距：** [无 — 政策已涵盖 | 部分 — 覆盖X但未覆盖Y | 完全 — 政策与此要求矛盾或未涉及]
 
-**Change needed:** [specific — "add a paragraph on X" not "update the policy"]
+**所需变更：** [具体 — "在个人信息保护办法第3.2条中增加生物识别信息定义"]
 
-**Policy owner:** [from index]
+**政策负责人：** [来自索引]
 ```
 
-### Step 4: No-match gaps
-
-Requirements with no policy match get called out separately:
+### 步骤5：无匹配要求的处理
 
 ```markdown
-### New policy needed
+### 需制定新政策
 
-Requirement [N]: [requirement]
+要求 [N]：[要求内容]（引用：[第X条第Y款]）
 
-No existing policy covers this. Options:
-- Draft new policy (suggested owner: [whoever owns the closest topic])
-- Add to existing [related policy] as a new section
-- Determine this doesn't need a policy (one-off compliance, not ongoing)
+无现行政策涵盖此项。选项：
+- 起草新政策（建议负责人：[拥有最接近主题的人]）
+- 作为新章节纳入现有[相关政策]
+- 确认此项无需政策（一次性合规事项）
 ```
 
-## Branches by regulatory input type
+## 按监管输入类型的分支逻辑
 
-### Pre-rule branch (ANPR / RFI)
+### 征求意见稿分支
 
-If the regulatory input is an ANPR or RFI (no imposed requirements), do NOT run a full gap-closure diff. Instead, produce a **pre-positioning analysis**:
+如监管输入为征求意见稿（尚未正式颁布/生效），不运行完整的合规差距关闭对比。产出**预判分析**：
 
-- Name the policies that will likely need to change once a final rule issues (not today).
-- Flag whether any of the ANPR's issue areas intersect with the company's practice in a way that warrants a comment letter.
-- Note the comment deadline and the team's comment-decision owner from `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md`.
-- Do NOT produce per-requirement "no gap" rows for an ANPR — there are no requirements to diff against. Produce one paragraph naming the future exposure and the policies it would touch.
+- 指出若正式发布可能需要变更的政策（非今日）。
+- 标记征求意见稿议题是否涉及企业核心业务，值得提交反馈意见。
+- 注明征求意见截止日期及企业征求意见决策负责人。
+- 不产出逐条"无合规差距"行 — 无生效要求可供对比。
 
-### Negative-finding branch (final rule / NPRM diffed against a policy that isn't the right target)
+### 否定发现分支（法规不影响该政策）
 
-If every requirement in the extracted list comes out as "no gap against [the named policy]," do NOT produce the full per-requirement analysis — compress to a single short paragraph:
+如提取列表中每个要求对[指定政策]均为"无合规差距"，不产出完整的逐条分析，压缩为单段落：
 
 ```markdown
-## Policy Diff: [Regulation name] — [Policy name]
+## 政策差异对比：[法规名称] — [政策名称]
 
-[REGULATION] doesn't appear to require a change to [POLICY NAME]. [POLICY NAME]
-§[X] already covers [Y]. The policies this regulation actually touches are
-[other-policy-1] and [other-policy-2] — rerun `/regulatory-legal:policy-diff` against those.
-
-Review on [next cycle — e.g., "at the next annual policy review"] or if
-[trigger — e.g., "the rule is finalized or amended"].
+[法规] 不要求对 [政策名称] 进行变更。
+该法规实际触及的政策为 [其他政策-1] 和 [其他政策-2] — 重新运行差异对比对它们进行对比。
 ```
 
-One paragraph, one recommendation, routing note. Don't repeat the "no gap" finding for every requirement — the summary table handles that. A negative finding against the wrong target policy is a routing problem, not a compliance analysis.
+### 有合规差距分支（正式法规与政策间存在至少一个差距）
 
-### Gap branch (final rule / NPRM with at least one gap against the target policy)
+产出以下完整逐条分析。
 
-Full per-requirement analysis as specified below. The detailed diff format is for diffs that actually find gaps.
-
-## Output
+## 输出
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+## 政策差异对比：[法规名称]
 
-## Policy Diff: [Regulation name]
+**法规：** [名称，文号，链接]
+**效力层级：** [法律/行政法规/部门规章/规范性文件/司法解释]
+**施行日期：** [日期]
+**提取要求数量：** [N]
 
-**Regulation:** [name, link]
-**Effective:** [date]
-**Requirements extracted:** [N]
+### 底线
 
-### Bottom line
+[N 项合规差距需在[日期]前行动 — 前三项：X, Y, Z]
 
-[N gaps need action by [date] — top 3: X, Y, Z]
+### 摘要
 
-### Summary
-
-| # | Requirement | Policy affected | Gap | Owner |
+| # | 要求 | 受影响政策 | 合规差距 | 负责人 |
 |---|---|---|---|---|
-| 1 | [short] | [policy name or "none"] | None/Partial/Full | [name] |
+| 1 | [简要] | [政策名称或"无"] | 无/部分/完全 | [姓名] |
 
-### Detailed diffs
+### 详细差异对比
 
-[Each requirement block from Step 3]
+[步骤4中的每个要求块]
 
-### New policies needed
+### 需制定新政策
 
-[From Step 4, if any]
+[步骤5，如有]
 
-### No-gap requirements
+### 无合规差距的要求
 
-[List — useful to know what's already covered]
+[列表]
 
 ---
 
-**Verify citations before relying on them.** The regulatory citations and policy references above were AI-generated and have not been checked against a primary source. Before acting on any requirement here, confirm the rule against Westlaw, your firm's research platform, or the issuing authority's website — check accuracy, effective date, and current status. AI-generated regulatory citations are sometimes fabricated, misquoted, or stale. Source tags on each requirement (e.g., `[Federal Register]`, `[web search — verify]`) show where the citation came from; `verify` tags carry higher fabrication risk and should be checked first.
+**依赖前核实引用。** 上述法规引用和政策引用由AI生成且未经一级来源核实。在根据任何要求采取行动之前，通过国家法律法规数据库、北大法宝或外部律师确认法规准确性、生效日期和当前状态。
 ```
 
-## Config-dependent fallbacks
+## 移交
 
-This skill reads the policy library index from `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md`. When the index is empty or still `[PLACEHOLDER]`:
+至合规差距提示器：每个"部分"或"完全"合规差距成为带负责人和截止日期的跟踪项目。
 
-- **Policy library empty:** flag every requirement as "no policy match" by default and append to the output: "The policy library in your configuration is empty, so every requirement is flagged as a new-policy gap. If you have policies that address these requirements, add them to the library with `/regulatory-legal:cold-start-interview --redo` or by editing `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md`, then re-run the diff."
-- **Owner missing for a matched policy:** leave the Owner cell blank in the summary and append: "Policy owners aren't set for [list]. Assign them with `/regulatory-legal:cold-start-interview --redo` or by editing the policy library in `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` so gap-surfacer can route."
+## 本技能不做的事
 
-Say nothing about config when the library is populated and owners are set.
-
-## Handoff
-
-To gap-surfacer: every Partial or Full gap becomes a tracked item with owner and deadline.
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- Draft the policy updates. It identifies what needs updating; policy-drafting (or a human) drafts.
-- Interpret ambiguous regulatory text definitively. If the reg could be read two ways, say so and flag for counsel.
+- 起草政策更新。识别需要更新什么；政策起草由人工或政策修订草案技能完成。
+- 对模糊的监管文本做确定性解释。如法规可有两种解读，说明并标记由律师判断。

@@ -1,214 +1,190 @@
 ---
-name: wage-hour-qa
+name: 工资工时问答
 description: >
-  Jurisdiction-aware wage/hour and employment Q&A — classification, overtime,
-  meal/rest breaks, leave, final pay — answered for the specific state/country
-  with the controlling rule researched and cited rather than stated from
-  memory. Use when the user asks any employment law question, or says "what's
-  the rule in [state]", "is this exempt", "do we have to pay overtime for",
-  or "can we classify this as".
-argument-hint: "[question]"
+  管辖感知的工资/工时和劳动法问答——加班费计算、最低工资、年假折算、病假工资、
+  经济补偿金/赔偿金、社保公积金、高温津贴、停工停产工资——针对特定省市回答，
+  适用规则经研究并引用而非凭记忆陈述。当用户提出任何劳动法问题、或说"在[省份]
+  加班费怎么算""这个岗位能用不定时工作制吗""我们需要支付未休年假工资吗"
+  "辞退补偿怎么算"时使用。
+argument-hint: "[问题描述]"
 ---
 
-# /wage-hour-qa
+# /工资工时问答
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → jurisdictional footprint.
-2. Use the workflow below.
-3. Identify jurisdiction the question is about. If not specified, ask.
-4. Answer per that jurisdiction's rule. Cite. Flag if it's a close call or law is shifting.
-
----
-
-## Matter context
-
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/employment-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围。
+2. 使用以下工作流。
+3. 识别问题所涉及的管辖。如果未指定，询问。
+4. 按该管辖的规则回答。引用。标记是否为接近判断或法律在变化。
 
 ---
 
-## Purpose
+## 案件上下文
 
-"It depends" is true but unhelpful. This skill produces a jurisdiction-specific
-answer grounded in researched, cited primary sources — and flags when the
-question is close enough to need human judgment. It does not state rules from
-memory: wage-and-hour thresholds, exemption criteria, and final-pay timing
-change frequently and vary meaningfully by state.
+**案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务用户的默认设置），跳过本段其余部分——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问并加载活跃案件。将输出写入案件文件夹。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。
 
-## Load context
+---
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → jurisdictional footprint. If the question doesn't specify a
-jurisdiction, ask — or answer for the state with the most employees and note
-that.
+## 目的
 
-## The answer
+"看情况"是对的但没用。此技能产生管辖特定的答案，基于经研究并引用主要来源——并在问题足够接近需要人类判断时标记。它不凭记忆陈述规则：加班费计算基数、最低工资标准、社保缴费基数和比例、年假折算工资标准等在中国各省市间有实质差异且频繁调整。
 
-### Step 1: Jurisdiction
+## 中国劳动法核心规范速览
 
-Which state/country is this about? If not stated:
-- If it's about a specific employee: where do they work?
-- If it's a policy question: identify the jurisdictions in the footprint that
-  are most likely to be the most restrictive on the question at hand, then
-  research those.
+| 事项 | 法律依据 | 核心规则 |
+|---|---|---|
+| **加班费** | 《劳动法》第44条 | 工作日延长时间→150%；休息日不补休→200%；法定节假日→300% |
+| **标准工时** | 《劳动法》第36条 | 每日≤8小时，每周≤40小时（国务院《关于职工工作时间的规定》第3条） |
+| **加班时长限制** | 《劳动法》第41条 | 每日≤3小时，每月≤36小时 |
+| **最低工资** | 《劳动法》第48条；《最低工资规定》 | 各省市每年调整，标准不同，不包含加班费和特殊津贴 |
+| **年假** | 《职工带薪年休假条例》第3条 | 1-10年工龄→5天；10-20年→10天；≥20年→15天 |
+| **未休年假工资** | 《职工带薪年休假条例》第5条 | 按日工资收入的300%支付 |
+| **病假（医疗期）** | 《企业职工患病或非因工负伤医疗期规定》 | 按工龄3-24个月医疗期；病假工资≥当地最低工资的80%（劳部发[1995]309号第59条） |
+| **产假** | 《女职工劳动保护特别规定》第7条 | 98天基本产假+各地奖励假（30-80天不等） |
+| **高温津贴** | 《防暑降温措施管理办法》第17条 | 35°C以上室外/33°C以上室内，各地标准不同 |
+| **停工停产工资** | 《工资支付暂行规定》第12条 | 第一个工资支付周期按正常工资；超过后按≥当地最低工资80%发放生活费 |
+| **经济补偿金** | 《劳动合同法》第47条 | N×月工资（上限：社平工资3倍×12年） |
+| **违法解除赔偿金** | 《劳动合同法》第87条 | 2N |
+| **代通知金** | 《劳动合同法》第40条 | N+1（未提前30天通知时） |
+| **社保公积金** | 《社会保险法》；《住房公积金管理条例》 | 缴费基数上下限和比例各省市不同 |
 
-### Step 2: Research the rule, then state it
+---
 
-> **Research before answering.** For the jurisdiction and question, identify
-> the currently operative rule. Cite the controlling primary source (statute,
-> regulation, wage order, or case) with a pinpoint cite. Note the effective
-> date and whether the rule has been recently amended, indexed, or is in
-> litigation. If you are uncertain or cannot verify the current state of the
-> law, say so and flag for attorney verification — do not state a rule you
-> haven't confirmed.
+## 加载上下文
 
-State the rule in one paragraph, tied to the cite. Use your tools (web search,
-legal research integrations, team reference materials) to verify currency —
-especially for:
+`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围。如果问题未指定管辖，询问——或按员工最多的省市回答并注明。
 
-> **No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, or firm platform) returns few or no results for the jurisdiction-and-question, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [jurisdiction / question]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) flag the question as unverified and stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources.
+## 答案
+
+### 步骤1：确定管辖和适用标准
+
+这涉及哪个省市？如果未指明：
+- 如果是关于特定员工：员工在哪里工作？（劳动合同履行地）
+- 如果是政策问题：识别范围内所有相关管辖，按最严格管辖作为基线
+
+**管辖冲突规则**：劳动合同履行地与用人单位注册地不一致的，有关劳动者的最低工资标准、劳动保护、劳动条件、职业危害防护和本地区上年度职工月平均工资标准等事项，按照劳动合同履行地的有关规定执行；用人单位注册地的有关标准高于劳动合同履行地的，且双方约定按照注册地标准执行的，从其约定（《劳动合同法实施条例》第14条）。
+
+### 步骤2：研究规则，然后陈述它
+
+> **在回答前研究。**针对管辖和问题，识别当前有效的规则。引用控制性主要来源（法律、法规、规章、司法解释、地方性规定）并附精确引用。注明生效日期以及规则是否近期修订、调整或处于诉讼中。如果您不确定或无法验证法律的当前状态，如实说明并标记供律师核实——不要陈述未经确认的规则。
+
+使用您的工具（北大法宝、裁判文书网、各级政府网站、法律研究集成）验证时效性——尤其针对：
+
+**每年/经常变化的数据：**
+- 最低工资标准（各省市政府每年年中至年底调整）
+- 社保缴费基数上下限（各省市每年7月调整）
+- 公积金缴存比例和基数（各省市每年调整）
+- 高温津贴标准（各省市每年可能调整）
+- 工伤保险待遇标准（按上年度职工月平均工资计算）
+
+**相对稳定的规则：**
+- 加班费计算基数的认定（各地裁判口径不同——按劳动合同约定工资还是实际应得工资）
+- 综合计算工时制和不定时工作制的审批要求（《关于企业实行不定时工作制和综合计算工时工作制的审批办法》）
+- 医疗期计算规则
+- 产假地方奖励天数（各省人口与计划生育条例规定不同）
+- 停工停产生活费标准（各地生活费标准不同）
+
+> **不要静默补充。**如果对配置的法律研究工具的查询返回很少或没有结果，报告已找到的内容并停止。不要从网络搜索或模型知识填补缺口而不询问。呈现选项——扩大查询、尝试不同工具、接受网络搜索附标签、留下占位符——让用户决定。
 >
-> **Source attribution.** Tag every citation in the answer with where it came from: `[Westlaw]`, `[CourtListener]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the user supplied. Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags.
+> **来源归属。**将答案中的每个引用标记为来源：`[北大法宝]`、`[裁判文书网]`或法律研究连接器的MCP工具名称；`[网络搜索——核实]`用于网络搜索引用；`[模型知识——核实]`用于从训练数据回忆的引用；`[用户提供]`用于用户提供的引用。标记为`核实`的引用具有更高的虚构风险，应首先检查。永远不要剥离或合并标签。
 
+常见问题类型——对每个，答案是管辖特定和时间敏感的：
 
-- Salary thresholds for any exemption (federal and state — several states
-  index annually and several have tiered thresholds by employer size).
-- Final-pay timing on termination vs. resignation (many states differ).
-- PTO payout requirements (jurisdiction-specific; some require, some leave
-  it to policy, some depend on accrual-plan design).
-- Meal and rest break rules and any penalty-pay consequence.
-- Daily or weekly overtime rules (some states have daily overtime and
-  double-time rules that federal law does not).
-- Classification tests — see the worker-classification skill; the applicable
-  test depends on jurisdiction and purpose.
+- "这个岗位是否适用标准工时制？"——研究综合计算工时和不定时工作制的适用岗位范围
+- "我们是否需要为X支付加班费？"——研究加班费计算规则、基数认定和工时制度类型
+- "加班费计算基数是什么？"——研究各地裁审口径（劳动合同约定工资 vs 实发工资 vs 基本工资）
+- "最终工资什么时候必须结清？"——研究《工资支付暂行规定》第9条及各省市工资支付条例规定的结清时限
+- "我们是否必须支付未休年假工资？"——研究未休年假的举证责任和300%计算方法
+- "经济补偿金怎么计算？"——研究离职前12个月平均工资的认定标准
+- "最低工资包含社保和公积金吗？"——研究各省市最低工资口径（均为税前，但各地对是否含社保个人缴纳部分规定不同）
+- "病假工资怎么发？"——研究医疗期和病假工资的地方规定
+- "停工停产了工资怎么发？"——研究各地生活费标准
+- "可以将此人员分类为劳务关系吗？"——路由到`/employment-legal:劳动关系认定`
 
-Common question types you may be asked — for each, the answer is
-jurisdiction-specific and time-sensitive. Do not state the rule here; route
-to research:
+### 步骤2a：加班费和经济补偿金计算
 
-- "Is this role exempt?" — Research the applicable federal and state salary
-  thresholds (verify current amounts and any employer-size tiers) and the
-  applicable duties test(s).
-- "Do we have to pay overtime for X?" — Research federal FLSA overtime plus
-  any state-specific overtime rules (daily OT, double-time, alternative
-  workweeks).
-- "Do we have to provide meal/rest breaks?" — Research the applicable
-  state rule and any penalty-pay consequence for missed breaks.
-- "When is final pay due?" — Research the applicable state rule, including
-  whether timing differs for termination vs. resignation and whether
-  waiting-time or late-pay penalties apply.
-- "Do we have to pay out accrued PTO?" — Research the applicable state rule
-  and any carve-out for accrual-cap or use-it-or-lose-it policies.
-- "Can we classify this person as a contractor?" — Route to
-  `/employment-legal:worker-classification` if the facts are not already clear.
+当问题是加班费计算、经济补偿/赔偿金计算或任何涉及工资基数的问题时，使用此框架：
 
-### Step 2a: FLSA regular-rate and back-pay calculations
+#### 加班费计算（《劳动法》第44条）
 
-When the question is a back-pay computation, unpaid-OT computation, or any
-question that turns on the FLSA "regular rate," use this scaffold. Do not
-answer from bare hourly wage × OT hours; that's the two most common errors
-this skill exists to catch.
+| 加班类型 | 倍数 | 计算方式 | 备注 |
+|---|---|---|---|
+| 工作日延长工作时间 | 150% | 小时工资×150%×加班小时数 | 不能以补休替代 |
+| 休息日工作又不能补休 | 200% | 日/小时工资×200%×天数/小时数 | 优先安排补休 |
+| 法定休假日工作 | 300% | 日/小时工资×300%×天数/小时数 | 不能以补休替代 |
 
-**The regular rate is NOT just the hourly wage.** Under 29 U.S.C. §207(e),
-the regular rate is **all remuneration** for employment EXCEPT the eight
-statutory exclusions in §207(e)(1)–(8) (e.g., discretionary bonuses, gifts,
-premium pay, expense reimbursements, profit-sharing plans meeting the DOL
-regs, stock options meeting §207(e)(8), retirement/insurance contributions).
-Anything NOT within those eight exclusions is IN.
+**加班费计算基数**：各地裁判口径不同。主流裁判观点：劳动合同约定的工资标准（双方约定的正常工作时间工资）。注意——各地高院和中院关于"约定工资"是否包括绩效工资、津贴补贴的认定存在分歧。
 
-1. **Non-discretionary bonuses are IN the regular rate.** Productivity
-   bonuses, attendance bonuses, commissions, shift differentials, contest
-   awards, and most "bonuses" a reasonable employee would expect as a matter
-   of course are non-discretionary under §207(e)(3) and 29 C.F.R. §778.211.
-   Divide the bonus by the total hours worked in the bonus period to get
-   the per-hour increase to the regular rate. True discretionary bonuses
-   (§207(e)(3)) require both the fact of payment AND the amount to be
-   within the employer's sole discretion, determined at or near the end of
-   the period — narrow category.
-2. **The unpaid OT premium is 0.5×, not 1.5× — when straight time was
-   already paid for all hours.** If the employee was paid straight time for
-   every hour (including the OT hours) but no premium, they are owed the
-   **half-time premium** on OT hours, not time-and-a-half: `unpaid OT =
-   0.5 × regular rate × OT hours`. 29 C.F.R. §778.110(b). If the employee
-   was NOT paid for the OT hours at all, the owed amount is 1.5× the
-   regular rate on those hours. **State which pay posture you're assuming
-   before you compute** — it determines 0.5× vs. 1.5× and is the most
-   common error in this computation.
-3. **Show your math.** Print the formula and the inputs explicitly:
-   ```
-   Regular rate    = (straight-time wages + non-discretionary bonuses + other non-excluded comp) ÷ total hours worked
-   OT premium owed = 0.5 × regular rate × OT hours    [if straight time already paid for OT hours]
-                   = 1.5 × regular rate × OT hours    [if OT hours were unpaid]
-   ```
-   A number without the formula is not usable by a wage-and-hour lawyer.
-4. **Liquidated damages double the back-pay.** 29 U.S.C. §216(b). Liquidated
-   damages equal the unpaid back-pay amount unless the employer proves, to
-   the court's satisfaction, that the violation was in good faith and based
-   on reasonable grounds to believe it was not a violation. 29 U.S.C.
-   §260. Default assumption is liquidated damages apply; the employer bears
-   the burden to avoid them.
-5. **Statute of limitations is 2 years; 3 for willful.** 29 U.S.C. §255(a).
-   State the lookback explicitly and compute both bookends unless the
-   willfulness posture is already established by the user.
-6. **State overlay.** Many states have longer lookback, higher overtime
-   multipliers (daily OT, double-time), and different regular-rate rules.
-   Check state wage-and-hour law against the jurisdiction gate from Step 1
-   and flag where state law compounds (higher cap) or replaces (different
-   rate) federal. California, New York, Massachusetts, and Washington are
-   the most frequent overlay hits.
-7. **Attach the verify tag to the number.** Any back-pay amount produced by
-   this skill carries `[verify — consult wage-and-hour counsel before
-   asserting or paying]` on the line the number appears. The computation is
-   specialist work; the skill is scaffolding, not opinion.
+**日工资** = 月工资 ÷ 月计薪天数21.75天（《关于职工全年月平均工作时间和工资折算问题的通知》）
+**小时工资** = 月工资 ÷ (月计薪天数21.75天 × 8小时)
 
-If the question is a back-pay calculation and any of these inputs are
-missing (bonus breakdown, whether straight time was paid for OT hours,
-willfulness posture, state jurisdiction), **ask before computing**. A
-confident wrong number is the worst output this skill can produce.
+**显示计算过程。**打印公式和输入项。没有公式的数字不能被劳动法律师使用。
 
-### Step 3: The flag
+#### 经济补偿金计算（《劳动合同法》第47条）
 
-Is this a close call? Be honest.
+**N（经济补偿金）** = 劳动者解除或终止前12个月平均工资 × 在本单位工作年限
 
-- If the answer is clear on the researched rule: say so. "Exempt — meets
-  each element of the applicable duties test and the current salary
-  threshold."
-- If it's close: say so. "The duties test is borderline — this role could
-  go either way. Recommend classifying as non-exempt to be safe, or getting
-  a formal opinion."
-- If the law is in flux: say so. "This rule has been amended recently — the
-  current version takes effect [date]. Confirm effective date before relying
-  on this answer."
-- If you could not verify currency: say so. Do not guess.
+- 工作年限：每满1年支付1个月工资；6个月以上不满1年的，按1年计算；不满6个月的，支付半个月工资
+- 封顶：月工资高于用人单位所在地上年度职工月平均工资3倍的，按月平均工资3倍支付，最高不超过12年
+- **平均工资的计算**：解除或终止前12个月应得工资（含奖金、津贴、加班费等）的平均值
 
-## Output format
+**2N（违法解除/终止赔偿金）**（《劳动合同法》第87条）：
+- 用人单位违法解除或终止劳动合同的，按经济补偿金标准的二倍支付赔偿金
+- 注意：支付赔偿金后不再支付经济补偿金（二者不可兼得）
 
-Conversational. This is a Q&A, not a memo.
+**N+1（代通知金）**（《劳动合同法》第40条）：
+- 适用情形：医疗期满不能从事原工作、不胜任工作经培训或调岗仍不能胜任、客观情况重大变化
+- 额外支付1个月工资（按该劳动者上一个月的工资标准确定）
 
-> **Research-connector pre-flight.** Before emitting the answer, check whether a legal research connector is reachable for this session — Westlaw, CourtListener, or any firm-configured research MCP. Collect this into the reviewer note per CLAUDE.md `## Outputs`: if no connector returns results in Step 2 (or none is configured at run time), record it in the **Sources:** line of the reviewer note — e.g., `not connected — cites from training knowledge; pinpoint cites (volume/page/subsection) carry the highest fabrication risk, spot-check those first`. Per-citation `[model knowledge — verify]` tags remain inline. Do not emit a standalone banner above the output.
+**附加`核实`标签。**此技能产生的任何计算附带`[核实——在主张或支付前咨询劳动法律师]`标签。计算是专家工作；技能是脚手架，不是意见。
 
-> **Jurisdiction assumption.** Answers apply only to the jurisdiction identified. Wage-hour rules, exemption thresholds, and final-pay timing vary materially by state and country, and many rules index or change year over year. If the employee works in another jurisdiction, or the question is answered for the default-footprint state, this answer may not apply as written.
+#### 特殊情况
+
+**工伤待遇计算**（《工伤保险条例》）：
+- 停工留薪期工资：原工资福利待遇不变，由单位按月支付（一般不超过12个月）
+- 工伤医疗费、伙食补助费、交通食宿费、康复治疗费
+
+**未签书面劳动合同的双倍工资**（《劳动合同法》第82条）：
+- 用工之日起超过1个月不满1年未签的，支付双倍工资（最多11个月）
+- 满1年视为已订立无固定期限劳动合同
+- 双倍工资仲裁时效为1年，从知道或应当知道权利被侵害之日（即应签未签的次日）起算
+
+**社会保险和住房公积金**：
+- 缴费基数：一般为职工上年度月平均工资，在当地社平工资60%-300%之间
+- 缴费比例：各地区不同（如上海：养老16%+8%、医疗9%+2%、失业0.5%+0.5%、工伤0.16%-1.52%）
+- 公积金缴存比例：5%-12%，单位可自主选择
+
+### 步骤3：标记
+
+这是一个接近判断吗？诚实。
+
+- 如果按研究规则答案明确：这样说。
+- 如果接近（如计算基数有争议、工时制度认定有争议）：这样说。"建议按更保守的分类以避免风险，或获取正式法律意见。"
+- 如果法律在变化：这样说。"此规则近期修订——当前版本生效日期为[date]。在依赖此答案前确认生效日期。"
+- 如果各地裁审口径不同：这样说。"关于[问题]，[A地]和[B地]的裁判口径不同。在[A地]的通常裁判观点是[X]；在[B地]是[Y]。"
+- 如果无法验证时效性：这样说。不要猜测。
+
+## 输出格式
+
+对话式。这是问答，不是备忘录。
 
 ```
-**[Jurisdiction]:** [The researched rule, one paragraph, with pinpoint cite
-and currency note.]
+**[管辖]：** [经研究的规则，一段话，附精确引用和时效性说明。如有必要，附计算过程和公式。]
 
-[If close call or shifting law: the flag.]
+[如果是接近判断或变化中的法律：标记。]
 
-[If the answer differs in other footprint jurisdictions: one line noting that,
-and whether the differences are material.]
+[如果答案在范围内其他管辖不同：一行说明，及差异是否实质性。]
 ```
 
-> **Verify citations.** Any case, statute, regulation, or wage-order cite above was generated with AI assistance. Before relying on a cite, check it against Westlaw, CourtListener, the relevant state agency's site, or your firm's research tool for accuracy, currency, and subsequent history. Fabricated or misquoted citations in filings or formal advice have resulted in sanctions.
+> **核实引用。**上述任何案例、法条、法规或规章引用由AI辅助生成。在依赖引用之前，请对照北大法宝、裁判文书网、相关政府网站或您的研究工具检查其准确性、时效性和后续历史。
 
-## Close with the next-steps decision tree
+## 以下一步决策树结束
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+以CLAUDE.md`## 输出`中的下一步决策树结束。
 
-## What this skill does not do
+## 此技能不做什么
 
-- State the rule from memory — every answer is grounded in a researched,
-  cited primary source verified for currency.
-- Make classification decisions for borderline cases. It states the rule and
-  flags the close call. Human decides.
-- Give a 50-state survey unless asked. Answers for the relevant
-  jurisdiction(s).
-- Track when the answer changes. If thresholds index or law shifts, the
-  answer goes stale. Re-ask for current.
+- 凭记忆陈述规则——每个答案基于经研究、引用并经时效性验证的主要来源。
+- 为边界案例做出支付决定。它陈述规则并标记接近判断。人决定。
+- 提供全国31省市调查除非被要求。为相关管辖回答。
+- 追踪答案何时变化。如果最低工资阈值调整、社保缴费比例变化或法律修订，答案过时。重新询问以获取最新数据。
+- 替代专业劳动法律师的法律意见。对于争议金额大或法律问题复杂的劳动法问题，建议咨询专业劳动法律师。

@@ -1,23 +1,10 @@
 {
-  "mcpServers": {
-    "Slack": {
-      "type": "http",
-      "url": "https://mcp.slack.com/mcp",
-      "title": "Slack",
-      "description": "Search messages, read channels, find discussions across your workspace."
-    },
-    "Google Drive": {
-      "type": "http",
-      "url": "https://drivemcp.googleapis.com/mcp/v1",
-      "title": "Google Drive",
-      "description": "Search, read, and fetch documents from Google Drive."
-    }
-  },
+  "mcpServers": {},
   "recommendedCategories": [
     "legal-research",
     "regulatory-intelligence",
     "documents",
-    "chat",
-    "email"
-  ]
+    "chat"
+  ],
+  "_note": "中国政府监管数据源待配置。建议接入：国家法律法规数据库 API、国务院政策文件库 RSS、中国政府网微信公众号、各部委（市场监管总局/网信办/证监会/金融监管总局/药监局等）官网。美国数据源（Federal Register API/Thomson Reuters Regulatory Intelligence/CourtListener）已移除。"
 }

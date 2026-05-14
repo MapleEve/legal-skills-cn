@@ -1,40 +1,95 @@
 ---
-name: investigation-summary
+name: 调查摘要
 description: >
-  Draft an audience-specific summary from the privileged investigation memo —
-  HR, leadership, or outside counsel versions. Use when an investigation memo
-  needs to be communicated to an audience that should not see the full
-  privileged work product.
-argument-hint: "[matter name] [audience: hr / leadership / outside-counsel]"
+  从律师特权调查备忘录起草分受众版本的摘要——公司管理层版、HR版、
+  监事会/审计委员会版、外部律师版。当调查备忘录需要传达给不应看到
+  完整特权工作成果的受众时使用。
+argument-hint: "[案件名称] [受众：管理层 / HR / 监事会 / 外部律师]"
 ---
 
-# /investigation-summary
+# /调查摘要
 
-Drafts a stripped-down, audience-appropriate summary from the privileged
-investigation memo. HR summaries contain no privilege analysis. Leadership
-summaries are high-level. Outside counsel briefings include full context.
+从律师特权调查备忘录起草精简的、适合受众的摘要。不同受众版本的信息披露边界不同。
 
-## Instructions
+## 中国法下的摘要分层
 
-1. Load the `internal-investigation` reference skill and run Mode 5 (Audience summary).
-2. If no memo exists yet, offer to draft the memo first.
-3. HR summaries must not include attorney mental impressions, credibility
-   methodology, or legal exposure analysis.
+在中国律所调查实践中，调查报告（完整版）仅向委托方提供。当需要向不同受众传达调查结果时，必须谨慎剥离以下内容：
+- 律师思维印象和工作方法
+- 可信度评估方法论
+- 法律风险分析
+- 涉及个人隐私的信息
+- 可能影响劳动争议仲裁/诉讼策略的内容
 
-## Examples
+## 指示
+
+1. 加载`内部调查`参考技能并运行模式5（受众摘要）。
+2. 如果还没有备忘录，提供先起草备忘录。
+3. HR版本不得包含律师思维印象、可信度分析方法论或法律风险预判。
+4. 管理层版本为高层次的，不含证据细节但保留结论和行动建议。
+5. 外部律师版本包含完整背景，以便外部律师快速了解案件。
+
+## 受众版本说明书
+
+### 1. 公司管理层版（CEO/VP/法务总监）
+
+**包含：**
+- 调查结论摘要（1-2页）
+- 核心事实（不含敏感证据细节）
+- 建议措施及风险评估
+- 商业影响分析
+
+**不包含：**
+- 详细证据引用
+- 法律分析过程
+- 证人可信度评估
+- 可能引起不必要恐慌的细节
+
+### 2. HR版
+
+**包含：**
+- 调查结论（仅事实部分）
+- 是否违反规章制度
+- 建议的纪律处分措施
+- 后续HR操作建议（如协商解除、N/N+1补偿方案）
+
+**绝不包含：**
+- 律师思维印象和分析过程
+- 可信度评估方法论
+- 法律风险分析（特别是劳动争议可能的结果预测）
+- 证据来源和证人的具体信息（保护证人）
+
+> 红线提醒：HR摘要绝不得包含律师思维印象、可信度方法论或法律风险分析。如果将包含这些内容的备忘录提供给HR，在后续劳动争议中被对方获取可能导致不利后果。
+
+### 3. 监事会/审计委员会版
+
+**包含：**
+- 完整的调查发现
+- 财务影响（如涉及资金）
+- 内部控制建议
+- 是否需要向公安机关报案的分析
+
+### 4. 外部律师版（如委托外部律师协助仲裁/诉讼）
+
+**包含：**
+- 完整的调查背景和范围
+- 核心证据及证明方向
+- 对证据效力（合法性/真实性/关联性）的初步评估
+- 需要验证的问题清单
+- 争议焦点预判
+- 已有的经济补偿计算草案
+
+## 示例
 
 ```
-/employment-legal:investigation-summary [matter name] hr
+/employment-legal:调查摘要 [案件名称] 管理层
 ```
 
 ```
-/employment-legal:investigation-summary [matter name] leadership
+/employment-legal:调查摘要 [案件名称] HR
 ```
 
 ```
-/employment-legal:investigation-summary [matter name] outside-counsel
+/employment-legal:调查摘要 [案件名称] 外部律师
 ```
 
-> Detailed audience-stripping rules and summary templates live in the
-> `internal-investigation` reference skill — load it before doing substantive
-> work.
+> 详细的受众剥离规则和摘要模板位于`内部调查`参考技能中——在做实质性工作之前加载它。

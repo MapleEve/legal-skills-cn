@@ -1,8 +1,8 @@
 {
-  "name": "employment-legal",
-  "version": "1.0.2",
-  "description": "Reviews hires and terminations for jurisdiction-specific risk flags, classifies workers against the controlling state test, tracks leave deadlines before they're missed, runs internal investigations, and drafts policies with state supplements where the law differs.",
+  "name": "劳动用工",
+  "version": "1.0.0",
+  "description": "以中国劳动法律体系为框架，覆盖员工招聘审查、离职解雇合规、竞业限制与保密协议、工时与加班合规（含996审查）、社保公积金缴纳、工伤认定与处理、女职工及未成年工特殊保护、残疾人就业保障、劳动仲裁应对、经济性裁员等全流程用工法律风险管理。内置风险等级体系（红线/重大/一般/提示），支持按省份/城市做地域差异化审查，集成劳动合同解除制度（第39/40/41条）与经济补偿金计算（N/N+1/2N）。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

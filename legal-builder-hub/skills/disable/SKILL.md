@@ -1,38 +1,44 @@
 ---
-name: disable
+name: 禁用技能
 description: >
-  Disable a community skill installed through the hub without removing its
-  files. Use when the user wants to temporarily quiet a community skill
-  ("disable [skill]"), stop its hooks from firing while keeping its config,
-  or re-enable a previously disabled skill.
-argument-hint: "[skill name]"
+  禁用已安装的技能而不卸载——保留配置和数据但使其不活跃。
+  与卸载不同（卸载删除数据），禁用保留一切以便随时重新启用。
+  当用户说"禁用[技能]"、"暂时关闭[技能]"、"暂停[技能]"时使用。
+argument-hint: "<技能名称>"
 ---
 
-# /disable
+# /禁用技能
 
-Run the `disable` workflow from the skill-manager reference skill against the
-named skill.
+## 功能目的
 
-What disable does:
+用户可能想暂时关闭某个技能而不丢失其配置和数据——比如某个领域的业务暂时不做、某个技能的输出需要人工验证后再启用、或者需要排查技能间的冲突。禁用功能将技能标注为不活跃但保留一切。
 
-- Renames the skill's `SKILL.md` to `SKILL.md.disabled` so Claude no longer
-  discovers it as an active skill. Files, references, templates, and config
-  stay in place.
-- If the skill ships hooks in `hooks/hooks.json`, also rename that file to
-  `hooks.json.disabled` so no automatic triggers fire while the skill is
-  disabled.
-- Logs the action to
-  `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/install-log.yaml`.
+## 操作流程
 
-Safety rules:
+1. **确认技能已安装。** 列出技能名称和当前状态。
+2. **询问禁用原因。** 可选——记录原因便于后续回顾。
+3. **检查依赖。** 是否有其他已安装技能依赖此技能？如有则警告。
+4. **执行禁用。** 将技能标注为"已禁用"——技能文件保留但不再被调用。
+5. **确认。** 说明如何重新启用："随时运行 `/legal-builder-hub:skill-manager --list` 查看已禁用技能，运行 `/legal-builder-hub:disable <技能名称>` 再次切换可重新启用。"
 
-1. **Only disable community skills installed through this hub.** Same check
-   as uninstall — consult the install log and CLAUDE.md installed table.
-2. **Never disable a first-party plugin's skill.** Off-limits.
-3. **Confirm before renaming.** Show the paths, get explicit `yes`.
+## 禁用的影响
 
-Re-enable by running the command again with the same skill name — the
-skill-manager workflow recognizes a disabled skill and flips the rename back.
+- 技能不再出现在可用命令列表中
+- 依赖该技能的其他技能可能出现功能降级
+- 技能配置和数据完整保留
+- 对系统性能无影响（仅标注状态）
 
-> Detailed uninstall, disable, and re-enable workflows live in the
-> `skill-manager` reference skill — load it before doing substantive work.
+## 与卸载的区别
+
+| 操作 | 技能文件 | 配置 | 数据/输出 | 可逆性 |
+|---|---|---|---|---|
+| 禁用 | 保留 | 保留 | 保留 | 即时恢复 |
+| 卸载 | 删除 | 删除 | 可备份后删除 | 需重新安装 |
+
+**选择建议：** 如果是短期不需要——禁用。如果是永久不需要——卸载。
+
+## 本技能不做的事
+
+- 不删除数据
+- 不卸载技能
+- 不禁用系统必需的技能（如技能管理器本身）

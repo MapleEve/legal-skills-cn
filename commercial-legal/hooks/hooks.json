@@ -1,3 +1,4 @@
 {
-  "hooks": {}
+  "hooks": {},
+  "_description": "钩子事件注册表。在此文件中注册事件类型后，对应事件在 CLAUDE.md 的 hooks 配置中引用即可触发自动化流程。"
 }

@@ -1,158 +1,241 @@
 ---
-name: feature-risk-assessment
+name: 功能风险评估
 description: >
-  Deeper risk assessment for a single feature or product area when the launch
-  review found something that needs more than a line item. Structured analysis:
-  what could go wrong, how likely, how bad, what mitigates it. Use when user
-  says "deep dive on this risk", "risk assessment for [feature]", "what could
-  go wrong with", or when launch-review flags a novel issue.
+  对单个功能或产品模块进行深度风险评估——当产品上线审查发现需要超出列表项的问题时使用。
+  结构化分析：功能涉及的数据类型 → 法律义务触发 → 风险等级 → 缓解措施。
+  当用户说"深入分析这个风险"、"[功能]风险评估"、
+  "可能出什么问题"或上线审查标记了新颖问题时使用。
 ---
 
-# Feature Risk Assessment
+# 功能/特性风险评估
 
-## Matter context
+## 事项上下文
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/product-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/product-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+检查实践级CLAUDE.md中的 `## 事项工作区`。如 `启用` 为 `✗`（法务部内部用户的默认值），跳过本段。如已启用且无活跃事项，询问事项并将输出写入事项文件夹。
 
 ---
 
-## Purpose
+## 目的
 
-The launch review is broad. This is deep. When a single issue needs more than a table row — a novel AI feature, a children's product, something a regulator is actively looking at — this skill produces a standalone assessment.
+产品上线审查是广度的——逐项排查。本技能是深度的——当单个问题需要的不仅仅是一行表格条目时，生成独立的风险评估报告。
 
-Not every launch needs one. Most don't. This is for the 10% where "PIA done, shipped" isn't the right level of scrutiny.
+适用于：新颖的AI功能、涉及未成年人的产品、监管机构正在积极关注的领域、游戏/电竞行业特有的合规风险。
 
-## When to run this
+并非每次上线都需要。大多数不需要。这仅适用于约10%需要更深入审查的情况。
 
-- Launch review found a pattern that's **not in the calibration table** (novel)
-- Launch review found something in the **"usually blocks"** category
-- GC or leadership asked "what's the risk here" and wants more than a one-liner
-- The feature is in an area with **active regulatory attention** (AI, children, biometric, health)
-- Someone outside legal is worried and a structured answer would help
+## 何时使用
 
-If none of the above, the launch review is enough. Don't generate paperwork for its own sake.
+- 上线审查发现校准表中**没有的模式**（新颖问题）
+- 上线审查发现在**"阻断"**类别中的内容
+- 总法律顾问或领导层问"这里有什么风险"，需要的不是一句话
+- 功能处于**活跃监管关注**领域（AI、未成年人、数据跨境、消费者权益）
+- 游戏/电竞专项：虚拟道具交易、随机抽取概率设计、未成年人充值机制
+- 法务之外的人担心，结构化的回答有帮助
 
-## Structure
+如上述皆否，上线审查就足够了。
 
-### 1. What we're assessing
+## 核心分析框架
 
-One paragraph. What the feature does, what's new about it, why it got escalated to a full assessment.
-
-### 2. The risks
-
-For each distinct risk (aim for 2-5, not 15):
-
-```markdown
-### Risk [N]: [Short name]
-
-**Scenario:** [What would have to happen for this to go wrong. Be specific —
-not "data breach" but "the recommendation algo surfaces a user's sensitive
-category interest to someone who shouldn't see it because X."]
-
-**Who gets hurt:** [Users? The company? A third party? Specific.]
-
-**How likely:** [Low / Medium / High — with a reason. "Low — would require
-both X and Y to fail simultaneously." Not just a vibes rating.]
-
-**How bad if it happens:** [Low / Medium / High — with a reason. "High —
-regulatory fine + class action exposure + press" vs. "Low — one angry
-tweet, no actual harm."]
-
-**Existing mitigations:** [What already reduces the likelihood or impact]
-
-**Gap:** [What's missing, if anything]
-
-**Residual risk:** [After existing mitigations — is this acceptable or does
-it need more?]
+```
+功能涉及的数据/行为 → 触发法律义务 → 风险等级评估 → 缓解措施设计
 ```
 
-### 3. Regulatory landscape (if relevant)
+## 评估结构
 
-Only include if a regulator is actively interested in this space. If so:
+### 一、评估对象
 
-- Which regulator, what they've said/done recently
-- How this feature would look to them
-- Whether we'd rather they hear about it from us or from a headline
+一段话。功能做什么、有什么新颖之处、为什么升级到完整风险评估。
 
-### 4. Precedent (if any)
+### 二、数据与行为分析
 
-Has another company done something similar? What happened?
+功能涉及哪些数据类型：
+- 个人信息（姓名、手机号、身份证号、生物特征等）
+- 未成年人信息（年龄、监护人信息等）
+- 交易数据（充值金额、支付方式、账户余额等）
+- 行为数据（浏览记录、操作日志、游戏行为等）
+- 虚拟财产（虚拟道具、游戏币、积分等）
 
-- If nothing bad happened → useful, not dispositive
-- If something bad happened → what was different about their situation, does it apply here
+功能涉及哪些行为：
+- 收集、使用、共享、委托处理、跨境传输
+- 自动化决策、用户画像、个性化推荐
+- 随机抽取、概率公示
+- 充值、退款、虚拟道具交易
 
-Don't overweight precedent. Regulators change priorities; one company getting away with something doesn't mean the next one will.
+### 三、法律义务触发清单
 
-### 5. Options
+根据数据类型和行为，逐项标注触发的法律义务：
 
-Present 2-3 realistic paths:
+| 数据/行为 | 触发的法律义务 | 法律依据 | 是否适用 |
+|-----------|---------------|----------|----------|
+| 收集个人信息 | 告知-同意、最小必要 | 《个保法》第13条、第6条 | ☐ |
+| 处理敏感个人信息 | 单独同意+必要性+保护措施 | 《个保法》第28-32条 | ☐ |
+| 处理未成年人信息 | 监护人同意、专门保护 | 《未保法》第72条、《个保法》第31条 | ☐ |
+| 自动化决策 | 透明度+拒绝权+说明 | 《个保法》第24条 | ☐ |
+| 跨境传输 | 安全评估/标准合同/保护认证 | 《个保法》第38条 | ☐ |
+| 随机抽取 | 概率公示+合规性 | 《网络游戏管理暂行办法》 | ☐ |
+| 虚拟道具交易 | 禁止反向兑换为法定货币 | 《关于加强网络游戏虚拟货币管理工作的通知》、《网络游戏管理暂行办法》 | ☐ |
+| 未成年人充值 | 消费限额+提醒机制 | 《未保法》第75条、《关于防止未成年人沉迷网络游戏的通知》 | ☐ |
+| 防沉迷 | 实名认证+时长限制+时段限制 | 《未保法》第75条、《关于进一步严格管理切实防止未成年人沉迷网络游戏的通知》 | ☐ |
+| AI生成内容 | 标识+内容安全+训练数据合规 | 《生成式AI服务管理暂行办法》《深度合成管理规定》 | ☐ |
+| 用户内容发布 | 内容审核+投诉举报+处置义务 | 《网络信息内容生态治理规定》 | ☐ |
+
+### 四、风险分析
+
+每个独立风险（2-5个，非15个）：
 
 ```markdown
-| Option | Description | Risk reduction | Cost |
-|---|---|---|---|
-| A: Ship as designed | [current plan] | None | None |
-| B: Ship with [mitigation] | [change] | [how much] | [eng effort, timeline, UX] |
-| C: Don't ship [component] | [scope cut] | [how much] | [product impact] |
+#### 风险[N]：[简要名称]
+
+**场景描述：** [具体描述出错的业务场景]
+**受影响方：** [用户？公司？第三方？具体说明]
+**发生概率：** [低/中/高 —— 附理由]
+**严重程度：** [低/中/高 —— 附理由，参考处罚金额/用户规模/声誉影响]
+**现有缓解措施：** [已减少可能性或影响的内容]
+**缺口分析：** [缺少什么]
+**残余风险：** [现有缓解措施之后 — 可接受还是需要更多？]
 ```
 
-### 6. Recommendation
+**风险评估矩阵：**
 
-Pick one. Explain why. Acknowledge what you're trading off.
+|          | 严重程度低 | 严重程度中 | 严重程度高 |
+|----------|-----------|-----------|-----------|
+| **概率高** | 🟠 高风险 | 🔴 阻断 | 🔴 阻断 |
+| **概率中** | 🟡 关注   | 🟠 高风险 | 🔴 阻断 |
+| **概率低** | 🟢 可接受 | 🟡 关注   | 🟠 高风险 |
+
+### 五、游戏/电竞行业专项关注
+
+#### 虚拟道具
+
+- [ ] 虚拟道具是否可反向兑换为法定货币？（禁止）
+- [ ] 是否涉及虚拟道具交易平台功能？
+- [ ] 交易规则是否公示？
+- [ ] 用户虚拟财产保护机制？
+
+#### 随机抽取
+
+- [ ] 是否以显著方式公示抽取概率？
+- [ ] 概率是否真实？
+- [ ] 是否有保底机制？保底机制是否公示？
+- [ ] 是否涉及未成年人参与抽奖？
+
+#### 防沉迷
+
+- [ ] 实名认证机制是否到位？
+- [ ] 未成年人游戏时长限制（仅周五六日及法定节假日20-21时可登录）？
+- [ ] 未成年人充值限额是否实现（单次/月度）？
+- [ ] 是否接入国家新闻出版署网络游戏防沉迷实名认证系统？
+
+#### 未成年人充值
+
+- [ ] 8周岁以下：不得充值？
+- [ ] 8-16周岁：单次≤50元，月度≤200元？
+- [ ] 16-18周岁：单次≤100元，月度≤400元？
+- [ ] 退款机制是否健全？
+
+### 六、监管格局（如相关）
+
+仅在监管机构对此领域有活跃兴趣时纳入。包括：
+- 相关监管机构及其近期执法动态
+- 功能在监管视角下的定位
+- 主动备案/报告 vs. 被动应对的建议
+
+### 七、先例（如有）
+
+其他公司是否做过类似事情？发生了什么？是否有执法案例或行业通报？
+
+### 八、缓解措施选项
+
+呈现2-3条现实路径：
+- **方案A**：按设计发版（如残余风险可接受）
+- **方案B**：附带缓解措施发版（列明需增加的合规措施及负责人和完成期限）
+- **方案C**：暂不发版某组件（说明不发的理由和可重新评估的时间点）
+
+### 九、建议
+
+选择一个方案。解释选择理由。承认做出的权衡。
+
+## 校准检查
+
+最终定稿前，对照配置中的风险校准检查：
+- [ ] 此风险评估是否针对公司实际业务校准？
+- [ ] 风险评级是否反映公司风险偏好？
+- [ ] 是否考虑了行业特定的执法趋势？
+
+## 交接
+
+- **给AI治理：** 如由AI功能触发，运行 `/ai-governance-legal:aia-generation`
+- **给隐私/个人信息保护：** 如涉及新的个人信息处理行为
+- **给供应商AI审查：** 如使用新AI供应商
+- **给版号/许可：** 如涉及需要行政许可的新业务类型
+
+## 输出格式
+
+独立文件，2-4页。添加工作成果标头。保存到配置指定的审查文件位置。
 
 ```markdown
-**Recommended: Option [X]**
+[工作成果标头]
 
-[Why. What risk remains. Why that's acceptable. Who accepts it.]
+# 功能风险评估报告：[功能名称]
 
-**If the answer is "not my call":** [Who decides, what they need to know]
+**评估日期：** [日期]
+**评估人：** [姓名]
+**关联上线审查编号：** [如有]
+**产品/项目：** [名称]
+
+---
+
+## 一、评估对象
+
+[一段话描述]
+
+---
+
+## 二、数据与行为分析
+
+[数据清单 + 行为清单]
+
+---
+
+## 三、法律义务触发
+
+[触发的法律义务表格]
+
+---
+
+## 四、风险分析
+
+[每个独立风险的结构化分析]
+
+---
+
+## 五、行业专项关注（如适用）
+
+[游戏/电竞专项检查结果]
+
+---
+
+## 六、缓解措施选项
+
+[方案A/B/C]
+
+---
+
+## 七、建议
+
+[推荐方案及理由]
+
+---
+
+## 八、声明
+
+本风险评估仅基于提供的信息作出，不构成正式法律意见。
+涉及重大法律风险的建议咨询外部专业律师。
 ```
 
-## Calibration check
+## 本技能不做的事
 
-Before finalizing, check against `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` → Risk calibration:
-
-- Is this risk assessment calibrated to *this company*, or is it generic?
-- A risk that's "High" at a company under a consent decree might be "Medium" at one that isn't
-- The assessment should reflect the actual regulatory posture, litigation history, and risk appetite captured in the practice profile
-
-## Handoffs
-
-- **To AI governance:** If the deep-dive was triggered by an AI feature — which
-  it often is — run `/ai-governance-legal:aia-generation [feature]` in parallel or
-  immediately after. The feature risk assessment frames the decision; the AIA
-  documents the AI system specifically in the format AI governance needs. They're
-  not duplicates: the FRA is a product-legal decision doc; the AIA is the
-  governance record.
-- **To privacy:** If the feature involves new data collection or processing,
-  run `/privacy-legal:pia-generation [feature]`. The FRA's risk section
-  will likely overlap with the PIA's — flag that overlap so work isn't duplicated,
-  but both docs need to exist.
-- **To AI governance vendor review:** If the feature uses a new AI vendor,
-  run `/ai-governance-legal:vendor-ai-review [vendor agreement]` if not already done
-  during the launch review.
-
-## Output format
-
-Standalone doc, 2-4 pages. Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` `## Outputs` (it differs by user role — see `## Who's using this`).
-
-Not a slide deck, not a memo to file — a decision document someone reads and then decides.
-
-Save where `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` → Launch review process says review docs go. If the doc is going to be shared with anyone outside the privileged loop (e.g., posted to a broadly-shared ticket), drop the work-product header only for that externally-facing copy and keep the privileged original in the matter file.
-
-## Citation check
-
-If the assessment cites cases, statutes, regulations, or enforcement actions — in the Regulatory landscape or Precedent sections especially — those citations were generated by an AI model and have not been verified against a primary source. Before the decision document goes to a decisionmaker, verify each citation against a legal research tool (Westlaw, CourtListener, or your firm's research platform) for accuracy, good law status, and current enforcement posture. A risk assessment built on a fabricated enforcement action is worse than no assessment.
-
-> **No silent supplement.** If a research query to the configured legal research tool returns few or no results for the regime or precedent the assessment needs, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [regime / precedent]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against the issuing authority before relying, or (4) flag as unverified and stop. Which would you like?" A lawyer decides whether to accept lower-confidence sources.
->
-> **Source attribution.** Tag every citation in the Regulatory landscape and Precedent sections with where it came from: `[Westlaw]`, `[CourtListener]`, `[regulator site]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations from the feature team. Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags — the decisionmaker needs to see which citations to verify first.
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- It doesn't assess every feature. Most features get a launch review and that's it.
-- It doesn't make the decision. It frames the decision. Someone with authority picks an option.
-- It doesn't do quantitative risk modeling. If the company has a formal risk framework with numbers, use that — this is qualitative.
+- 不评估每个功能——大多数功能的上线审查足够
+- 不做决策——框架化选项。有权限的人选定方案
+- 不做量化风险建模（概率论/蒙特卡洛等）
+- 不替代正式的法律意见书

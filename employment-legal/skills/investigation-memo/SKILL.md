@@ -1,36 +1,96 @@
 ---
-name: investigation-memo
+name: 调查备忘录
 description: >
-  Draft or update the privileged investigation memo from the investigation log.
-  Use when an investigation is far enough along to write the first memo cut, or
-  when new data has been added and the existing draft needs updating.
-argument-hint: "[matter name]"
+  从调查日志起草或更新律师特权调查备忘录。采用中国律所调查报告的标准格式：
+  委托背景→调查范围→调查方法→事实发现→法律分析→结论与建议→附件（证据清单）。
+  当调查进展到足以写出第一版备忘录时，或新数据已添加而现有草案需要更新时使用。
+argument-hint: "[案件名称]"
 ---
 
-# /investigation-memo
+# /调查备忘录
 
-Drafts the first cut of the privileged investigation memo from the log,
-or updates an existing draft when new data has been added.
+从调查日志起草律师特权调查备忘录，或当新数据已添加时更新现有草案。
 
-## Instructions
+## 中国律所调查报告标准格式
 
-1. Load the `internal-investigation` reference skill and run Mode 4 (Draft or update memo).
-2. If drafting for the first time, warn if high-priority sources are still
-   open on the checklist.
-3. If updating, show what changed before rewriting.
-4. All output is marked PRIVILEGED AND CONFIDENTIAL — ATTORNEY WORK PRODUCT.
+本技能采用中国律所调查报告的标准结构：
 
-## Examples
+**委托背景** → **调查范围** → **调查方法** → **事实发现** → **法律分析** → **结论与建议** → **附件（证据清单）**
+
+## 保密性要求
+
+本备忘录属于律师工作成果，受律师-客户特权保护。仅向委托方（公司/董事会/监事会/审计委员会）提供。禁止对外披露或转发给本调查无关人员。
+
+## 指示
+
+1. 加载`内部调查`参考技能并运行模式4（起草或更新备忘录）。
+2. 如果是首次起草，警告如果证据收集清单上仍有高优先级来源未完成。
+3. 如果更新，在重写前显示变化。
+4. 所有输出标记为保密特权——律师工作成果。
+
+## 备忘录结构
+
+### 一、委托背景
+- 委托方
+- 委托时间
+- 委托范围
+- 调查组成员
+
+### 二、调查范围
+- 调查对象（姓名/职位/部门）
+- 调查事项
+- 时间范围
+- 调查限制（如无法获取某些数据）
+
+### 三、调查方法
+- 文件审查（审查文件清单及数量）
+- 人员访谈（访谈对象列表、次数、日期）
+- 电子取证（方式、工具、范围）
+- 第三方鉴定（如有）
+- 现场走访（如有）
+
+### 四、事实发现
+- 按时间线或按争议点组织
+- 每项事实标注证据来源
+- 标注存疑事实（证据不足或证据矛盾）
+- 不遗漏对调查对象有利的证据
+
+### 五、法律分析
+- 适用的法律法规（《劳动合同法》《民法典》《反不正当竞争法》《刑法》等）
+- 是否构成规章制度违反（规章制度需经民主程序+公示）
+- 是否构成严重违反规章制度（《劳动合同法》第39条）
+- 是否涉及经济补偿或赔偿金的计算（N/N+1/2N）
+- 是否涉及刑事责任（如职务侵占罪、侵犯商业秘密罪、非国家工作人员受贿罪）
+- 用人单位的举证责任（《劳动争议调解仲裁法》第6条）
+
+### 六、结论与建议
+- 调查结论（分项陈述，含确定性程度：已证实/高度盖然/可能/无法确定）
+- 建议措施：纪律处分 / 协商解除（N/N+1）/ 单方解除（第39条，需谨慎）/ 经济性裁员（第41条）/ 移交公安机关
+- 制度改进建议
+- 风险提示
+
+### 七、附件
+- 证据清单（编号、证据名称、来源、页码范围、主要证明内容）
+- 关键证据节选
+- 访谈笔录摘要
+
+## 可信度评估
+
+对证人陈述的可信度评估应考虑：
+- 是否亲身经历、直接感知
+- 陈述是否一致（本人在不同时间的陈述是否一致；与他人陈述是否一致）
+- 是否有利害关系
+- 是否有其他证据印证
+
+## 示例
 
 ```
-/employment-legal:investigation-memo [matter name]
+/employment-legal:调查备忘录 [案件名称]
 ```
 
 ```
-/employment-legal:investigation-memo [matter name]
-(updates existing memo if one exists)
+/employment-legal:调查备忘录 [案件名称]
+（如果存在备忘录则更新）
 ```
 
-> Detailed memo structure, credibility-assessment framework, and update rules
-> live in the `internal-investigation` reference skill — load it before doing
-> substantive work.
+> 详细的备忘录结构、可信度评估框架和更新规则位于`内部调查`参考技能中——在做实质性工作之前加载它。

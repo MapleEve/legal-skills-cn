@@ -1,108 +1,135 @@
 ---
-name: case-brief
+name: 案例研习
 description: >
-  Brief a case in your preferred format. In drill-me mode, makes the student
-  state the holding first. Use when the user says "brief [case]", "what's the
-  holding in", "case brief", or pastes a case.
-argument-hint: "[case name or citation, or paste the case]"
+  中国案例摘要与案例研习。以标准格式编写案例摘要，辅助学生理解和记忆。
+  在研习模式下，要求学生先陈述裁判要旨。
+  当用户说"摘要[案例]"、"裁判要旨"、"案例研习"或粘贴案例时使用。
+argument-hint: "[案例名称或引用，或粘贴案例文本]"
 ---
 
-# /case-brief
+# 案例研习（案例摘要）
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → outline/brief preferences.
-2. Apply the workflow below.
-3. Brief in the student's format. If drill-me mode: ask the student to state the holding first.
+## 程序步骤
+
+1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 知识体系/摘要偏好。
+2. 使用以下工作流。
+3. 以学生偏好格式编写案例摘要。如研习模式：要求学生先陈述裁判要旨。
 
 ---
 
-## Purpose
+## 目的
 
-A case brief is a tool for remembering what a case does. This skill makes one in your format — the format you'll actually use in your outline.
+案例摘要是记住案例裁判逻辑的学习工具。本技能以您知识体系中实际使用的格式生成摘要。
 
-## Confidence discipline
+## 案例来源体系
 
-Case briefs state holdings, rules, and reasoning. Getting them wrong turns your outline into a false map. The rule for this skill:
+中国案例的效力层级和参考价值：
 
-- **If you paste the case text:** I extract holding/rule/reasoning from what's in front of me. Confident.
-- **If you only give a case name:** I brief from knowledge. Worth a lot less. I flag every line I'm not sure about with `[UNCERTAIN: specific reason]`, and I strongly recommend you confirm against the actual case before putting the brief in your outline. If I don't know the case well enough, I say so.
-- **If the case has famous-but-contested interpretations:** I give the majority read and `[VERIFY: check your casebook and professor's framing]`.
+| 案例类型 | 发布机关 | 效力说明 | 可信度 |
+|----------|----------|----------|--------|
+| **指导性案例** | 最高人民法院/最高人民检察院 | 各级法院审判类似案件时**应当参照**；非裁判依据，但裁判理由部分应参照 | 最高 |
+| **公报案例** | 最高人民法院公报 | 具有重要参考价值，代表最高司法机关的裁判立场 | 高 |
+| **典型案例** | 最高人民法院/最高人民检察院专项发布 | 某一领域的示范性裁判，具有指导意义 | 高 |
+| **中国裁判文书网案例** | 各级人民法院 | 一般裁判文书，参考价值视审级和裁判质量而定 | 视情况 |
+| **参考性案例** | 高级人民法院 | 本辖区内参照适用 | 中高 |
 
-A brief built on my guess and your good faith is worse than no brief. Better to err toward "I'm not sure — read it yourself" than to invent.
+**重要提示：** 指导性案例在中国不被承认为正式法律渊源，不可作为裁判的直接依据，但各级人民法院审判类似案件时应当参照其裁判要点。法考中需注意指导性案例的效力定位。
 
-## Load context
+## 可信度准则
 
-`~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → outline/brief preferences (format, depth), learning style.
+- **如粘贴案例全文：** 从面前文本中提取裁判要旨/规则/推理。可信度高。
+- **如仅提供案例名称/案号：** 建议从中国裁判文书网或北大法宝/威科先行等法律数据库查询核实。不应仅凭记忆撰写完整摘要。
+- **如案例有著名但有争议的解释：** 给出主流理解并标记 `[核实：对照教材和教授分析框架]`。
+- **法条引用：** 标明法条全称和条款号。
 
-## The "don't brief it for me" rule (hard rule)
+## "不替学生写摘要"规则（核心规则）
 
-A brief you didn't write is a brief you won't remember. Every mode of this skill defaults to scaffolding the student's brief-writing, not to writing the brief.
+不是自己写的摘要，考试时记不住。本技能的每种模式默认都是辅助学生写摘要，而非替学生写。
 
-**What this skill will do in every mode:**
-- Ask the student what they already got from reading: the facts, the issue, the holding as they understand it.
-- Provide the blank template in their preferred format (headings for Facts, Issue, Holding, Reasoning, Rule, Notes).
-- Ask pointed follow-ups on whichever section is thin: "What were the key facts the court actually relied on?", "What's the narrow issue vs. the broader question?", "Why did the court reject the dissent's framing?"
-- If the student pastes the case text, extract verbatim the court's own language for holding and reasoning — that is not writing-for-them; that is pointing at what the case says.
-- Flag confused or wrong understandings: "You said the holding is X. The court's actual language is closer to Y. Which one is the rule you'll carry into your outline?"
+**本技能会做的：**
+- 引导学生陈述已从阅读中获取的内容：事实、争议焦点、对裁判要旨的理解
+- 以学生偏好格式提供空白模板框架
+- 对薄弱部分提出有针对性的追问
+- 如学生粘贴案例全文，提取法院自身的语言供参考——这是指向原文，不是替写
+- 标记混淆或错误的理解
 
-**What this skill will not do, even if asked:**
-- Write a full case brief from a case name alone. That is the exact thing the student is learning not to need.
-- "Summarize this case for me" — refused. The brief is for remembering, which requires writing.
+**本技能不会做的（即使被要求）：**
+- 仅凭案例名称就写出完整案例摘要（除最简框架外）
+- "帮我总结这个案例"——拒绝。摘要的目的是记忆，记忆需要自己写。
 
-**Exception** (the only one): the student explicitly overrides — "I've read it three times, I'm stuck on phrasing the holding, just give me a starter sentence so I can rewrite it." Then write a minimal starter with `[VERIFY]` flags and prompt them to rewrite in their own words before it goes into an outline.
+**唯一例外：** 学生明确说"我读了三遍了，卡在措辞裁判要旨上，只需要给我一个起头句"。那么给出一个最简起头并标记 `[核实]` 标签，并提示用自己的话改写。
 
-## Mode fork
+## 模式分支
 
-**Drill-me mode:** Ask the student to state the holding before anything else:
-> "You've read this case. What's the holding? One sentence."
+**研习模式（drill-me）：** 先要求学生陈述裁判要旨。如果陈述不出来，让他们再读一遍。追问争议焦点和法律适用逻辑。
 
-If they can't state it, make them read it again. The brief is a memory aid, not a substitute for reading. Then proceed to the scaffold — ask them to state facts, issue, reasoning, and rule in turn. Push back on thin or wrong statements.
+**讲解模式（explain-to-me）：** 同样的辅助工作流，语气更温和。逐节引导但不替写。
 
-**Explain-to-me mode:** Same scaffolded workflow, softer tone. The skill walks the student through each section, offers structural prompts ("a good holding is one sentence, yes/no + the rule"), but still waits for the student to write the content. **Explain-to-me does not mean "write the brief for me."** It means "explain what a good brief looks like, and guide me through writing mine."
-
-If the student pastes the case text in either mode, the skill can extract the court's own language into the Facts/Holding/Reasoning slots — that's not writing-for-them, that's pointing at the source.
-
-## The brief — scaffold, then the student fills
-
-The skill produces the **template with questions**, not the filled-in brief. Student fills each section; skill reviews, pushes back, suggests what's missing.
-
-Per the student's format in `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`. If none captured, default:
+## 案例研习标准格式
 
 ```markdown
-## [Case Name], [cite]
+## [案件名称]
 
-**Court:** [court, year]
+### 一、案件基本信息
 
-**Facts:** [The facts that matter to the holding. Not every fact — the ones
-the court relied on. Two to four sentences.]
+| 项目 | 内容 |
+|------|------|
+| **审理法院** | [法院名称] |
+| **案号** | [如：(2024)最高法民终xxx号] |
+| **案由** | [如：买卖合同纠纷] |
+| **当事人** | 原告/上诉人：[名称]；被告/被上诉人：[名称] |
+| **审判程序** | [一审/二审/再审] |
+| **裁判日期** | [日期] |
+| **案例来源** | [指导性案例第xx号/公报案例/中国裁判文书网/教材案例] |
 
-**Procedural posture:** [How did this get here? Trial court ruled X, this
-is an appeal from that. One sentence.]
+### 二、案件事实
 
-**Issue:** [The question the court answered. Phrased as a yes/no question.]
+[对裁判至关重要的核心事实。2-4句话概括。不写无关细节。]
 
-**Holding:** [The answer. One sentence. Yes/no + the rule.]
+### 三、争议焦点
 
-**Reasoning:** [Why. The court's logic. This is where the law is. Three to
-five sentences.]
+[法院需要回答的核心法律问题。以问句形式表述。通常1-3个。]
 
-**Rule:** [The rule you'd put in your outline. The portable takeaway.]
+### 四、法律适用
 
-**Notes:** [Dissent worth knowing? Distinguishable on these facts? How
-professor emphasized it?]
+| 法律依据 | 条款内容 | 适用分析 |
+|----------|----------|----------|
+| 《民法典》第xxx条 | [条款核心内容] | [如何适用于本案] |
 
----
+### 五、裁判结果与裁判要旨
 
-**Citation check.** The case cite, quoted language, and any supporting authority above were generated by an AI model and have not been verified. Before you rely on them — in a brief, memo, outline entry, or exam answer — look them up on Westlaw, Fastcase, CourtListener, or your school's research tool. AI-generated citations are sometimes fabricated or misquoted.
+**裁判结果：** [法院的判决结论，1-2句话]
+
+**裁判要旨：** [本案确立或重申的法律规则。1句话。这是知识体系中要提取的核心。]
+
+### 六、推理逻辑
+
+[法院的裁判推理过程。3-5句话。逻辑链条：大前提（法律规则）→ 小前提（本案事实）→ 结论。]
+
+### 七、研习要点
+
+**核心规则：** [可携带的知识要点。法考的考点关联。]
+
+**注意事项：** [值得了解的反对意见？可区分的事实？教材如何强调？]
+
+**关联案例：** [如有类似或对比的案例]
 ```
 
-## Depth calibration
+## 深度校准
 
-Per `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` — some students want one-line briefs (rule + cite), some want full treatment. Match their format.
+根据学生年级和需求调整：
+- **本科低年级：** 需要较完整的案例摘要以学习如何读案例
+- **法考备考学生：** 重点提取规则和考点关联，摘要从简
+- **研究生：** 注重推理逻辑和不同学说观点的对比分析
 
-If they're a 1L still learning to read cases: fuller briefs. If they're a 3L doing bar prep: rules only.
+## 与知识体系的联动
 
-## What this skill does not do
+每个案例研习完成后，提示学生将提取的规则纳入知识体系对应位置：
+> "本案的核心规则：[规则]。建议纳入知识体系 → [科目] → [章节] → [子主题]。"
 
-- Brief a case the student hasn't read. In drill-me mode, the holding check enforces this.
-- Tell you what's on the exam. Brief everything; the exam will surprise you.
-- **Brief from memory without flagging.** If you only give me a case name and I brief from what I think I know, every line I'm unsure about gets `[UNCERTAIN]` or `[VERIFY]`. Don't put a brief in your outline unless you've confirmed it against the actual case.
+## 本技能不做的事
+
+- 不替未读案例的学生写摘要
+- 不告知考试中一定会出现什么案例
+- 不凭记忆写完整摘要而不标记来源不确定性
+- 不替代北大法宝/威科先行/中国裁判文书网等正规案例数据库

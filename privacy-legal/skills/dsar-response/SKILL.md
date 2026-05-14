@@ -1,288 +1,291 @@
 ---
-name: dsar-response
+name: 个人信息主体权利请求响应
 description: >
-  Walk through a Data Subject Access Request (or deletion, portability, correction
-  request) and draft the response — verify identity, locate data system-by-system,
-  assess exemptions, draft the acknowledgment and substantive response letters.
-  Use when a DSAR comes in, the user pastes an access/deletion/portability/correction
-  request, or says "DSAR came in", "access request", "right to be forgotten", or
-  "someone wants their data".
-argument-hint: "[paste the request, or describe it]"
+  处理个人信息主体权利请求（查询、更正、删除、撤回同意、注销账号、携带权、解释说明权）
+  并起草响应文件——验证身份、逐系统定位数据、评估豁免情形、
+  起草确认函和实质响应函。适用场景：收到个人信息主体权利请求、
+  用户粘贴查询/删除/携带/更正请求，或说"有人要查数据""用户要求删除数据"
+  "个人信息保护请求来了"。
+argument-hint: "[粘贴请求内容，或描述请求]"
 ---
 
-# /dsar-response
+# /个人信息主体权利请求响应
 
-1. Load `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → DSAR process (systems list, verification method, SLA).
-2. Run the workflow below.
-3. Classify request type. Check escalation triggers — if any fire, route before proceeding.
-4. Walk through: verify identity → walk systems list → exemption analysis → draft.
-5. Output response draft. Do NOT send — human reviews and sends.
-6. Log the DSAR per house process.
+## 指示
 
-**Before pasting the request:** the request will contain the data subject's PII. Confirm your session and output storage meet your data-handling requirements. Redact anything you don't need (ID attachments, unrelated email threads). Do not store the subject's name in filenames.
+1. 加载执业画像中的系统清单和权利请求处理流程配置。
+2. 按以下工作流程执行。
+3. 分类请求类型。检查升级触发条件——如有触发，先分流处理。
+4. 逐步推进：验证身份 → 遍历系统清单 → 豁免分析 → 起草。
+5. 输出响应草稿。不得发送——由人审查后发送。
+6. 按内部流程记录权利请求。
+
+**粘贴请求前须知：** 请求中包含个人信息主体的个人信息。请确认您的会话和输出存储满足数据处理要求。对不需要的内容进行脱敏处理（身份证件影印件、无关邮件线索等）。不得将个人信息主体的姓名存储在文件名中。
 
 ```
-/privacy-legal:dsar-response
-[paste the request email]
+/privacy-legal:个人信息主体权利请求响应
+[粘贴请求邮件]
 ```
-
----
-
-# DSAR Response Drafting
-
-## Matter context
-
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/privacy-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/privacy-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
 
 ---
 
-## Purpose
+# 个人信息主体权利请求响应起草
 
-A DSAR has a deadline (set by the applicable regime), a process (verify, locate, assess exemptions, respond), and a bunch of places it can go wrong. This skill walks through each step and drafts the response.
+## 目的
 
-## Jurisdiction assumption
+个人信息主体权利请求有法定响应期限（《个保法》规定）、有流程（验证、定位、评估豁免、响应）、有诸多可能出错的地方。本技能逐步推进每一步并起草响应文件。
 
-This analysis assumes the jurisdictional scope specified in your configuration. Privacy rules, response deadlines, and lawful bases vary materially by jurisdiction (GDPR vs. state consumer privacy laws vs. sectoral). If the data subject, processing activity, or controller is in a different jurisdiction than configured, this analysis may not apply as written.
+## 法律依据
 
-## Load the process
+本工作流依据中华人民共和国《个人信息保护法》（PIPL，2021年11月1日施行）：
 
-Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → `## DSAR process`. That section has:
-- The systems list (every place user data lives)
-- Identity verification method
-- Response SLA
-- Who handles routine vs. who gets escalated
-
-If the systems list is empty or stale, flag it — can't do a complete DSAR without knowing where to look.
-
-## Workflow
-
-### Step 1: Classify the request
-
-Identify which right the data subject is invoking. Common categories:
-
-- **Access** — copy of their data + information about processing
-- **Deletion / erasure** — remove their data (subject to exemptions)
-- **Portability** — their data in machine-readable format
-- **Correction / rectification** — fix inaccurate data
-- **Objection** — stop a particular processing (often marketing)
-- **Restriction** — pause processing pending a dispute
-- **Opt-out of sale/share / automated decision-making** — regime-specific rights
-
-**Research the applicable rule before proceeding.** For each invoked right, identify the jurisdiction(s) whose law applies (GDPR, UK GDPR, CCPA/CPRA, other US state privacy laws, sectoral regimes). Cite the controlling statute or regulation with pinpoint references — the specific article/section, the scope of the right, any carve-outs. Note effective dates; data subject rights are amended frequently (new state laws each legislative session). Flag uncertainty and escalate for attorney verification rather than stating a rule you haven't confirmed.
-
-> **No silent supplement.** If a research query to the configured legal research tool returns few or no results for the jurisdiction's rights, exemptions, or deadlines, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [regime / right]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) flag as unverified and stop. Which would you like?" A lawyer decides whether to accept lower-confidence sources.
->
-> **Source attribution tiering.** Tag every citation with its source. For model-knowledge citations, use one of three tiers rather than a single blanket "verify" tag:
->
-> - `[settled]` — stable, well-known statutory and regulatory references unlikely to have changed (e.g., GDPR Art. 33, CCPA § 1798.100, FTC Act § 5, 45-day CCPA response window under § 1798.130(a)(2) as a concept). Still verify before filing, but lower priority.
-> - `[verify]` — model-knowledge citations that are real but should be verified: specific implementing regulations, agency guidance, case holdings, thresholds, effective dates, post-2023 amendments.
-> - `[verify-pinpoint]` — pinpoint citations (specific subsection letters, volume/page numbers, paragraph numbers, regulatory subpart references) carry the highest fabrication risk and should ALWAYS be verified against a primary source.
->
-> Tool-retrieved citations keep their source tag (`[Westlaw]`, `[issuing authority site]`, or the MCP tool name); web-search citations remain `[web search — verify]`; user-supplied citations remain `[user provided]`. The tiering surfaces the real verification work — a reader who verifies everything verifies nothing. Never strip or collapse the tags.
-
-Some requests are combinations — "delete my account and send me my data first" is deletion + portability. Handle as two linked requests.
-
-### Step 2: Verify identity
-
-Per the method in `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`. Common approaches:
-
-- **Logged-in verification:** Request came from within an authenticated session → identity confirmed
-- **Email match:** Request came from an email on file → usually sufficient for low-risk requests
-- **Additional verification:** For high-value accounts or deletion requests → challenge question, phone verification, ID document
-
-**Calibrate to risk.** Over-verifying turns the DSAR process into a barrier (bad look with regulators). Under-verifying risks handing someone else's data to a fraudster.
-
-If identity can't be verified:
-
-```markdown
-We were unable to verify that this request came from the individual whose data
-is at issue. To proceed, please [verification step]. We cannot provide personal
-data in response to a request we cannot verify.
-```
-
-This pauses the clock (arguably) but don't sit on it — respond to say you need verification within a few days, not on day 29.
-
-### Step 3: Locate the data
-
-Walk the systems list from `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`. For each system:
-
-| System | Queried? | Data found? | What |
-|---|---|---|---|
-| Production database | | | |
-| Analytics (e.g., Mixpanel, Amplitude) | | | |
-| Support tickets (e.g., Zendesk) | | | |
-| CRM (e.g., Salesforce, HubSpot) | | | |
-| Email marketing (e.g., Marketo) | | | |
-| Logs | | | |
-| Backups | | | (note: usually exempt from deletion — see below) |
-| Third-party processors | | | (they may need to be notified for deletion) |
-
-For a B2B processor: the "data subject" is usually *your customer's* end user. Check whether this is actually your customer's DSAR to handle, not yours. Many processor DPAs say "forward DSARs to the controller."
-
-### Step 4: Exemption analysis
-
-Not everything gets produced or deleted. **Research the applicable rule before proceeding.** For each item, identify every exemption that plausibly applies under the regime in scope (e.g., third-party privacy, privilege, trade secret, security, legal obligation to retain, establishment/defense of legal claims, transactional necessity, backup rotation accommodations, freedom of expression). Cite the controlling statute, regulation, or case with a pinpoint cite. Exemption scope varies by jurisdiction and regime — verify currency and flag uncertainty.
-
-**Don't narrow the list on a subjective call.** The skill proposes exemptions where a good-faith basis exists and flags the uncertain ones; the attorney narrows the list before the response goes out. Dropping an exemption that later turns out to apply is costly — once material is disclosed, the exemption is functionally gone. Over-asserting a plausible exemption is correctable by the attorney in review. Prefer the recoverable error.
-
-Every proposed exemption carries an explicit note: **"proposed — requires attorney review before asserting. Regulators scrutinize blanket exemption claims, so the attorney narrows this list; the skill does not."**
-
-Common recurring questions to work through:
-
-- Does the record contain data about *other* people that needs to be redacted before production?
-- Is there a specific legal retention obligation that blocks deletion? Cite it.
-- Is there an active litigation hold covering this individual's data?
-- Are there backup rotation or technical-feasibility accommodations that need to be documented (not used as a general excuse)?
-
-**Document every exemption claimed.** If a regulator asks why you didn't delete something, "we had a legal obligation" needs a citation.
-
-### Step 5: Draft the response — TWO LETTERS
-
-> **Research-connector pre-flight.** Before emitting either letter or the internal exemption analysis, check whether a legal research connector is reachable for this session — Westlaw, an EUR-Lex / regulator-site connector, or any firm-configured research MCP. Collect this into the reviewer note per CLAUDE.md `## Outputs` — the reviewer note sits on the INTERNAL exemption-analysis and cover memo, NOT on the outward-facing DSAR letters to the data subject. If no connector returns results in Step 1 (right classification), Step 4 (exemption analysis), or the Deadline management research step (or none is configured at run time), record it in the **Sources:** line of the internal reviewer note — e.g., `not connected — cites from training knowledge; claimed exemptions, response deadlines, and extension mechanisms are especially fabrication-prone, verify before asserting any exemption to a data subject or regulator`. Per-citation `[model knowledge — verify]` tags remain inline. Do not emit a standalone banner above the output.
-
-Most regimes expect (or require) a prompt acknowledgment separate from the substantive response. Produce both; do not collapse them into one letter that waits until the 45-day deadline to go out.
-
-- **Step 5a — Acknowledgment letter.** Sent within days of receipt (target: same-day to 3–5 days, always well inside the regime's statutory window). Confirms receipt, states what the controller understands the request to be, states the response clock and the target date, asks for any identity-verification material still outstanding. Does NOT contain the substantive disclosure. A prompt acknowledgment is the first regulator-visible signal that the DSAR process is working; it also reduces the risk of a duplicate request or an early complaint.
-- **Step 5b — Substantive response letter.** The actual disclosure, deletion confirmation, or portability export. Goes out by the statutory deadline (or the internal SLA if tighter). Only after identity verification is complete and the Step 3 / Step 4 data location + exemption analysis is done.
-
-**Before proceeding to send either letter to the data subject:** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`. If the Role is Non-lawyer:
-
-> Sending a DSAR response has legal consequences — the content, the exemptions claimed, and the omissions are all reviewable by a regulator, and misstatements become enforcement exposure. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> [Generate a 1-page summary: data subject, right invoked, applicable regime(s), what was located across the systems list, what is being withheld and under which exemption, identity verification posture, response deadline, and the three things to ask the attorney before the letter goes out.]
->
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
-
-Do not proceed past this gate without an explicit yes.
-
-> **Note:** Both DSAR letters are externally-facing deliverables sent to the data subject. Do **not** include the work-product header from `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` `## Outputs` on either letter. Internal notes, logs, and exemption analyses that accompany the letters are attorney work product — keep those separate and prepend the work-product header per `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` `## Outputs` (which differs by user role — see `## Who's using this`).
-
-> **Before sending either letter:** This is a draft for attorney review, not a response to send. Sending commits the controller to a position, may waive exemptions, and may start a regulator's clock. A licensed attorney reviews, edits, and approves before either letter goes to the data subject. Do not send unreviewed.
-
-#### Step 5a — Acknowledgment letter template
-
-```markdown
-Subject: We received your privacy request — [Company] — [date]
-
-Dear [Name],
-
-We received your [access / deletion / portability / correction] request on [date received].
-
-**Your request, as we understand it:** [one-sentence restatement — e.g., "a copy of all personal data we hold associated with your account, along with the categories of third parties with whom we share it, and deletion of your account after we provide the copy."]
-
-**What happens next:**
-- Our target date for the substantive response is [date — no later than the regime's statutory deadline; use internal SLA if tighter]. [If identity verification is outstanding: "We need [specific verification step] before we can proceed — see below."]
-- If we need more time because the request is complex or we receive other requests from you at the same time, we will tell you before the initial deadline and explain why. [If the regime allows an extension, cite the controlling provision.]
-- No fee applies to this request. [Or: the fee applies only if the regime permits it and the request is manifestly unfounded or excessive — cite the provision.]
-
-[If identity verification is outstanding:]
-**To verify your identity,** please [specific verification step — e.g., reply to this email from the address on file with the last 4 digits of the payment method we have on file]. This does not pause our deadline; we continue to work in parallel.
-
-If you have questions, contact [privacy contact].
-
-[Sender]
-```
-
-**Clock-start rule.** The response clock starts on receipt of the request, not on completion of identity verification — unless the applicable regime says otherwise. Do not tacitly toll the clock on verification. If a regime has a different trigger, cite it; do not assume.
-
-#### Step 5b — Substantive response letter templates
-
-**Access request response:**
-
-```markdown
-Subject: Your Data Access Request — [Company] — [date]
-
-We received your request on [date] for a copy of the personal data we hold about you.
-
-**What we found:**
-
-We hold the following categories of personal data associated with [identifier]:
-
-| Category | Source | Purpose | Retained until |
-|---|---|---|---|
-| [Account info: name, email] | You, at signup | Account management | Account deletion |
-| [Usage data] | Our service | Analytics, product improvement | [period] |
-| [Support correspondence] | You | Customer support | [period] |
-
-**Your data is attached** in [format]. [Secure delivery note — password-protected
-archive, secure link with expiry, etc.]
-
-**Third parties:** We share data with the following processors: [list or link to
-subprocessor page].
-
-**Your other rights:** You may also request [deletion / correction / portability].
-To do so, [method].
-
-**Data we did not include:**
-- [Category] — [exemption and reason, e.g., "internal security logs — disclosure
-  would compromise security measures"]
-- [Data about other individuals has been redacted from support correspondence]
-
-If you have questions about this response, contact [privacy contact].
-```
-
-**Deletion request response:**
-
-```markdown
-Subject: Your Deletion Request — [Company] — [date]
-
-We received your request on [date] to delete the personal data we hold about you.
-
-**What we deleted:**
-
-| Category | System | Deleted on |
+### 个人信息主体权利（《个保法》第44-50条）
+| 权利 | 法律条文 | 内容概述 |
 |---|---|---|
-| [Account and profile] | Production | [date] |
-| [Analytics events] | [Amplitude/etc.] | [date] |
-| [etc.] | | |
+| **查阅/复制权** | 第44-45条 | 查阅其个人信息；获取其个人信息副本 |
+| **更正/补充权** | 第46条 | 发现信息有误或不完整时请求更正、补充 |
+| **删除权** | 第47条 | 处理目的已实现/无法实现/不再必要；撤回同意；停止提供服务；保存期限届满；违法处理等 |
+| **撤回同意权** | 第15条 | 撤回之前给予的处理同意（不影响撤回前基于同意的处理） |
+| **注销账号权** | 第47条 | 注销注册账号 |
+| **携带/转移权** | 第45条第三款 | 将个人信息转移至其指定的个人信息处理者（符合国家网信部门规定条件） |
+| **解释说明权** | 第48条 | 要求个人信息处理者对其个人信息处理规则进行解释说明 |
+| **拒绝自动化决策** | 第24条 | 拒绝仅通过自动化决策作出对其权益有重大影响的决定 |
 
-**What we retained and why:**
+### 响应时效要求（第47条 + 《个保法》实施规则）
+- **及时响应义务**：收到请求后应及时响应
+- **一般期限**：15个工作日内作出响应
+- **延期机制**：可在15个工作日基础上延长15个工作日（合计30个工作日），**需及时告知**个人信息主体延期的原因
+- **时效起算**：自确认收到请求之日（而非完成身份验证之日）起算
+- **延期通知义务**：必须在最初15个工作日到期前告知
 
-| Category | Reason | Retained until |
-|---|---|---|
-| [Transaction records] | Legal obligation (tax record retention, [cite law]) | [date] |
-| [Backup snapshots] | Will be deleted on next rotation | [date] |
+## 加载流程
 
-**Third-party processors:** We have instructed [list] to delete your data from
-their systems.
+读取执业画像配置中的系统清单（用户数据存在于哪些系统）、身份验证方式、响应时效和升级接收人设置。
 
-Your account is now closed. If you have questions, contact [privacy contact].
+如果系统清单为空或过时，标注——不明确数据存放位置则无法完成完整的权利请求响应。
+
+## 工作流程
+
+### 第1步：分类请求
+
+识别个人信息主体正在行使哪项权利。常见类别：
+
+- **查阅/复制权**（第44-45条）——获取其个人信息副本及处理相关信息
+- **删除权**（第47条）——删除其个人信息（受豁免限制）
+- **携带/转移权**（第45条第三款）——以结构化、通用、机器可读格式获取个人信息，转移至其他处理者
+- **更正/补充权**（第46条）——修正不准确的个人信息或补充不完整的个人信息
+- **撤回同意**（第15条）——撤回之前给予的处理同意
+- **注销账号**（第47条）——注销注册账号
+- **解释说明权**（第48条）——要求对其个人信息处理规则进行解释说明
+- **自动化决策相关权利**（第24条）——要求对自动化决策处理进行说明，并拒绝仅通过自动化决策方式作出对其权益有重大影响的决定
+
+**继续前先研究适用规则。** 对每项被行使的权利，确认适用法律条文（《个保法》及相关配套法规）。引用具体条款——权利范围、除外情形。标注不确定的部分，由律师核实。
+
+> **禁止静默补充。** 如果已配置的法律检索工具（裁判文书网、北大法宝或律所平台）返回零或极少结果，报告已发现内容并停止。不得未经询问从网络搜索或模型知识填充空白。由律师决定是否接受较低可信度的来源。
+>
+> **来源标注分级：**
+> - `[通说]` —— 稳定、公认的法律条文引用（如《个保法》第44-50条）。提交前仍需核实，但优先级较低。
+> - `[核实]` —— 确实存在但应核实：具体实施细则、网信办指引、执法案例。
+> - `[核实-精确定位]` —— 精确定位引用（具体条款编号、段落）具有最高虚构风险，应始终对照一手来源核实。
+
+复合请求（如"删除我的账户并先把数据发给我"=删除+查阅）按两个关联请求处理。
+
+### 第2步：验证身份
+
+按执业画像中的身份验证方式执行。常见方式：
+
+- **登录态验证：** 请求来自已认证会话内 → 身份已确认
+- **邮箱/手机号匹配：** 请求来自系统中已登记的邮箱/手机号 → 通常足以应对低风险请求
+- **额外验证：** 高价值账户、删除或携带请求 → 密保问题、电话验证、身份证明文件验证
+
+**依风险校准。** 过度验证使权利请求流程变成障碍（监管机构观感不佳）。验证不足存在将他人数据交给冒名者的风险。
+
+**代理人请求：** 如果请求由代理人提出，需核实代理人的授权委托手续（授权委托书等）。
+
+如果身份无法验证：
+
+```markdown
+我方无法核实您是否为本请求所涉个人信息主体（或经其合法授权的代理人）。为继续处理，请您[验证步骤]。我方无法在无法核实身份的请求中提供或处理个人信息。
 ```
 
-### Step 6: Log it
+身份验证环节应尽快完成，不得成为拖延响应的手段。
 
-DSARs get audited. Record:
-- Date received
-- Date identity verified
-- Date responded
-- What was produced/deleted
-- Exemptions claimed and basis
-- Who handled it
+### 第3步：数据定位
 
-If your team uses a DSAR tracking tool, create the record there. If not, a log file works.
+遍历执业画像中的系统清单。对每个系统：
 
-## Escalation triggers
+| 系统 | 是否查询？ | 是否发现数据？ | 内容 |
+|---|---|---|---|
+| 生产数据库 | | | |
+| 数据分析（神策、友盟等） | | | |
+| 客服工单系统 | | | |
+| CRM系统 | | | |
+| 邮件/短信营销系统 | | | |
+| 日志系统 | | | |
+| 备份系统 | | | （注：删除通常不适用于备份——见第4步） |
+| 受托处理者系统 | | | （需通知受托处理者配合处理） |
 
-Per `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → Escalation table, escalate when:
+对于受托处理者：个人信息主体通常是你客户的终端用户。检查应否将请求转至个人信息处理者（客户）处理。委托处理协议通常约定"将权利请求转至个人信息处理者"。
 
-- Requester is (or might be) a plaintiff, opposing counsel, or journalist
-- Request scope is unusual ("all data including internal communications about me")
-- There's a litigation hold on this individual's data (deletion request + lit hold = conflict, lawyer decides)
-- Requester is disputing a previous DSAR response
-- Any regulator is cc'd or mentioned
+### 第4步：豁免分析
 
-## Deadline management
+并非所有数据都需要提供或删除。逐一分析是否适用以下豁免情形：
 
-**Two-letter rule.** Every DSAR produces an acknowledgment letter (prompt — target same-day to 3–5 days after receipt) AND a substantive response letter (by the statutory deadline). Most regimes either require or expect a prompt acknowledgment separate from the substantive response; a single combined letter sent on day 45 is a process failure even if it is substantively correct.
+| 豁免情形 | 法律依据 | 分析要点 |
+|---|---|---|
+| **法律另有规定** | 《个保法》多条款 | 如法定留存义务阻止删除——引用具体法律法规条文 |
+| **商业秘密保护** | 《个保法》第48条 | 处理规则中包含商业秘密的，可以不予详细说明 |
+| **对他人权利有重大影响** | 《个保法》第45条 | 行使查阅/复制权可能对他人权益产生重大影响的（如包含他人的聊天记录、通讯录） |
+| **有法律、行政法规规定应保密或不需要告知** | 《个保法》第18条 | 不适用告知义务的豁免情形延伸 |
+| **证据保全覆盖** | 民事诉讼等 | 存在活跃的证据保全措施覆盖该个人信息主体的数据 |
+| **备份轮换容纳** | 技术可行性考量 | 备份系统中无法逐条删除——记录将在下一次备份轮换时自然删除 |
+| **安全和防欺诈** | 业务必需性 | 内部安全日志——披露将危害安全保障措施 |
 
-**Research the currently operative response deadline for the specific right invoked and the applicable jurisdictions.** Check whether an extension mechanism exists, how much extra time it buys, and what notice the data subject must receive to invoke it. Identify when the clock starts (receipt vs. verification vs. some other trigger — default rule is receipt; verify per regime). Cite the controlling statute or regulation with pinpoint references. Note effective dates — data protection response timelines are amended frequently and new state laws introduce their own clocks.
+**记录每项所主张的豁免。** 如果监管机构询问为何未删除某项数据，"有法定义务"需要具体的法律条文引证。
 
-If `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → `## DSAR process` records an internal SLA that is tighter than the legal deadline, use the internal SLA and note the legal backstop.
+**每项提议的豁免均附明确说明：** "提议——须律师审查后方可主张。监管机构审视笼统的豁免主张，因此由律师缩小此清单；本技能不替代律师判断。"
 
-If you're going to need an extension, send the "we need more time" notice well before the first deadline. Day-of extensions look bad.
+### 第5步：起草响应——两份函件
 
-## What this skill does not do
+> **外部交付：** 两份权利请求函件均为发给个人信息主体的对外文件。**不得**在其中包含"保密·律师工作成果"抬头。伴随函件的内部备忘、日志和豁免分析为律师工作成果——应单独保留并附工作成果抬头。
 
-- It doesn't query systems directly. It walks you through the checklist; a human (or a connected tool) does the actual queries.
-- It doesn't make exemption calls on close cases. It flags them for a lawyer.
-- It doesn't send the response. Draft, review, human sends.
+> **发送前注意：** 本输出为律师审查的草稿，不是可发送的响应。发送即确定了个人信息处理者的立场，可能构成豁免放弃，并可能启动监管时效。执业律师审查、修改并批准后，方可向个人信息主体发出。不得发送未经审查的草稿。
+
+产出两份函件：
+
+- **第5a步——确认函。** 收到请求后数日内发出（目标：当天至3-5天内，始终远在15个工作日内）。确认收到、说明处理者理解的请求内容、说明响应时效和目标日期、询问尚待完成的身份验证材料。**不包含**实质内容。
+- **第5b步——实质响应函。** 在法定截止日（15个工作日，可延长至30个工作日）前发出。仅在身份验证完成且数据定位+豁免分析完成后发出。
+
+**向个人信息主体发送任一函件前：** 读取执业画像中的使用人身份。如果角色为非律师：
+
+> 发送权利请求响应具有法律后果——内容、所主张的豁免和遗漏均可被监管机构审查，错误陈述构成执法风险。您是否已与律师审查过？如果已审查，继续。如果未审查，以下是一份带去给律师的简要说明：
+>
+> [生成1页摘要：个人信息主体、行使的权利、在系统清单中定位到的数据、扣留了什么及依据、身份验证状态、响应截止日、发函前应询问律师的3个问题。]
+>
+> 如果您需要在贵司法管辖区寻找执业律师：中华全国律师协会或地方律师协会是最快的起点。
+
+不得在未获得明确同意的情况下越过此关。
+
+#### 第5a步——确认函模板
+
+```markdown
+主题：关于您的个人信息保护请求的确认 —— [公司名称]
+
+尊敬的[姓名]：
+
+我方于[收到日期]确认收到您关于[查阅/删除/更正/撤回同意/注销账号/携带转移/解释说明]个人信息的请求。
+
+**您请求的内容，以我方理解为准：** [一句话重述]
+
+**后续安排：**
+- 我方将及时响应您的请求。目标日期为[日期——不迟于收到后15个工作日]。
+- 如因请求复杂或同时收到多份请求需要延长处理时间至30个工作日，我方将在上述到期日前告知您并说明原因。
+- 本请求不收取任何费用。[或：仅在请求明显无理或过度重复的情况下，依据相关规定收取必要费用。]
+
+[如身份验证尚待完成：]
+**为核实您的身份：** 请您[具体验证步骤]。我方将继续并行推进处理。
+
+如有疑问，请联系[隐私保护联系人]：[联系方式]
+
+[发件人]
+```
+
+#### 第5b步——实质响应函模板
+
+**查阅请求响应：**
+
+```markdown
+主题：您的个人信息查阅请求响应 —— [公司名称]
+
+我方于[日期]收到您关于获取我方所持有个人信息副本的请求。
+
+**查阅结果：**
+
+我方持有以下与[标识符]关联的个人信息类别：
+
+| 类别 | 来源 | 处理目的 | 保留至 |
+|---|---|---|---|
+| [账户信息：姓名、邮箱、手机号] | 您注册时提供 | 账户管理 | 注销账户时止 |
+| [使用数据] | 我方服务 | 数据分析、产品改进 | [期限] |
+| [客服通信记录] | 您主动联系 | 客户服务 | [期限] |
+
+**您的个人信息已附后**，格式为[格式]。[安全交付说明——密码保护文件、带有效期安全链接等。]
+
+**受托处理者/接收方：** 我方与以下受托处理者/接收方共享了您的个人信息：[列出]。
+
+**您的其他权利：** 您还可请求[更正/删除/撤回同意/注销账号/携带转移]。如需行使上述权利，请[方式]。
+
+**未包含的数据及原因：**
+- [类别] —— [豁免及法律依据]
+- [类别] —— [数据中含他人个人信息，已进行脱敏处理]
+
+如对本响应有疑问，请联系[隐私保护联系人]：[联系方式]
+```
+
+**删除请求响应：**
+
+```markdown
+主题：您的个人信息删除请求响应 —— [公司名称]
+
+我方于[日期]收到您关于删除我方所持有个人信息的请求。
+
+**已删除的数据：**
+
+| 类别 | 所在系统 | 删除日期 |
+|---|---|---|
+| [账户与个人资料] | 生产环境 | [日期] |
+| [分析事件] | [系统名] | [日期] |
+
+**保留的数据及原因：**
+
+| 类别 | 原因 | 预计删除时间 |
+|---|---|---|
+| [交易记录] | 法定留存义务（[引用具体法规条文]） | [日期] |
+| [备份快照] | 将在下次备份轮换时覆盖删除 | [日期] |
+
+**受托处理者：** 我方已通知[受托处理者]配合删除其系统中的您的个人信息。
+
+如有疑问，请联系[隐私保护联系人]：[联系方式]
+```
+
+### 第6步：记录
+
+权利请求将受审计。记录：
+- 收到日期
+- 身份验证日期
+- 响应日期
+- 提供/删除/更正/转移了什么
+- 所主张的豁免及法律依据
+- 处理人
+
+如果团队使用权利请求跟踪系统，在其中创建记录。如果没有，日志文件亦可。
+
+## 升级触发条件
+
+以下情形需升级处理：
+
+| 升级触发情形 | 升级接收人 |
+|---|---|
+| 请求人是（或可能是）原告、对方律师、记者或监管人员 | [升级接收人] |
+| 请求范围异常（如"包括关于我的所有内部通信"） | [升级接收人] |
+| 该个人信息主体的数据存在证据保全（删除请求 + 证据保全 = 冲突，律师决定） | [升级接收人] |
+| 请求人在质疑先前的权利请求响应 | [升级接收人] |
+| 任何监管机构被抄送或提及 | [升级接收人] |
+| 请求涉及大量数据或批量请求 | [升级接收人] |
+
+## 截止日期管理
+
+**双函件规则。** 每项权利请求产出确认函（及时——目标当天至收到后3-5天）和实质响应函（15个工作日截止前）。仅在30个工作日时才发出一份合并函件，即使内容正确也是流程失败。
+
+**延期规则：**
+- 15个工作日：一般响应期限
+- 可延长15个工作日：需在最初15个工作日到期前告知个人信息主体原因
+- 延长总期限不得超过30个工作日（含原15个工作日）
+- 不得等到第15个工作日才告知需要延期
+
+## 本技能不做什么
+
+- 不直接查询系统。带您走一遍核查清单；由人（或接入的工具）执行实际查询。
+- 不对边缘案件做豁免判断。标注供律师/DPO决定。
+- 不发送响应。起草 → 审查 → 由人发送。
+- 不替代从第14条处理到第47条删除的完整数据生命周期合规。

@@ -1,163 +1,87 @@
 ---
-name: draft
+name: 法律文书代书
 description: >
-  First draft of a common clinic document — practice-area templates (asylum
-  applications, eviction answers, protective order petitions, demand letters),
-  jurisdiction-aware formatting, explicitly a starting point requiring student
-  analysis and attorney review. Use when a student needs a first draft of a
-  motion, letter, petition, declaration, or other clinic document.
-argument-hint: "[document type — e.g., 'eviction-answer', 'asylum-declaration', 'demand-letter']"
+  按中国法院/仲裁委格式要求生成法律援助诊所常用文书初稿——
+  起诉状、答辩状、上诉状、再审申请书、执行申请书、财产保全申请书、
+  证据保全申请书、劳动仲裁申请书、法律援助申请书等。
+  按管辖法院要求格式化，明确标注为需学生分析填充和指导教师审查的草稿起点。
+  当学生需要代书法律文书时使用。
+argument-hint: "[文书类型 — 如'起诉状'、'上诉状'、'劳动仲裁申请书']"
 ---
 
-# /draft
+# /法律文书代书
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice-area templates, jurisdiction, local rules, supervision style.
-2. Use the workflow below.
-3. Match doc type to template. Gather facts from case notes — flag missing, never guess.
-4. Apply jurisdiction formatting. Draft with `[FACT NEEDED]`, `[VERIFY]`, `[UNCERTAIN]` flags inline.
-5. Output with prominent AI-assisted label, student review checklist, supervision routing.
+## 目的
 
-```
-/legal-clinic:draft eviction-answer
-```
+法律援助诊所的一项重要职能是为当事人代写法律文书。《法律援助法》(2022)第25条
+将"代拟法律文书"列为法律援助服务形式之一。
 
-```
-/legal-clinic:draft asylum-declaration
-```
+本技能按中国法院/仲裁委对文书的格式要求生成结构化初稿——这是需要学生分析填充
+和指导教师审查的起点，而非可直接立案提交的成品。中国法院文书格式不同于美国
+法院（后者使用caption/pleading paper之类的格式），必须按照中国法院要求的格式书写。
 
----
+## 中国法律援助常见代书文书
 
-# Draft: First-Draft Document Generation
+### 民事诉讼类
+- **民事起诉状：** 原告/被告信息、诉讼请求、事实与理由、证据清单和证据来源、受诉法院名称
+- **民事答辩状：** 答辩人信息、针对起诉状的答辩意见、事实与理由
+- **民事上诉状：** 上诉人/被上诉人信息、原审法院和案号、上诉请求、事实与理由
+- **再审申请书：** 申请人/被申请人信息、原审信息、再审请求、法定再审事由
+- **执行申请书：** 申请人/被申请人信息、执行依据（生效判决/裁定/调解书）、申请执行内容
+- **财产保全申请书：** 申请保全的财产信息、担保方式
+- **证据保全申请书：** 申请保全的证据内容和理由
+- **管辖权异议申请书**
+- **追加当事人申请书**
 
-## Purpose
+### 劳动争议类
+- **劳动仲裁申请书：** 申请人/被申请人信息（特别是被申请人用人单位准确名称）、仲裁请求、事实与理由
+- **劳动争议起诉状：** 对仲裁裁决不服向法院起诉
 
-Students spend enormous time on first drafts of documents where the educational value is in the analysis and strategy, not in formatting a caption or writing "Dear Judge." This skill produces the first draft from case notes and practice-area templates so the student's time goes to the thinking.
+### 婚姻家庭类
+- **离婚起诉状：** 当事人信息、诉讼请求（离婚/子女抚养/财产分割/债务承担）、感情破裂的事实与理由
+- **变更抚养权起诉状**
+- **追索抚养费起诉状**
 
-**Every draft is explicitly a starting point.** Not final work product. The student analyzes, revises, and the professor reviews before anything goes anywhere.
+### 刑事诉讼类
+- **刑事附带民事起诉状：** 刑事被害人要求赔偿
+- **刑事上诉状**
+- **取保候审申请书**
+- **刑事申诉状**
 
-## Load context
+### 行政争议类
+- **行政起诉状：** 针对具体行政行为的诉讼请求
+- **行政复议申请书**
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → practice areas, practice-area templates, jurisdiction (state + local court + any local rules ingested), supervision style.
+### 法律援助专用文书
+- **法律援助申请书：** 向法律援助机构提交
 
-Case notes or intake summary for the facts.
+## 工作流
 
-## Pedagogy check
+1. **确定文书类型和业务领域。**
+2. **从案件文件加载当事人和案件信息。** 读取接案笔录（intake-record.md）、案件文件。
+3. **按管辖法院/仲裁委要求生成结构化初稿。**
+   - 部分法院对文书格式有特殊要求（如必须使用法院提供的模板），注意查阅当地法院规则
+   - 如当地规则未知，使用省级默认格式并标记 `[格式需对照当地法院要求核实]`
+4. **标记需学生完成的空白处。** `[需学生填写：具体日期/金额/证据编号等]`
+5. **标记需指导教师审查的章节。** `[review：诉讼请求是否妥当？]` `[review：被告主体是否适格？]`
 
-Read the supervisor guide for this practice area at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Check the `pedagogy_posture` setting:
+## 文书格式要求（中国法院标准）
 
-- **`guide` (default):** Produce the structure and the checklist. Ask the student to draft each section. Give feedback on their draft (register, reading level, required elements, what they missed). Offer to fill a section only when the student has tried once.
-- **`assist`:** Produce the work product. Flag items for student review. The student edits and learns by reviewing.
-- **`teach`:** Don't produce the work product. Ask the student to draft it. Give feedback. Ask leading questions when they're stuck. Only show a model paragraph after two attempts, and only the section they're stuck on. Track what they got right and wrong so the supervisor can see progress.
+中国法院法律文书的基本格式要素：
+- **标题：** 文书名称（如"民事起诉状"）居中
+- **当事人信息：** 自然人（姓名/性别/出生日期/民族/住址/身份证号/联系方式）或法人（名称/统一社会信用代码/法定代表人/地址）
+- **诉讼请求：** 逐项列明，具体明确可执行
+- **事实与理由：** 按时间顺序叙述事实，引用法律依据
+- **落款：** "此致" + 受诉法院名称、具状人签名/盖章、日期
+- **附件：** 证据清单（证据名称、份数、证明目的）、起诉状副本份数
 
-If no guide exists, use `guide`. If the guide exists but doesn't set a posture, use `guide`.
+## 质量标记
 
-Whatever the posture, the output always includes: "**Pedagogy mode: [assist/guide/teach]** — set by your supervisor's guide. This means I [description of what the student did vs what the skill did]."
+每个初稿都是 `[AI辅助草稿——需学生分析及指导教师审查]`。绝不声称是可就绪提交法院的版本。
 
-**Jurisdiction assumption.** The draft assumes the state, court, and local rules set in CLAUDE.md. Caption format, service requirements, page limits, filing windows, and substantive rules vary materially across jurisdictions and even between courts in the same state. If the matter is in a different court or a different state, confirm with your supervisor before relying on any format, deadline, or argument in the draft.
+## 本技能不做的事
 
-## Workflow
-
-### Step 1: Which document?
-
-Match the request to the clinic's template set (from `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`). Common set by practice area:
-
-| Practice area | Documents |
-|---|---|
-| **Immigration** | I-589 asylum application narrative, client declaration, motion to change venue, motion to continue, FOIA request, country conditions summary |
-| **Housing** | Eviction answer, demand letter (repairs/deposit), motion to stay execution, discovery requests |
-| **Family** | Protective order petition, custody declaration, motion to modify, financial affidavit |
-| **Consumer** | Debt validation letter, FDCPA demand letter, answer to collection complaint, motion to vacate default |
-| **General litigation** | Motion template, notice of appearance, certificate of service |
-
-If the requested document isn't in the template set: "The clinic's templates don't include [X]. I can attempt a draft from general principles, but flag this heavily — it hasn't been tuned for your practice area or jurisdiction. Better to ask [Professor] if there's an existing template."
-
-### Step 2: Gather the facts
-
-Read the intake summary or case notes. For each fact the document needs: do we have it?
-
-| Document needs | Have? | Source |
-|---|---|---|
-| [fact] | ✓ / ✗ | [intake / client doc / need to get] |
-
-Missing required facts → don't guess. Mark them: `[FACT NEEDED: client's entry date — get from I-94 or ask client]`.
-
-### Step 3: Apply jurisdiction
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` jurisdiction:
-
-- **Caption format:** state and local court rules. If local rules were ingested at cold-start, use them. If not, use state default and flag: `[VERIFY CAPTION: local rules not loaded — confirm format against [Court]'s current rules]`
-- **Service requirements:** who gets served, how, by when per the court's rules
-- **Local quirks:** page limits, font requirements, standing orders. Apply what's ingested; flag what isn't.
-
-### Step 4: Draft
-
-Use the practice-area template. Fill what can be filled from facts. Leave placeholders explicit — never fill with plausible-sounding invention.
-
-**Everywhere the draft makes a legal assertion:** that assertion is a hypothesis the student verifies, not a conclusion the draft guarantees. Mark accordingly.
-
-### Step 5: Flag uncertainty
-
-Three kinds of flags, in-line:
-
-- `[FACT NEEDED: ...]` — the document needs a fact the case notes don't have
-- `[VERIFY: ...]` — a legal or factual assertion that needs checking before this is filed
-- `[UNCERTAIN: ...]` — the skill is genuinely unsure and says so rather than guessing
-
-### Step 6: Supervision routing
-
-Filing a document with a court or agency is a consequential action. The gate is the supervision workflow in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check that confirms a licensed supervising attorney owns the clinic setup. Court filings always route through supervision before filing, regardless of the supervision-style choice.
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` supervision style:
-- **Formal queue:** draft goes to queue, student sees "queued for [Professor]"
-- **Configurable flags:** if this document type is a flag trigger (court filings usually are), output includes "CHECK WITH [PROFESSOR] BEFORE FILING"
-- **Lighter-touch:** standard safeguard label, no additional gate — but court filings still go to the professor before filing per the clinic's existing supervision structure
-
-## Output
-
-```markdown
-═══════════════════════════════════════════════════════════════════════
-  AI-ASSISTED DRAFT — REQUIRES STUDENT ANALYSIS AND ATTORNEY REVIEW
-  This is a starting point, not final work product.
-  Every [VERIFY] and [FACT NEEDED] flag must be resolved before filing.
-═══════════════════════════════════════════════════════════════════════
-
-[The document — in the practice-area template format, jurisdiction-aware,
-with flags inline]
-
-═══════════════════════════════════════════════════════════════════════
-
-## Student review checklist
-
-Before showing this to [Professor]:
-
-- [ ] Read the whole thing. Does it say what you want it to say?
-- [ ] Every fact: is it accurate per the client's actual documents, not just the intake notes?
-- [ ] Every [VERIFY] flag: resolved with research or struck
-- [ ] Every [FACT NEEDED] flag: filled with verified information or the section removed
-- [ ] Legal theory: is this the right argument? Are there better ones? (That's your analysis, not the draft's.)
-- [ ] Jurisdiction: caption, service, format correct per current local rules
-- [ ] [Supervision step per CLAUDE.md style]
-
-## What this draft does NOT do
-
-- It does not decide strategy. The draft follows the most common approach for
-  this document type — you decide if that's right for this client.
-- It does not verify its own legal assertions. Every legal conclusion above is
-  a hypothesis until you research it.
-- It does not file itself. [Professor] reviews, you file per clinic procedure.
-
----
-
-**Before this leaves the clinic.** This is a student draft for supervising-attorney review, not a final letter, filing, or form. Filing it with a court or agency, or sending it to a client or opposing party, has legal consequences for the client. A licensed supervising attorney reviews, edits, and signs off before it leaves the clinic. Strip the AI-assisted draft header only after that sign-off. Do not send or file this draft without supervisor approval.
-
-*ABA Formal Opinion 512 (2024): generative AI use requires competence,
-supervision, and verification. This draft is designed to be supervised and
-verified — it is not designed to be trusted without that.*
-```
-
-## What this skill does NOT do
-
-- **Produce final work product.** First draft only. Student revises, professor reviews.
-- **Guess at missing facts.** Flags them for the student to get.
-- **Decide the legal theory.** Uses the common approach; the student decides if it's the right one for this case.
-- **Replace jurisdiction-specific research.** Applies ingested local rules; flags where rules weren't ingested or might have changed.
+- 不生成可直接提交法院立案的最终文书——必须经学生分析填充和指导教师审查批准
+- 不替代学生法律分析和文字撰写能力训练
+- 不替代指导教师对文书内容的审查和批准
+- 不提供美国法律文书格式（complaint/motion/petition等美式格式）

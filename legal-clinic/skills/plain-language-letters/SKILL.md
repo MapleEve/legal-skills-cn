@@ -1,22 +1,19 @@
 ---
-name: plain-language-letters
+name: 通俗语言信件
 description: >
-  Reference: DEPRECATED — use `/client-letter` for routine correspondence or
-  `/status client` for substantive updates. Split into two more focused skills
-  during the v2 rebuild. Kept as a redirect for migration.
+  已废弃 — 常规函件请使用 `/当事人函件`，实质性案件进展更新请使用 `/案件状态报告 client`。
+  本技能在v2重构中拆分为两个更聚焦中国法律援助实践需求的技能。保留为迁移重定向。
 user-invocable: false
 ---
 
-# [DEPRECATED] Plain-Language Letters → see `/client-letter` and `/status client`
+# [已废弃] 通俗语言信件 → 请参见 `/当事人函件` 和 `/案件状态报告`
 
-This skill was split during the v2 rebuild:
+本技能在v2重构期间被拆分：
+- 预约确认、文件请求、案情告知等常规函件 → `/legal-clinic:client-letter`（`/当事人函件`）
+- 包含实质性法律分析的案件进展更新 → `/legal-clinic:status client`（`/案件状态报告 client`）
 
-- **Routine correspondence** (appointment confirms, document requests, brief
-  "we filed it" updates) → `skills/client-letter/` — use `/client-letter [type]`
-
-- **Substantive client status updates** → `skills/status/` in client-facing
-  mode — use `/status client`
-
-Both apply the plain-language standards (reading level, no jargon) from CLAUDE.md.
-
-See the respective SKILL.md files for full workflows.
+废弃原因：原技能将"通俗语言"作为独立分类，但在中国法律援助诊所实践中，
+所有面向当事人的函件和案件进展更新均应使用通俗语言——这是《法律援助法》(2022)
+第47条当事人知情权保障的基本要求，不需要单独成为一个技能。
+统一为 `/当事人函件`（常规沟通）和 `/案件状态报告`（实质性进展汇报），
+二者均以通俗语言作为默认要求。

@@ -1,71 +1,70 @@
-# Employment Counsel Plugin
+# 劳动用工合规插件
 
-In-house employment law workflows: hiring review, termination review, policy drafting, handbook updates, jurisdiction-aware wage & hour Q&A. Built around a jurisdictional footprint learned at cold-start — the plugin knows which states you're in and what's different about each.
+面向中国企业（含外商投资企业）的劳动用工全流程法律合规助手。基于《劳动法》《劳动合同法》《社会保险法》《工伤保险条例》《女职工劳动保护特别规定》《残疾人保障法》《劳动争议调解仲裁法》等核心法律法规，覆盖招聘录用、在职管理、离职解雇、争议处理四大阶段的用工风险管理。
 
-**Every output is a draft for attorney review — cited, flagged, and gated — not a legal conclusion.** The plugin does the work: reads the documents, applies your playbook, finds the issues, drafts the memo. A lawyer reviews, verifies, and decides. Citations are tagged by source so you know which ones came from a research tool and which ones need checking. Privilege markers are applied conservatively so nothing waives by accident. Consequential actions — filing, sending, executing — are gated behind explicit confirmation.
+**所有输出均为律师复核草稿——标注引用来源、标记风险等级、设置决策门槛——而非最终法律结论。** 插件完成法律检索、文档审查、风险识别和文书草拟；律师复核、验证并决策。引注按来源标注，确保执业律师清楚哪些来自数据库检索、哪些需人工核实。敏感文书自动附加保密声明，防止不当披露。高风险操作（如发送解雇通知、提交仲裁申请）须经显式确认后方可执行。
 
-## Who this is for
+## 适用角色
 
-| Role | Primary workflows |
+| 角色 | 主要工作场景 |
 |---|---|
-| **Employment counsel** | Termination review, policy drafting, wage/hour analysis |
-| **HR business partners** | Hiring review, handbook questions, first-line wage/hour Q&A |
-| **GC** | Escalation recipient for high-risk terms and RIFs |
+| **法务/合规负责人** | 离职审查、规章制度起草、用工风险评估 |
+| **HR业务伙伴** | 招聘录用审查、员工手册答疑、一线用工合规咨询 |
+| **总经理/VP** | 重大用工风险升级接收、经济性裁员决策 |
 
-## First run: cold-start
+## 首次使用：冷启动访谈
 
-Asks which states and countries you have employees in, reads your handbook and three recent termination memos, builds a jurisdiction-aware escalation table.
+通过访谈了解公司的用工地域分布（省份/城市）、员工规模、现行员工手册及近期离职案例，构建地域差异化风险升级矩阵。
 
 ```
 /employment-legal:cold-start-interview
 ```
 
-Your configuration is stored at `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` and survives plugin updates.
+配置存储在 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`，插件升级后配置不丢失。
 
-## Prerequisites
+## 前置条件
 
-- **Persistent data path.** The leave register, investigation logs, and expansion trackers are written to `~/.claude/plugins/config/claude-for-legal/employment-legal/`, a version-independent path that survives plugin updates. These files contain privileged and sensitive personnel information — make sure that directory is backed up and access-controlled.
-- **Legal research access.** Skills in this plugin intentionally do not store substantive legal rules (salary thresholds, restrictive-covenant enforceability, final-pay timing, release consideration periods, country-specific employment frameworks, etc.). Every jurisdiction-specific rule is researched and cited at the time of review. Make sure the session has access to the research tools you rely on (web search, internal legal research integrations, team reference materials).
-- **Outside counsel.** No country-specific or jurisdiction-specific legal advice is produced without outside counsel engagement on any close call or new jurisdiction.
+- **持久化数据路径。** 假期登记册、内部调查日志、合规跟踪器等数据写入 `~/.claude/plugins/config/claude-for-legal/employment-legal/` 目录（版本无关路径，插件升级后保留）。该目录包含涉密个人信息，请确保备份并做好访问控制。
+- **法律检索工具。** 插件不内置实体法律规则（社保基数、最低工资标准、竞业限制补偿比例、各地工伤待遇标准等），所有地域性规则均在审查时实时检索并引注。请确保会话环境可访问法律数据库（如北大法宝、威科先行、中国裁判文书网等）或内部法务知识库。
+- **外部律师协作。** 重大疑难案件或新进入的省份/行业领域，建议引入当地外部律师复核。
 
-## Skills
+## 技能列表
 
-| Skill | Does |
+| 技能 | 功能说明 |
 |---|---|
-| `/employment-legal:cold-start-interview` | Cold-start interview — learns jurisdictional footprint + escalation rules from handbook + term memos |
-| `/employment-legal:hiring-review` | Offer letter + restrictive covenant review, jurisdiction check |
-| `/employment-legal:termination-review` | Termination review with high-risk flag detection |
-| `/employment-legal:policy-drafting [topic]` | Draft a policy with state supplements where needed |
-| `/employment-legal:wage-hour-qa [question]` | Wage/hour or general employment Q&A, jurisdiction-aware |
-| `/employment-legal:worker-classification` | Classify a proposed worker engagement and flag misclassification gaps |
-| `/employment-legal:expansion-kickoff [country]` | Kick off international expansion planning for a new country |
-| `/employment-legal:expansion-update [country]` | Update an in-progress expansion tracker |
-| `/employment-legal:investigation-open` | Open a new internal investigation matter |
-| `/employment-legal:investigation-add` | Add documents, interview notes, or observations to an open investigation |
-| `/employment-legal:investigation-query` | Ask questions against an open investigation log |
-| `/employment-legal:investigation-memo` | Draft or update the privileged investigation memo |
-| `/employment-legal:investigation-summary` | Draft an audience-specific summary from the investigation memo |
-| `/employment-legal:leave-tracker` | Check open leaves for deadline alerts and required decisions |
-| `/employment-legal:log-leave` | Add a new leave to the leave register |
-| `/employment-legal:matter-workspace` | Manage matter workspaces (multi-client private practice only) — new, list, switch, close, none |
-| **handbook-updates** | Diff proposed changes against current handbook, flag state supplement impact |
+| `/employment-legal:cold-start-interview` | 冷启动访谈——了解用工地域分布和风险升级规则 |
+| `/employment-legal:hiring-review` | 录用通知书审查、竞业限制与保密协议审查、地域合规检查 |
+| `/employment-legal:termination-review` | 离职解雇审查（含过失性/无过失性/经济性裁员三类），高风险标记自动升级 |
+| `/employment-legal:policy-drafting [话题]` | 起草规章制度/员工手册，标注需地方性补充的条款 |
+| `/employment-legal:wage-hour-qa [问题]` | 工时工资合规问答（含996审查），按地域差异化回答 |
+| `/employment-legal:worker-classification` | 劳动关系vs劳务关系认定（依据劳社部发〔2005〕12号） |
+| `/employment-legal:expansion-kickoff [城市]` | 新城市/省份用工扩展规划启动 |
+| `/employment-legal:expansion-update [城市]` | 更新进行中的扩展合规跟踪 |
+| `/employment-legal:investigation-open` | 启动内部调查事项 |
+| `/employment-legal:investigation-add` | 向进行中的调查添加文件、访谈记录或观察 |
+| `/employment-legal:investigation-query` | 针对进行中的调查日志提问 |
+| `/employment-legal:investigation-memo` | 草拟或更新内部调查备忘录 |
+| `/employment-legal:investigation-summary` | 根据调查备忘录生成面向不同受众的摘要 |
+| `/employment-legal:leave-tracker` | 检查进行中的休假是否有法定截止日期临近，提示必须做出的决策 |
+| `/employment-legal:log-leave` | 新增一条休假记录到假期登记册 |
+| `/employment-legal:matter-workspace` | 管理事项工作区（仅限多客户律所场景）——新建、列表、切换、关闭、无 |
+| **handbook-updates** | 对比现行员工手册与拟修改版本，标记地方性补充条款影响 |
 
-Reference skills `internal-investigation` and `international-expansion` carry the detailed frameworks and templates — the per-mode skills above load them as needed.
+## 交互式技能 vs 定时代理
 
-## Interactive skills vs. scheduled agents
+上述技能在您调用时运行——适用于正在处理具体事务时。以下代理按周期运行——监控您不在线时的事项变化：
 
-The skills above run when you invoke them — for when you're working a matter. The agents below run on a schedule — for what moves while you're not looking:
-
-| Agent | What it watches | Default cadence |
+| 代理 | 监控内容 | 默认频率 |
 |---|---|---|
-| **leave-tracker** | Open leaves with hard legal deadlines — FMLA, state equivalents (CA CFRA, NY PFL), USERRA, ADA leave as accommodation; fires decision-point alerts before deadlines are missed | Weekly (Monday) |
+| **假期追踪器** | 具有法定硬性截止日期的进行中休假——年休假、产假/陪产假、医疗期、工伤停工留薪期；在截止日期前触发决策提醒 | 每周（周一） |
 
-## How it learns
+## 插件如何持续优化
 
-Your practice profile at `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. You can re-run setup, edit the file directly, or tell a skill to record a new position.
+您的实践画像存储在 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`，随着使用不断优化。技能会告知您何时某个输出使用了应调整的默认值。您可以重新运行设置、直接编辑该文件，或告诉技能记录新的立场。
 
-## Notes
+## 说明
 
-- Jurisdiction awareness is the whole point. The plugin knows California final pay is due on the last day and New York's is the next regular payday.
-- Termination review is NOT a replacement for the conversation with HR and the manager. It's a checklist that catches the thing everyone forgot.
-- Wage/hour Q&A cites the rule but flags close calls for human review. Classification decisions have consequences.
+- 地域差异化是本插件的核心价值。插件知道北京、上海、深圳等地的社保基数上下限、最低工资标准、劳动争议裁判倾向各有不同。
+- 离职审查不是替代与HR和业务负责人的沟通，而是一份检查清单，帮助发现每个人都可能遗漏的风险点。
+- 工时工资问答引用法规原文，但标记灰色地带供人工复核。用工分类决策后果严重，不可仅凭自动化判断。
+- 中国法律体系下的"律师-当事人保密特权"依据《律师法》第38条及《刑事诉讼法》相关规定，与美国"attorney work product"原则不同。内部法务文件在法律程序中并非当然受保护——请谨慎标记，并就敏感文件的外部律师协作策略咨询执业律师。

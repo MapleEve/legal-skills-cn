@@ -1,173 +1,94 @@
 ---
-name: deadlines
+name: 案件期限管理
 description: >
-  Track case deadlines — add, cross-case rollup report, update, complete,
-  close. Warns at configurable thresholds (default 14/7/3/1 days); overdue
-  items stay flagged until resolved. The operational record for a clinic
-  workload. Use when a student or supervisor needs to add a deadline,
-  ask what's due this week, get a deadline report, or update a case deadline.
-argument-hint: "[--add | --report (default) | --update [id] | --complete [id] | --close [id] | --horizon=N]"
+  追踪中国法律援助案件的关键期限——诉讼时效（3年/《民法典》第188条）、
+  上诉期（判决15天/裁定10天）、举证期限、申请执行期限（2年）、
+  法律援助特有的审查期限。在可配置阈值（默认14/7/3/1天）发出预警；
+  逾期项持续标记直至解决。当学生或指导教师需添加期限、查询到期情况、
+  获取期限汇总报告或更新案件期限时使用。
+argument-hint: "[--add | --report(默认) | --update [ID] | --complete [ID] | --close [ID] | --horizon=N]"
 ---
 
-# /deadlines
+# /案件期限管理
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → jurisdiction, practice areas, warning-day cadence.
-2. Use the workflow below.
-3. Route by flag:
-   - `--add`: capture case, type, description, due date, source, owner. Write to `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml`. Check for duplicates first.
-   - `--report` (default): cross-case rollup — overdue, next 3d, next 7d, next 14d; by owner; by practice area; unassigned flags.
-   - `--update [id]`: modify fields; log note with date.
-   - `--complete [id]`: mark done; confirm with student that work is actually filed/submitted.
-   - `--close [id]`: close-without-completing; require rationale in notes.
-4. Confirm any write before committing.
+## 目的
 
----
+中国法律援助案件的期限管理涉及多个法律层次的期间规定。错过关键期限可能导致
+丧失诉讼权利、案件被驳回或当事人权益无法得到救济。本技能维护诊所所有案件
+的期限记录并按预设阈值发出预警。
 
-# Deadlines
+本技能管理的期限来自中国法律体系，而非美国诉讼法中的filing deadlines。
+中国法院流程为：立案→举证→开庭→判决，各阶段均有法定期限和指定期限。
 
-## Purpose
+## 中国法律制度中的关键期限
 
-A clinic's biggest operational risk is a missed deadline. Students carry multiple cases, work part-time, turn over every semester. Deadlines that live only in individual students' heads get dropped at handoff, get forgotten during finals week, get missed when a student unexpectedly withdraws from the clinic. This skill is the central operational record.
+### 实体法期限
+- **诉讼时效：** 3年（《民法典》第188条），自权利人知道或应当知道权利受损及义务人之日起算
+- **诉讼时效中断：** 权利人主张权利、义务人同意履行、提起诉讼或申请仲裁时中断，重新计算（《民法典》第195条）
+- **诉讼时效中止：** 不可抗力、无/限制民事行为能力人无法定代理人等情形（《民法典》第194条）
+- **最长权利保护期限：** 20年（《民法典》第188条第2款），有特殊情况的法院可决定延长
 
-The supervising attorney is on the hook if a deadline is missed. The skill is calibrated to that stakes level — warnings fire early, overdue items stay visible until explicitly resolved, handoffs (via `/semester-handoff`) pull the deadline list forward to the next student.
+### 程序法期限
+- **立案审查期限：** 法院收到起诉状后7日内决定是否立案（《民事诉讼法》第123条）
+- **上诉期（判决）：** 15日（《民事诉讼法》第171条）
+- **上诉期（裁定）：** 10日（《民事诉讼法》第171条）
+- **举证期限：** 法院指定，一审普通程序不少于15日（《民事诉讼法》举证期限规定）
+- **申请再审期限：** 判决/裁定生效后6个月内（《民事诉讼法》第212条）
+- **申请执行期限：** 2年（《民事诉讼法》第246条），适用诉讼时效中止、中断的规定
+- **财产保全期限：** 冻结存款1年/查封扣押动产2年/查封不动产3年（《民事诉讼法》司法解释），期满前需申请续行
 
-## Load context
+### 劳动仲裁特定期限
+- **申请劳动仲裁时效：** 1年，从知道或应当知道权利被侵害之日起算（《劳动争议调解仲裁法》第27条）
+- **对仲裁裁决不服起诉：** 收到裁决书后15日内（《劳动争议调解仲裁法》第48条）
 
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → jurisdiction, practice areas, deadline warning days (default 14/7/3/1), supervising attorneys
-- `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` — the ledger
+### 法律援助特定期限
+- **法律援助审查期限：** 法律援助机构自收到申请之日起7日内作出决定（《法律援助法》第43条）
+- **法律援助机构指派期限：** 决定给予法律援助后3日内指派（《法律援助法》第43条）
+- **案件办结归档期限：** 案件办结后及时归档
 
-**Jurisdiction assumption.** Deadline calculations and warning thresholds assume the jurisdiction set in CLAUDE.md. Deadlines, tolling rules, computation-of-time rules, and local court practices vary materially by jurisdiction and by specific court. If a matter involves a different state, a specific court's local rules, or a federal vs. state forum question, confirm the deadline against the governing rule with your supervisor before relying on it.
+## 工作流
 
-## Modes
+1. **按标志路由。**
+2. `--add`：添加新期限。询问：案件ID、期限类型（诉讼时效/上诉期/举证期限/开庭日期/申请执行期限/其他）、日期、优先级（高/中/低）、是否法定期限或指定期限。
+3. `--report`：显示未来N天内到期的所有期限（默认14天）。按紧急程度排序：逾期 > 1天内 > 3天内 > 7天内 > 14天内。
+4. `--update`：更新已有期限详情。
+5. `--complete`：标记期限已处理完成（如已按时提交、已完成开庭等）。
+6. `--close`：关闭不再适用的期限（如案件撤回/和解等原因不再需要追踪）。
 
-Flag: `--add | --report | --update | --complete | --close` (default: report)
+## 预警阈值
 
-### `--add` — log a new deadline
+在以下阈值发出预警（可配置默认）：
 
-**Inputs:**
-- Case ID + name (which case)
-- Practice area
-- Type (filing / hearing / statute-of-limitations / discovery / cure-period / response / notice / other)
-- Description — one line of what's due
-- Due date (and time + timezone if applicable)
-- Source — where the deadline came from (court order served 2026-04-20, statute 8 USC § 1229a, cure period in contract §7)
-- Owner student — the student responsible
+| 阈值 | 含义 | 标识 |
+|------|------|------|
+| 14天 | 提前提醒 | 🔵 关注 |
+| 7天 | 需要行动 | 🟡 准备 |
+| 3天 | 紧急 | 🟠 紧急 |
+| 1天 | 严重 | 🔴 危急 |
+| 已逾期 | 已过期限 | ⚠️ 逾期 |
 
-The skill generates an `id` slug automatically: `[case]-[short-desc]-[YYYY-MM]`.
+逾期期限保持可见直到解决（标记完成或显式关闭）。指导教师可查看所有逾期期限汇总。
 
-**Extraction from other skills:** when `/client-intake`, `/draft`, or `/status` surface a deadline in their output, they should hand off to this skill with pre-populated fields. Student confirms and adds.
+## 跨案件汇总报告
 
-**Pre-add check:** if a deadline with the same case_id + type + due_date already exists, flag as likely duplicate and ask before adding.
+展示所有活跃案件的期限汇总：案件ID、当事人、期限类型、日期、剩余天数、优先级。
+按紧急程度排序。指导教师可整体掌握诊所工作量。
 
-**Plausibility sanity band.** After the student enters a due date, do NOT compute or verify — but apply a rough plausibility check against typical ranges for the filing type, and flag the student if the date falls far outside. This is scaffolding to catch gross errors in the student's own math, not an alternative to computing against the rule.
+## 期限提醒提示
 
-**Bands are jurisdiction-keyed.** Load the band file for this clinic's jurisdiction from `references/plausibility-bands/{state}.md` where `{state}` is the two-letter code from `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → clinic jurisdiction (and federal always loads alongside). The legal-clinic plugin ships `references/plausibility-bands/CA.md` (fully populated) and `references/plausibility-bands/IL.md` (placeholder structure) as starting points.
+添加期限时，技能自动检查是否存在下列风险并提示：
+- 诉讼时效是否已接近届满？（剩余不足3个月则高亮提示）
+- 是否有可中断诉讼时效的事由建议？（如发函催告/部分履行确认等）
+- 上诉期是否即将届满？
+- 财产保全即将到期是否需申请续行？
 
-**Hard stop at cold-start if the band file is missing.** If `references/plausibility-bands/{state}.md` does not exist for the clinic's jurisdiction, do NOT silently run without plausibility checks. At cold-start, tell the supervisor:
+## 存储格式
 
-> "I don't have deadline plausibility checks for [state] — the sanity band for this clinic's jurisdiction isn't in the shipped reference files. I can still track deadlines (add, report, update, complete, close), but I cannot sanity-check them against typical ranges. Here's how to build the band file from your state's rules: copy `references/plausibility-bands/IL.md` as a template, fill in one row per deadline type your clinic sees most (typical range, triggering-event handling, computation-of-time rule, short cite), save at `references/plausibility-bands/{state}.md`, and re-run `/legal-clinic:deadlines`. Until then, every deadline I accept will carry `warnings: no-plausibility-band` and your review should treat dates as unchecked."
+期限数据存储于 `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml`。
 
-Do not fall back to the CA table for a non-CA clinic. The silent-degradation case — shipping a California sanity check to an Illinois clinic — is the failure this fix exists to close.
+## 本技能不做的事
 
-**Sanity check logic:**
-
-1. Load the bands table for this clinic's jurisdiction from `references/plausibility-bands/{state}.md` (plus federal-always).
-2. After the student enters `due:`, compare to triggering-event date + typical range for that `type:` (if a typical range exists in the loaded band file for the filing type).
-3. If inside the range, write the entry. Say nothing — the band exists to catch errors, not to congratulate correct math.
-4. If outside the range by a material margin, stop before writing and say:
-   > The date you entered falls outside the typical range for [type] in [jurisdiction]. [Type] deadlines for [filing type] typically fall ~[range] after [triggering event]. Your entry: [date], which is [N] days from [triggering event]. Re-check your calculation against [cited rule from the band file] and the jurisdiction's computation-of-time rule. If your calculation is correct (local rule exception, atypical triggering event, tolling, waiver), confirm and I will add the entry as-is. Otherwise, recompute and re-run `/deadlines --add`.
-5. If no band is known for this `type:` (unusual filing, non-standard deadline), do not sanity-check — write the entry and note in the `warnings:` field that no plausibility band applies.
-6. If the band file is missing entirely for this jurisdiction, the hard stop above applies at cold-start; in steady-state (supervisor acknowledged the gap and proceeded), every entry is written with `warnings: no-plausibility-band`.
-
-**The skill does not compute.** If the student enters `[VERIFY]` in the `due:` field because they haven't done the math yet, write the entry with `due: [VERIFY]` — the sanity band runs only when the student supplies a concrete date. The computation stays with the student and supervisor.
-
-### `--report` (default) — cross-case rollup
-
-Read `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml`. Produce:
-
-```markdown
-# Deadline Report — [today]
-
-**Active deadlines:** [N]
-**Overdue:** [N] ⚠️
-**Due this week (next 7 days):** [N]
-
----
-
-## ⚠️ Overdue (flagged for immediate attention)
-
-| ID | Case | Type | Due | Owner | Days overdue |
-|---|---|---|---|---|---|
-
-## 🔴 Due today / next 3 days
-
-| ID | Case | Type | Due | Owner |
-|---|---|---|---|---|
-
-## 🟡 Due in 4-7 days
-
-| ID | Case | Type | Due | Owner |
-|---|---|---|---|---|
-
-## 🟢 Due in 8-14 days
-
-[list]
-
-## Beyond 14 days
-
-[count only — expand with `/deadlines --report --horizon=30` for details]
-
----
-
-## By owner student (workload distribution)
-
-| Student | Overdue | Next 7d | Next 14d | Total active |
-|---|---|---|---|---|
-
-## By practice area
-
-[same table, grouped by area]
-
-## Unassigned deadlines
-
-[list — flag if any active deadline has no owner_student]
-```
-
-### `--update` — modify an existing deadline
-
-Common updates: due date changed (court continuance), owner changed (reassignment), notes added.
-
-Every update writes a dated note inline; history is visible in the entry.
-
-### `--complete` — mark done
-
-- Sets `status: completed`, `completed_date: [today]`.
-- Confirms with the student that the actual work is done and filed/submitted.
-- Removes from active reports but stays in the yaml.
-
-### `--close` — close without completing
-
-For deadlines that no longer apply — case settled, motion withdrawn, client dropped the matter. Requires a `notes:` entry explaining why.
-
-## Warning cadence
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` deadline warning days. Default 14, 7, 3, 1.
-
-Warnings don't auto-surface — this plugin has no scheduled/agent behavior. But any time `/deadlines` is invoked (or `/status`, which routes to this skill for deadline checks), the report pulls forward anything hitting a warning threshold.
-
-If a deadline passes its due date without being marked complete, it moves to `status: overdue` and stays there in every report until explicitly resolved. Overdue deadlines do not auto-close.
-
-## Integration
-
-- **`/client-intake`:** when intake surfaces a timeline urgency (eviction notice date, asylum filing deadline, hearing date), offer to `/deadlines --add` with pre-populated fields.
-- **`/draft`:** when a filing draft references a deadline (answer due, objection window), offer to add.
-- **`/status`:** the status skill reads `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml` for the relevant case and includes upcoming deadlines in its output.
-- **`/semester-handoff`:** reads deadlines.yaml to identify all active deadlines across departing-student cases; each handoff memo carries the deadlines forward.
-- **`/supervisor-review-queue` (if formal review enabled):** deadlines near their cutoff get priority in the review queue.
-
-## What this skill does not do
-
-- **Calculate deadlines from triggering events.** If a complaint was served today and the answer is due in 21 days per local rules, the skill doesn't do that math — the student does, using the rule, and logs the resulting date. (Doing the math autonomously creates a liability the skill shouldn't own; rules vary by jurisdiction and court.)
-- **File or serve anything.** The skill tracks dates; filing happens outside the plugin.
-- **Auto-notify.** No scheduled notifications. The report surfaces warnings when invoked; it doesn't push. A scheduled cron could be added later but would need explicit professor opt-in per clinic.
-- **Override local rules.** If the student logs a due date that contradicts local rules, the skill doesn't catch it. Another reason to calendar with `[VERIFY: confirm against local rule]` for any non-routine deadline.
+- 不计算法院指定期限的起始日——法院传票/举证通知书载明的期限由学生和指导教师确认后录入
+- 不替代诉讼时效中断的法律判断——仅记录期限，是否中断由指导教师判断
+- 不替代法援管理系统的日历功能
+- 不适用美国式的filing deadlines和statutes of limitations

@@ -1,102 +1,57 @@
 ---
-name: customize
-description: >
-  Guided customization of your corporate practice profile — change one thing
-  without re-running the whole cold-start interview. Adjust risk posture,
-  escalation contacts, active modules (M&A / Board / Public Company / Entity
-  Management), materiality thresholds, disclosure schedule format, consent
-  precedents, or matter workspace paths. Use when the user says "change my
-  [thing]", "update my profile", "edit my config", or "customize".
-argument-hint: "[section name, or describe what you want to change]"
+name: 自定义配置
+description: 对公司法律执业画像进行引导式自定义 — 更改一项而不重新运行整个冷启动访谈。调整风险立场、升级联系人、活跃模块（投资并购/董事会/上市公司/主体管理）、实质性阈值、信息披露日程格式、决议惯例或案件工作空间路径。当用户说"更改我的[某物]"、"更新我的画像"、"编辑我的配置"或"自定义"时使用。
+argument-hint: "[部分名称，或描述你想更改的内容]"
 ---
 
-# /customize
+# 自定义配置
 
-## When this runs
+## 何时运行
 
-The user typed `/corporate-legal:customize`. They want to change something
-in their practice profile — a risk posture, an escalation contact, a module
-toggle, an output format — without re-running the whole cold-start interview
-and without hand-editing YAML.
+用户想更改执业画像中的某项内容 — 风险偏好、活跃模块、输出格式、人员配置 — 而不重新运行整个冷启动访谈。
 
-## What to do
+## 做什么
 
-1. **Read the config.** Read
-   `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md`
-   (and `~/.claude/plugins/config/claude-for-legal/company-profile.md` one
-   level up). If the plugin config does not exist or still contains
-   `[PLACEHOLDER]` values, say:
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md` 及共享公司档案。如不存在或包含 `[PLACEHOLDER]`，提示先运行冷启动访谈。
 
-   > You haven't run setup yet. Run `/corporate-legal:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+2. **展示可自定义的地图。** 按组列出画像内容：
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+   - **公司/你是谁** — 名称、行业、公司类型（有限公司/股份公司）、法域
+   - **活跃模块** — 投资并购/董事会&秘书/上市公司/主体管理，开关状态
+   - **风险立场** — 风险偏好、实质性阈值
+   - **人员** — 法务总监/总法律顾问、各部门联系人、外部律师、升级链
+   - **投资并购模块** — 尽调维度、实质性阈值、交割清单模板、数据室管理
+   - **董事会&秘书模块** — 纪要格式、决议惯例、章程约定、工商登记流程
+   - **上市公司模块** — 上市交易所、信息披露节奏、内幕交易防控
+   - **主体管理模块** — 主体列表、合规节奏、工商年报管理
+   - **工作流** — 案件工作空间、整合追踪器、简报频率
+   - **集成** — AI审查工具/企业通讯/文档存储状态
 
-   - **Company / who you are** — name, industry, jurisdictions, stage, public
-     vs. private, practice setting *(shared across all 12 plugins — changes
-     flow through `company-profile.md`)*
-   - **Active modules** — which of M&A, Board & Secretary, Public Company,
-     Entity Management are on. Turning a module on/off changes which skills
-     prompt for setup.
-   - **Risk posture** — conservative / middle / aggressive, what each means
-     for diligence materiality and disclosure schedule scope
-   - **People** — deal team, board secretary, entity management owner,
-     escalation chain
-   - **M&A module** — materiality thresholds (contract value, headcount,
-     revenue), data room platforms trusted, AI bulk-review trust level
-     (Luminance / Kira), deal-team briefing cadence
-   - **Board & Secretary module** — house consent format, signatory
-     preferences, committee structure
-   - **Public Company module** — reporting calendar, disclosure controls,
-     10-K/10-Q review timing
-   - **Entity Management module** — entity table, registered agent, filing
-     jurisdictions, annual report calendar
-   - **Workflow** — matter workspaces (deal rooms), closing checklist
-     location, VDR watcher cadence
-   - **Integrations** — Box / Intralinks / Datasite / CT Corp / Slack status,
-     fallbacks
+3. **询问想更改什么。**
 
-3. **Ask what they want to change.**
+   > 你想调整什么？选一个章节，或用你自己的话描述更改。
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+4. **进行更改。** 显示当前值 → 询问新值 → 说明下游影响 → 确认 → 写入配置。
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+   示例：
+   - *启用/禁用模块：* "投资并购模块现在为[活跃/关闭]。相应的命令将[可见/不可见]。"
+   - *调整实质性阈值：* "阈值从[X]调整为[Y]。尽调发现分类将据此变更。"
+   - *添加新主体至主体管理：* "合规追踪器将纳入此主体的申报日程。"
 
-   Examples:
-   - *Materiality threshold $250K → $500K:* "`/diligence-issue-extraction`
-     and `/material-contract-schedule` will now treat $500K as the cutoff.
-     Existing findings stay as logged; re-run if you want the new threshold
-     applied retroactively."
-   - *Turning on the Public Company module:* "I'll prompt you for reporting
-     calendar and disclosure controls next time you run anything in that
-     area."
-   - *AI bulk-review trust "check every row" → "spot-check 10%":* "`/ai-tool-
-     handoff` will QA a 10% sample rather than every extraction."
+5. **对于共享档案更改**（公司名称、行业、法域等）：写入 `company-profile.md`，注明影响所有插件。
 
-5. **For shared-profile changes** (company name, industry, jurisdictions,
-   practice setting, stage): write to
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md` and note:
+6. **结束。**
 
-   > This change affects all 12 plugins — any plugin that reads your
-   > jurisdiction footprint now sees [new value].
+## 护栏
 
-6. **Close.**
+- **绝不删除章节。** 如要"移除"，标记为 `[未配置]` 并说明影响。
+- **标记内部不一致。** 如上市公司模块活跃但未配置上市交易所，提示。
+- **标记护栏降级。** 实质性阈值可调整，但降低到漏报风险不可接受的程度时警告。
+- **一次一个更改。** 不重新问整个访谈。
 
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/corporate-legal:customize` anytime.
+## 中国公司法特有配置
 
-## Guardrails
-
-- **Never delete a section.** If the user wants to "remove" something, set it
-  to `[Not configured]` and explain what that means for the plugin's behavior.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., Public Company module off + "SEC counsel" in
-  escalation; or aggressive risk posture + $25K materiality threshold), flag
-  the tension.
-- **Flag guardrail degradation.** The `[review]` flag, source attribution
-  tags on retrieved documents, and `[verify]` tags on cited authorities are
-  load-bearing — explain the trade-off before removing.
-- **One change at a time.** Don't re-ask the whole interview.
+- 公司类型选择影响所有治理相关输出（有限公司 vs 股份公司的法定要求不同）
+- 章程中的特殊约定（如表决比例、一票否决权）需在配置中记录，影响纪要起草
+- 外资企业的额外合规维度需在主体管理模块中启用
+- 上市公司选择的交易所决定信息披露规则适用

@@ -1,8 +1,8 @@
 {
-  "name": "corporate-legal",
-  "version": "1.0.2",
-  "description": "Runs M&A diligence at scale with cited tabular review, builds disclosure schedules and closing checklists, drafts board consents and minutes in house format, and tracks entity compliance deadlines across jurisdictions.",
+  "name": "公司证券",
+  "version": "1.0.0",
+  "description": "规模化运行投资并购法律尽调（附引用表格化审查）、生成披露清单与交割清单、按公司内部格式起草股东会/董事会/监事会决议和会议记录、跨辖区追踪主体工商合规期限。覆盖三会一层治理、注册资本认缴制、VIE架构、经营者集中审查、内幕信息知情人登记等中国公司法核心制度。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

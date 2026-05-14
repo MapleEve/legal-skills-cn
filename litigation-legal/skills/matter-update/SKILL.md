@@ -1,150 +1,184 @@
 ---
-name: matter-update
-description: Append a dated event to a matter's history file and refresh the log row — captures new developments, status changes, risk re-assessments, deadline shifts, and settlement authority changes. Use when the user wants to log an update on a matter, note a development, or record a status change against the portfolio.
-argument-hint: "[slug] [brief event description]"
+name: 案件更新
+description: 追加带日期事件至案件办案日志并刷新日志行——记录新进展、状态变更、风险重新评估、期限变动和调解/和解权限变更。适用场景：用户欲记录案件更新、记录进展或对案件组合记录状态变更。
+argument-hint: "[标识] [简要事件描述]"
 ---
 
-# /matter-update
+# /案件更新
 
-1. Follow the workflow and reference below.
-2. Confirm slug exists in `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/` and `_log.yaml`.
-3. Prompt for event type, date (default today), summary, and any log field updates (risk change, status change, next deadline shift, materiality reclassification).
-4. Append dated entry to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`.
-5. Update `_log.yaml` — set `last_updated` to today, apply any field updates.
-6. Confirm.
+1. 遵循以下工作流程和参考。
+2. 确认标识在 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/` 和 `_log.yaml` 中存在。
+3. 提示事件类型、日期（默认今日）、摘要及任何日志字段更新（风险变更、状态变更、下一期限变动、重要性重分类）。
+4. 追加带日期条目至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`。
+5. 更新 `_log.yaml` —— 将 `最近更新` 设为今日，应用任何字段更新。
+6. 确认。
 
 ---
 
-# Matter Update
+# 案件更新
 
-## Purpose
+## 目的
 
-The portfolio only stays useful if it stays current. This skill makes logging an update cheap — two minutes of structured capture, no freeform drift.
+案件组合仅在保持最新时有用。中国诉讼的节点密集——立案、举证期限、庭前会议、开庭、宣判、上诉、执行——错过任何一个都可能意味着程序权利的丧失。本技能使记录更新成本低廉——两分钟结构化记录，无自由散漫。
 
-## Load context
+## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — find the row
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — append target
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — reference (don't rewrite)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (if re-assessing risk)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 查找行
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 追加目标
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 参考（不重写）
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（如重新评估风险）
 
-**Conflicts gate — unbypassable.** Before logging an update, check `_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**利益冲突检索关——不可跳过。** 记录更新前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace exists. I won't append history to an unmanaged matter — the conflicts check is the gate, and there's no `history.md` to append to until the matter is intaken."
+> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:案件立案`，这样利益冲突检索就会运行，案件工作空间也会建立。我不会向未登记案件追加日志——利益冲突检索是入门关，且案件立案前不存在可供追加的 `办案日志.md`。"
 
-## Input
+## 输入
 
-Slug (required). If not provided, ask — with a short list of recently updated matters to pick from.
+标识（必需）。若未提供，询问——附最近更新案件简短列表供选择。
 
-## The update
+## 更新
 
-### 1. Event type
+### 1. 事件类型
 
-Offer categories:
+提供类别——基于中国民事诉讼程序：
 
-- **Procedural** — motion filed/received, order issued, hearing held, deadline set
-- **Discovery** — production made/received, depositions taken, subpoena served
-- **Substantive** — new facts, key document surfaced, ruling on merits
-- **Strategy** — posture shift, settlement offer made/received, authority update
-- **Risk re-assessment** — severity or likelihood changed
-- **Stakeholder** — new person looped in, outside counsel change
-- **Administrative** — engagement letter executed, budget adjusted, hold refreshed
+- **立案** —— 收到法院受理案件通知书/应诉通知书、法院出具案号、立案缴费完成
+- **答辩** —— 答辩状已提交（答辩期15天）、管辖权异议已提出
+- **举证** —— 证据已提交、举证期限已设定/延长、证据交换（庭前会议）已完成、申请法院调查取证、申请证人出庭、申请鉴定
+- **庭前会议** —— 庭前会议已召开、争议焦点已整理、证据交换已进行
+- **保全** —— 财产保全申请/裁定/执行、行为保全申请/裁定、证据保全申请/裁定
+- **开庭** —— 开庭日期已确定、开庭已进行（法庭调查+法庭辩论）、庭审笔录已核对
+- **裁判** —— 判决/裁定/调解书已送达、裁判生效日期
+- **上诉** —— 上诉状已提交（上诉期15天判决/10天裁定）、二审立案、二审开庭、二审裁判
+- **执行** —— 申请执行已提交（2年内）、执行立案、执行进展、执行到位/终结
+- **调解/和解** —— 调解要约已发出/收到、调解会议已进行、和解协议已签署
+- **再审** —— 再审申请已提交、再审审查/裁定、再审开庭、再审裁判
+- **实体性** —— 新事实发现、关键证据显现、法律依据变更
+- **策略** —— 诉讼策略调整、调解/和解姿态转变、上诉/不上诉决策
+- **风险重新评估** —— 严重性或可能性已变更
+- **利益相关方** —— 新人员纳入循环、代理律师变更
+- **行政** —— 委托代理合同签署、律师费支付、预算调整
 
-Or freeform if none fits.
+或无匹配时的自由格式。
 
-### 2. Date
+### 2. 日期
 
-Default today. Accept an override (e.g., capturing an event from last week).
+默认今日。接受覆盖（如记录上周事件）。
 
-### 3. Summary
+### 3. 摘要
 
-One-paragraph narrative. What happened, what it means, any immediate implication.
+一段叙述。发生了什么、意味着什么、任何即时影响。中国诉讼中特别注意记录：法院指定的期限、法官/合议庭成员、对已方有影响的法律观点。
 
-### 4. Log field changes
+### 4. 日志字段变更
 
-Walk through potentially affected fields:
+逐项检查可能受影响的字段：
 
-- `status:` — has the stage shifted (e.g., pleadings → fact discovery)?
-- `stage:` — substage update
-- `risk:` — reassessment required?
-- `materiality:` — any change (new facts might trigger reserve or disclosure)?
-- `exposure_range:` — revise if new information
-- `next_deadline:` — new upcoming date, if any
-- `outside_counsel:` — change?
-- `internal_owners:` — anyone new or removed?
-- `legal_hold:` — refreshed, expanded, released?
+- `状态:` —— 阶段是否已变更（如立案中 → 举证 → 等待开庭 → 等待判决 → 执行中）
+- `阶段:` —— 子阶段更新
+- `案号:` —— 法院案号（立案时获取）
+- `受理法院:` —— 如有管辖移送变更
+- `承办法官:` —— （如知晓）
+- `风险:` —— 是否需重新评估？
+- `重要性:` —— 是否有变化（新事实可能触发拨备或披露）？
+- `敞口区间:` —— 如有新信息，修订
+- `下一关键节点:` —— 新的即将到来日期（举证期限截止日、开庭日、宣判日、上诉期截止日、申请执行截止日）
+- `代理律师:` —— 变更？
+- `内部负责人:` —— 新增或移除人员？
+- `证据保全:` —— 已更新、已扩大、已解除？
 
-Only prompt for fields likely affected by the event type. Procedural updates usually touch `stage` and `next_deadline` only; a settlement offer might touch `materiality`, `exposure_range`, `status`.
+仅提示事件类型可能影响的字段。程序性更新通常仅涉及 `阶段` 和 `下一关键节点`；调解/和解要约可能涉及 `重要性`、`敞口区间`、`状态`。
 
-### 4pre. Settlement-acceptance gate
+### 4前. 调解/和解关
 
-If the Strategy update is a **settlement acceptance** (the company is accepting a settlement offer, executing a settlement agreement, or authorizing acceptance in principle — not merely logging an offer made or received): Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+若策略更新为**接受调解/和解**（客户接受调解/和解要约、签署调解书/和解协议或授权原则接受——不仅是记录要约发出或收到）：读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。若角色为非律师：
 
-> Accepting a settlement has legal consequences — it resolves claims, typically requires a release, and can affect insurance, tax, and related matters. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> 接受调解/和解具有法律后果——民事调解书具有强制执行效力，和解可能伴随诉请放弃声明，并可能影响保险、税务和相关事项。您是否已与律师审查？若是，继续。若否，以下是带给律师的简要说明：
 >
-> [Generate a 1-page summary: the matter, proposed settlement terms (dollar, structural, release scope, confidentiality, non-disparagement), exposure at stake, authority ladder status (see `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` settlement authority), what could go wrong, what to ask the attorney before accepting.]
+> [生成1页摘要：案件、拟议调解/和解条款（金额、结构、放弃范围、保密、不贬损）、利害敞口、权限阶梯状态（见 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 调解/和解权限）、可能出错之处、接受前向律师询问的问题。]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> 若您需要在贵管辖区寻找执业律师：中华全国律师协会或地方律师协会是最快的起点。
 
-Do not log the acceptance or flip materiality on acceptance basis without an explicit yes. Logging offers or counters does not require the gate — acceptance does.
+未经明确同意，不得记录接受或在接受基础上变更重要性。记录要约或反要约无需过此关——接受须过。
 
-### 4a. Materiality trigger — explicit prompt
+### 4a. 重要性触发 —— 显式提示
 
-Certain event types force a materiality re-check. When the event type is in this list, **always prompt** — don't let the user move on without an explicit answer:
+某些事件类型强制重要性重新检查。当事件类型在以下列表中时，**始终提示** —— 不让用户在无显式回答的情况下继续：
 
-| Event type | Materiality trigger prompt |
+| 事件类型 | 重要性触发提示 |
 |---|---|
-| Substantive (new facts, key document, merits ruling) | "This event is substantive. Does it push `materiality`? Current: `[current]`. Options: `reserved / disclosed / monitored / none`. Change?" |
-| Strategy (posture shift, settlement offer made or received) | "Settlement activity often triggers materiality reclassification. Current: `[current]`. If the offer, counter, or acceptance moves exposure or shifts from contested to probable-and-estimable, reclassify." |
-| Risk re-assessment (severity or likelihood changed) | "Risk moved. Materiality should track. Current: `[current]`. Reclassify?" |
-| Regulatory / enforcement development | "Regulator action (subpoena, CID, enforcement notice) usually triggers disclosure analysis. Current: `[current]`. Change?" |
+| 实体性（新事实、关键证据、实体裁判） | "此事件为实体性。是否推动 `重要性`？当前：`[当前]`。选项：`已计提 / 已披露 / 监测中 / 无`。变更？" |
+| 策略（姿态转变、调解/和解要约发出或收到） | "调解/和解活动通常触发重要性重分类。当前：`[当前]`。若要约、反要约或接受改变敞口或从争议转变为很可能且可估计，重新分类。" |
+| 裁判（判决/裁定/调解书） | "裁判文书已送达。是否推动 `重要性`？当前：`[当前]`。如判决败诉，敞口需重新评估。" |
+| 风险重新评估（严重性或可能性变更） | "风险已变动。重要性应跟踪。当前：`[当前]`。重新分类？" |
+| 行政监管/执法进展 | "监管行动（行政调查通知、执法通知）通常触发披露分析。当前：`[当前]`。变更？" |
 
-Acceptable answers include `no change` — but `no change` must be explicit, not implied by silence. Capture in the history entry:
-
-```markdown
-**Materiality check:** [no change / changed from X to Y]
-**Reasoning:** [one sentence]
-```
-
-If materiality moves to `reserved` or `disclosed`, and the matter did not previously carry a reserve or disclosure, flag the event as requiring finance / audit-committee notification per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` materiality thresholds.
-
-### 5. Seed doc prompt (optional)
-
-If the update references a document (order, filing, correspondence), ask if there's a path to link. Not pushy.
-
-## Writing
-
-### Append to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`
-
-Most recent at top, directly under the `---` that follows the header.
+可接受的答案包括 `不变更` —— 但 `不变更` 必须显式表达，不能由沉默默示。记录在办案日志条目中：
 
 ```markdown
-## [YYYY-MM-DD] — [Event type]: [short title]
-
-[Paragraph summary.]
-
-**Fields changed:**
-- [field]: [old → new]
-- [field]: [old → new]
-
-**Related doc:** [path, if provided]
+**重要性检查：** [不变更 / 从X变更为Y]
+**理由：** [一句]
 ```
 
-If no fields changed, omit the "Fields changed" block.
+若重要性变更为 `已计提` 或 `已披露`，且案件此前未计提拨备或披露，将事件标注为需按 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 重要性阈值通知财务/审计委员会。
 
-### Update `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 5. 种子文件提示（可选）
 
-- Apply any field changes.
-- Set `last_updated: [today]` (or the event date if the user overrode — the log tracks when the record was last touched).
+若更新引用文件（判决书、裁定书、调解书、起诉状副本、证据材料、庭审笔录），询问是否有路径可链接。不强求。
 
-## Confirm
+## 写入
 
-Show the user the history entry and the yaml diff before writing:
+### 追加至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`
 
-> Here's what I'll append and update. Good to commit?
+最新在最前，紧接抬头下 `---` 后。
 
-## What this skill does not do
+```markdown
+## [年-月-日] —— [事件类型]：[简短标题]
 
-- Edit past history entries. Corrections are new entries that reference and correct prior ones.
-- Silently change the log. Every field change is shown to the user before write.
-- Decide whether a new development warrants reserve/disclosure. It surfaces the question ("this might push materiality — want to reclassify?"), the user answers.
+[段落摘要。]
+
+**字段变更：**
+- [字段]: [旧 → 新]
+- [字段]: [旧 → 新]
+
+**关键期限提醒：**
+- [如：举证期限截止于 X月X日]
+- [如：上诉期截止于 X月X日]
+
+**关联文件：** [路径，如有]
+```
+
+若无字段变更，省略"字段变更"块。
+
+### 更新 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+
+- 应用任何字段变更。
+- 设置 `最近更新: [今日]`（或事件日期若用户覆盖——日志追踪记录最后触及时间）。
+
+## 期限特别提醒
+
+中国民事诉讼关键期限——记录事件时检查：
+
+| 期限 | 法定期限 | 提醒 |
+|------|----------|------|
+| 答辩期（被告） | 15天（自送达起诉状副本起） | 管辖权异议须在此期限内提出 |
+| 举证期限 | 法院指定（一审普通程序不少于15天） | 可申请延长；逾期举证可能不被采纳 |
+| 上诉期（判决） | 15天（自判决书送达起） | 不可延长 |
+| 上诉期（裁定） | 10天（自裁定书送达起） | 管辖权异议裁定、不予受理裁定等 |
+| 申请再审 | 6个月（自判决/裁定生效起） | 部分事由自知道之日起算 |
+| 申请执行 | 2年（自法律文书规定履行期间最后一日起） | 适用诉讼时效中断/中止规定 |
+| 诉讼时效 | 3年（自权利人知道权利受损及义务人之日起） | 最长20年保护期 |
+
+若事件涉及上述任何期限，在日志条目中明确标注截止日。
+
+## 确认
+
+写入前向用户展示办案日志条目和yaml差异：
+
+> 以下是我即将追加和更新的内容。可以提交吗？
+
+## 本技能不做什么
+
+- 编辑过往办案日志条目。纠正是引用并更正之前条目的新条目。
+- 静默变更日志。每项字段变更写入前向用户展示。
+- 决定新进展是否需要拨备/披露。提出问题（"这可能推动重要性——是否重新分类？"），用户回答。
+- 计算诉讼程序期限。标注法定期间并提醒用户确认起算点。法院实际指定期限以法院文书为准。

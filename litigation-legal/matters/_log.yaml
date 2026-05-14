@@ -1,64 +1,71 @@
-# Portfolio Ledger — litigation-legal
+# 案件总账 —— 争议解决
 #
-# One entry per matter under `matters:`. Source of truth for /portfolio-status rollups.
-# Closed matters stay in this file (searchable history) but are filtered out
-# of active rollups by default. Edit via /litigation-legal:matter-intake,
-# /matter-update, and /matter-close — direct edits are fine but show your work in
-# the matter's history.md.
+# 每个案件在 `matters:` 下列一条。作为 /portfolio-status 汇总的数据源。
+# 已结案件保留在本文件中（可检索历史），但默认从活跃汇总中过滤。
+# 通过 /litigation-legal:matter-intake、/matter-update 和 /matter-close 编辑——
+# 直接编辑亦可，但请在案件的 history.md 中注明修改内容。
 #
 # ──────────────────────────────────────────────────────────────────────────
-# Schema
+# 数据结构定义
 # ──────────────────────────────────────────────────────────────────────────
-# - id:                string — slug, stable; matches matters/[slug]/ folder
-#   name:              string — display name
-#   type:              contract | employment | ip | regulatory | investigation | product | other
-#   role:              plaintiff | defendant | claimant | respondent | investigated
-#   counterparty:      string
-#   jurisdiction:      string — court or regulatory body
-#   status:            threatened | active | discovery | trial | appeal | closed
-#                      (resolution type is captured separately via `outcome` at close time;
-#                       `/matter-close` writes `outcome: settled` for resolved-via-settlement)
-#   stage:             string — free-text substage (e.g., "pleadings", "fact discovery")
-#   source:            demand-letter | complaint-served | subpoena | regulator-inquiry | internal-report | pre-suit-threat
+# - id:                string — 简称，稳定唯一；对应 matters/[简称]/ 文件夹
+#   name:              string — 案件显示名称
+#   type:              合同纠纷 | 劳动争议 | 知识产权 | 行政监管 | 刑事调查 | 产品责任 | 其他
+#   role:              原告 | 被告 | 申请人 | 被申请人 | 被调查方
+#   counterparty:      string — 对方当事人
+#   jurisdiction:      string — 管辖法院或仲裁机构
+#   status:            潜在威胁 | 进行中 | 举证阶段 | 开庭审理 | 上诉 | 已结案
+#                      （结案方式通过结案时的 `outcome` 字段单独记录；
+#                       /matter-close 对通过调解结案的写入 `outcome: 调解结案`）
+#   stage:             string — 自由文本子阶段（如 "立案审查"、"庭前会议"）
+#   source:            律师函 | 起诉状副本 | 法院传票 | 监管询问 | 内部报告 | 诉前威胁
 #   outside_counsel:
-#     firm:            string | null
-#     lead:            string | null
-#     email:           string | null     # NEW v2 — used by /oc-status email drafter
-#     engagement:      signed | pending | none
+#     firm:            string | null — 外聘律所
+#     lead:            string | null — 主办律师
+#     email:           string | null     # v2 新增 — 供 /oc-status 邮件生成使用
+#     engagement:      已签署 | 待签署 | 无
 #   conflicts:
-#     status:          cleared | pending | not-run | waived
-#     method:          corporate-legal | outside-counsel | system-check | informal | other
-#     cleared_by:      string | null
-#     cleared_date:    YYYY-MM-DD | null
-#     override:                                                          # NEW v2.1
-#       by:              string | null        # who authorized the bypass
-#       date:            YYYY-MM-DD | null
-#       rationale:       string | null        # permanent record; does not auto-expire
-#   risk:              critical | high | medium | low   (per CLAUDE.md risk matrix)
-#   materiality:       reserved | disclosed | monitored | none
-#   exposure_range:    string — e.g., "$2M–$5M" or "<$250K"
+#     status:          已审查无冲突 | 审查中 | 未审查 | 豁免
+#     method:          公司法务审查 | 外聘律师审查 | 系统检索 | 人工判断 | 其他
+#     cleared_by:      string | null — 审查人
+#     cleared_date:    YYYY-MM-DD | null — 审查日期
+#     override:                                                          # v2.1 新增
+#       by:              string | null        # 授权绕过审查的人
+#       date:            YYYY-MM-DD | null    # 授权日期
+#       rationale:       string | null        # 永久保留理由；不会自动过期
+#   risk:              红线 | 重大 | 一般 | 提示   （对应 CLAUDE.md 风险矩阵）
+#   materiality:       已计提准备金 | 已披露 | 持续监控 | 无需
+#   exposure_range:    string — 标的金额区间，如 "200万–500万元" 或 "<50万元"
 #   internal_owners:
-#     business_lead:   string | null
-#     hr_partner:      string | null
-#     comms_contact:   string | null
-#   legal_hold:
-#     issued:          bool
-#     issued_date:     YYYY-MM-DD | null
-#     scope:           string | null
-#     custodians:      [string]            # NEW v2
-#     last_refresh:    YYYY-MM-DD | null   # NEW v2
-#     next_refresh:    YYYY-MM-DD | null   # NEW v2
-#     released:        YYYY-MM-DD | null   # NEW v2
-#   related_matters:   [string] | null     # NEW v2 — list of related matter slugs
-#   opened:            YYYY-MM-DD
-#   next_deadline:     YYYY-MM-DD | null
-#   last_updated:      YYYY-MM-DD
-#   path:              string — "matters/[slug]/"
+#     business_lead:   string | null — 业务负责人
+#     hr_partner:      string | null — HR 对接人
+#     comms_contact:   string | null — 公关/媒体对接人
+#   property_preservation:                                            # 财产保全
+#     applied:          bool — 是否已申请
+#     applied_date:     YYYY-MM-DD | null — 申请日期
+#     type:             string | null — 保全类型（诉前财产保全 / 诉中财产保全 / 证据保全 / 行为保全）
+#     target:           string | null — 保全标的
+#     amount:           string | null — 保全金额
+#     ruling_date:      YYYY-MM-DD | null — 法院裁定日期
+#     ruling_result:    string | null — 裁定结果
+#     legal_hold:
+#     issued:          bool — 是否已签发
+#     issued_date:     YYYY-MM-DD | null — 签发日期
+#     scope:           string | null — 范围
+#     custodians:      [string]            # v2 新增
+#     last_refresh:    YYYY-MM-DD | null   # v2 新增 — 最近更新日期
+#     next_refresh:    YYYY-MM-DD | null   # v2 新增 — 下次更新日期
+#     released:        YYYY-MM-DD | null   # v2 新增 — 解除日期
+#   related_matters:   [string] | null     # v2 新增 — 关联案件简称列表
+#   opened:            YYYY-MM-DD — 立案日期
+#   next_deadline:     YYYY-MM-DD | null — 下一个期限
+#   last_updated:      YYYY-MM-DD — 最后更新日期
+#   path:              string — "matters/[简称]/"
 #
-# Closed matters additionally carry:
-#   closed:            YYYY-MM-DD
-#   outcome:           settled | dismissed | judgment-for-us | judgment-against-us | withdrawn | consolidated | other
-#   final_cost:        string | number
+# 已结案件额外字段：
+#   closed:            YYYY-MM-DD — 结案日期
+#   outcome:           调解结案 | 撤诉 | 胜诉 | 败诉 | 撤回申请 | 合并审理 | 其他
+#   final_cost:        string | number — 最终费用/律师费
 # ──────────────────────────────────────────────────────────────────────────
 
 matters: []

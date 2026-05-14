@@ -1,354 +1,172 @@
 ---
-name: policy-monitor
+name: 政策监控
 description: >
-  Keep the AI policy current with practice — weekly sweep of saved AIAs, triage
-  results, and vendor reviews to find policy drift, or direct query for a proposed
-  new AI practice. Use when user says "policy sweep", "does our AI policy cover
-  this", "we want to start doing X — does the policy need updating", "run the
-  policy monitor", or on a recurring schedule.
-argument-hint: "[describe a proposed new AI practice — or omit / use --sweep for crawl mode]"
+  保持AI政策与实践同步——定期扫描已保存的AI影响评估、分诊结果和供应商审查，
+  发现政策偏离；或针对拟议的新AI实践进行直接查询。
+  关注《生成式AI服务管理暂行办法》、《深度合成管理规定》、
+  《算法推荐管理规定》及TC260系列标准等法规变化。
+  当用户说"政策扫描"、"我们的AI政策是否涵盖这个"、
+  "我们想开始做X——政策需要更新吗"、"运行政策监控"或按定期计划时使用。
+argument-hint: "[描述拟议的新AI实践——或省略/使用 --sweep 进入扫描模式]"
 ---
 
-# /policy-monitor
+# /政策监控
 
-**Sweep mode** (no argument or `--sweep`):
-1. Read `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` → outputs folder path, AI policy document, last sweep date.
-2. Use the framework below. Scan outputs folder for files since last sweep.
-3. For each output: extract approved practices → diff against current policy commitments and use case registry.
-4. Classify gaps: REQUIRED (policy misrepresents current practice) vs ADVISABLE (policy silent).
-5. For each gap: quote current policy, describe gap, draft suggested language.
-6. Flag any use cases in outputs not yet added to the `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` registry.
-7. Present results to the human. Only after acknowledgment, update `Last policy sweep` and `gaps_found` in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`.
+**扫描模式**（无参数或 `--sweep`）：
+1. 读取实践配置 → 输出文件夹路径、AI政策文件、上次扫描日期。
+2. 使用以下框架。扫描输出文件夹中自上次扫描以来的文件。
+3. 对每个输出：提取已批准实践 → 与当前政策承诺和用例注册表对比。
+4. 差距分类：必须更新（政策与实际不符）vs 建议更新（政策空白）。
+5. 对每个差距：引用当前政策、描述差距、起草建议措辞。
+6. 标注任何尚未添加到配置注册表的输出中的用例。
+7. 将结果呈现给用户。仅在用户确认后更新。
 
-**Direct query mode** (with description argument):
-1. Read `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` → current policy commitments, use case registry, actual policy document.
-2. Parse proposed practice. Diff against policy: use case coverage, automation level, affected parties, disclosure, vendor data use, oversight.
-3. Output: covered / missing / conflicting + suggested language for each gap + registry entry if needed + timing recommendation.
+**直接查询模式**（带描述参数）：
+1. 读取当前政策承诺、用例注册表、实际政策文件。
+2. 解析拟议实践。与政策对比：用例覆盖、自动化水平、受影响方、披露、供应商数据使用、监督。
+3. 输出：已涵盖/缺失/冲突 + 每个差距的建议措辞 + 注册表条目（如需要）+ 时间建议。
 
-**Recurring runs:**
-Set up a recurring reminder in your own scheduler to run `/ai-governance-legal:policy-monitor` weekly. Scheduled execution requires a scheduled-tasks integration, which is not bundled with this plugin.
+## 示例
 
 ```
 /ai-governance-legal:policy-monitor
-/ai-governance-legal:policy-monitor "We want to use AI to automatically flag expense reports for review"
+/ai-governance-legal:policy-monitor "我们想用AI自动标注报销报告进行审查"
 ```
 
 ---
 
-## Purpose
+## 功能目的
 
-AI policies drift from practice faster than almost any other policy document — the
-field moves quickly, use cases multiply, and each approved AIA or triage result
-represents a new commitment the policy may not have caught up with. An AIA approves
-a new AI use case with a human-oversight condition. A vendor AI agreement permits
-data processing the policy doesn't mention. A triage result marks a new category
-of deployment as conditional with a disclosure requirement. The policy sits there
-unchanged.
+AI政策偏离实践的速度比几乎任何其他政策文件都快——领域变化快、用例倍增、每个批准的AI影响评估或分诊结果都代表政策可能尚未跟上的新承诺。
 
-This skill catches the drift — either by crawling the outputs folder weekly, or by
-answering the direct question: "we're about to start doing X, what does that mean
-for our AI policy?"
+中国AI治理法规也在快速演进——新的管理办法、标准、指南不断出台。本技能捕捉偏离——通过定期爬取输出文件夹，或通过回答直接问题："我们即将开始做X，这对我们的AI政策意味着什么？"
 
-The output is always the same: here's the gap, here's the suggested language.
+输出始终相同：这里是差距，这里是建议措辞。
 
 ---
 
-## Load current state
+## 加载当前状态
 
-Read `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`:
-- `## AI policy commitments` — commitments extracted from the published policy
-- `## Use case registry` — approved, conditional, and never use cases
-- `## Outputs` — outputs folder path, AI policy document location, last sweep date
-
-If `## Outputs` contains `[PLACEHOLDER]`:
-> "Outputs aren't configured yet. I can still run a direct-query check — describe
-> what you're planning to do and I'll diff it against your current AI policy. To
-> enable the crawl sweep, run `/ai-governance-legal:cold-start-interview` and provide the outputs
-> folder path."
-
-Read the actual AI or acceptable use policy document from the path in `## Outputs`
-→ **AI policy document**. The commitments in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` are a summary; the actual
-document is authoritative for suggesting edits.
+读取配置中的AI政策承诺、用例注册表、产出设置。读取实际的AI或可接受使用政策文件。
 
 ---
 
-## Mode detection
+## 模式检测
 
-**Sweep mode:** No argument, `--sweep`, or triggered by schedule.
-→ Scan the outputs folder. Diff all outputs since last sweep against current policy.
+**扫描模式：** 无参数、`--sweep` 或由计划触发。扫描输出文件夹。
 
-**Direct query mode:** User provides a description of a proposed new AI practice.
-→ Diff that practice against current policy and use case registry. Suggest updates.
+**直接查询模式：** 用户提供拟议新AI实践描述。对比该实践与当前政策和用例注册表。
 
 ---
 
-## Mode 1: Sweep
+## 模式一：扫描
 
-### Determine scope
+### 确定范围
 
-Read `## Outputs` → **Last policy sweep** date. Scan for output files in the
-outputs folder dated after that date. If no date is recorded, scan all files and
-note: "First sweep — scanning all outputs."
+读取上次政策扫描日期。扫描该日期后的输出文件。
 
-If the outputs folder is empty or has no new files since the last sweep:
-> "No new outputs since [last sweep date]. AI policy appears current with recent
-> practice. Next scheduled sweep: [date]."
+如果输出文件夹为空或自上次扫描以来无新文件，报告无事，不更新。
 
-**Do not update `Last policy sweep` or `gaps_found` automatically.** After the sweep results are presented, wait for the human to acknowledge them ("sweep acknowledged," "results reviewed," or equivalent). Only then update `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`:
+**不要自动更新上次扫描日期。** 等待用户确认后再更新。
 
-- `Last policy sweep: [date of acknowledgment]`
-- `gaps_found: [N]` (number of REQUIRED + ADVISABLE gaps found in that sweep)
+### 在每种输出类型中读取什么
 
-Updating the stamp before acknowledgment would let an unreviewed sweep silently roll forward and suppress the next sweep's attention to the same gaps.
+**AI影响评估：** 提取已批准的用例、系统描述、部署模式、附加条件、受影响方、使用的供应商、披露要求。标注不在注册表中的用例、条件未反映在政策中的批准、政策未涵盖的新供应商。
 
-### What to read in each output type
+**分诊结果（附条件/已批准结果）：** 提取用例分类、层级分配、附加条件。标注新用例类别、暗示政策承诺的条件。
 
-**AIAs (AI Impact Assessments):**
-- Extract: use case approved, AI system description, deployment mode (assistive /
-  augmentative / automated), conditions imposed, affected parties, vendor used,
-  any disclosure requirements to affected individuals
-- Flag: use cases not in the registry, use cases approved with conditions not
-  reflected in policy, vendor added that policy doesn't cover, automated decision
-  deployed where policy implies human oversight
+**供应商AI审查（已签署/已批准）：** 提取供应商、约定的数据使用条款、与标准立场不同的AI特定条款。
 
-**Triage results (CONDITIONAL / APPROVED outcomes):**
-- Extract: use case classified, tier assigned, conditions imposed
-- Flag: new use case categories not in registry, conditions that imply policy
-  commitments (e.g., "must disclose to affected parties" — does the policy say you
-  do this?), newly approved practices that expand policy scope
+**用例注册表更新：** 如直接添加了新条目，检查政策是否反映了这些已批准类别。
 
-**Vendor AI reviews (signed / approved):**
-- Extract: vendor added, data use terms agreed to, any AI-specific provisions
-  accepted that differ from standard positions in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`
-- Flag: vendors added whose data use terms the policy should reference (e.g., "we
-  use third-party AI services and ensure they do not train on our data"), approved
-  deviations from standard positions that the policy implies you hold
+### 差距识别
 
-**Use case registry updates:**
-- If new entries were added to the registry since the last sweep (directly, not
-  through an AIA), check whether the policy reflects those approved categories.
+**必须更新** — 政策承诺与实际矛盾，或已批准用例缺乏政策覆盖且影响外部方。
+**建议更新** — 政策空白但不矛盾。
 
-### Gap identification
-
-For each flagged item, assess:
-
-**REQUIRED update** — the policy makes a commitment that an output contradicts, or
-an approved use case has no policy coverage and affects external parties. Not
-updating creates a material misrepresentation.
-
-> Example: AI policy says "we do not use AI in employment decisions." An AIA
-> approved an AI-assisted hiring screening tool with human review required. Policy
-> needs updating — even with human review, AI is now involved in employment
-> decisions. "We do not use AI" is no longer accurate.
-
-**ADVISABLE update** — policy is silent but not in conflict. The practice is
-defensible without updating, but cleaner with it. Important when the practice
-affects external parties or creates a reasonable expectation.
-
-> Example: Policy says "we use AI to improve our products and services." An AIA
-> approved an AI feature for customer support drafts. Policy technically covers it
-> but is vague. Advisable to be more specific so customers know what they're
-> interacting with.
-
-### Sweep output format
+### 扫描输出格式
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果标头]
 
-*This sweep is derived from AIAs, triage results, and vendor AI reviews that carry the plugin's privilege/confidentiality marking. The sweep inherits that status. Distribute deliberately — forwarding gap findings outside the privilege circle can waive privilege on the underlying assessments.*
+# AI政策监控 — 扫描报告
 
-# AI Policy Monitor — Sweep Report
-
-**Date:** [date]
-**Outputs scanned:** [N files] | **New since last sweep:** [N files]
-**Gaps found:** [N] REQUIRED | [N] ADVISABLE
+**日期：** [日期]
+**已扫描输出：** [N个文件] | **自上次扫描新增：** [N个文件]
+**发现差距：** [N] 必须 | [N] 建议
 
 ---
 
-## REQUIRED updates
+## 必须更新
 
-### [Gap 1 short name]
-
-**Source:** [filename / output type that triggered this]
-**What's happening:** [plain description of the new practice]
-**Current policy:** [quote the relevant section — or "No coverage"]
-**Gap:** [what's missing or inconsistent]
-
-**Suggested language:**
-> *Add to / update [section name]:*
-> "[Drafted policy text — specific, consistent with house style of the actual policy]"
+[每个差距：来源、实际情况、当前政策、差距、建议措辞]
 
 ---
 
-[repeat for each REQUIRED gap]
+## 建议更新
+
+[同上格式]
 
 ---
 
-## ADVISABLE updates
+## 无需行动
 
-### [Gap name]
-
-**Source:** [filename]
-**What's happening:** [description]
-**Current policy:** [quote or "Silent"]
-**Suggested language:**
-> *Add to / update [section]:*
-> "[Drafted text]"
+[列出未发现差距的输出]
 
 ---
 
-## No action needed
+## 用例注册表同步
 
-[List outputs scanned where no gaps were found]
-
----
-
-## Use case registry sync
-
-[Any use cases approved since the last sweep that aren't yet in the `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`
-registry — suggest registry entries to add]
+[建议添加的注册表条目]
 
 ---
 
-## Next steps
+## 后续步骤
 
-- [ ] Review REQUIRED updates — decisions needed before the associated use cases
-  go live (or immediately if already live)
-- [ ] Review ADVISABLE updates — lower urgency, address at next policy refresh
-- [ ] Add new use cases to registry (if any flagged above)
-- [ ] Next scheduled sweep: [date]
+- [ ] 审查必须更新项
+- [ ] 审查建议更新项
+- [ ] 将新用例添加到注册表
+- [ ] 下次预定扫描：[日期]
 ```
 
 ---
 
-## Mode 2: Direct query
+## 模式二：直接查询
 
-### Parse the proposed practice
+### 解析拟议实践
 
-Extract from the user's description:
-- What AI system or capability is being introduced?
-- What does it do — assistive, automated decisions, content generation?
-- Who does it affect — employees, customers, third parties?
-- Which vendor or model is involved?
-- Is there human review, or is it fully automated?
-- Are affected parties told the AI is involved?
-- Any data flowing to a vendor that wouldn't be expected?
+从用户描述中提取：什么AI系统或能力、做什么、影响谁、哪个供应商或模型、是否有人工审查、受影响方是否被告知、是否涉及个人信息或敏感数据。
 
-If the description is vague, ask one clarifying question. Don't run a long intake
-— direct query mode should be fast.
+### 政策对比
 
-### Policy diff
+检查拟议实践与当前政策及用例注册表：用例类别、AI使用范围、自动化决策、向受影响方披露、供应商数据使用、人工监督、算法透明度、个人信息保护。
 
-Check the proposed practice against the current policy and use case registry:
+### 直接查询输出格式
 
-| Check | Current policy / registry | Proposed practice | Verdict |
-|---|---|---|---|
-| Use case category | [registry — approved / conditional / never / not present] | [new use case] | 🟢 Covered / 🟡 Gap / 🔴 Conflict |
-| Scope of AI use | [what policy says AI is used for] | [new use] | |
-| Automated decisions | [policy position on automation] | [is this automated?] | |
-| Disclosure to affected parties | [what policy commits to] | [what this requires] | |
-| Vendor data use | [policy position on vendor AI] | [this vendor's terms] | |
-| Human oversight | [policy statement if any] | [what's actually in place] | |
-
-### Direct query output format
-
-```markdown
-# AI Policy Check: [Proposed practice in one line]
-
-**Bottom line:** [POLICY UPDATE REQUIRED / ADVISABLE / NO UPDATE NEEDED]
+输出包含底线结论（需要更新政策/建议更新/无需更新）、已涵盖内容、缺失内容、冲突内容、用例注册表建议、时间建议。
 
 ---
 
-## What's covered
+## 建议措辞质量标准
 
-[Aspects of the proposed practice already addressed — brief, confirms no change needed]
-
-## What's missing
-
-### [Gap 1]
-
-**Current policy:** [quote or "Silent"]
-**What's needed:** [why this gap matters — legal, reputational, or expectation reason]
-
-**Suggested language:**
-> *Add to [section]:*
-> "[Drafted text]"
-
-### [Gap 2]
-[same format]
-
-## What conflicts
-
-### [Conflict 1 — if any]
-
-**Current policy says:** [quote]
-**Proposed practice does:** [what conflicts]
-**Resolution:** [which one needs to change — usually practice adjusts to match policy,
-or policy is updated to a defensible new position; never silently accept both]
+- 匹配现有政策的语气和风格
+- 偏好持久的语言："AI辅助"而非命名会变化的特定模型
+- 不要起草团队无法遵守的承诺
+- 当政策立场真正变化时明确说明
+- 披露语言：起草得让受影响方（员工、客户）能读懂
 
 ---
 
-## Use case registry
+## 计划集成
 
-[If this use case isn't in the registry: "Add to `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` → Use case registry:"]
-```
-| [use case] | [Approved/Conditional] | [conditions] | — |
-```
+建议按周或按月运行扫描。在您自己的调度器中设置定期提醒。
 
 ---
 
-## Timing
+## 本技能不做的事
 
-[REQUIRED: "Policy update should happen before this practice goes live — or
-immediately if it's already running."
-ADVISABLE: "Can proceed; update at next policy refresh."]
-```
-
----
-
-## Suggested language quality standards
-
-AI policy language is unusually prone to becoming outdated — the field moves fast
-and vague language ages better than specific commitments. When drafting:
-
-- Match the voice and style of the existing policy (read the actual document)
-- Prefer durable language: "AI-assisted" rather than naming specific models that
-  will change; "automated or AI-assisted decisions" rather than technical descriptions
-- Don't draft commitments the team can't keep — "we always have a human review
-  AI outputs" is broken the moment one automated workflow ships
-- When a policy position is genuinely changing (not just extending), say so
-  explicitly: "This update reflects that we now use AI in [new category] — the
-  previous language did not cover this."
-- For disclosure language: draft it to be readable by the affected party (employee,
-  customer), not just legally accurate
-
-Always say which section to add to. If the right section doesn't exist, suggest
-creating it and draft the header.
-
----
-
-## Schedule integration
-
-The weekly sweep is designed to run on a recurring cadence. Set up a recurring reminder in your own scheduler to run `/ai-governance-legal:policy-monitor` weekly. Scheduled execution requires a scheduled-tasks integration, which is not bundled with this plugin.
-
-After each sweep, the **Last policy sweep** and **gaps_found** fields in `## Outputs` are updated only once the human has acknowledged the sweep results (see "Determine scope" above).
-
----
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- It doesn't update the policy itself — it drafts suggested language and flags
-  decisions, but a human reviews and approves every change.
-- It doesn't catch incoming regulations — that's `reg-gap-analysis`. This skill
-  monitors internal practice drift, not external legal changes.
-- It doesn't enforce that outputs are saved — if AIAs and triage results aren't
-  being saved to the configured folder, the sweep won't find them. Direct-query
-  mode works without saved outputs.
-- It doesn't read email, Slack, or informal decisions — only structured outputs
-  saved to the configured folder.
-- It doesn't update the use case registry automatically — it flags registry gaps
-  and drafts entries for human review before adding.
+- 不自动更新政策本身——起草建议措辞并标注决策，但由人工审查和批准每项更改。
+- 不捕捉新法规——那是法规差距分析的工作。本技能监控内部实践偏离，而非外部法律变化。
+- 不强制要求保存输出。
+- 不读取邮件、即时通讯或非正式决策——仅读取保存到配置文件夹的结构化输出。
+- 不自动更新用例注册表——标注注册表差距并起草条目供人工审查。

@@ -1,35 +1,60 @@
 ---
-name: uninstall
+name: 卸载技能
 description: >
-  Uninstall a community skill that was installed via the hub. Confirms before
-  deleting files, refuses to touch first-party plugin skills, and logs every
-  action. Use when the user wants to fully remove a community skill
-  ("uninstall [skill]", "remove this skill") rather than just disable it.
-argument-hint: "[skill name]"
+  从系统中完全卸载技能——删除技能文件、配置和数据。
+  需要明确确认且不可撤销。与禁用不同（禁用保留数据）。
+  当用户说"卸载[技能]"、"删除[技能]"、"移除[技能]"时使用。
+argument-hint: "<技能名称>"
 ---
 
-# /uninstall
+# /卸载技能
 
-Run the `uninstall` workflow from the skill-manager reference skill against
-the named skill.
+## 功能目的
 
-Safety rules:
+完全移除技能及所有关联数据和配置。这是不可逆操作。如需保留数据以备后用，请使用禁用功能。
 
-1. **Only uninstall community skills installed through this hub.** Check
-   `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/install-log.yaml`
-   and the CLAUDE.md installed starter pack table. If the skill is not recorded
-   there, refuse and tell the user.
-2. **Never uninstall a first-party plugin's skill.** The 12 core plugins that
-   ship with claude-for-legal are off-limits from this command. If the named
-   skill resolves to a path inside one of those plugins, refuse.
-3. **Confirm before removing files.** Show the user every path that will be
-   deleted. Proceed only on explicit `yes`.
-4. **Log the uninstall.** Append to `install-log.yaml` with action `uninstall`
-   and timestamp so the audit trail is intact.
+## 操作流程
 
-If the user wants to stop a skill from running but keep the files (e.g., for
-later re-enable, or to preserve configuration), suggest `/legal-builder-hub:disable`
-instead.
+1. **确认技能已安装。** 列出技能详情：名称、版本、安装日期、最后使用日期。
+2. **检查依赖。** 是否有其他已安装技能依赖此技能？如有则警告并说明影响。
+3. **数据备份提示。** 如技能有数据或输出文件（如审查记录、影响评估、配置），询问是否保留备份。
+   - 默认备份位置：`~/.claude/plugins/config/claude-for-legal/_uninstalled_backups/<技能名称>/`
+4. **要求明确确认。**
+   > "您确定要卸载[技能名称]吗？这将删除以下内容：
+   > - 技能文件和命令
+   > - 该技能的所有配置
+   > - 关联的数据和输出文件（数据将先备份至 `_uninstalled_backups/`）
+   >
+   > 此操作不可撤销。重新安装需要从头配置。
+   >
+   > 确认卸载？输入技能名称以确认。"
+5. **执行卸载：**
+   - 备份数据（如用户选择保留）
+   - 删除技能文件
+   - 删除技能配置
+   - 更新技能注册表
+6. **确认完成。** 列出已删除的内容和备份位置（如有）。
 
-> Detailed uninstall, disable, and re-enable workflows live in the
-> `skill-manager` reference skill — load it before doing substantive work.
+## 前置检查
+
+卸载前验证：
+- 技能不是系统必需技能（如技能管理器、社区浏览等基础技能）
+- 无活跃事项依赖此技能（如有则警告）
+- 技能当前未被禁用（如果是禁用状态，先启用再卸载或确认直接删除）
+
+## 与禁用的区别
+
+| 操作 | 技能文件 | 配置 | 数据/输出 | 可逆性 |
+|---|---|---|---|---|
+| 禁用 | 保留 | 保留 | 保留 | 即时恢复 |
+| 卸载 | 删除 | 删除 | 可备份后删除 | 需重新安装 |
+
+**选择建议：** 如果是短期不需要——禁用。如果是永久不需要——卸载。
+
+## 护栏规则
+
+- **卸载前始终要求明确确认。** 必须等用户明确表达确认后才执行。
+- **始终检查依赖。** 避免破坏其他依赖技能的功能。
+- **卸载前提供备份数据选项。** 默认备份到 `_uninstalled_backups/`。
+- **不卸载系统必需技能。** 如技能管理器本身就是系统必需的。
+- **记录卸载日志。** 记录卸载时间、技能名称、原因（如提供）、备份位置。

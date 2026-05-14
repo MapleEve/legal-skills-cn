@@ -1,36 +1,98 @@
 ---
-name: investigation-open
+name: 调查开启
 description: >
-  Open a new internal investigation matter — runs intake, generates the sources
-  checklist, and creates the persistent investigation log. Use when a complaint
-  or allegation comes in and the attorney needs to stand up a privileged
-  investigation workspace.
-argument-hint: "[brief description of the allegation]"
+  以律所受托模式开启新的内部调查案件——确定委托关系、明确调查范围、
+  组成调查组、向被调查对象发出调查通知、创建调查工作日志。
+  当投诉或举报到来、律师需要建立受律师保密义务保护的调查工作空间时使用。
+argument-hint: "[调查事项的简要描述]"
 ---
 
-# /investigation-open
+# /调查开启
 
-Opens a new investigation matter — runs intake, generates the sources
-checklist, and creates the persistent investigation log.
+以律所受托模式开启新的内部调查案件——确定委托关系、明确调查范围、组成调查组、发出调查通知、创建调查工作日志。
 
-## Instructions
+## 中国法语境
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`.
-2. Load the `internal-investigation` reference skill and run Mode 1 (Open).
-3. If a matter with the same slug already exists, warn before overwriting.
+在中国法下，企业内部调查通常以律所受委托的方式开展，以最大程度保护律师保密义务与工作成果保护与工作成果保密性。本技能假设调查由律所接受委托后开展。
 
-## Examples
+## 指示
+
+1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。
+2. 加载`内部调查`参考技能并运行模式1（开启）。
+3. 如果相同简码的案件已存在，覆盖前发出警告。
+4. 按中国调查实践逐步开展：委托确认→调查范围→调查组组成→调查通知→证据收集准备。
+
+## 调查开启工作流
+
+### 阶段1：委托关系确认
+
+- 委托方是谁？（公司/董事会/监事会/审计委员会/纪委）
+- 委托协议是否已签署？是否明确律师保密义务与工作成果保护？
+- 委托费用和计费方式
+
+### 阶段2：调查范围确定
+
+- 调查对象（员工姓名/职位/部门/地点）
+- 调查事项（骚扰/歧视/舞弊/利益冲突/商业秘密泄露/违反规章制度/其他）
+- 是否需要向公安机关初步咨询（如涉及刑事犯罪嫌疑，如职务侵占、侵犯商业秘密罪）
+- 时间范围
+- 涉及金额（如有）
+
+### 阶段3：调查组组成
+
+- 主办律师
+- 协办律师/律师助理
+- 是否需要外部鉴定机构（如电子取证、财务审计）
+- 是否需要翻译（如涉及外籍员工）
+- 是否需要进行利益冲突检查
+
+### 阶段4：调查通知
+
+- 是否向被调查对象发出书面调查通知？
+- 是否需要告知被调查对象的权利（如申请回避、查看部分调查材料的权利）
+- 是否需要同步通知公司内部相关部门（HR/法务/合规/审计）？
+- 保密要求：调查组成员、知悉范围限制
+
+### 阶段5：证据收集框架
+
+- 文件证据：邮件、聊天记录、财务凭证、合同、审批单
+- 电子证据：服务器日志、门禁记录、设备使用记录
+- 人证：目击证人、相关人员访谈计划
+- 物证：实物材料的保管和证据链
+- 注意：电子数据取证应符合《关于办理刑事案件收集提取和审查判断电子数据若干问题的规定》的要求
+
+## 调查日志初始化
+
+在创建案件工作空间后，初始化调查日志文件，包含：
+- 委托方信息
+- 调查范围和边界
+- 调查组成员及分工
+- 调查通知发出日期及方式
+- 证据收集清单模板
+- 时间线记录
+
+## 输出
 
 ```
-/employment-legal:investigation-open
-Harassment complaint filed against a manager in the Austin office.
+调查已开启：[案件简码]
+
+委托方：[名称]
+调查范围：[事项摘要]
+调查组成员：[名单]
+调查通知：[已发出/待发出]
+下一步：证据收集阶段
+```
+
+## 示例
+
+```
+/employment-legal:调查开启
+关于杭州办公室一名管理人员被投诉性骚扰的调查。
 ```
 
 ```
-/employment-legal:investigation-open
-(skill will ask for details)
+/employment-legal:调查开启
+（技能将询问详情）
 ```
 
-> Detailed intake, privilege-formation requirements, sources checklist, and log
-> templates live in the `internal-investigation` reference skill — load it
-> before doing substantive work.
+> 详细的信息收集、特权形成要求、证据收集清单和日志模板位于`内部调查`参考技能中——在做实质性工作之前加载它。

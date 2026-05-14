@@ -1,66 +1,59 @@
-# Adding a Connector
+# 添加连接器
 
-The plugins are at their best when connected to authoritative sources. If you build or operate a legal data source, research tool, CLM, DMS, eDiscovery platform, or practice management system, we want your MCP connector in the suite.
+插件在接入权威数据源时才能发挥最大价值。如果你构建或运营法律数据源、检索工具、合同管理系统（CLM）、文档管理系统（DMS）、电子取证平台或律所管理系统，我们欢迎你为插件套件贡献 MCP 连接器。
 
-## What makes a good legal MCP connector
+## 好的法律 MCP 连接器标准
 
-- **Remote MCP server over HTTPS** with OAuth or API-key auth (streamable HTTP or SSE transport)
-- **Read-heavy tools** — search, fetch, list. Write tools (create, send, file) need an explicit confirmation prompt on the client side; say so in your tool descriptions.
-- **Provenance in results** — return the source, date retrieved, and a citation-ready identifier. The plugins tag every cite by source; your connector should make that possible.
-- **No instruction-like content in results** — the plugins treat retrieved content as data, not commands. If your tool results include metadata or system notes, mark them clearly so they don't look like embedded directives.
-- **Rate limits and errors that degrade gracefully** — the plugins have a fallback for when a connector isn't responding; a clean error is better than a timeout.
+- **基于 HTTPS 的远程 MCP 服务器**，使用 OAuth 或 API-Key 认证（支持 Streamable HTTP 或 SSE 传输协议）
+- **以读取为主**——搜索、获取、列举。写入类工具（创建、发送、提交）需要在客户端侧设置明确的确认提示；请在工具描述中说明。
+- **结果中携带来源信息**——返回来源、检索日期和可直接引用的标识符。插件会给每条引文标注来源；你的连接器应支持这一点。
+- **结果中不含指令性内容**——插件将检索结果视为数据而非命令。如果你的工具结果包含元数据或系统备注，请明确标注，避免被当作嵌入式指令。
+- **限流和错误优雅降级**——插件在连接器无响应时有备选路径；一个清晰的报错比超时更好。
 
-## How to submit
+## 如何提交
 
-1. Publish your MCP server and document its tools, auth flow, and data coverage.
-2. Open a PR adding your server to the relevant plugin's `.mcp.json` with the URL, auth method, and a one-line description of what it gives Claude.
-3. Include a note on which practice areas / plugins it's most useful for.
-4. We'll test against the plugin workflows and merge. Connectors that pass the retrieval-quality and injection-resistance checks go in the default `.mcp.json`; others get documented in the plugin README for users to add themselves.
+1. 发布你的 MCP 服务器，并记录其工具清单、认证流程和数据覆盖范围。
+2. 创建 PR，将你的服务器添加到相关插件的 `.mcp.json` 中，包含 URL、认证方式和一句话描述（说明它给 Claude 提供什么能力）。
+3. 注明它最适用于哪些业务领域/插件。
+4. 我们将对照插件工作流进行测试后合并。通过检索质量和注入抵抗检查的连接器将纳入默认 `.mcp.json`；未通过的会在插件 README 中记录，供用户自行添加。
 
-## Current connectors
+## 当前连接器
 
-Connectors shipped in the default `.mcp.json` of each plugin:
+以下连接器随各插件默认 `.mcp.json` 发布：
 
-| Connector | Plugins |
+| 连接器 | 适用插件 |
 |---|---|
-| **Slack** | all 12 |
-| **Google Drive** (`gdrive`) | all 12 |
-| **CourtListener** | legal-clinic, ip-legal, litigation-legal, law-student |
-| **Descrybe** | legal-clinic, ip-legal, law-student |
-| **Definely** | commercial-legal, corporate-legal |
-| **iManage** | commercial-legal, corporate-legal |
-| **Solve Intelligence** | corporate-legal, ip-legal |
-| **TopCounsel** | commercial-legal, corporate-legal, litigation-legal |
-| **Box** | corporate-legal |
-| **Ironclad** | commercial-legal |
-| **DocuSign / DocuSign CLM** | commercial-legal |
-| **Everlaw** | litigation-legal |
-| **Trellis** | litigation-legal |
-| **Aurora** | litigation-legal |
-| **Courtroom5** | legal-clinic |
-| **Lawve AI** | legal-builder-hub |
-| **Linear** | product-legal |
-| **Atlassian (Jira)** | product-legal |
-| **Asana** | product-legal |
+| **飞书**（TBD） | 全部 12 个 |
+| **Google Drive**（`gdrive`） | 全部 12 个 |
+| **北大法宝**（TBD） | 所有（检索与法规数据库） |
+| **威科先行**（TBD） | 所有（检索与法规数据库） |
+| **法信**（TBD） | 所有（类案检索与法律知识） |
+| **裁判文书网**（TBD） | 争议解决、法学生、法律援助诊所 |
+| **企业微信**（TBD） | 全部 12 个 |
+| **飞书云文档** | 公司证券 |
+| **幂律智能 / 法狗狗** | 商业合同 |
+| **法大大 / e签宝** | 商业合同 |
+| **Linear** | 产品合规 |
+| **Atlassian (Jira)** | 产品合规 |
+| **Asana** | 产品合规 |
 
-See the `.mcp.json` in each plugin directory for the authoritative list.
+各插件目录下的 `.mcp.json` 为权威列表。
 
-## Wanted connectors
+## 希望接入的连接器
 
-These would make specific plugins significantly more useful. If you build or operate one, see "How to submit" above.
+以下连接器能显著增强特定插件的实用性。如果你构建或运营其中某个，见上方"如何提交"。
 
-- **IP management systems** (Anaqua, Clarivate IPfolio, AppColl, Patrix, Alt Legal, FoundationIP) — full docket sync for `ip-legal` portfolio tracking
-- **USPTO by customer number** — full portfolio status and deadlines, not just per-application lookup
-- **USPTO TSDR / Trademark Status** — trademark status and deadlines for `ip-legal` brand management
-- **Jira / Linear / Asana for OSS requests** — `ip-legal` OSS clearance can monitor and respond to incoming tickets
-- **Thomson Reuters** (CoCounsel, Practical Law, Westlaw) — research and drafting for every plugin
-- **SS&C Intralinks / Datasite** — VDR access for `corporate-legal` diligence
-- **Relativity / Everlaw beyond read** — eDiscovery workflow for `litigation-legal`
-- **State bar CLE trackers** — `law-student` bar prep
-- **Court e-filing systems** (PACER write, state e-filing) — with a hard irreversibility gate, obviously
-- **Global AI Regulation Tracker** (techieray.com/GlobalAIRegulationTracker) — jurisdiction-tagged AI regulation tracking with structured API. Curated, verified, multi-jurisdiction. Would be a primary-source-adjacent feed for `ai-governance-legal` and `regulatory-legal`.
-- **Regulatory primary sources** — a connector to official registers (eCFR, Federal Register, EUR-Lex, legislation.gov.uk, Federal Register of Legislation AU, Singapore Statutes Online) that bypasses the agent-blockers many legislative sites use. A curated regulatory knowledge base would be a high-value addition.
+- **知识产权管理系统**（大为、中知路、知呱呱等）——为 `知识产权` 插件提供完整的案件期限与档案同步
+- **国家知识产权局专利检索**——按申请人/代理机构的专利全生命周期状态与期限
+- **商标局商标综合查询**——为 `知识产权` 插件提供商标状态与续展期限
+- **Jira / Linear / Asana 开源合规请求**——`知识产权` 开源合规可监控并响应外部工单
+- **SS&C Intralinks / Datasite**——为 `公司证券` 尽调提供虚拟数据室访问
+- **全国企业信用信息公示系统**（TBD）——为所有插件提供企业工商信息查询
+- **中国执行信息公开网**（TBD）——为 `争议解决` 提供失信被执行人与限制消费查询
+- **中国庭审公开网**（TBD）——为 `争议解决` 提供庭审信息查询
+- **全球 AI 监管追踪器**（techieray.com/GlobalAIRegulationTracker）——带管辖地标签的 AI 监管动态结构化 API。经过策划与核实，覆盖多管辖地。为 `人工智能治理` 和 `政府监管` 提供准一手数据源。
+- **监管一手数据源**——接入官方登记系统的连接器（中国政府网法律法规库、全国人大会法律数据库、国务院政策文件库、EUR-Lex、legislation.gov.uk 等），绕过部分立法网站的反爬机制。经过策划的法律知识库将是高价值补充。
 
-## Questions
+## 问题反馈
 
-Open an issue on this repo. For partnership or integration questions, see the contact on each plugin's README.
+在本仓库提交 Issue。合作或集成相关问题，请参阅各插件 README 中的联系方式。

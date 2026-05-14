@@ -1,320 +1,145 @@
 ---
-name: use-case-triage
+name: 用例分诊
 description: >
-  Classify a proposed AI use case against your registry — approved, conditional,
-  or not approved — and produce required conditions and next steps. Flags
-  cross-plugin handoffs to privacy or product counsel. Use when user says "triage
-  this use case", "can we use AI for X", "is this approved", "what do we need to
-  do to use AI for X".
-argument-hint: "[describe the use case, or 'batch' to triage a list]"
+  将提议的AI用例对照注册表进行分类——已批准、附条件或禁止——
+  并输出所需的条件和后续步骤。审批分级（标准/升级/高风险不通过），
+  基于算法备案触发条件+安全评估门槛+科技伦理审查要求。
+  标注跨插件交接给隐私或产品法务。
+  当用户说"分诊这个用例"、"我们能用AI做X吗"、"这个批准了吗"、
+  "用AI做X需要什么"时使用。
+argument-hint: "[描述用例，或使用'batch'批量分诊列表]"
 ---
 
-# /use-case-triage
+# /用例分诊
 
-1. Read `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`. Confirm registry is populated — if not, stop and direct to setup.
-2. Use the framework below. Clarify the use case if vague.
-3. Registry lookup → red line check → classify.
-4. Output: classification, reasoning, conditions table (if conditional), governance tier, cross-plugin handoffs.
-5. Propose registry update if use case wasn't already in the registry.
+## 操作流程
+
+1. 读取实践配置。确认注册表已填充——如果没有，停止并引导到设置。
+2. 使用以下框架。如用例描述模糊则澄清。
+3. 注册表查找 → 红线检查 → 分类。
+4. 输出：分类、推理、条件表（如为附条件）、治理层级、跨插件交接。
+5. 如用例尚未在注册表中，建议更新注册表。
+
+## 示例
 
 ```
-/ai-governance-legal:use-case-triage "Sales team wants to score leads with AI automatically"
+/ai-governance-legal:use-case-triage "销售团队想用AI自动评分潜在客户"
+```
+
+```
+/ai-governance-legal:use-case-triage "HR想用AI筛选简历"
 ```
 
 ---
 
-## Matter context
+## 事项上下文
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/ai-governance-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+**事项上下文。** 检查实践级 CLAUDE.md 中的 `## 事项工作区`。如果 `启用` 为 `✗`（法务部内部用户的默认值），跳过本段。如果已启且无活跃事项，询问事项。加载活跃事项的 `matter.md`。输出写入事项文件夹。除非 `跨事项上下文` 为 `开启`，否则绝不读取其他事项的文件。
 
 ---
 
-## Purpose
+## 功能目的
 
-Stop the conversation that happens in a hallway and starts as "can we just use AI
-for this?" Give a fast, calibrated answer from the registry — and if the answer
-is conditional, make the conditions concrete and the next step obvious.
+阻止那种从走廊开始的对话——"我们能不能直接用AI做这个？"从注册表给出快速、校准过的答案——如果答案是附条件的，让条件具体化、让下一步明确。
 
-The triage skill is a gateway, not a destination. Its job is to classify, flag
-what's required, and route. The aia-generation skill does the deep work.
+分诊技能是一个网关，而非终点。它的工作是分类、标注需要什么、进行路由。影响评估技能做深度工作。
 
-## Read `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` first
+## 审批分级体系
 
-Before triaging, always read `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`. The use case registry and red lines there
-are authoritative. Generic AI ethics reasoning is not a substitute for what this
-company has actually decided.
+基于中国AI治理框架，分诊采用三级审批：
 
-If `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` contains `[PLACEHOLDER]`, surface this bounce:
+- **标准审批** — 低风险用例，已有注册表前例，常规业务使用。可快速通过。
+- **升级审批** — 涉及个人信息、自动化决策、新供应商、或注册表无前例。需法务审查。
+- **高风险不通过** — 触及红线、违反禁止性规定、触发强制安全评估或算法备案但未准备。不予批准，需返回重做。
 
-> I notice you haven't configured your practice profile yet — that's how I tailor the use case registry, red lines, and governance tiers to your practice.
+## 先读取配置文件
+
+分诊前，始终读取实践配置。其中的用例注册表和红线是权威的。
+
+如果配置中包含 `[PLACEHOLDER]`，显示此弹窗：
+
+> 我注意到您尚未配置实践设置。
 >
-> **Two choices:**
-> - Run `/ai-governance-legal:cold-start-interview` (2 minutes) to configure your profile, then I'll triage tailored to YOUR practice.
-> - Say **"provisional"** and I'll triage against generic defaults — US jurisdiction, middle risk appetite, lawyer role, no playbook — and tag every output `[PROVISIONAL — configure your profile for tailored output]` so you can see what I do before committing.
+> **两个选择：**
+> - 运行 `/ai-governance-legal:cold-start-interview`（2分钟）配置您的实践设置，然后我将根据您的实践进行定制化分诊。
+> - 说 **"临时模式"** 我将按通用默认值进行分诊——中国管辖范围、中等风险偏好、法务角色，并标注每个输出 `[临时 — 配置实践设置后可获得定制化输出]`。
 
-### Provisional mode
+### 临时模式
 
-If the user says "provisional," run triage normally using these generic defaults: middle risk appetite, lawyer role, US jurisdiction, no registry (classify by general AI governance principles rather than matching to a registered entry). Tag the reviewer note and every finding block with `[PROVISIONAL]`. At the end of the output, append:
+如果用户说"临时模式"，使用以下通用默认值正常运行分诊。在审查人说明和每个发现模块中标注 `[临时]`。
 
-> "That was a generic run against default assumptions. Run `/ai-governance-legal:cold-start-interview` to get output calibrated to YOUR practice — your registry, your jurisdiction, your risk appetite. 2 minutes."
+## 分诊流程
 
-**Jurisdictional scope.** Triage applies the registry, red lines, and governance tiers configured for the regulatory footprint in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`. AI rules vary materially by jurisdiction — an APPROVED classification in one footprint may be CONDITIONAL or prohibited in another. If deployment touches a jurisdiction not in the footprint, surface that and re-triage rather than extending by analogy.
+### 第1步：理解用例
 
----
+分类前，确保理解实际提议的内容。如果描述模糊，询问：
 
-## Triage process
+- "AI具体做什么——生成内容、做出决策、给出建议、自动化任务？"
+- "AI作用于谁或什么——员工、客户、第三方、仅内部数据？"
+- "AI输出之前有人工审查吗，还是全自动化的？"
+- "提议的是哪个供应商或工具？与供应商的AI条款一致吗？"
+- "这仅限于内部使用，还是涉及客户或其他外部方？"
+- "是否涉及个人信息？是否涉及敏感个人信息？"
+- "是否可能触发算法备案义务？是否需要安全评估？"
 
-### Step 1: Understand the use case
+不要让"我们想用AI做[模糊的事]"不经分诊就放过。获取足够的细节以准确分类。
 
-Before classifying, make sure you understand what's actually being proposed. If
-the description is vague, ask:
+### 第2步：注册表查找
 
-- "What is the AI doing, exactly — generating content, making a decision, surfacing
-  recommendations, automating a task?"
-- "Who or what is the AI acting on — employees, customers, third parties, internal
-  data only?"
-- "Is a human reviewing the AI output before anything happens, or is it automated?"
-- "Which vendor or tool is being proposed?"
-- "Is this internal-only, or does it touch customers or other external parties?"
+检查实践配置中的用例注册表，查找直接或近似匹配。
 
-Don't let "we want to use AI for [vague thing]" go untriaged. Get specific enough
-to classify accurately.
+**直接匹配：** 如果注册表有直接匹配的条目，适用之。
 
----
+**近似匹配：** 如果用例与注册表条目相似但不完全相同，标注："这看起来像[已注册的用例]——我将应用该分类，但如果范围有实质性差异，可能需要单独评估。"
 
-### Step 2: Registry lookup
+**无匹配：** 如果用例不在注册表中，默认归类为"附条件"，需待影响评估。给出风险的初步判断并路由。
 
-Check the use case registry in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` for a direct or close match.
+### 第3步：红线检查
 
-**Direct match:** If the registry has a directly matching entry, apply it.
+检查实践配置中的红线。特别注意中国AI法规下的禁止性规定。
 
-**Near match:** If the use case is similar to a registry entry but not identical,
-flag this: "This looks like [registered use case] — I'm applying that classification,
-but if the scope is meaningfully different, it may need its own assessment."
+如果用例触发了红线——即使是部分触发——立即说明。
 
-**No match:** If the use case isn't in the registry, default to CONDITIONAL pending an AI impact assessment. Surface the preliminary read on risk and route to the AIA.
+> "此用例触及[红线]。您的红线将其视为自动否决。如果此情况有不同之处，那需要法务审批层面的讨论——而非分诊层面的判断。"
 
-> "This use case isn't in your registry yet. Defaulting to CONDITIONAL pending an
-> AI impact assessment. Here's my preliminary read on risk: [preliminary read].
-> Next step: run the impact assessment, and I'll add the use case to the registry
-> once classification is settled."
+不要弱化红线结论。否决就是否决。
 
----
+### 第4步：分类与输出
 
-### Source attribution (applies whenever the triage cites regulation)
+分类分组、红线定义、附条件所需的控制清单均来自配置文件。
 
-Triage typically stays high-level, but if the classification depends on citing a regulation, statute, rule, directive, standard, or guidance — tag the citation. Do not output untagged regulatory citations in the triage reasoning, the red-line explanation, or the conditions list. A triage that says "Art. 22(1)" without a tag is exactly where a fabricated pinpoint slips past the reader.
+审批分级（标准/升级/高风险不通过），基于：
+- 算法备案触发条件
+- 安全评估门槛
+- 科技伦理审查要求
+- 个人信息保护影响评估触发条件
 
-**Source attribution tiering.** For model-knowledge citations, use one of three tiers:
+### 第5步：跨插件交接
 
-- `[settled]` — stable, well-known statutory and regulatory references unlikely to have changed (e.g., GDPR Art. 22 as a concept, the existence of Regulation (EU) 2024/1689 as the EU AI Act). Still verify before certifying, but lower priority.
-- `[verify]` — model-knowledge citations that are real but should be verified: specific delegated / implementing acts, regulator guidance, standards, effective dates, thresholds, post-2023 amendments.
-- `[verify-pinpoint]` — pinpoint citations (specific article numbers, annex references, subsection letters, paragraph numbers) carry the highest fabrication risk and should ALWAYS be verified against a primary source. EU AI Act article numbers in particular shifted during consolidation; every pinpoint cite to the Act should be verified against the Official Journal text.
+**隐私交接：** 如果用例涉及个人信息——员工数据、客户数据、行为数据——标注之，建议路由至隐私/个人信息保护审查。
 
-Other sources keep their own tags: `[registry]` when drawn from the practice profile's use case registry; `[Westlaw]`, `[EUR-Lex]`, `[regulator site]`, or the MCP tool name when retrieved from a connected legal research tool; `[web search — verify]` for web-search citations; `[user provided]` for user-supplied citations. The tiering surfaces the real verification work — a reader who verifies everything verifies nothing. Never strip or collapse the tags.
+**产品法务交接：** 如果这是涉及AI的新产品功能，标注产品法务。
 
-**For non-lawyer users, uncertain dates and thresholds go in a confirm-list, not inline.** A `[verify]` tag on "effective February 1, 2026" reads as "effective February 1, 2026" to someone who doesn't know what the tag means. Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`. If Role is **Non-lawyer** and an effective date, phase-in, threshold, or deadline is uncertain (would carry `[verify]` or `[verify-pinpoint]` if inline), replace the inline assertion with "effective date: confirm with counsel" (or "threshold: confirm with counsel") and collect all uncertain assertions in a final triage section titled: "**Things I'm not certain about — ask your attorney to confirm before relying on this:**" with each item listed (what I said, what's uncertain, why it matters). Lawyer-role users keep the inline `[verify]` treatment.
+仅标注实际相关的交接。不要对每个分诊都附加两者作为模板。
 
----
+### 第6步：注册表更新建议
 
-### Step 3: Red line check
+如果此分诊产生了尚未在注册表中的分类——无论是无匹配还是揭示差距的近似匹配——建议添加。
 
-Before going further, check the red lines in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`.
+## 批量分诊
 
-If the use case triggers a red line — even partially, even in a charitable reading —
-say so immediately.
+如果用户一次呈现多个用例——列表、待办事项、产品路线图——逐一处理并先输出摘要表。
 
-> "This use case touches [red line]. Your red lines treat this as an automatic no.
-> If there's something different about this situation, that's a conversation for
-> legal sign-off — not a triage call."
+## 边界情况和失败模式
 
-Do not soften red line outcomes. If it's a no, it's a no.
+**"我们已经在做了"的分诊：** 如果有人要求追溯性分诊——用例已部署——明确说明。追溯性分诊常会浮现一个条件已偏离当前实践的旧注册表条目。
+
+**"这只是内部用的"不改变分析：** 影响员工的内部AI使用（筛选、监控、评估）通常比面向客户的AI风险更高。
+
+**"供应商说它是安全的"：** 供应商的声明不能替代您自己的影响评估。
+
+**"我们只是试点"：** 涉及真实员工或客户数据的试点不免除分诊或影响评估的要求。
 
 ---
 
-**Jurisdictional scope.** Ask: "Who's affected, and where are they? (Employees / customers / the general public / specific groups.) Which jurisdictions? (Not just where your company is — where the affected people are.)"
-
-Then check the use case against EVERY regime in the practice profile's `## Regulatory footprint`, not just the primary one. Flag conflicts:
-- "APPROVED under US law, but triggers EU AI Act Article 27 FRIA if EU residents are affected — confirm whether any affected individuals are in the EU."
-- "Standard tier under your governance framework, but NYC LL144 requires a bias audit if used for hiring decisions affecting NYC residents."
-- "Low risk under Australian AI Ethics Framework, but may be high-risk under the Colorado AI Act if Colorado residents are affected."
-
-A use case that crosses jurisdictions gets the strictest applicable treatment, not the most convenient one.
-
----
-
-### Step 4: Classification and output
-
-The APPROVED / CONDITIONAL / NOT APPROVED buckets, the red-line definitions, and the CONDITIONAL required-controls list all come from `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` → `## AI use case triage criteria` and `## Use case registry`. If the playbook doesn't define a criterion the use case turns on, ask the user: "Your playbook doesn't cover [specific question]. What's your default position? I'll add it to `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` so the next triage is consistent."
-
-**Before issuing an APPROVED classification (approving an AI use case for deployment):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`. If the Role is Non-lawyer:
-
-> Approving this use case for deployment has legal consequences. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> [Generate a 1-page summary: the use case and its scope, how it maps to the registry, what policies or red lines it touches, what could go wrong in deployment, what to ask the attorney before green-lighting.]
->
-> If you need to find an attorney, solicitor, barrister, or other authorised legal professional: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
-
-Do not proceed past this gate without an explicit yes. CONDITIONAL outputs do not require the gate.
-
-**Before issuing a NOT APPROVED classification that cuts off a proposed use case:** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`. If the Role is Non-lawyer, a symmetric gate applies — wrongly rejecting a use case is also a consequential error, and the business will push back regardless of the triage call:
-
-> This is a full stop for a business ask. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> [Generate a 1-page summary: the use case and its scope, the specific red line or registry entry that blocks it, what a narrower version could look like that might clear elevated tier (if anything), what the business will likely ask the attorney for, and the three questions to ask the attorney before accepting the no.]
->
-> If you need to find an attorney, solicitor, barrister, or other authorised legal professional: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
-
-Do not proceed past this gate without an explicit yes. A non-lawyer issuing a hard no on the AI plugin's behalf, without an attorney in the loop, is the mirror failure of a non-lawyer issuing a hard yes.
-
-**Format for each triage output:**
-
----
-
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
-
-**USE CASE:** [State the use case as you understand it]
-
-**CLASSIFICATION:** [APPROVED / CONDITIONAL / NOT APPROVED]
-
-**Registry match:** [Direct match / Near match — [name] / No match]
-
-**Reasoning:**
-[1-3 sentences on why this classification. If approved, what makes it safe. If
-conditional, what creates the risk that conditions are managing. If not approved,
-what red line or policy position applies.]
-
-**Red lines triggered:** [None / List any that apply]
-
----
-
-*If CONDITIONAL — required before proceeding:*
-
-| Requirement | Owner | Done? |
-|---|---|---|
-| [e.g., AI impact assessment] | [AI governance counsel] | ☐ |
-| [e.g., Privacy review / PIA] | [Privacy counsel] | ☐ |
-| [e.g., Human-in-the-loop requirement — no automated decisions] | [Product] | ☐ |
-| [e.g., Disclosure to affected parties] | [Product / Legal] | ☐ |
-| [e.g., Specific vendor only — [approved vendor name]] | [Procurement] | ☐ |
-| [e.g., Legal sign-off] | [GC] | ☐ |
-
-**Governance tier:** [Standard / Elevated / High — per `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`]
-
-**Approval path:** [Who needs to sign off, per tier]
-
-**Next step — offer to continue:**
-
-After presenting a CONDITIONAL result, always end with:
-
-> "Want me to start the impact assessment now? I can run the intake questions
-> and produce the assessment document without you needing to run a separate command."
-
-If they say yes, load the `aia-generation` skill and continue in the same
-conversation — no need to restart. Pass the use case description and governance
-tier already determined.
-
-If they say no (or don't respond), the triage result stands as a standalone output.
-The AIA can be run any time with:
-`/ai-governance-legal:aia-generation [use case]`
-
----
-
-*If NOT APPROVED:*
-
-**Reason:** [Specific red line, policy prohibition, or registry entry]
-
-**If there's a version of this that could work:** [Optional — "A narrower version
-that keeps a human in the loop for every adverse decision might clear the elevated
-tier. That would require..."] Only include if genuinely true. Don't offer a workaround
-for every no.
-
----
-
-### Step 5: Cross-plugin handoffs
-
-**Privacy handoff:** If the use case involves personal data — employee data,
-customer data, behavioral data — flag it:
-
-> "This use case involves personal data. A PIA is likely required in addition to
-> an AI impact assessment. Use `/privacy-legal:pia-generation [use case]`, if the
-> plugin is installed, to run that in parallel."
-
-**Product counsel handoff:** If this is a new product feature involving AI:
-
-> "If this use case is part of a product launch, loop in product counsel.
-> Use `/product-legal:launch-review`, if the plugin is installed — it will detect
-> the AI component and route to this plugin."
-
-Only flag handoffs that are actually relevant. Don't append both as boilerplate
-to every triage.
-
----
-
-### Step 6: Registry update suggestion
-
-If this triage resulted in a classification that isn't in the registry yet — either
-a no-match or a near-match that revealed a gap:
-
-> "I'd suggest adding this to your use case registry. Proposed entry:"
-
-```
-| [Use case description] | [Approved/Conditional/Never] | [Conditions if any] | [Reason if Never] |
-```
-
-> "Add to `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` → Use case registry. This means next time the same request
-> comes up, the answer is documented and consistent."
-
----
-
-## Batch triage
-
-If the user presents multiple use cases at once — a list, a backlog, a product
-roadmap — run through each one and output a summary table first, then expand
-each conditional or not-approved entry:
-
-| # | Use case | Classification | Key condition / blocker |
-|---|---|---|---|
-| 1 | [use case] | 🟢 Approved | — |
-| 2 | [use case] | 🟡 Conditional | Impact assessment required |
-| 3 | [use case] | 🔴 Not approved | Automated adverse decision — red line |
-
-Then expand each row that isn't a clean approved.
-
----
-
-## Edge cases and failure modes
-
-**"We're already doing this" triage:**
-If someone is asking for retroactive triage — the use case is already deployed —
-say so plainly, and before classifying from scratch, search the registry for an
-existing entry covering the deployed version. Retroactive triages often surface a
-superseded registry entry whose conditions have drifted from current practice;
-updating that entry is usually the right follow-up rather than adding a new row.
-> "This looks like retroactive triage. If this is already running without an
-> assessment, that's a gap to document, not to wave through. I'm searching the
-> registry for any existing entry covering this deployment before running the
-> triage fresh. Here's the classification: [run normal triage]. If it's
-> conditional, those conditions should be confirmed in place now, not assumed.
-> If the registry has an existing entry and the deployed version has drifted,
-> the right follow-up is updating that entry rather than adding a new one."
-
-**"It's just internal" doesn't change the analysis:**
-Internal AI use affecting employees (screening, monitoring, evaluation) is often
-higher-risk than customer-facing AI. Flag this if the user implies internal scope
-reduces risk.
-
-**"The vendor says it's safe":**
-Vendor representations don't substitute for your own impact assessment. Flag it:
-> "The vendor's position doesn't substitute for your own assessment — especially
-> for anything in the elevated or high tier."
-
-**"We're just piloting":**
-A pilot that touches real employee or customer data is not exempt from triage or
-impact assessment. Apply the same classification; if conditions include an impact
-assessment, the pilot should have one too.
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
+以 CLAUDE.md `## 产出` 中的下一步决策树收尾。根据本技能刚刚产出的内容定制选项。

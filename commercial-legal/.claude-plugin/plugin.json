@@ -1,8 +1,8 @@
 {
-  "name": "commercial-legal",
+  "name": "商业合同",
   "version": "1.0.2",
-  "description": "Reviews vendor agreements, NDAs, and SaaS subscriptions against your sales-side or purchasing-side playbook, tracks renewals and cancel-by deadlines before they're missed, routes escalations to the right approver, and translates reviews into summaries business stakeholders will actually read.",
+  "description": "按销售侧或采购侧审查手册审查合同（买卖合同/服务合同/保密协议/框架协议），追踪续约和解除期限，路由升级审批至适当决策者，将法律审查结论转化为业务干系人可读的摘要。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

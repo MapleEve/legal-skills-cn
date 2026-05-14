@@ -1,110 +1,231 @@
 ---
-name: review
+name: 审查
 description: >
-  Review a vendor agreement, NDA, or SaaS subscription against your playbook.
-  Identifies the agreement structure from titles, routes to the right review skill
-  (vendor-agreement-review, nda-review, saas-msa-review), and integrates the output
-  into a single memo. Use when the user says "review this contract", "check this
-  MSA", "is this NDA okay", "look at this SaaS agreement", or attaches an inbound
-  agreement for review.
-argument-hint: '[file path | Drive link | [CLM ID] | paste text]'
+  依《民法典》有名合同分类对入站合同进行审查。从合同标题及核心内容识别合同类型，
+  路由至对应审查技能（买卖合同审查、服务合同审查、技术合同审查、保密协议审查、
+  建设工程合同审查、租赁合同审查、委托合同审查），并将输出整合为单一审查意见书。
+  适用场景：用户说"审查这份合同"、"帮我看下这个买卖合同"、"这个保密协议可以吗"、
+  "技术服务合同帮我审一下"，或附上一份待审的入站合同。
+argument-hint: '[文件路径 | 云盘链接 | 粘贴文本]'
 ---
 
-# /review
+# /审查
 
-Reviews an inbound agreement against the playbook in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`. Identifies the agreement structure from titles, selects the appropriate skill(s), and — if confirm_routing is enabled — checks with the user before proceeding.
+依《民法典》合同编对入站合同进行分类审查。从标题及核心条款识别合同类型，路由至对应技能，整合输出标准格式的合同审查意见书。
 
-## Instructions
+## 审查工作流：中国律所模式
 
-1. **Load `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`.** If placeholders present, stop and prompt: "Run `/commercial-legal:cold-start-interview` first — I need to learn your playbook before I can review against it."
+本 Skill 模拟中国律师事务所合同审查的标准工作流：
 
-   Also read `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` → `## Review preferences` → `confirm_routing`. If the field is missing, treat it as `true`.
+```
+收件（业务部门发送合同）
+  → 初审（律师助理/初级律师：格式审查、主体资格审查、条款完整性检查）
+    → 实质审查（主办律师：法律风险分析、条款公平性评估、合规审查）
+      → 复核（合伙人：重大风险把关、商业条款协调、审查意见审核）
+        → 出具审查意见（法律意见书 / 合同审查意见书 / 修订版合同）
+          → 交付客户
+```
 
-2. **Get the agreement:** From file path, Drive link, [CLM ID], or pasted text. If none provided, ask.
+企业内部法务审查工作流：
 
-3. **Read the document structure — titles first.**
+```
+业务部门发起合同审批
+  → 法务部审查（法律风险、合规性）
+    → 财务部会签（付款条件、金额、税务）
+      → 管理层审批（按金额分级）
+        → 用印（公章/合同章）
+          → 归档（原件+电子档）
+```
 
-   Before reading the body, extract:
-   - The main agreement title (e.g., "Master Services Agreement", "Non-Disclosure Agreement")
-   - All exhibit, schedule, addendum, and attachment titles (e.g., "Exhibit A — Data Processing Addendum", "Schedule 1 — Subscription Order Form", "Annex B — Service Level Agreement")
+## 操作指引
 
-   This is the routing signal. Do not rely on body keywords alone — a 40-page MSA with "confidential" throughout is not an NDA.
+1. **加载审查配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`。若存在占位符，提示用户先完成冷启动访谈配置审查手册。
 
-4. **Select the skill(s) based on document structure.**
+2. **获取合同文本。** 从文件路径、云盘链接或粘贴文本获取。若均未提供，请求提供。
 
-   Map each identified document or section to a skill:
+3. **识别合同类型——标题优先，核心条款验证。**
 
-   | Document / section title contains | Skill |
+   在逐条审查前，提取：
+   - 合同标题（如"买卖合同"、"技术服务合同"、"保密协议"）
+   - 核心条款（标的、对价、履行方式）
+   - 附件及附表标题
+
+   不要仅依赖关键词——一份标题为"合作协议"但核心内容是提供技术开发服务的合同，应识别为技术合同。
+
+4. **按《民法典》有名合同分类路由。**
+
+   将合同映射至对应审查技能：
+
+   | 合同名称 / 核心特征 | 审查技能 |
    |---|---|
-   | Non-Disclosure, NDA, Confidentiality Agreement (as the *main* agreement) | **nda-review** |
-   | Master Services Agreement, Professional Services, Statement of Work, Consulting Agreement | **vendor-agreement-review** |
-   | Subscription, SaaS, Cloud Services, Order Form with auto-renewal, Software License with recurring fees | **saas-msa-review** (overlay on vendor-agreement-review) |
-   | Data Processing Addendum, DPA, Data Processing Agreement (as exhibit or standalone) | note for **vendor-agreement-review** → data protection section |
-   | Service Level Agreement, SLA (as exhibit) | note for **saas-msa-review** → SLA section |
+   | 买卖合同（《民法典》第595-647条：转移标的物所有权、支付价款） | **买卖合同审查** |
+   | 供用电/水/气/热力合同（《民法典》第648-656条） | **买卖合同审查** |
+   | 服务合同（提供劳务/服务换取报酬，非典型但有名） | **服务合同审查** |
+   | 技术合同——技术开发/技术转让/技术许可/技术咨询/技术服务（《民法典》第843-887条） | **技术合同审查** |
+   | 建设工程合同——工程勘察/设计/施工（《民法典》第788-808条） | **建设工程合同审查** |
+   | 租赁合同（《民法典》第703-734条） | **租赁合同审查** |
+   | 委托合同（《民法典》第919-936条） | **委托合同审查** |
+   | 保密协议（单方保密/双方保密） | **保密协议审查** |
+   | 框架协议（约定未来交易基本条款，需配合具体订单/合同） | **框架协议审查** |
 
-   Multiple skills may apply. Common combinations:
-   - MSA + DPA exhibit → vendor-agreement-review, with DPA noted
-   - SaaS subscription + Order Form + SLA exhibit → saas-msa-review (covers all three)
-   - MSA + Order Form with auto-renewal → vendor-agreement-review + saas-msa-review overlay
+   可能适用多个技能。常见组合：
+   - 设备采购 + 安装服务 → 买卖合同审查为主，服务条款单独标注
+   - 软件开发 + 维护服务 → 技术合同审查为主
+   - 框架协议 + 具体订单 → 框架协议审查 + 买卖合同/服务合同审查叠加
+   - 战略合作协议 + 保密附件 → 委托合同/无名合同审查 + 保密协议审查
 
-   When the structure is genuinely ambiguous after reading titles (e.g., a document titled "Agreement" with no exhibits listed), read the first two pages of the body to resolve it — then stop and route.
+   当标题模糊（如"合作协议"、"战略协议"）时，阅读核心条款前两页以确定合同类型——然后路由。
 
-5. **Confirm routing if enabled.**
-
-   If `confirm_routing` is `true` in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` (or field is absent):
+5. **确认合同类型分类。**
 
    ```
-   I'm going to review this as: [agreement type(s)].
+   经初步审查，本合同的类型识别如下：
 
-   Documents identified:
-   - [Main agreement title] → [skill]
-   - [Exhibit A title] → [how it will be handled]
-   - [Exhibit B title] → [how it will be handled]
+   合同名称：[原始标题]
+   识别类型：[《民法典》合同编对应有名合同类型]
+   核心依据：[标的条款、对价条款、履行方式条款的简要说明]
 
-   Sound right? (yes / no — or tell me what I got wrong)
+   已识别文件：
+   - [主合同] → [对应审查技能]
+   - [附件A] → [处理方式]
+   - [附件B] → [处理方式]
+
+   是否确认？若分类有误请指出。
    ```
 
-   Wait for confirmation before proceeding. If the user corrects the routing, apply their instruction and proceed.
+   等待确认再继续。若用户纠正分类，按用户指示执行。
 
-   If `confirm_routing` is `false`: proceed silently. Log the routing decision at the top of the review memo so the user can see what was applied.
+6. **执行审查。** 完整遵循各技能的工作流。若适用多个技能，顺序执行并将输出整合为单一审查意见书。
 
-6. **Run the skill(s).** Follow each skill's workflow fully. If multiple skills apply, run them in sequence and integrate the output into a single memo — don't produce separate memos.
+7. **生成合同审查意见书。**
+   输出格式遵循中国律师行业标准：
 
-7. **Check for escalations:** If any issue exceeds the reviewer's authority per the `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` matrix, invoke **escalation-flagger** to route and draft the ask.
+   ```
+   [律所名称/法务部]
+   合同审查意见书
 
-8. **Offer follow-ups:**
-   - Stakeholder summary for the business owner
-   - Redline .docx with tracked changes
-   - [CLM] record creation (if connected)
-   - Add to renewal register (if auto-renewal found)
+   致：[业务部门/客户名称]
+   自：[审查律师/法务部]
+   日期：[YYYY-MM-DD]
 
-## Configuring confirm_routing
+   一、审查结论
+   [可接受 / 需修改后签署 / 不建议签署]
 
-Add to `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` → `## Review preferences`:
+   二、合同基本情况
+   - 合同名称：
+   - 合同相对方：
+   - 合同标的：
+   - 合同金额：
+   - 合同期限：
 
-```markdown
-## Review preferences
+   三、核心风险提示
+   [按风险等级排序：红线风险 → 重大风险 → 一般风险 → 提示风险]
 
-confirm_routing: true   # Set to false to skip routing confirmation and proceed automatically
+   四、关键条款分析
+   [逐条分析，附修改建议及法律依据]
+
+   五、修改建议汇总
+   [修改前后对照表]
+
+   六、审查依据
+   - 《民法典》合同编相关条款
+   - 其他相关法律法规
+   - 公司内部合规要求
+
+   七、后续步骤
+   [签约流程、审批层级、用印要求、归档安排]
+   ```
+
+8. **检查是否需要升级审批。** 若依审批矩阵，任何问题超出当前审查人权限，调用**升级审批标记**进行路由。
+
+9. **提供后续选项：**
+   - 面向业务负责人的干系人摘要（法律意见摘要）
+   - 含修订批注的 .docx 修订版合同
+   - 添加至合同台账/续约登记册
+   - 提交用印审批流程
+
+## 《民法典》核心审查维度
+
+中国合同审查必须覆盖以下核心维度：
+
+### 1. 主体适格性
+- 营业执照核验（统一社会信用代码）
+- 授权代表权限（法定代表人 / 授权代理人，需出具授权委托书）
+- 特殊行业资质证照（如建筑资质、食品经营许可、增值电信业务经营许可）
+
+### 2. 合同效力
+- 《民法典》第143条：民事法律行为有效的三个要件（行为人具有相应民事行为能力、意思表示真实、不违反法律行政法规的强制性规定及公序良俗）
+- 《民法典》第153条：违反强制性规定及公序良俗的民事法律行为无效
+- 《民法典》第154条：恶意串通损害他人权益的民事法律行为无效
+
+### 3. 格式条款审查
+- 《民法典》第496条：格式条款提供方的提示说明义务
+- 《民法典》第497条：格式条款无效的三种情形（排除对方主要权利、不合理免除或减轻责任、加重对方责任/限制对方主要权利）
+- 《民法典》第498条：格式条款争议的解释规则（不利于提供方）
+
+### 4. 核心商业条款完整性
+- 标的（《民法典》第470条：名称、数量、质量）
+- 价款或报酬
+- 履行期限、地点和方式
+- 违约责任（《民法典》第577-585条）
+- 争议解决方法（诉讼与仲裁不得同时约定）
+
+### 5. 违约责任条款审查
+- 《民法典》第577条：违约责任一般规定——继续履行、采取补救措施或赔偿损失
+- 《民法典》第584条：损失赔偿额的可预见规则
+- 《民法典》第585条：违约金调整规则——违约金过高可请求人民法院或仲裁机构适当减少（司法实践中超过实际损失30%视为"过分高于"）
+- 《民法典》第586-588条：定金规则（定金合同自实际交付定金时成立，定金不得超过主合同标的额的20%，定金与违约金不得同时适用）
+
+### 6. 争议解决条款审查
+- 《民事诉讼法》第35条：协议管辖须与争议有实际联系（被告住所地、合同履行地、合同签订地、原告住所地、标的物所在地）
+- 诉讼与仲裁二选一，不得同时约定
+- 仲裁条款必须明确约定仲裁机构（如中国国际经济贸易仲裁委员会、北京仲裁委员会等）
+
+### 7. 知识产权归属
+- 技术开发合同成果归属（《民法典》第860-861条）
+- 委托创作作品的著作权归属（《著作权法》第19条）
+
+### 8. 保密条款
+- 不得与《反不正当竞争法》第9条商业秘密定义相冲突
+- 保密期限（含合同终止后存续期）
+- 保密信息范围不可过宽
+
+## 合同金额分档审批
+
+| 合同金额 | 审批层级 |
+|---|---|
+| 50万元以下 | 法务经理审批 |
+| 50万-500万元 | 法务总监审批 |
+| 500万元以上 | 总法律顾问/总经理审批 |
+
+## 用印管理
+
+- **公章**：以公司名义对外行文、合同签署等
+- **合同章**：仅用于合同签署
+- **法人章**：法定代表人签章，通常与公章配合使用
+- 所有用印须填写用印审批单，载明合同编号、合同相对方、用印份数
+
+## 合同归档要求
+
+- 签署后至少保留一份原件存档
+- 扫描电子档上传合同管理系统
+- 归档信息包括：合同编号、合同名称、合同相对方、签署日期、金额、归档人、归档日期
+
+## 操作示例
+
+```
+/commercial-legal:审查 买卖合同-设备采购.pdf
 ```
 
-The cold-start interview should ask about this preference. Default is `true` — confirmation on. As trust builds, the user can set it to `false`.
-
-## Examples
-
 ```
-/commercial-legal:review vendor-msa.pdf
+/commercial-legal:审查 https://pan.baidu.com/s/ABC123
 ```
 
 ```
-/commercial-legal:review https://drive.google.com/file/d/ABC123
+/commercial-legal:审查
+[粘贴合同文本]
 ```
 
-```
-/commercial-legal:review
-[paste agreement text]
-```
+## 输出
 
-## Output
-
-Full review memo per the skill's format. Routing decision logged at the top. Deviation-by-deviation, specific redline language, named approver. Saved where `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` → House style says work product goes.
+依各技能格式的完整合同审查意见书。合同类型分类记录在顶部。逐条偏离、具体修订批注措辞、指明审批人。保存至合同管理系统或指定工作成果存放处。

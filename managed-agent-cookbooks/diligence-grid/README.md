@@ -1,61 +1,61 @@
-# Diligence Grid — managed-agent template
+# 尽调网格（Diligence Grid）—— 托管代理模板
 
-## Overview
+## 概述
 
-Batch document review over a virtual data room. Two modes:
+对虚拟数据室进行批量文档审查。两种模式：
 
-- **watch** — monitors the VDR for new uploads since a cutoff, classifies each against the deploying team's diligence request-list categories, and flags uploads in high-priority categories (Material Contracts, Litigation, IP).
-- **grid** — runs a tabular review against a column schema over a folder of documents. One row per document, one column per data point, every cell cited back to a verbatim source quote. The M&A diligence workhorse.
+- **监控** —— 监控虚拟数据室中自截止时间以来的新增上传，将每份文档对照部署团队的尽调需求清单分类，标记高优先级类别（重大合同、诉讼、知识产权）的上传。
+- **网格** —— 对文件夹中的文档按列 Schema 执行表格审查。每份文档一行，每个数据点一列，每个单元格均引用逐字来源原文。并购尽调的主力工具。
 
-Same source as the [`corporate-legal`](../../corporate-legal) plugin — this directory is the Managed Agent cookbook for `POST /v1/agents`. Grid mode is the `tabular-review` skill, running headless across a fleet of extractor workers.
+与 [`corporate-legal`](../../corporate-legal) 插件同一来源——本目录为 `POST /v1/agents` 的托管代理模板。网格模式即 `tabular-review` 技能，在提取工作节点集群上以无人工界面模式运行。
 
-## ⚠️ Before you deploy
+## 部署前注意事项
 
-- **Every cell is a lead, not a finding.** A diligence grid is not a representation, a disclosure schedule, or a diligence memo until a lawyer has read the underlying documents. The verbatim quote in every cell is there so the reviewer can verify fast — use it.
-- **The materiality filter and column classifications apply heuristics, not legal judgment.** A contract the schema calls immaterial may be the one that kills the deal. An "answered" cell is still wrong if the extractor misread the clause. Reviewer time scales with `unclear` + `needs_review` + `answered` — not just the flagged ones.
-- **Watch mode classifies metadata and previews, not full documents.** A new upload the classifier tags "low priority" can still be the side letter that changes the deal. Treat the watch report as a queue, not a filter.
-- **Counterparty-uploaded documents are untrusted input for the toolchain too.** The grid-writer's CSV formula-injection defense is mandatory, not optional — see the security section below.
+- **每个单元格是线索，而非事实认定。** 一份尽调网格在律师阅读底层文档之前，不是陈述与保证、不是披露清单、也不是尽调备忘录。每个单元格中的逐字引用是为了让审查者能快速核实——应充分使用。
+- **重大性过滤器和列分类应用启发式判断，而非法律判断。** Schema 判定为非重大的合同可能是扼杀交易的那份。即使提取器误读了条款，标记为"已应答"的单元格仍可能是错误的。审查者时间按 `unclear` + `needs_review` + `answered` 成比例分配——不仅是已标记的那些。
+- **监控模式分类的是元数据和预览，而非完整文档。** 分类器标记为"低优先级"的新增上传仍可能是改变交易的补充协议。将监控报告视为队列，而非过滤器。
+- **相对方上传的文档对整个工具链同样为不可信输入。** grid-writer 的 CSV 公式注入防御是强制性的，而非可选的——参见下方安全章节。
 
-## Deploy
+## 部署
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
 export BOX_MCP_URL=...
 export GDRIVE_MCP_URL=...
-export IMANAGE_MCP_URL=...          # optional; set the toolset default to enabled if used
-export DEFINELY_MCP_URL=...         # optional; for clause-structure QA of the normalizer pass
+export IMANAGE_MCP_URL=...          # 可选；如使用，将工具集默认设为 enabled
+export DEFINELY_MCP_URL=...         # 可选；用于 normalizer 步骤的条款结构质检
 ../../scripts/deploy-managed-agent.sh diligence-grid
 ```
 
-## Steering events
+## 引导事件
 
-See [`steering-examples.json`](./steering-examples.json).
+参见 [`steering-examples.json`](./steering-examples.json)。
 
-## Security and handoffs
+## 安全与交接
 
-VDR documents — contracts, board minutes, side letters, counterparty uploads — are **untrusted input**. A counterparty-uploaded contract can contain strings meant to manipulate the reviewer or the downstream toolchain. Four-tier isolation keeps the Write hand and the MCP hand away from the documents:
+虚拟数据室文档——合同、董事会纪要、补充协议、相对方上传文件——均为**不可信输入**。相对方上传的合同可能包含旨在操纵审查者或下游工具链的字符串。四级隔离将 Write 持有者和 MCP 持有者与文档分开：
 
-| Tier | Touches untrusted docs? | Tools | Connectors |
+| 层级 | 是否接触不可信文档？ | 工具 | 连接器 |
 |---|---|---|---|
-| **`doc-reader`** | **Yes** (read-only) | `Read`, `Grep` | Box, Google Drive, iManage (read) |
-| **`extractor`** | **Yes** (read-only) | `Read`, `Grep` | None |
-| `normalizer` / Orchestrator | No | `Read`, `Grep`, `Glob`, `Agent` | None (definely optional, read-only) |
-| **`grid-writer`** (Write-holder) | No | `Read`, `Write` | None |
+| **`doc-reader`** | **是**（只读） | `Read`、`Grep` | Box、企业网盘、iManage（只读） |
+| **`extractor`** | **是**（只读） | `Read`、`Grep` | 无 |
+| `normalizer` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`Agent` | 无（definely 可选，只读） |
+| **`grid-writer`**（Write 持有者） | 否 | `Read`、`Write` | 无 |
 
-`doc-reader` and `extractor` return length-capped, schema-validated JSON. The orchestrator and `normalizer` see only structured data. `grid-writer` produces `./out/diligence-grid-<date>.csv`, `./out/diligence-grid-<date>_sources.csv`, and `./out/diligence-grid-<date>-summary.md`.
+`doc-reader` 和 `extractor` 返回长度受限、符合 Schema 验证的 JSON。编排器和 `normalizer` 仅接触结构化数据。`grid-writer` 产出 `./out/diligence-grid-<date>.csv`、`./out/diligence-grid-<date>_sources.csv` 和 `./out/diligence-grid-<date>-summary.md`。
 
-**CSV formula injection.** Every cell written by `grid-writer` — values, verbatim quotes, locations, document names, column labels — is first-character-checked against `=`, `+`, `-`, `@`, tab, and carriage return. Cells that match are prefixed with a single apostrophe before they land in the CSV. Counterparty-uploaded contracts routinely contain strings that Excel and Sheets will otherwise execute as formulas (`=HYPERLINK(...)` exfil, `=cmd|...` DDE on older Excel) the moment the deal team opens the file. The sources CSV is the larger exposure — verbatim quotes are the attacker-controlled surface.
+**CSV 公式注入。** `grid-writer` 写入的每个单元格——值、逐字引用、位置、文档名称、列标签——均对其首字符检查 `=`、`+`、`-`、`@`、制表符和回车符。匹配的单元格在写入 CSV 前添加单引号前缀。相对方上传的合同通常包含 Excel 和 Sheets 会作为公式执行的字符串（`=HYPERLINK(...)` 数据窃取、旧版 Excel 的 `=cmd|...` DDE），在交易团队打开文件的那一刻即可触发。来源 CSV 是更大的暴露面——逐字引用是攻击者控制的攻击面。
 
-**Xlsx is a deployment concern.** The cookbook ships CSVs only. The deploying team transforms them to `.xlsx` with the workbook structure in [`corporate-legal/skills/tabular-review/references/excel-output.md`](../../corporate-legal/skills/tabular-review/references/excel-output.md) — hidden `_source` columns, cell comments carrying the quote on hover, state-based fills, `Verified` dropdown per column, `_schema` and `_summary` sheets. That transform happens on the deploying team's Excel surface (Claude in Excel, openpyxl, or Google Sheets via the Sheets API). Shipping the xlsx from the headless agent requires a trusted runtime and a macro surface this cookbook deliberately does not assume.
+**Xlsx 是部署层面的问题。** 本模板仅交付 CSV。部署团队根据 [`corporate-legal/skills/tabular-review/references/excel-output.md`](../../corporate-legal/skills/tabular-review/references/excel-output.md) 中的工作簿结构将其转换为 `.xlsx`——隐藏 `_source` 列、悬停显示引用的单元格批注、基于状态的填充色、每列 `Verified` 下拉菜单、`_schema` 和 `_summary` 工作表。该转换在部署团队的 Excel 环境（Claude in Excel、openpyxl 或通过 Sheets API 的 Google Sheets）中完成。从无人工界面代理交付 xlsx 需要可信运行时和宏环境，本模板有意不做此假设。
 
-**Not guaranteed:** every cell this agent produces is a **lead that needs verification**, not a finding. The reviewer reads the source, checks the quote, marks the `Verified` column. A lawyer decides what goes into a rep, a schedule, or a memo.
+**不予保证：** 本代理产出的每个单元格都是**需要核实的线索**，而非事实认定。审查者阅读来源、检查引用、标记 `Verified` 列。由律师决定哪些进入陈述与保证、披露清单或备忘录。
 
-## Adaptation notes
+## 适配说明
 
-- **VDR URL.** Set `BOX_MCP_URL` / `GDRIVE_MCP_URL` / `IMANAGE_MCP_URL` to match your data room. The default enables Box and Google Drive; flip the `default_config` in [`agent.yaml`](./agent.yaml) if you run iManage or Datasite as primary. If your VDR is Intralinks or Datasite, add an entry to `mcp_servers` and `tools` with the matching MCP URL.
-- **Column schema.** The M&A diligence standard in [`corporate-legal/skills/tabular-review/references/ma-diligence-columns.md`](../../corporate-legal/skills/tabular-review/references/ma-diligence-columns.md) is the default. Customize for your deal type — tech/IP, healthcare, real estate, government contractor, regulated financial — using the additions in that reference.
-- **Output destination.** Outputs land in `./out/`. Wire them to your deal folder, Google Drive, iManage workspace, or Box folder through your deploy pipeline. Do not give `grid-writer` an MCP to upload them; a handoff to your upload step is cleaner and keeps the Write tier isolated.
-- **Default mode.** Watch vs grid is selected per steering event. If your workflow is almost always one or the other, seed the steering event template in your orchestrator accordingly.
-- **Request-list categories.** Watch mode classifies against the categories in the deploying team's corporate-legal `CLAUDE.md` configuration. Re-run `/corporate-legal:cold-start-interview` there before wiring watch mode into a live deal.
-- **Work-product header.** `grid-writer` prepends the header from the deploying team's `## Outputs` configuration. Confirm the header with your legal team before deploying — it differs by reviewer role (lawyer vs non-lawyer).
-- **Slack routing.** This agent never posts directly. Reports are files; a `handoff_request` tells your orchestrator which channel to route to. Configure the deal channel in the deploying team's `CLAUDE.md` House style section.
+- **虚拟数据室 URL。** 设置 `BOX_MCP_URL` / `GDRIVE_MCP_URL` / `IMANAGE_MCP_URL` 以匹配你的数据室。默认启用 Box 和企业网盘；如果以 iManage 或 Datasite 为主，请在 [`agent.yaml`](./agent.yaml) 中切换 `default_config`。如果虚拟数据室使用国内数据室服务(TBD)，在 `mcp_servers` 和 `tools` 中添加条目及匹配的 MCP URL。
+- **列 Schema。** [`corporate-legal/skills/tabular-review/references/ma-diligence-columns.md`](../../corporate-legal/skills/tabular-review/references/ma-diligence-columns.md) 中的并购尽调标准为默认。根据交易类型自定义——科技/知识产权、医疗、房地产、政府承包商、受监管金融——使用该参考资料中的扩展项。
+- **输出目标。** 输出落地在 `./out/`。通过部署管道接入交易文件夹、企业网盘、iManage 工作区或 Box 文件夹。不要给 `grid-writer` 授予上传的 MCP 权限；交接给上传步骤更干净，且保持 Write 层级隔离。
+- **默认模式。** 监控 vs 网格按引导事件选择。如果工作流几乎总是其中一种，在编排器中相应设定引导事件模板。
+- **需求清单分类。** 监控模式根据部署团队 corporate-legal `CLAUDE.md` 配置中的分类进行文档分类。在为实时交易接入监控模式前，在那里重新运行 `/corporate-legal:cold-start-interview`。
+- **工作产出标头。** `grid-writer` 从部署团队的 `## Outputs` 配置添加标头。在部署前与法律团队确认标头——因审查者角色（律师 vs 非律师）而异。
+- **Slack 路由。** 本代理绝不直接发布。报告是文件；`handoff_request` 告诉编排器路由到哪个通道。在部署团队的 `CLAUDE.md` 内部风格部分配置交易通道。

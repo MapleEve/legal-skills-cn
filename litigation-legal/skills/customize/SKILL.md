@@ -1,102 +1,101 @@
 ---
-name: customize
-description: >
-  Guided customization of your litigation practice profile — change one thing
-  without re-running the whole cold-start interview. Adjust practice role,
-  side (plaintiff / defense / mixed), risk calibration, landscape, house
-  style, escalation contacts, severity vocabulary, or matter workspace
-  paths. Use when the user says "change my [thing]", "update my profile",
-  "edit my config", or "customize".
-argument-hint: "[section name, or describe what you want to change]"
+name: 定制配置
+description: 引导式定制中国民事诉讼执业画像——无需重新运行完整冷启动面谈即可更改一项设置。调整执业角色、立场（原告/被告/混合）、风险校准、场景、律所风格、升级联系人、严重性词汇或案件工作空间路径。适用场景：用户说"改我的[某设置]""更新我的画像""编辑我的配置"或"定制"。
+argument-hint: "[章节名称，或描述您想更改的内容]"
 ---
 
-# /customize
+# /定制配置
 
-## When this runs
+## 何时运行
 
-The user typed `/litigation-legal:customize`. They want to change something
-in their litigation profile — a risk calibration, a house style rule, an
-escalation contact, a landscape note — without re-running the whole
-cold-start interview and without hand-editing YAML.
+用户输入了 `/litigation-legal:定制配置`。他们想更改执业画像中的某项——风险校准、律所风格规则、升级联系人、场景说明、收费结构、管辖法院列表——无需重新运行完整冷启动面谈，也无需手动编辑文件。
 
-## What to do
+## 操作流程
 
-1. **Read the config.** Read
-   `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`
-   (and `~/.claude/plugins/config/claude-for-legal/company-profile.md` one
-   level up). If the plugin config does not exist or still contains
-   `[PLACEHOLDER]` values, say:
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`（以及上一层的 `company-profile.md`）。如插件配置不存在或仍含 `[待补]` 值，说：
 
-   > You haven't run setup yet. Run `/litigation-legal:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+   > 您尚未运行设置。请先运行 `/litigation-legal:冷启动面谈`——定制适用于调整已有画像。
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+2. **展示可定制项。** 按组列出画像中的内容，附当前值的一行摘要：
 
-   - **Company / who you are** — name, industry, jurisdictions, stage, practice
-     setting *(shared across all 12 plugins — changes flow through
-     `company-profile.md`)*
-   - **Practice role** — in-house counsel / outside counsel / solo / clinic
-   - **Side** — plaintiff / defense / mixed, and any posture nuances (class
-     action defense, regulatory enforcement defense, commercial
-     plaintiff, etc.)
-   - **Risk calibration** — what counts as high / medium / low risk on an
-     inbound demand, subpoena, or new matter; escalation triggers
-   - **Landscape** — regular adversaries, friendly and unfriendly venues,
-     judges to know, standing OC relationships
-   - **House style** — brief style, declaration format, demand letter
-     template, deposition outline structure, legal hold template
-   - **Severity vocabulary map** — how you translate severity labels across
-     client / internal / court-facing outputs
-   - **People** — matter leads, in-house team, outside counsel by matter
-     type, escalation chain
-   - **Workflow** — matter workspaces, portfolio log, OC status cadence,
-     legal hold refresh cadence
-   - **Integrations** — document storage / e-filing / calendar / Slack
-     status, fallbacks
+   - **公司/您是谁** —— 名称、行业、主要执业区域、执业场景、委托人类型
+   - **执业角色** —— 企业法务/律所律师/独立执业/其他
+   - **立场** —— 原告/被告/混合/因案而异
+   - **风险校准** —— 什么算高/中/低风险（严重性区间 x 可能性区间）
+   - **重要性阈值** —— 预计负债触发、披露触发、董事会/审计委员会、法总级别
+   - **场景** —— 常规案件类型（合同纠纷/劳动纠纷/知识产权/侵权/公司纠纷等）、常见对手、常见受案法院
+   - **律所风格** —— 法律文书风格（起诉状/答辩状/代理词/上诉状）、律师函模板、举证清单格式、证据目录格式
+   - **严重性词汇映射**
+   - **人员** —— 案件主管、内部团队、外聘律师阵容、升级链
+   - **工作流** —— 案件工作空间、案件组合登记簿、外聘律师状态频率、证据保全刷新频率
+   - **集成** —— 文件存储/邮件/日程/通知状态、中国法律数据工具（裁判文书网/北大法宝/威科先行等）
+   - **收费结构**（独立执业） —— 固定收费/小时计费/风险代理/混合、费率详情
+   - **客户管理**（独立执业） —— 更新频率、更新格式、和解讨论默认姿态
+   - **委托代理合同** —— 模板、授权委托书范围（一般代理/特别授权）
 
-3. **Ask what they want to change.**
+3. **询问他们想更改什么。**
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+4. **执行更改。** 显示当前值，询问新值，解释下游变化，确认，写入配置。
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+   示例：
+   - *立场从混合改为仅被告*："立案将停止询问原告方问题。起草律师函仍适用于被告方诉前协商律师函，但起始框架不同。案件理论将以防守为主。"
+   - *收紧高风险阈值*："更多收到的律师函和法院通知将通过案件简报和外部律师状态路由。"
+   - *新的常设外聘律所*："外聘律师状态将包含此律所在相关案件中的每周排查。"
+   - *新增管辖法院*："案件立案和管辖分析将包含此法院的实务信息。"
+   - *调整风险代理比例*（独立执业）："将影响案件价值判断和接案决策。注意风险代理不适用于婚姻继承等法律禁止的案件类型。"
+   - *更改主要执业区域*："将影响管辖分析——不同省份对同案由的裁判实践可能有差异。"
 
-   Examples:
-   - *Side mixed → defense-only:* "`/new-matter` intake will stop asking the
-     plaintiff-side questions. `/demand-draft` will still work for
-     defense-side pre-suit demands but the starting frame will be different."
-   - *Risk calibration tightening high-risk threshold:* "More inbound
-     demands and subpoenas will route through `/matter-briefing` and
-     `/oc-status`."
-   - *New standing OC for IP matters:* "`/oc-status` will include this firm
-     in weekly sweeps for IP-tagged matters."
+5. **共享画像变更**。若变更涉及公司层面信息（如公司名称、行业），同步写入 `company-profile.md` 并说明："此变更影响所有法律插件。"
 
-5. **For shared-profile changes** (company name, industry, jurisdictions,
-   practice setting, stage): write to
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md` and note:
+6. **结束。**
 
-   > This change affects all 12 plugins — any plugin that reads your
-   > jurisdiction footprint now sees [new value].
+## 中国民事诉讼特有定制项
 
-6. **Close.**
+本插件与US litigation插件的关键差异——以下定制项专门针对中国民事诉讼：
 
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/litigation-legal:customize` anytime.
+### 程序期限定制
 
-## Guardrails
+可定制的默认假设：
 
-- **Never delete a section.** If the user wants to "remove" a matter type
-  from scope, offer to mark it `[Not currently handled]` and explain what
-  intake routing changes.
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., plaintiff-only side + defense-only OC roster; or
-  "high volume" portfolio + no matter workspaces configured), flag the
-  tension.
-- **Flag guardrail degradation.** The FRE 408 / privilege gate on
-  `/demand-draft`, the privilege header on matter outputs, source
-  attribution tags, and `[verify]` tags on cited authorities are load-
-  bearing — do not remove. The `[review]` flag and the "do not file
-  without attorney review" framing are load-bearing.
-- **One change at a time.** Don't re-ask the whole interview.
+- **答辩期** —— 默认15天（《民事诉讼法》第128条）
+- **举证期限** —— 由法院指定，不可预设，但可记录常受案法院的惯例
+- **上诉期** —— 判决15天/裁定10天（《民事诉讼法》第171条）
+- **申请再审期限** —— 6个月（《民事诉讼法》第212条）
+- **申请执行期限** —— 2年（《民事诉讼法》第246条）
+- **诉讼时效** —— 3年（《民法典》第188条）
+
+以上为法定期限，不可通过定制缩短，但可定制提醒策略（提前多少天提醒）。
+
+### 法院列表定制
+
+记录经常出庭的法院及其实务特点：
+
+- 法院全称、层级（基层/中级/高级/最高）
+- 立案方式（现场立案/网上立案/邮寄立案）——了解该法院是否已开通"人民法院在线服务"网上立案
+- 举证期限惯例（该法院通常指定多长期限）
+- 财产保全担保要求（该法院对担保比例的要求，是否有保险公司保函绿色通道）
+- 庭审风格（该法院法官的庭审风格——纠问式强度、是否倾向调解）
+
+### 法律文书格式定制
+
+中国法律文书特有的格式要素：
+
+- **法院文书要求** —— 起诉状/答辩状/代理词的法条援引格式（《民法典》第X条 还是 "民法典第X条"）
+- **案号格式** —— （2026）X民初X号等
+- **律所文书** —— 律师函的律所抬头、案号编制规则、盖章要求（律所公章+律师签名）
+- **证据目录格式** —— 编号规则（书证1/书证2 还是 证据1/证据2）、是否要求分组、证明目的表述风格
+
+## 护栏
+
+- **永不删除章节。** 如用户想"移除"某案件类型，提议标记 `[当前不处理]` 并解释立案路由的变化。
+- **标注内部不一致。** 如果变更使画像不一致（如仅原告立场+仅被告外聘律师），标注矛盾。
+- **标注护栏退化。** 以下为不可移除的核心保障：
+  - 律师函的保密关
+  - 案件输出的保密抬头
+  - 来源标注标签和引用法律根据上的 `[待核实]` 标签
+  - 非律师用户的法律后果暂停关
+  - 调解/和解接受前的律师审查关
+  - 结案前的律师审查关
+- **一次只改一项。** 不重问整个面谈。
+- **法定期限不可定制为更短。** 答辩期、上诉期、诉讼时效等是法律规定——不可通过技能缩短。只能定制提醒窗口。
+- **风险代理合规提醒。** 若用户（独立执业）尝试对禁止风险代理的案件类型（婚姻继承/社会保险/赡养费/刑事/行政/国家赔偿）设置风险代理，明确标注合规风险并拒绝该设置。

@@ -1,72 +1,47 @@
 ---
-name: related-skills-surfacer
+name: 关联技能推荐
 description: >
-  Suggest community skills based on recent activity in other plugins. Checks
-  whether the community has built something relevant to a task and mentions it
-  once, non-intrusively. Use when the user says "is there a community skill for
-  this", "what else is out there", or asks for skill recommendations; also runs
-  passively as part of other plugins' workflows.
+  根据用户当前活动推荐中国法律技能社区中的关联技能。
+  当用户做某件事而另一个技能可能更好用时，主动提示。
+  也当用户说"还有什么能帮我的"、"有没有更好的技能"、"关联技能"时使用。
+argument-hint: "[当前活动或领域描述]"
 ---
 
-# /related-skills-surfacer
+# /关联技能推荐
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → practice profile.
-2. Use the workflow below.
-3. Check what other plugins have been doing. Match against registry.
-4. Suggest: "You've been doing X — community has a skill for Y that's related."
+## 功能目的
 
----
+用户可能不知道社区中存在的技能。本技能根据用户当前工作推荐关联技能——例如当用户手动审阅合同时提示社区中有专门的合同审阅技能，或当用户在审查AI产品时提示AI治理相关的技能。
 
-## Purpose
+## 操作流程
 
-The community might have built the thing you're about to build. This skill notices and mentions it — once, briefly, non-annoyingly.
+1. **识别用户当前活动/执业领域。** 通过分析用户正在执行的任务类型、使用的工具、涉及的法律领域来判断。
 
-## How it runs
+2. **搜索社区注册表。** 查找匹配的已安装和未安装技能。考虑：
+   - 直接匹配：同领域的更专业技能
+   - 互补匹配：与当前任务配合使用的辅助技能
+   - 替代匹配：比当前方法更高效的替代方案
 
-This skill surfaces related community skills after a task. It can be invoked directly by the user ("what else is out there for X?") or wired into other plugins via a Stop hook — the hook-based pattern requires each sibling plugin to declare a Stop hook that calls this skill, which is not wired by default. Without the hook wiring, invoke it directly.
+3. **推荐未安装的关联技能。** 如果用户已有的技能不够用，推荐更合适的。
 
-Other plugins can include a light check at the end of a task:
-> "The legal-builder-hub found a community skill that might help with this kind of thing: [name] — [one-line]. Want to take a look?"
+## 推荐格式
 
-## Load context
+简短精准。示例：
 
-`~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → practice profile, installed skills (don't suggest what's already installed).
-Registry cache from registry-browser.
+> "在做[合同审查]吗？社区有[商业合同审查技能]是为这个专门设计的——支持SaaS协议审查、保密协议分类、续约追踪。要我安装吗？"
 
-## The match
+## 推荐场景举例
 
-Given a task description (what the user was just doing), find registry skills that match:
+| 用户正在做 | 可能推荐的技能 |
+|---|---|
+| 手动审查商业合同 | 商业合同审查（SaaS专项、保密协议分类） |
+| 审查产品功能 | 产品法务（上线审查、营销合规） |
+| 被问"AI能做这个吗" | AI治理（用例分诊、系统清单） |
+| 起草AI使用政策 | AI政策起草（政策生成、法规差距分析） |
+| 跟踪合同续约 | 续约追踪（解除期限提醒、续约日历） |
+| 处理个人信息 | 数据合规（PIPL合规、个人信息保护影响评估） |
 
-- Keyword overlap between the task and skill descriptions
-- Practice profile fit (don't suggest litigation skills to a transactional lawyer)
-- Not already installed
+## 本技能不做的事
 
-**Threshold:** Only surface if the match is strong. Weak matches are noise. Better to surface nothing than to annoy.
-
-## Output
-
-If strong match:
-> 💡 The community has a skill for this: **[name]** from [registry] — "[description]". `/legal-builder-hub:skill-installer [name]` to try it.
-
-If no strong match: silent. No output. Don't announce "I found nothing."
-
-## Frequency limit
-
-Don't surface the same skill twice. If the user didn't install it the first time, they saw it and decided no. Track dismissals in `references/surfaced.json`.
-
-## User control
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → new skill notifications:
-- **All:** Surface any match
-- **Matching practice profile:** Filter by profile (default)
-- **None:** This skill is off
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- Install anything.
-- Interrupt a task in progress. Surfacing happens at the *end* of a task, not in the middle.
-- Nag. One mention per skill, ever.
+- 不自动安装技能——仅推荐，由用户决定
+- 如果用户当前的技能完全胜任则不烦扰用户

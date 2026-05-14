@@ -1,75 +1,79 @@
-# Quick Start
+# 快速上手
 
-**60 seconds.** This gets you to using your plugins.
+**60 秒**，即可开始使用你的插件。
 
-## Install in Claude Cowork
-1. [Install Claude Desktop](https://claude.com/download)
-2. Get access to Claude Cowork
-3. Follow the instructions in the video below:
+## 在 Claude Cowork 中安装
+1. [安装 Claude Desktop](https://claude.com/download)
+2. 获取 Claude Cowork 使用权限
+3. 按照下方视频说明操作：
 
 https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 
-## Install in Claude Code
+## 在 Claude Code 中安装
 
-1. **Open Claude Code** (in your terminal) or **Claude Cowork** (the desktop app). Not sure which you have? If you have a terminal window open with Claude in it, that's Claude Code.
+1. **打开 Claude Code**（终端中）或 **Claude Cowork**（桌面应用）。不确定你用的是哪个？如果你打开了一个终端窗口，里面有 Claude，那就是 Claude Code。
 
-2. **Add the marketplace.** In Claude Code, type `/plugin marketplace add ` (with a space at the end), then **drag the unzipped `claude-for-legal` folder onto the terminal window** — it'll fill in the path. Then press Enter.
+2. **添加市场。** 在 Claude Code 中执行：
 
-   (Or type the full path: `/plugin marketplace add /Users/you/Desktop/claude-for-legal`)
-
-3. **Install your plugin.** Pick the one that matches your work from the table below, then:
    ```
-   /plugin install privacy-legal@claude-for-legal
+   /plugin marketplace add https://github.com/MapleEve/legal-skills-cn
    ```
 
-4. **⚠️ Restart Claude Code.** Close and reopen. This step is not optional — the plugin isn't live until you restart.
+   如果你已经把仓库 clone 到本机，也可以使用本地路径：`/plugin marketplace add /Users/你/Desktop/claude-for-legal-cn`
 
-5. **Run setup.** Takes 2 minutes (quick start) or 10-15 minutes (full).
+3. **安装你的插件。** 从下方表格中选择与你工作领域匹配的插件，然后执行：
+   ```
+   /plugin install 数据合规@claude-for-legal-cn
+   ```
+
+4. **重启 Claude Code。** 关闭后重新打开。此步骤不可跳过——插件在重启之前不会生效。
+
+5. **运行初始化设置。** 快速模式约需 2 分钟，完整模式约需 10-15 分钟。
    ```
    /privacy-legal:cold-start-interview
    ```
 
-6. **Connect a research tool.** Citations are flagged unverified without one. In Cowork: Settings → Connectors → add CourtListener. In Claude Code: the plugin already lists the research MCP in its config; you'll be prompted to authorize it the first time a skill needs it.
+6. **接入检索工具。** 未接入检索工具时，引文会标记为未验证。Cowork 用户：设置 → 连接器 → 添加北大法宝。Claude Code 用户：插件已在配置中列出检索 MCP；首次运行某个技能需要时，系统会提示你授权。
 
-## Install user-scoped, not project-scoped
+## 安装为"用户级"，不要安装为"项目级"
 
-When you run `/plugin install`, you may be asked whether to install for this project only or for all projects (user scope). **Pick user scope.**
+执行 `/plugin install` 时，系统可能会问你是安装为"仅当前项目"还是"所有项目（用户级）"。**选择"用户级"。**
 
-It's counterintuitive: project scope feels safer. But project scope blocks the plugin from reading files outside the project folder — your outlines in Downloads, your contract in Documents, your client file in Dropbox. Most skills need to read your files. User scope doesn't give the plugin any extra access to your files — the plugin can only read files you explicitly point it at or that are in the current directory. It just means the plugin works from any folder instead of one.
+这有点反直觉：项目级看起来更安全。但项目级会阻止插件读取项目文件夹之外的文件——你放在"下载"里的提纲、"文档"里的合同、"云盘"里的客户资料。大多数技能需要读取你的文件。用户级并不会给插件额外的文件访问权限——插件只能读取你明确指定的文件或当前目录下的文件。它只是让插件在任何文件夹下都能工作，而不是仅限于某一个文件夹。
 
-If you already installed project-scoped and want to switch: `/plugin uninstall <plugin>`, then `/plugin install <plugin>@claude-for-legal` from your home directory.
+如果你已经安装为项目级，想切换：先 `/plugin uninstall <插件名>`，然后在你的用户主目录下执行 `/plugin install <插件名>@claude-for-legal-cn`。
 
-## Which plugin is for me?
+## 哪个插件适合我？
 
-| You are a… | Install… | First command |
+| 你的角色 | 安装… | 第一条命令 |
 |---|---|---|
-| Privacy lawyer / DPO | `privacy-legal` | `/privacy-legal:use-case-triage` |
-| Commercial / contracts lawyer | `commercial-legal` | `/commercial-legal:review` |
-| Corporate / M&A lawyer | `corporate-legal` | `/corporate-legal:diligence-issue-extraction` |
-| Employment lawyer / HR counsel | `employment-legal` | `/employment-legal:wage-hour-qa` |
-| Product counsel | `product-legal` | `/product-legal:is-this-a-problem` |
-| IP lawyer / patent agent | `ip-legal` | `/ip-legal:clearance` |
-| Litigator (in-house or firm) | `litigation-legal` | `/litigation-legal:matter-intake` |
-| Regulatory / compliance counsel | `regulatory-legal` | `/regulatory-legal:reg-feed-watcher` |
-| AI governance lead | `ai-governance-legal` | `/ai-governance-legal:use-case-triage` |
-| Clinic supervisor (law school) | `legal-clinic` | `/legal-clinic:cold-start-interview` |
-| Law student | `law-student` | `/law-student:cold-start-interview` |
-| Legal ops / looking for skills | `legal-builder-hub` | `/legal-builder-hub:registry-browser` |
+| 数据合规律师 / 数据保护官 | `数据合规` | `/privacy-legal:use-case-triage` |
+| 商业合同律师 / 法务 | `商业合同` | `/commercial-legal:review` |
+| 公司证券律师 / 投融资法务 | `公司证券` | `/corporate-legal:diligence-issue-extraction` |
+| 劳动用工律师 / 人事法务 | `劳动用工` | `/employment-legal:wage-hour-qa` |
+| 产品合规法务 | `产品合规` | `/product-legal:is-this-a-problem` |
+| 知识产权律师 / 专利代理人 | `知识产权` | `/ip-legal:clearance` |
+| 争议解决律师（企业法务/律所/个人执业） | `争议解决` | `/litigation-legal:matter-intake` |
+| 政府监管 / 合规法务 | `政府监管` | `/regulatory-legal:reg-feed-watcher` |
+| 人工智能治理负责人 | `人工智能治理` | `/ai-governance-legal:use-case-triage` |
+| 法律援助诊所指导教师（法学院） | `法律援助工作站` | `/legal-clinic:cold-start-interview` |
+| 法学生 | `法学生` | `/law-student:cold-start-interview` |
+| 法律运营 / 寻找更多技能 | `法律技能管理` | `/legal-builder-hub:registry-browser` |
 
-## What you're installing
+## 你正在安装的是什么
 
-Each plugin learns your playbook through a setup interview, writes it to a practice profile file (`~/.claude/plugins/config/claude-for-legal/<plugin>/CLAUDE.md`), and every skill reads from it. The profile is yours — edit it, re-run setup, or tell a skill to update it.
+每个插件通过初始化访谈了解你的工作流程，将其写入业务档案文件（`~/.claude/plugins/config/claude-for-legal-cn/<插件名>/CLAUDE.md`），此后每个技能都从中读取。这份档案属于你——你可以编辑它、重新运行初始化、或者口头指示某个技能更新它。
 
-**Every output is a draft for attorney review.** The plugins flag what they're unsure about, mark citations by source, and gate anything irreversible. A lawyer reviews, verifies, and takes responsibility. They make that review faster; they don't replace it.
+**所有输出均为律师审阅前草稿。** 插件会标记不确定之处、按数据来源标注引文、对不可逆操作设置门槛。律师负责审阅、核实并承担责任。插件让审阅更快；它不替代审阅。
 
-## What's in the box
+## 包含什么
 
-12 practice-area plugins, 5 managed-agent cookbooks, 16+ connectors. The full reference is in [README.md](README.md).
+12 个业务领域插件、5 个托管智能体手册、16+ 个连接器。完整参考见 [README.md](README.md)。
 
-## Stuck?
+## 遇到问题？
 
-- **"Command not found"** after install → you forgot step 4. Restart Claude Code.
-- **"Run setup first"** → run `/<plugin>:cold-start-interview` before any other command.
-- **Citations flagged `[verify]`** → connect a research tool (step 6). Without one, every cite is from training data, not a current database.
-- **"I can't read [file]"** → most often this means the plugin is project-scoped and the file is outside the project folder. See "Install user-scoped, not project-scoped" above — reinstall user-scoped or move the file into the project folder.
-- **The plugin doesn't do X** → run `/legal-builder-hub:related-skills-surfacer` to find a better match, or check the plugin's README for "What this plugin does not do."
+- **安装后提示"命令未找到"** → 你漏了第 4 步。重启 Claude Code。
+- **提示"请先运行初始化"** → 在执行任何其他命令之前，先运行 `/<插件名>:cold-start-interview`。
+- **引文标记为 `[需核实]`** → 接入检索工具（第 6 步）。没有检索工具时，所有引文来自训练数据而非当前数据库。
+- **"无法读取 [文件]"** → 通常是插件安装为项目级，而文件在项目文件夹之外。见上方"安装为用户级"——重装为用户级或把文件移到项目文件夹内。
+- **插件不包含 X 功能** → 运行 `/legal-builder-hub:related-skills-surfacer` 寻找更匹配的技能，或查看该插件的 README 中"本插件不做什么"一节。

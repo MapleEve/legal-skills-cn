@@ -1,114 +1,53 @@
 ---
-name: customize
+name: 定制配置
 description: >
-  Guided customization of your AI governance practice profile — change one thing
-  without re-running the whole cold-start interview. Adjust risk posture,
-  escalation contacts, use-case registry entries, vendor AI positions,
-  AI policy commitments, impact-assessment house style, or matter workspace
-  paths. Use when the user says "change my [thing]", "update my profile",
-  "edit my config", "tune my playbook", or "customize".
-argument-hint: "[section name, or describe what you want to change]"
+  向导式定制您的AI治理实践配置——无需重新运行完整的冷启动访谈即可修改单项内容。
+  可调整风险偏好、升级联系人、用例注册表条目、AI供应商立场、
+  AI政策承诺、影响评估格式模板或事项工作区路径。
+  当用户说"修改我的[某项目]"、"更新我的配置"、
+  "编辑我的配置"、"调整我的手册"或"定制"时使用。
+argument-hint: "[章节名称，或描述您要修改的内容]"
 ---
 
-# /customize
+# /定制配置
 
-## When this runs
+## 触发场景
 
-The user typed `/ai-governance-legal:customize`. They want to change something
-in their practice profile — a risk posture, an escalation contact, a playbook
-position, a jurisdiction, an output format — without re-running the whole
-cold-start interview and without hand-editing YAML.
+用户想修改实践配置中的某项内容——风险偏好、升级联系人、手册立场、管辖范围、输出格式——而无需重新运行完整的冷启动访谈，也无需手动编辑。
 
-## What to do
+## 执行步骤
 
-1. **Read the config.** Read
-   `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`
-   (and `~/.claude/plugins/config/claude-for-legal/company-profile.md` one
-   level up). If the plugin config does not exist or still contains
-   `[PLACEHOLDER]` values, say:
+1. **读取配置。** 读取实践配置（以及上级目录中的 `company-profile.md`）。如果插件配置不存在或仍包含 `[PLACEHOLDER]` 值，则提示先运行 `/ai-governance-legal:cold-start-interview`。
 
-   > You haven't run setup yet. Run `/ai-governance-legal:cold-start-interview`
-   > first — customize is for adjusting a profile you already have.
+2. **展示可定制项目总览。** 按组列出：
 
-2. **Show the customizable map.** List what's in the profile, grouped, with a
-   one-line summary of the current value:
+   - **公司/主体信息** — 名称、行业、管辖区域、发展阶段、执业类型
+   - **监管覆盖范围** — 《生成式AI服务管理暂行办法》、《深度合成管理规定》、《算法推荐管理规定》、《科技伦理审查办法（试行）》、TC260系列标准、各地方AI法规、行业监管机构范围
+   - **风险偏好** — 保守/中等/积极
+   - **人员** — 治理团队、AI风险负责人、升级链路、审批人
+   - **用例注册表** — 已批准/附条件/禁止条目，以及各条目附加的条件
+   - **AI系统清单** — 每个系统在《生成式AI服务管理暂行办法》等法规下的角色和风险等级。运行 `/ai-governance-legal:ai-inventory` 使用专用编辑器。
+   - **供应商AI治理** — 数据训练、责任承担、模型变更通知等
+   - **AI政策承诺** — 您的AI政策已作出的公开或内部承诺
+   - **算法备案追踪** — 需要算法备案的系统及其备案状态
+   - **科技伦理审查** — 触发审查的系统及审查状态
+   - **影响评估格式模板** — AI影响评估的章节和格式
+   - **工作流** — 接收路径、输出格式、事项工作区路径、政策监控器的审查频率
+   - **集成** — 已连接的（即时通讯、文档存储、定时任务），以及降级回退的
 
-   - **Company / who you are** — name, industry, jurisdictions, stage, practice
-     setting *(shared across all 12 plugins — changes flow through
-     `company-profile.md`)*
-   - **Regulatory footprint** — EU AI Act, state AI laws, sector regulators in
-     scope
-   - **Risk posture** — conservative / middle / aggressive, what each means for
-     triage and AIA output
-   - **People** — governance team, AI risk owner, escalation chain, approvers
-   - **Use case registry** — approved / conditional / never entries, and
-     conditions attached to each
-   - **AI system inventory** — per-system role (provider / deployer / etc.) and
-     tier under the EU AI Act. Run `/ai-governance-legal:ai-inventory` for
-     the dedicated editor.
-   - **Vendor AI governance** — training-on-data, liability, model-change
-     notice, and other positions in your vendor AI playbook
-   - **AI policy commitments** — the public or internal commitments your AI
-     policy has made, that the plugin cross-checks against
-   - **Impact assessment house style** — AIA section order, risk scoring
-     format, stakeholder framing
-   - **Workflow** — intake path, output format, matter workspace paths, review
-     cadence for the policy monitor
-   - **Integrations** — what's connected (Slack, document storage,
-     scheduled-tasks), what falls back
+3. **询问修改内容。**
 
-3. **Ask what they want to change.**
+   > 您想调整什么？选择一个章节，或用您自己的话描述修改内容。
 
-   > What would you like to adjust? Pick a section, or describe the change in
-   > your own words.
+4. **执行修改。** 展示当前值、询问新值、说明下游影响、确认后写入配置。
 
-4. **Make the change.** Show the current value, ask for the new value, explain
-   what changes downstream, confirm, write it to the config.
+5. **共享配置修改**写入 `company-profile.md`。
 
-   Examples of downstream explanation:
-   - *Risk posture middle → conservative:* "I'll flag more use cases as
-     conditional rather than approved, surface more AIA follow-ups, and
-     recommend more conservative vendor AI redlines."
-   - *Adding an escalation contact:* "Every skill that routes escalations
-     (`/triage`, `/review-vendor-ai`, `/gap-check`) will now include this
-     contact on the relevant risk bands."
-   - *New use case registry entry:* "`/triage` will match against this entry
-     on its next run. Existing AIAs aren't rewritten — re-run them if you want
-     the new posture reflected."
+6. **收尾。** "完成。您的下一次输出将反映此变更。"
 
-5. **For shared-profile changes** (company name, industry, jurisdictions,
-   practice setting, stage): write to
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md` and note:
+## 护栏规则
 
-   > This change affects all 12 plugins — any plugin that reads your
-   > jurisdiction footprint now sees [new value].
-
-6. **Close.**
-
-   > Done. Your next output will reflect the change. Anything else? You can
-   > run `/ai-governance-legal:customize` anytime.
-
-## Guardrails
-
-- **Never delete a section.** If the user wants to "remove" something, set it
-  to `[Not configured]` and explain what that means for the plugin's behavior.
-  ("Removing your escalation chain means `/triage` will flag escalation-worthy
-  items but won't route them to a specific person.")
-- **Flag internal inconsistency.** If the change would make the profile
-  inconsistent (e.g., risk posture aggressive + escalation "everything goes to
-  the GC"; or "EU AI Act in scope" + "no systems flagged for the EU"), flag
-  the tension and ask which one they want.
-- **Flag guardrail degradation.** If the user asks to turn off a guardrail
-  ("stop adding the `[review]` flag," "drop the citations warning," "skip the
-  privilege header"), explain what the guardrail protects against and confirm
-  they understand the trade-off. Most guardrails are adjustable — a few are
-  structural:
-  - The `[review]` flag mechanism (tells the user when legal judgment is
-    needed rather than a confident wrong answer) — load-bearing, don't
-    remove.
-  - Source attribution tags on retrieved content — load-bearing, don't remove.
-  - `[verify]` tags on cited statutes/regulations — load-bearing, don't
-    remove.
-- **One change at a time.** Don't re-ask the whole interview. If the user
-  wants multiple changes, handle them sequentially and confirm each before
-  moving on.
+- **绝不删除章节。** 如果用户想"删除"某内容，将其设为 `[未配置]` 并解释影响。
+- **标注内部不一致。** 如果修改会导致配置不一致，标注矛盾并询问用户的意图。
+- **标注护栏降级。** `[审核]` 标注机制、来源标注标签、法规援引上的 `[需核实]` 标签是承载性护栏——不可移除。
+- **每次只改一项。**

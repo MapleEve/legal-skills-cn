@@ -1,39 +1,80 @@
-# Privacy Currency Watch
+# 数据合规法规动态追踪
 
-**Last verified: 2026-05-10.**
+**最后验证日期：2026-05-14**
 
-> **⚠️ Staleness check.** If the last-verified date above is more than 90 days old, treat this file as stale and verify each entry before relying on it. A stale watch list is worse than no watch list — it looks current while being wrong. When a skill reads this file, check the last-verified date first. If stale, say: "The currency watch was last verified [date] — [N] months ago. I'm using it as a checklist of areas to search, not as a source of current status." When you update any entry, also update the last-verified date at the top.
+> **注意事项：时效性检查。** 如上方最后验证日期距今超过 90 天，请将此文件视为陈旧文件，逐项核实后再引用。过期的追踪清单比没有清单更危险——它看起来有效而实际已失效。当 skill 读取此文件时，请先检查最后验证日期。如陈旧，请告知："法规动态追踪上次验证日期为 [日期]，距今 [N] 个月。我会将其作为检索清单使用，而非时效性来源。" 更新任意条目时，请同步更新上方最后验证日期。
 
-Privacy law moves. Before relying on an effective date, threshold, or obligation, verify it. These are the areas most likely to have moved since model training:
+中国数据合规法律体系正在快速完善。依据模型训练信息所作的判断可能与最新法规存在偏差，正式使用前请核实以下关键领域的当前状态：
 
-## COPPA (16 CFR Part 312)
+---
 
-- **2025 Amendments — compliance deadline April 22, 2026.** Major changes: biometric identifiers and government IDs are now "personal information"; separate verifiable parental consent required for third-party disclosure tied to targeted advertising; written information security program mandatory; indefinite retention prohibited.
-- A plugin that knows pre-2025 COPPA looks competent while being stale. Verify at [FTC COPPA page](https://www.ftc.gov/legal-library/browse/rules/childrens-online-privacy-protection-rule-coppa).
+## 《个人信息保护法》(PIPL) 配套规章
 
-## State privacy laws (comprehensive)
+- **《网络数据安全管理条例》**（2025年1月1日起施行）：对 PIPL 的多项制度作出细化规定，包括个人信息保护影响评估的具体情形、个人信息出境安全评估的适用条件、大型互联网平台特殊义务等。
+- **《个人信息出境标准合同办法》**：国家网信办发布的标准合同模板及备案要求。关注是否有更新版本或备案流程调整。
+- **《个人信息保护认证实施规则》**：个人信息出境保护认证的具体实施要求。关注认证目录是否扩展。
+- **《数据出境安全评估办法》**：网信办主导的安全评估流程。关注触发条件的调整及评估周期。
+- **《App 违法违规收集使用个人信息行为认定方法》**：网信办等四部门联合发布。关注是否有更新版本或补充认定标准。
+- 核实来源：[国家互联网信息办公室](http://www.cac.gov.cn)
 
-The map grows every year. As of May 2026, comprehensive privacy laws in force or imminent: CA (CCPA/CPRA), VA, CO, CT, UT, IA, IN, TN, MT, OR, TX, FL, DE, NH, NJ, KY, MD, MN, NE, RI. Check the IAPP state law tracker for current effective dates and the most recent additions.
+## 《数据安全法》(DSL) 配套制度
 
-## Cross-border transfers
+- **《数据分类分级管理办法》**：国家数据安全工作协调机制下的分类分级标准。关注正式版本的发布和行业分类指引。
+- **重要数据目录**：各地区、各部门制定的重要数据具体目录。关注游戏/电商相关行业的重要数据认定。
+- **数据安全审查制度**：对影响或可能影响国家安全的数据处理活动进行安全审查。关注审查触发条件和最新案例。
+- 核实来源：[国家数据局](https://www.ndac.gov.cn)
 
-- **EU-US DPF** in force since July 2023. Subject to Schrems III litigation — verify it's still valid before relying.
-- **UK-US Data Bridge** in force since October 2023.
-- **Swiss-US DPF** in force since September 2024.
-- For any transfer that relies on an adequacy decision, check the EU Commission's current adequacy list.
+## 《网络安全法》(CSL) 修订动态
 
-## FTC enforcement trends
+- **《网络安全法》修订**：关注 CSL 的修正草案进展，包括处罚力度调整、与 PIPL/DSL 的制度衔接等。
+- **网络安全等级保护制度 (2.0)**：等保 2.0 标准实施情况。关注是否有 3.0 标准征求意见稿。
+- 核实来源：[全国网络安全标准化技术委员会](https://www.tc260.org.cn)
 
-- **FTC v. Humor Rainbow/OkCupid (March 2026):** Undisclosed sharing of user data with a third party for AI training as a §5 violation. Flag for any DPA or privacy policy review involving AI training pathways.
-- Health data: FTC's expansive reading of the Health Breach Notification Rule (GoodRx, BetterHelp, Premom settlements). Verify current scope.
-- Dark patterns: FTC's pattern of treating confusing consent flows as deceptive. Verify current enforcement posture.
+## 个人信息出境
 
-## DSAR response timelines
+- **三条出境路径的实践动态**：安全评估、标准合同备案、保护认证——各自的适用门槛、审批周期和最新通过率。
+- **网信办执法动态**：个人信息出境违规案例和处罚标准。
+- **粤港澳大湾区数据跨境流动**：大湾区标准合同的实施进展。
+- 核实来源：[国家互联网信息办公室](http://www.cac.gov.cn)
 
-CCPA: 45 days + 45-day extension with notice. GDPR: 1 month + 2-month extension. Other states vary — verify the specific state's window. The plugin defaults may be out of date for the newest states.
+## 算法与自动化决策
 
-## How to use this file
+- **《互联网信息服务算法推荐管理规定》**：算法备案制度的实施范围扩展情况。
+- **《互联网信息服务深度合成管理规定》**：深度合成服务提供者的合规义务。
+- **生成式人工智能**：《生成式人工智能服务管理暂行办法》的后续细化规则。
+- 核实来源：[国家互联网信息办公室](http://www.cac.gov.cn)
 
-When a skill cites a privacy rule, effective date, or threshold, it should note: "Privacy law is moving — this may have changed since my training. Verify at [source]. See `references/currency-watch.md`."
+## 行业监管动态
 
-**This file goes stale.** Current as of May 2026. Update when you notice drift.
+- **游戏行业**：国家新闻出版署关于未成年人网络保护的最新要求。游戏内个人信息收集的年龄分级合规。
+- **电商行业**：市监总局对个人信息保护合规的专项行动。
+- **App 治理**：工信部 App 侵害用户权益专项整治行动的最新通报标准。
+- 核实来源：[工业和信息化部](https://www.miit.gov.cn)、[国家市场监督管理总局](https://www.samr.gov.cn)
+
+## 个人信息主体权利请求
+
+- PIPL 第45条：查询、复制权——处理时限（收到申请后 15 个工作日内）。
+- PIPL 第46条：更正、补充权。
+- PIPL 第47条：删除权——触发条件和处理时限。
+- PIPL 第15条/第47条：撤回同意、注销账号权。
+- PIPL 第45条第3款：个人信息携带权——具体实施标准。
+- 注意：各地网信办对处理时限可能有个案要求，请以当地监管部门的最新指引为准。
+
+## 个人信息保护影响评估 (PIPIA)
+
+- PIPL 第55条：触发情形（敏感个人信息处理、自动化决策、委托处理、向第三方提供/出境、公开个人信息）。
+- PIPL 第56条：评估内容要点。
+- 《网络数据安全管理条例》对 PIPIA 的细化要求。
+
+## 敏感个人信息
+
+- PIPL 第28-32条：生物识别、医疗健康、金融账户、行踪轨迹、不满十四周岁未成年人个人信息。
+- 未成年人个人信息保护：《儿童个人信息网络保护规定》与 PIPL 的衔接。
+
+---
+
+## 如何使用此文件
+
+当 skill 引用数据合规法规、生效日期或义务标准时，应当注明："中国数据合规法规持续更新——本条可能已有变化，请以官方文本为准。详见 `references/currency-watch.md`。"
+
+**此文件具有时效性。** 当前版本截至 2026 年 5 月。发现法规变动时请及时更新。

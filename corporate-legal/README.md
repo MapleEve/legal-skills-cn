@@ -1,99 +1,116 @@
-# Corporate Counsel Plugin
+# 公司证券插件
 
-In-house corporate counsel workflows across four practice areas: M&A deals, board and corporate secretary, public company governance, and entity management. Activate only the modules that apply to your role. The cold-start interview is modular — it asks targeted questions per active area and writes only the relevant sections to your practice profile.
+中国企业法务工作流，覆盖四大业务模块：投资并购交易、公司治理（三会一层）、上市公司合规、主体工商管理。仅激活与你的角色相关的模块。冷启动访谈采用模块化设计——按已激活模块提出针对性问题，仅将相关章节写入你的执业档案。
 
-**Every output is a draft for attorney review — cited, flagged, and gated — not a legal conclusion.** The plugin does the work: reads the documents, applies your playbook, finds the issues, drafts the memo. A lawyer reviews, verifies, and decides. Citations are tagged by source so you know which ones came from a research tool and which ones need checking. Privilege markers are applied conservatively so nothing waives by accident. Consequential actions — filing, sending, executing — are gated behind explicit confirmation.
+**所有输出均为供律师审查的草稿——附引用、附标记、附门控——而非法律结论。** 本插件完成工作：阅读文件、应用你的操作手册、发现问题、起草备忘录。由律师审查、核实、决策。引用按来源标记，让你知道哪些来自研究工具、哪些需要核实。保密标记保守适用，避免意外放弃特权。结果性操作——申报、发送、执行——均需经明确确认方可执行。
 
-## Who this is for
+## 适用角色
 
-| Role | Active modules |
+| 角色 | 激活模块 |
 |---|---|
-| **In-house M&A counsel** | M&A |
-| **Corporate / assistant secretary** | Board & Secretary |
-| **GC at a public company** | M&A + Public Company + Board & Secretary |
-| **GC at a private company** | M&A + Board & Secretary + Entity Management |
-| **Legal ops / solo GC** | Whichever apply — mix and match |
+| **投资并购法务** | 投资并购 |
+| **公司秘书/董事会秘书** | 公司治理 |
+| **上市公司法务总监** | 投资并购 + 上市公司 + 公司治理 |
+| **非上市公司法务总监** | 投资并购 + 公司治理 + 主体管理 |
+| **法务运营/单兵法务总监** | 按需组合 |
 
-## First run
+## 首次运行
 
 ```
 /corporate-legal:cold-start-interview
 ```
 
-Walks through module selection, then a short targeted interview for each active area. Writes a modular `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md` with only the relevant sections. Your configuration is stored at that path and survives plugin updates.
+引导式完成模块选择，然后针对每个激活模块进行简短访谈。生成模块化的 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/CLAUDE.md`，仅包含相关章节。你的配置保存在该路径，插件更新后仍然保留。
 
-Per-deal setup (M&A module only):
+逐笔交易设置（仅投资并购模块）：
 
 ```
 /corporate-legal:cold-start-interview --new-deal
 ```
 
-## Commands
+## 命令
 
-| Command | Does |
+| 命令 | 功能 |
 |---|---|
-| `/corporate-legal:cold-start-interview` | Modular cold-start, or `--new-deal` / `--module [m&a \| board \| public \| entities]` |
-| `/corporate-legal:diligence-issue-extraction [folder]` | Read VDR docs, extract issues in house format |
-| `/corporate-legal:tabular-review` | Tabular review — one row per document, one column per data point, every cell cited to source, Excel output |
-| `/corporate-legal:material-contract-schedule` | Material contracts disclosure schedule from diligence findings |
-| `/corporate-legal:closing-checklist` | Closing checklist — what's blocking, critical path |
-| `/corporate-legal:written-consent` | Unanimous written consent — precedent-matched draft + signatory tracker |
-| `/corporate-legal:entity-compliance` | Entity compliance tracker — init, report, update, audit, export |
-| `/corporate-legal:integration-management` | Post-closing integration workplan, consents tracker, contract assignment, status reports |
-| `/corporate-legal:matter-workspace` | Manage matter workspaces (multi-client private practice only) — new, list, switch, close, none |
+| `/corporate-legal:cold-start-interview` | 模块化冷启动，或 `--new-deal` / `--module [m&a \| board \| public \| entities]` |
+| `/corporate-legal:diligence-issue-extraction [folder]` | 读取数据室文件，按公司内部格式提取尽调问题 |
+| `/corporate-legal:tabular-review` | 表格化审查——每份文件一行、每个数据点一列、每个单元格引用来源、Excel 输出 |
+| `/corporate-legal:material-contract-schedule` | 从尽调发现生成重大合同披露清单 |
+| `/corporate-legal:closing-checklist` | 交割清单——显示阻塞项和关键路径 |
+| `/corporate-legal:written-consent` | 书面决议/传签决议——参照先例的草案 + 签署追踪表 |
+| `/corporate-legal:entity-compliance` | 主体合规追踪——初始化、报告、更新、审计、导出 |
+| `/corporate-legal:integration-management` | 投后整合工作计划、同意函追踪、合同变更、状态报告 |
+| `/corporate-legal:matter-workspace` | 管理事项工作区（仅限多客户执业场景）——新建、列表、切换、关闭、无 |
 
-## Prerequisites
+## 前置条件
 
-Several features reference Slack, Google Drive, SharePoint, Box, Intralinks, or Datasite integrations. These require MCP servers configured in your environment — they are **not bundled with the plugin**. Without them, the plugin falls back to file output (drafts written locally rather than posted to a channel, tracker files written to disk rather than read from a connected repository).
+部分功能引用了 Slack、Google Drive、SharePoint、Box、Intralinks 或 Datasite 集成。这些需要在你的环境中配置 MCP 服务器——它们**不随插件内置**。未配置时，插件回退到文件输出（草稿写入本地而非发布到频道，追踪文件写入磁盘而非从连接仓库读取）。
 
-Configure MCP servers in `.mcp.json` at the repo or user level. Skills and agents will detect what's available at runtime and adjust behavior.
+在仓库级或用户级的 `.mcp.json` 中配置 MCP 服务器。技能和代理将在运行时检测可用资源并调整行为。
 
-## Skills
+## 技能
 
-| Skill | Module | Purpose |
+| 技能 | 模块 | 用途 |
 |---|---|---|
-| **cold-start-interview** | All | Modular interview — activates only relevant sections |
-| **diligence-issue-extraction** | M&A | VDR docs → issues in house format, by category |
-| **tabular-review** | M&A | Review a document set against a typed column schema; cited cells; `.xlsx` / `.csv` / markdown output; feeds material-contract-schedule |
-| **deal-team-summary** | M&A | Tiered briefs: exec / deal lead / working team |
-| **material-contract-schedule** | M&A | Disclosure schedule per purchase agreement definition |
-| **closing-checklist** | M&A | Self-updating: ingests from diligence and schedule builds |
-| **ai-tool-handoff** | M&A | Luminance/Kira integration — bulk extraction + QA layer |
-| **board-minutes** | Board & Secretary | Calendar-detected meetings → draft minutes in house format |
-| **written-consent** | Board & Secretary | Unanimous written consents with precedent search from consents repository; scope warning for major one-off actions |
-| **entity-compliance** | Entity Management | Compliance calendar tracker (YAML); filing deadlines by entity and state; health audit; CT Corp report ingestion; CSV export |
-| **integration-management** | M&A | Post-closing integration tracker; phased workplan (Day 1/30/90/180); Required Consents tracker with PA deadlines; contract assignment at scale (repository or manual list); weekly status reports |
-| **matter-workspace** | Create, list, switch, and close matter workspaces for multi-client practices; isolates each client/matter so context does not leak across them |
+| **cold-start-interview** | 全部 | 模块化访谈——仅激活相关章节 |
+| **diligence-issue-extraction** | 投资并购 | 数据室文件 → 按类别输出尽调问题（公司内部格式） |
+| **tabular-review** | 投资并购 | 按类型化列模式审查文件集；引用单元格；`.xlsx` / `.csv` / markdown 输出；供应给重大合同清单 |
+| **deal-team-summary** | 投资并购 | 分层简报：高管版 / 交易负责人版 / 工作组版 |
+| **material-contract-schedule** | 投资并购 | 按股权/资产购买协议定义生成披露清单 |
+| **closing-checklist** | 投资并购 | 自更新：从尽调和清单构建中摄取数据 |
+| **ai-tool-handoff** | 投资并购 | AI 工具集成——批量提取 + 质控层 |
+| **board-minutes** | 公司治理 | 按日程检测的会议 → 以公司内部格式起草会议记录 |
+| **written-consent** | 公司治理 | 书面决议/传签决议，含先例检索（从决议库）；对重大一次性事项发出范围警告 |
+| **entity-compliance** | 主体管理 | 合规日程追踪（YAML）；按主体和辖区列出申报期限；健康审计；监管报告摄取；CSV 导出 |
+| **integration-management** | 投资并购 | 投后整合追踪；分阶段工作计划（D1/30/90/180）；必要同意函追踪（含股权/资产购买协议截止日）；规模化合同变更（从数据库或手动清单）；周度状态报告 |
+| **matter-workspace** | 全部 | 为多客户执业创建、列表、切换和关闭事项工作区；隔离各客户/事项之间的上下文 |
 
-*Public Company skills coming in next release.*
+*上市公司技能将在下一版本中推出。*
 
-## Interactive commands vs. scheduled agents
+## 交互式命令 vs. 计划式代理
 
-The commands above run when you invoke them — for when you're working a matter. The agents below run on a schedule — for what moves while you're not looking:
+上述命令在你调用时运行——用于处理当前事项。以下代理按计划运行——处理你不在看时发生变化的事项：
 
-| Agent | Module | What it watches | Default cadence |
+| 代理 | 模块 | 监控内容 | 默认频率 |
 |---|---|---|---|
-| **dataroom-watcher** | M&A | VDR for new document uploads; flags uploads that match high-priority categories; runs closing checklist status | Weekly |
+| **数据室监控器** | 投资并购 | 监控数据室新增文件上传；标记匹配高优先级类别的新文件；运行交割清单状态 | 每周 |
 
-## Integrations
+## 集成
 
-**Connect a research tool first — the citation guardrails depend on it.** Without one, every cite is tagged `[verify]` and the reviewer note above each deliverable records that sources weren't verified. Skills work either way; a research tool (CourtListener) just shifts verification work off your plate.
+**首先连接研究工具——引用护栏依赖它。** 没有研究工具时，每条引用都标记为 `[需核实]`，每份交付物上方的审查者注释会记录来源未经核实。技能在有或没有研究工具时均可运行；研究工具只是将核实工作从你身上转移出去。
 
-Ships with:
+内置：
 
-- **Slack** — search messages, read channels, find discussions (general bucket)
-- **Google Drive** — search, read, and fetch documents (general bucket)
-- **Box** — data room and document management
+- **Slack** —— 搜索消息、读取频道、查找讨论（通用桶）
+- **Google Drive** —— 搜索、读取和获取文件（通用桶）
+- **Box** —— 数据室和文件管理
 
-Intralinks, Datasite, and other VDR connectors can be added to `.mcp.json` when partner URLs are available.
+Intralinks、Datasite 及其他数据室连接器可在合作方 URL 可用时添加到 `.mcp.json`。
 
-## How it learns
+## 如何学习
 
-Your practice profile at `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. You can re-run setup, edit the file directly, or tell a skill to record a new position.
+你在 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/CLAUDE.md` 中的执业档案不是静态的——它随你使用插件而改进。当输出使用了你应该调整的默认值时，技能会告知你。你可以重新运行设置、直接编辑文件，或告诉技能记录一个新立场。
 
-## M&A notes
+## 投资并购说明
 
-- Issue extraction applies materiality thresholds — does not read every document if threshold says top N by value.
-- Buy-side and sell-side are both supported. Practice Profile captures which side applies to this deal; skills adjust posture accordingly.
-- AI tool handoff (Luminance/Kira) is optional. If `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md` says no tool, all extraction runs through the direct skill.
-- Closing checklist initializes from the purchase agreement, then self-updates as diligence surfaces consents required.
+- 尽调问题提取会应用重要性阈值——如果阈值设为按金额取前 N 项，则不阅读每份文件。
+- 买方和卖方均支持。执业档案记录当前交易属于哪一方；技能据此调整姿态。
+- AI 工具交接（如 Luminance/Kira 等）为可选项。如果 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/CLAUDE.md` 中显示无工具，则所有提取均通过直接技能运行。
+- 交割清单从股权/资产购买协议初始化，随尽调发现需要取得的同意函而自更新。
+
+## 中国公司法核心概念覆盖
+
+本插件已针对中国法律环境完成本地化，内建以下核心制度的认知：
+
+- **三会一层**：股东会、董事会、监事会、管理层（《公司法》2024 修订）
+- **注册资本认缴制**：《公司法》第 47-53 条（5 年限期缴足）
+- **法定代表人制度**：法定代表人的产生、变更登记与责任
+- **外商投资负面清单**：外商投资准入特别管理措施
+- **经营者集中审查**：国务院反垄断局申报标准与审查程序
+- **VIE 架构合规**：协议控制架构的结构审查与风险提示
+- **公司决议效力**：《公司法》第 25-28 条（决议无效、可撤销、不成立）
+- **内幕信息知情人登记**：《证券法》第 51-53 条
+- **短线交易规则**：《证券法》第 44 条（6 个月内反向交易归入权）
+- **信息披露**：《证券法》第 78-87 条（定期报告与临时公告）
+- **或有事项**：《企业会计准则第 13 号——或有事项》（对应 ASC 450）
+- **工商登记/变更/备案**：市场监督管理局管辖事项

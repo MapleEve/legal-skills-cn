@@ -1,351 +1,277 @@
 ---
-name: demand-draft
-description: Draft a demand letter from a completed intake, gated on a privilege / FRE 408 / waiver / admission checklist, with a .docx output, post-send checklist, and an offer to create a matter. Use when the user says "draft the demand", "write the [type] letter", or has a finished demand intake ready to turn into a sendable draft.
-argument-hint: "[slug] [--skip-gate] [--version=N]"
+name: 起草律师函
+description: 按中国律师函规范格式起草——从案件信息和委托人指示出发，构建完整的律师函（律所抬头→案号→委托声明→事实陈述→法律分析→律师意见→要求/警告→期限→后果告知→律师署名+律所盖章+日期）。适用场景：用户说"起草律师函""写律师函""帮我写一封催款函/律师函"或已有完整的事实调查准备发函。
+argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 ---
 
-# /demand-draft
+# /起草律师函
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md`. Refuse if missing or strategic block empty (for material demands).
-2. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → demand-letter practice, house style, seed-doc table.
-3. Follow the workflow and reference below.
-4. Run the pre-draft gate: privilege filter, admission risk, accord-and-satisfaction, FRE 408 posture, waiver scan, tone, factual accuracy. Do not proceed until each is engaged.
-5. Template select: seed doc if provided in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`; else soft template for the demand type.
-6. Draft in-chat for review. Iterate until user approves.
-7. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/draft-v[N].docx` using the docx skill.
-8. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/checklist.md` (post-send checklist).
-9. Assess materiality per heuristic; offer to create a matter. If yes: hand off to `matter-intake` with pre-populated fields.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 律师函惯例、律所风格。
+2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[标识]/立案信息.md`（如存在）。
+3. 遵循以下工作流程和参考。
+4. 运行起草前关：委托人授权确认、事实核实、法律依据检索、保密审查、语气选择。
+5. 起草律师函供审查。迭代至用户批准。
+6. 写入 `.docx` 文件。
+7. 写入发函记录。
 
 ---
 
-# Demand Draft
+# 起草律师函
 
-## Purpose
+## 目的
 
-Take a completed intake and produce a sendable draft. Most of the value is in refusing to draft until privilege, waiver, admission, and settlement-communication posture have been consciously addressed — the failure mode is a letter that waives privilege or constitutes an admission because no one paused to check.
+将委托人指示和案件事实转化为符合中国律师执业规范的律师函。核心价值在于：确保律师函经委托人明确授权、事实有据可查、法律分析精准、措辞专业得当。
 
-## Record fidelity — quotes and pinpoints
+## 中国律师函的法律定位
 
-Demand letters are advocacy, and every quoted line from a contract, an email, or a prior communication becomes an assertion the counterparty will test. Canonical statement in the plugin's `CLAUDE.md` shared guardrails; repeated here.
+**律师函的法律性质：** 律师函是中国执业律师接受委托人委托后，以律师事务所名义向特定对象发出的、表明委托人的权利主张或法律立场、并要求对方在一定期限内作出回应的正式法律文书。
 
-**Verbatim quotes must be verbatim.** Never put quotation marks around words attributed to the counterparty, their counsel, a witness, or any document unless you have the exact passage in front of you. When you want to characterize without the exact words:
+**核心原则：**
 
-- **Paraphrase without quotation marks**, with a placeholder: "Your [date] email stated X `[verify exact quote — email cite pending]`."
-- **Never fill the gap.** A misquoted contract provision in a demand letter is the fastest way to lose credibility with opposing counsel on the first round.
-- Every `[verify exact quote]` must be flagged in the reviewer note before the letter leaves.
+1. **委托人授权原则** —— 律师函须经委托人明确授权，内容不得超出授权范围。委托代理合同须明确授权发函事项。
+2. **以律所名义发出** —— 律师函以律师事务所名义发出（加盖律所公章），由执业律师署名，而非律师个人或委托人直接发出。
+3. **事实有据原则** —— 律师函中的事实陈述须有证据支持，不得虚构或故意歪曲事实。
+4. **依法论证原则** —— 法律分析须引用现行有效的法律、法规和司法解释，不得凭空构建法律主张。
+5. **禁止威胁刑事追诉** —— 律师函不得以追究刑事责任作为向对方施压的手段。中华全国律师协会《律师执业行为规范》第83条明确规定：律师不得利用律师函向对方当事人提出不合理要求，不得以追究刑事责任等为由向对方施加压力。
+6. **禁止虚假陈述** —— 律师不得在律师函中作出虚假或误导性陈述。
 
-**Pinpoint cites must support the whole proposition.** If the demand asserts "Section 4.2 requires payment within 30 days upon invoice receipt," the cited section must cover the obligation AND the trigger AND the window. If it only covers one, split the cite (e.g., "Section 4.2 (payment obligation); Section 4.3 (30-day window)") or narrow the proposition. A contract cite that backs part of the demand is how the counterparty replies with the full text and flips the posture.
+**律师函的功能：**
+- 主张权利 / 催告履行义务
+- 中断诉讼时效（《民法典》第195条：权利人向义务人提出履行请求，诉讼时效中断）
+- 通知解除合同（《民法典》第565条）
+- 告知法律风险 / 警示侵权后果
+- 促进诉前和解 / 为后续诉讼奠定事实基础
 
-## Candor about weak arguments
+## 案卷忠实度——引文和精确定位
 
-When the law or the record is against a point, don't dress it up as solid. When an argument in the demand is weak — the contract language is ambiguous, the authority cuts the other way, the damages theory is a stretch — flag it for the sender:
+律师函是代理行为，每句引自合同、邮件或先前沟通的话都成为对方将检验的主张。
 
-> "The [claim / theory] here is weak because [authority / fact]. Options: (a) press it and frame as `[alternative framing]`, (b) drop it and rely on [stronger claim], (c) keep it as a hook but hedge the language. `[review — strategic call]`."
+**逐字引文必须逐字准确。** 没有原话在手时，不加引号转述，附占位符。**永远不填补空白。** 律师函中误引的合同条款，是失去对方信任的最快方式。
 
-A demand letter that over-asserts gets a response that catalogs every overreach, shifts leverage, and burns the next round. The strongest demand letter is the one that concedes what's weak so the counterparty can't.
+**精确定位引用必须支撑整个命题。** 如果律师函主张"第4.2条要求在收到发票后30天内付款"，引用的条款必须涵盖义务且触发条件且时间窗口。
 
-## Echo vs repeat
+## 对弱势论点的坦诚
 
-If the matter has prior correspondence, echo the key terms — the same characterization of the breach, the same framing of the core obligation, the same name for the transaction. Don't lift whole sentences. A demand letter that reads like a copy-paste of the prior one signals that nothing has changed; the new letter should advance the posture (new facts, new deadline, new consequence), not restate it.
+当法律或事实对某点不利时，不要包装成稳固论点。标注：
 
-> **External deliverable:** the drafted demand letter is sent to counterparty. Do NOT include a `PRIVILEGED & CONFIDENTIAL — ATTORNEY WORK PRODUCT — PREPARED AT THE DIRECTION OF COUNSEL` header on the outgoing letter. The post-send checklist and the intake file are internal work product and do carry the header.
+> "此[主张]薄弱，因[法律根据/事实]。选项：(a)坚持并以`[替代框架]`表述，(b)放弃并依赖[更强主张]，(c)保留作为谈判筹码但软化学眼。`[请审核——策略性判断]`。"
 
-## Side context
+## 呼应而非重复
 
-Drafting a demand letter is inherently an assertion — the sender is making a claim. Read `## Side` in the practice profile:
+如有先前往来函件，呼应关键术语。不要照搬整句。新的律师函应推进姿态（新事实、新截止日期、新后果），而非重述。
 
-- **Plaintiff / claimant** (default for this skill): demand-draft aligns with the posture. The letter is the claim. Tone, consequence language, and relief demanded all flow from the plaintiff-side playbook.
-- **Defense / respondent**: demand-drafts are less common from defense but do happen — a defense practitioner may send a counter-demand, a demand for contribution, or a demand letter in an unrelated matter. Confirm before drafting: "You said defense is your default. Is this matter plaintiff-posture for you (you're asserting a claim), or is this a different posture?"
-- **Both / varies**: ask per-draft which posture applies. The draft's tone and default signer may differ.
+> **对外发函。** 律师函发送给相对方。**不要**在对外发出的律师函上包含"保密/律师工作成果"抬头——律师函本质为对外文书。律所内部起草底稿为工作成果，应携带保密抬头。
 
-For in-house defense practitioners who receive demand letters more than they send them, route to `demand-received` instead — that skill handles the inbound-triage case.
+## 本案姿态
 
-## Posture for this matter
+起草前确认案件层面的策略姿态：
 
-Before the pre-draft gate, confirm the matter-level posture. Demand-letter tone and terms are case-by-case, not a practice default. Confirm with the user (reading the intake's `## Posture` section if present; asking if not):
+> **本案姿态：**
+> - **语气：** 审慎/坚定/强硬？
+> - **回应期限：** 给予对方多少天合理？（常见：7/15/30天，视案件复杂程度）
+> - **是否包含调解意向：** 是否在函中表达愿意协商/调解？
+> - **签署律师：** 由哪位执业律师署名？委托人是否需要共同签名？
 
-> **Posture for this matter.** Demand-letter tone and terms are case-by-case, not a practice default. Ask:
-> - **Tone:** measured / assertive / aggressive? (depends on the relationship, the amount, and whether litigation is likely)
-> - **Response window:** what's reasonable given the claim? (14 days is common for payment demands; 30 days for cure; 7 days for cease-and-desist — but the contract or protocol may set it)
-> - **Marking:** does this need a "without prejudice" or "without prejudice save as to costs" marking? (settlement communications do; assertions of claim often don't; jurisdiction matters — ask if unsure)
-> - **Signer:** you, the client, the GC, instructed solicitor/counsel?
-> Don't assume. Read the prior demand correspondence in the matter file if there is any — it establishes the register.
+## 加载上下文
 
-The answers drive tone verb choice, the consequence language, the `Without prejudice` header (or its absence), the signature block, and the compliance deadline. A posture that wasn't captured in intake gets captured here — do not fall back to a practice-level default.
+- 案件档案.md（如有立案记录）→ 案件事实、对方信息
+- CLAUDE.md → 律所律师函样式、引用惯例
+- `_log.yaml` → 检查已有相关案件
 
-## Jurisdiction assumption
+## 起草前关（不可跳过）
 
-This draft assumes the jurisdiction identified in the intake and the forum's applicable settlement-communication rule (FRE 408 in federal, the state equivalent otherwise). Legal rules, deadlines, fee-shifting, and statutory hooks vary materially by jurisdiction. If the underlying facts touch a different forum, a different counterparty's home state, or a choice-of-law question, the draft may not apply as written — confirm before sending.
-
-## Load context
-
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md` — required; refuse to proceed if missing
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Demand-letter practice (seed-doc paths, insurance-tender timing, materiality threshold for matter creation), house style (privilege markings, outside counsel directive format for tone reference). **Tone, compliance period, marking, and signer come from `## Posture for this matter` — they are matter-level, not practice-level.**
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — to check for existing related matters (same counterparty) and offer cross-link
-
-### Strategic-block skipped handling
-
-If the intake has `strategic_block: skipped` or `partial`, prompt the user before running the pre-draft gate:
-
-> The intake skipped [all / some] of the strategic block (leverage, BATNA, tone, privilege filters). Drafting now will produce a usable letter but the strategic sections will be generic and flagged with `[SME VERIFY]`.
->
-> - **Complete strategic block now** — pause, return to `/demand-intake [slug] --resume-strategic`
-> - **Proceed anyway** — continue to pre-draft gate; downstream sections flagged
-
-If "proceed anyway," every section of the draft that depends on a skipped strategic question gets `[SME VERIFY: [specific question]]` inline.
-
-## Flags
-
-- `--skip-gate` → bypass the pre-draft checklist. Available but logged; use only when the checklist was run separately and documented.
-- `--version=N` → draft as `draft-vN.docx` (default: next version number)
-
-## The pre-draft gate
-
-**This runs before any drafting. If the user doesn't engage with it, stop.**
+**此关在任何起草前运行。**
 
 ```
-PRE-DRAFT CHECKLIST — [slug]
+起草前核查清单 —— [案件标识]
 
-1. Privilege filter
-   Per intake privilege filters: [list]
-   Confirm: none of these will appear in the draft?  [y/n]
+1. 委托人授权确认
+   委托人是否已签署委托代理合同并授权发函？ [是/否]
+   委托人对律师函内容范围和措辞基调有无特别指示？ [说明]
 
-2. Admission risk
-   Per intake admission risk: [list]
-   For each, is the phrasing controlled or removed?  [y/n per item]
+2. 事实准确性
+   以下待写入事实是否已核实（逐项确认）：
+   - [事实1] —— 证据：[引用]
+   - [事实2] —— 证据：[引用]
+   未核实事实清单：[列出]
 
-3. Accord-and-satisfaction
-   Per intake: [flagged risk, if any]
-   Does the demand inadvertently satisfy or accept a separate claim?  [y/n]
+3. 法律依据准备
+   已检索的法条/司法解释/案例：[列表]
+   待检索的法律问题：[列表]
 
-4. Settlement-communication posture
-   Research the settlement-communication protections applicable in the forum
-   (FRE 408 in federal, the state equivalent otherwise). Note that protection
-   attaches from conduct and context, not merely from labeling the communication.
-   Intake says: [protected / not protected / case-by-case]
-   Draft will [include / omit] settlement-communication markers, and will be
-   structured so the substance — not just the label — supports the posture.
-   Confirm.
+4. 保密审查
+   本律师函中是否存在不应向对方披露的信息？
+   （如：委托人内部讨论、商业机密、与律师的保密沟通内容） [是/否]
 
-5. Privilege waiver scan
-   Will any sentence in the draft reveal the substance of our internal legal analysis (not just the conclusion)?  [y/n]
-   If yes, rephrase before drafting.
+5. 语气策略确认
+   本函语气：[审慎/坚定/强硬]
+   委托人确认？ [是/否]
 
-6. Tone posture
-   Intake says: [relationship-preserving / measured / scorched-earth]
-   This will drive verb choice, framing, and consequence language. Confirm.
-
-7. Factual accuracy
-   Every fact in the draft must be verified. Not "probably true" — verified. List any facts that are not yet verified, and they will be flagged [VERIFY: ___] inline.
+6. 期限确认
+   给予对方的回应期限：[N]天
+   理由：[说明]
 ```
 
-Only proceed when the user has engaged with each item. A blank-acknowledged checklist is worse than no checklist.
+仅在用户对每项都参与后方可继续。
 
-## Template selection
+## 中国律师函标准结构
 
-### Step 1: Seed doc
+```
+[律所全称]
+[律所地址、电话、传真]
 
-Check `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Demand-letter practice → seed-doc table for the intake's demand type.
 
-- **Seed doc provided:** read it. Match structure, tone, signature block, privilege markings, typical section ordering. The seed doc is the template.
-- **No seed doc:** use the soft template below for the demand type.
+致：[对方名称/姓名]
+[对方地址]
 
-### Step 2: Soft templates (used only when no seed doc)
+                                        本所案号：(20__)__律函字第__号
 
-Each is a skeleton — headings and expected content. Deviate when the facts require.
+敬启者：
 
-**Payment demand skeleton:**
-1. Parties and relationship context (1 paragraph)
-2. Facts — the obligation and its source (contract § / invoice / order), dates
-3. The default — what's owed, when due, what happened (or didn't)
-4. Demand — specific amount, deadline, method of payment
-5. Consequences — referral to counsel, interest, fees, collections, litigation
-6. Preservation notice (if relevant)
-7. Signature block
+    本律师事务所（以下简称"本所"）依法接受[委托人名称/姓名]（以下简称"委托人"）之委托，指派[律师姓名]律师（执业证号：__），就贵方与委托人之间因[案由简述]一事，郑重致函如下：
 
-**Breach / cure notice skeleton:**
-1. Parties and agreement (identify the contract — effective date, parties)
-2. The obligation alleged breached — contract section, plain language
-3. The breach — specific facts, dates, evidence available
-4. Cure — what specifically would cure; cure period (from contract or reasonable)
-5. Consequences of failure to cure — termination, damages, specific remedies in the contract
-6. Preservation of rights
-7. Signature block
+一、基本事实
 
-**Cease & desist skeleton:**
-1. Parties and our rights (trademark/copyright/contract/common law — identify the right)
-2. The infringement / violation — specific acts, dates, evidence
-3. Demand — cease immediately, remove, account for past use, confirm compliance in writing
-4. Compliance deadline
-5. Consequences of non-compliance — litigation, injunctive relief, statutory damages if applicable, fees
-6. Preservation demand (documents, metadata, systems related to the alleged conduct)
-7. Signature block
+[以时间顺序陈述与争议相关的事实，每项事实附证据引用]
 
-**Employment separation demand skeleton:**
-1. Parties and relationship context (ex-employee, dates of employment)
-2. The obligation — post-employment obligations breached (confidentiality, non-solicit, non-compete, IP assignment); cite the agreement
-3. The specific conduct alleged
-4. Demand — cease, return property/IP, confirm compliance, non-disparagement reinforcement if applicable
-5. Consequences — litigation, injunctive relief, fee-shifting if in the agreement
-6. Offer of informal resolution (if strategically appropriate)
-7. Preservation demand
-8. Signature block
+    1. [日期]，双方签订《[合同名称]》（编号：__），约定[核心条款内容]。[参见证据一：《合同》]
+    2. [日期]，委托人按合同约定[履行行为]。[参见证据二：__]
+    3. [日期]，贵方[违约/侵权等行为]。[参见证据三：__]
 
-**Preservation demand skeleton:**
-1. Parties and context — what dispute is anticipated
-2. Scope — categories of documents, data, systems, communications
-3. Custodians — named individuals expected to have relevant material
-4. Date range
-5. Affirmative preservation obligation — suspend auto-delete, preserve metadata, preserve devices
-6. Consequences of spoliation — adverse inference, sanctions, fee-shifting
-7. Acknowledgment request
-8. Signature block
+二、法律分析
 
-## Drafting rules
+[引用具体法条进行法律论证]
 
-0. **Installment-contract default for multi-lot goods disputes.** For any breach-of-contract demand involving a multi-delivery goods contract under the U.C.C. (multiple shipments, lots, or deliveries over time), default to the installment-contract framework of **U.C.C. § 2-612** — "substantial impairment of the value of the installment" — rather than § 2-601's perfect-tender rule or § 2-711's single-delivery buyer's-remedies framework.
+    根据《中华人民共和国民法典》第__条第__款之规定："[引用原文]"。
+    根据[其他法律法规/司法解释]第__条之规定："[引用原文]"。
 
-Perfect tender under § 2-601 applies cleanly to single-delivery goods contracts. It does NOT transfer cleanly to installment contracts, where § 2-612 modifies the rule: a buyer can reject a nonconforming installment only when the nonconformity substantially impairs the value of that installment and cannot be cured; and can treat the whole contract as breached only when the nonconformity substantially impairs the value of the whole contract.
+    基于上述法律规定，结合本案事实，本所认为：
+    1. [法律分析观点一]
+    2. [法律分析观点二]
 
-When drafting the demand letter for a multi-lot goods breach:
+三、律师意见
 
-- Cite `[CITE: U.C.C. § 2-612 — installment contracts; substantial impairment of the installment]` as the primary framework, not § 2-601.
-- Cite § 2-711 and § 2-712 (cover) as remedies flowing from breach, but state the breach standard in § 2-612 terms.
-- Flag for the signer in a `[SIGNER NOTE:]` block above the draft: "This letter is drafted under U.C.C. § 2-612 (installment contracts), not § 2-601 (perfect tender). The two have materially different breach standards. Confirm the contract's delivery structure supports installment-contract characterization before sending."
-- If the contract's delivery structure is unclear from the intake (e.g., the intake says "three lots delivered" but doesn't confirm whether the contract called for separate lot deliveries or a single shipment split for convenience), flag it `[VERIFY: is this an installment contract under § 2-612, or a single-delivery contract split into lots by shipping convenience?]` — do not silently assert § 2-612 applies.
+[综合以上事实与法律分析，提出律师的总体判断]
 
-Single-delivery breach: use § 2-601 perfect-tender framing. Installment: use § 2-612. Do not conflate them.
+四、律师函告
 
-1. **Specificity over adjectives.** "On March 14, 2026, you sent X" beats "You repeatedly and improperly sent X." Adjectives are the draftsperson's tell that the facts are thin.
+[明确要求对方做什么]
 
-2. **Facts traceable to sources.** Every factual assertion maps to a document, date, or witness. If not verifiable yet: `[VERIFY: specific claim]`.
+    本所依据委托人的授权，郑重函告贵方：
+    1. 请贵方于收到本函之日起[N]日内，[具体要求——如支付拖欠款项人民币__元至以下账户/立即停止__侵权行为/书面回复说明情况等]。
+    2. [其他具体要求]
 
-3. **Citations as placeholders.** `[CITE: statute/section/case]` wherever legal authority goes. Do not invent citations. If the user provided authorities in the intake, use them faithfully.
+五、后果告知
 
-4. **Consequence language matches tone posture.**
-   - `relationship-preserving`: "We hope to resolve this without further action."
-   - `measured`: "If not cured within [N] days, we will consider our options, including litigation."
-   - `scorched-earth`: "Failure to cure within [N] days will result in immediate legal action, including [specific relief]."
+    如贵方未在上述期限内履行上述义务，本所将依据委托人的授权，依法采取以下措施：
+    1. 向人民法院提起诉讼，要求贵方承担[违约责任/侵权责任等]；
+    2. 申请财产保全，查封/扣押/冻结贵方相应财产；
+    3. 贵方将承担由此产生的全部诉讼费、保全费、律师费及委托人其他损失。
 
-5. **Inline alternative phrasings.** Where tone could shift, the draft includes a compact alternative. Format:
-   > *The attached invoice of $X remains unpaid.* [or more assertive: *You have failed to pay the attached invoice of $X, due [date].*]
+六、联系方式
 
-6. **No settlement discussion on the record unless intended.** If the intake flagged the communication as not carrying settlement-communication protection in the forum, the draft does not include any offer to compromise, any "without prejudice" framing, or any language that could be characterized as a settlement communication. Remember that protection attaches from conduct and context; labeling alone is not a cure.
+    如有任何疑问或希望协商解决，请于上述期限内与本律师联系：
+    联系人：[律师姓名]
+    电话：[律所电话]
+    邮箱：[律师邮箱]
+    地址：[律所地址]
 
-7. **Privilege markings per house style.** Apply `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` privilege conventions exactly.
+特此函告。
 
-## Output
+                               [律所名称]（盖章）
 
-### Primary: `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/draft-v[N].docx`
+                               [律师姓名] 律师（签名）
+                               执业证号：__
+                               年    月    日
 
-Use the `docx` skill to produce a letter-formatted .docx:
-- Letterhead / sender address block
-- Date
-- Recipient address block
-- Re: line (concise; does not reveal privileged strategy)
-- Salutation
-- Body (per template + drafting rules)
-- Closing
-- Signature block per intake
 
-### In-chat review
-
-Show the draft as readable plain text for the user to review and request edits. Iterate before writing the final .docx. Once approved, write to disk.
-
-### Send gate (closing note on the draft)
-
-Append the following, set apart from the body, to the in-chat presentation and to any internal preview — it is a reviewer-facing note, not letter text, and is stripped before the letter goes out:
-
-> This is a draft demand letter for attorney review, not a letter ready to send. Sending it may constitute an attorney communication, create FRE 408 (or state-equivalent) implications, and start the clock on disputes, counterclaims, and statutes. A licensed attorney reviews, edits, and takes professional responsibility before sending. Do not send this draft unreviewed.
-
-### Citation verification
-
-Every `[CITE:___]` placeholder — and any citation pulled from the intake or the seed doc — is unverified until a human runs it through a citator. Before sending, run a verification pass: check each case, statute, and regulation against a legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or your firm's platform) for accuracy, good law status, and subsequent history. Fabricated or misquoted citations in sent demand letters and filed documents have resulted in sanctions.
-
-**Source attribution.** Tag every citation in the draft with where it came from: `[Westlaw]`, `[CourtListener]`, `[Trellis]`, `[Descrybe]`, or the specific MCP tool name for citations retrieved via a legal research connector; `[web search — verify]` for citations surfaced by web search; `[model knowledge — verify]` for citations the model recalled from training data; `[user provided]` for citations supplied in the intake or seed doc. Citations tagged `verify` carry higher fabrication risk than tool-retrieved citations and should be checked first. Never strip or collapse the tags — they are the signer's fastest signal about which citations to verify before the letter goes out.
-
-**No silent supplement.** If a research query to the configured legal research tool (Westlaw, CourtListener, Trellis, Descrybe, or firm platform) returns few or no results for an authority the draft needs, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [issue]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) leave the `[CITE:___]` placeholder and stop here. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
-
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/checklist.md` — the post-send checklist
-
-```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`. This header applies to the internal checklist file; the outgoing letter does NOT carry it.]
-
-# Post-Send Checklist — [slug]
-
-**Draft version sent:** [v1 / v2 / etc.]
-**Sent date:** [YYYY-MM-DD — filled in after send]
-**Signer:** [name]
-
-## Pre-send (before the letter goes out)
-
-- [ ] Final read-through by signer
-- [ ] Factual accuracy: all [VERIFY] flags resolved
-- [ ] Citations: all [CITE] placeholders filled and run through a citator (verify it is good law)d (if live law cited)
-- [ ] Privilege markings applied per house style — note: this is an external deliverable; do not include the `PRIVILEGED & CONFIDENTIAL — ATTORNEY WORK PRODUCT` header in the version sent to counterparty
-- [ ] Settlement-communication markers [present / absent] as intake specified, and substance aligns with posture
-- [ ] Internal copies cleared (per intake distribution list)
-- [ ] Insurance tender sent (if required per house practice)
-- [ ] Conflicts confirmed (if not yet cleared)
-
-**Before the letter is sent (the consequential act):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
-
-> Sending this demand letter has legal consequences — it creates a record, can trigger statutes and counterclaims, and may waive privileges or constitute admissions. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> [Generate a 1-page summary: counterparty and dispute, the demand and deadline, tone posture, FRE 408 / settlement-communication status, privilege and admission risks flagged in the pre-draft gate, what could go wrong, what to ask the attorney before sending.]
->
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
-
-Do not mark as sent — do not execute the Send mechanics below — without an explicit yes.
-
-## Send mechanics
-
-- [ ] Delivery method executed: [certified / email / both]
-- [ ] Proof of delivery retained (certified receipt, email read-receipt, courier confirmation)
-- [ ] Copies sent per distribution list
-
-## After send
-
-- [ ] Compliance deadline calendared: [YYYY-MM-DD]
-- [ ] Escalation plan if no response: [next step + date]
-- [ ] Follow-up check-in calendared: [date — typically deadline + 2 business days]
-- [ ] Matter created in `_log.yaml`: [yes / no — see materiality below]
-
-## Materiality call
-
-**Heuristic says:** [material / immaterial]
-**Reason:** [demand type / exposure / counterparty type]
-**Your call:** [material → create matter] [immaterial → demand-letters record only]
-
-If material: `/litigation-legal:matter-intake` with `source: demand-letter` pre-populated from this intake.
+附：证据清单
+1. [证据名称]
+2. [证据名称]
+...
 ```
 
-### Matter auto-creation offer
+## 常见律师函类型
 
-After drafting and writing the checklist, assess materiality per heuristic:
+### 类型一：催款/催告履行函
 
-- **Default yes if ANY of:**
-  - Demand type is `cease-desist`, `breach-cure`, `employment-separation`, or `preservation`
-  - Desired outcome $$ ≥ `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` medium-severity band
-  - Counterparty is a customer, competitor, or frequent adversary per landscape
-- **Default no otherwise**
+- 重点：列明合同依据、应付款项的计算方式及依据、逾期利息的法律依据
+- 时效意义：催告履行具有中断诉讼时效的效果（《民法典》第195条）
 
-Present the call:
-> Materiality heuristic: [result]. [One-sentence reason.]
-> Create a tracked matter in `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`? (default: [yes/no])
+### 类型二：停止侵权/停止侵害函
 
-If user accepts: trigger `matter-intake` with fields pre-populated from the intake (counterparty, type, jurisdiction, `source: demand-letter`, initial theory, internal stakeholders). User reviews pre-filled fields and confirms.
+- 重点：明确指出侵权行为的法律定性和法律后果
+- 引用：商标法/著作权法/专利法/反不正当竞争法相关条款
+- 注意不得以此作为威胁手段获取不当利益
 
-If user declines: update intake `status: drafted` (later `sent` when user confirms). The record stays in `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/` only.
+### 类型三：解除合同通知
 
-## Versioning
+- 重点：引用合同解除条款或《民法典》第563条（法定解除权）
+- 《民法典》第565条：当事人一方依法主张解除合同的，应当通知对方。合同自通知到达对方时解除
+- 异议期提示：对方对解除有异议的，可请求法院或仲裁机构确认解除的效力
 
-Never overwrite a draft that has been sent. If revising after send, `draft-v2.docx`. The sent-version history is itself the record of what the counterparty received.
+### 类型四：劳动争议律师函
 
-## What this skill does not do
+- 重点：引用《劳动法》《劳动合同法》相关条款
+- 特殊注意：劳动仲裁前置——大多数劳动争议需先经劳动仲裁，方可起诉
 
-- **Send the letter.** Drafting only. The user sends.
-- **Research citations.** `[CITE:___]` placeholders stay as placeholders. If the user provided authorities in the intake, they're used; otherwise, blanks. Inventing cites is malpractice exposure.
-- **Bypass the pre-draft gate.** Even with `--skip-gate`, the skill notes in the draft file that the gate was skipped and why.
-- **Rewrite the intake.** If the intake is thin, send the user back to `demand-intake`. The draft is only as good as what it reads from.
-- **Decide materiality.** The heuristic offers a default; the user's call is the record.
+### 类型五：证据保全提示函
+
+- 重点：提示对方负有证据保管义务，警示证据毁灭的法律后果
+- 引用：《民事诉讼法》第114条（妨害民事诉讼的强制措施）、《最高人民法院关于民事诉讼证据的若干规定》
+
+## 起草规则
+
+1. **具体优于形容词。** "贵方于2026年3月14日发送的邮件中称'……'"中的表述优于"贵方反复且不当……"
+2. **事实可追溯至来源。** 每项事实主张映射至文件、日期或证人。
+3. **法条引用必须给出具体条款号。** 不得仅写"根据相关法律规定"而不指明具体条文。
+4. **后果语言匹配策略姿态。** 坚定不等于咄咄逼人；审慎不等于软弱。
+5. **不告而"调"——先函告后调解。** 调解意愿应真诚表达，但须明确是"在对方履行义务前提下"的调解。
+
+## 输出
+
+### 主要输出：律师函 `.docx` 文件
+
+存放路径：`~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[标识]/律师函-v[N].docx`
+
+### 对话中审查
+
+以可读纯文本展示草稿供用户审查和修改。批准后写入磁盘。
+
+### 发送关（草稿结尾说明——不属函件正文，发送前剥离）
+
+> 本文件为律师函草稿，供执业律师审查，非可发送正式律师函。发出律师函可能构成当事人意思表示、启动时效计算、产生证据效力。由执业律师审查、修改并承担专业责任。律所盖章后方可发送。请勿以草稿形式发送。
+
+### 引用核实
+
+每条法条引用均为起草内容，需由执业律师通过北大法宝/裁判文书网/国家法律法规数据库核实现行有效性。
+
+**来源标注。** 将草稿中每条引用标出其检索来源：`[北大法宝]`、`[裁判文书网]` 等。标注 `[核实]` 的引用风险更高。
+
+### 发函记录
+
+律师函发出后记录于办案日志：
+
+```
+## [年-月-日] —— 律师函发出
+
+函件编号：(20__)__律函字第__号
+发函对象：[对方名称]
+发函方式：[EMS/当面送达/其他] 快递单号：[__]
+函件类型：[催告履行/停止侵权/解除合同/其他]
+核心诉求：[一行摘要]
+对方回应期限：[年-月-日]
+```
+
+---
+
+## 版本控制
+
+永不得覆盖已发送的律师函。如发送后修改，生成 `律师函-v2.docx`。已发送版本历史即为律师函工作记录。
+
+## 本技能不做什么
+
+- **发送律师函。** 仅起草。用户（执业律师）审查后用印、发送。
+- **替代法律研究。** 法条引用标注来源，需律师核实现行有效性。
+- **绕过起草前关。** 即使 `--skip-gate`，技能在草稿文件中注明关被跳过及原因。
+- **决定策略姿态。** 语气、期限等策略选择由律师决定；技能提供选项供选择。

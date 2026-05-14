@@ -1,159 +1,309 @@
 ---
-name: escalation-flagger
+name: 升级审批标记
 description: >
-  Route a contract issue to the right approver per the escalation matrix in
-  `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`, and draft the ask. Use when the user
-  says "who needs to approve this", "escalate this", "does this need GC sign-off",
-  "route this for approval", or when another skill finds an issue that exceeds the
-  reviewer's authority.
-argument-hint: "[describe the issue, or reference a review memo]"
+  依据团队审批矩阵，将合同问题路由至正确的审批人并起草审批请求。
+  覆盖：合同金额分档（50万/500万阈值）、条款偏离升级、红线条款自动升级。
+  支持中国律所三级审核（律师→主办律师→合伙人）及企业法务四级审批
+  （法务专员→法务经理→法务总监→总经理/董事会）。适用场景：用户说
+  "这个需要谁审批"、"升级审批"、"这需要法务总监签吗"、"把这个报批"，
+  或其他技能发现超出审查人权限的问题时。
+argument-hint: "[描述问题，或引用审查备忘录]"
 ---
 
-# /escalation-flagger
+# /升级审批
 
-Names the approver for a contract issue per the `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` escalation matrix and drafts the message so you're not writing "hey got a sec" at 5pm.
-
-## Instructions
-
-1. **Load `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`** → Escalation section. If missing, say so — the practice profile needs editing.
-
-2. **Characterize the issue:** dollar threshold / term deviation / automatic trigger / business decision.
-
-3. **Match to matrix, name the approver.** Be specific — a person or role, not "legal leadership."
-
-4. **Draft the ask** per the template below: what the contract says, what playbook says, options with recommendation, decision-by date.
-
-5. **Do not send.** Draft it, show it, let the lawyer send.
-
-## Examples
-
-```
-/commercial-legal:escalation-flagger
-The Acme MSA has uncapped liability — who approves and what do I say?
-```
-
-```
-/commercial-legal:escalation-flagger
-Reference: acme-review-memo.md
-Issue: §8.2 indemnity carveouts
-```
+依据团队审批矩阵，为合同审查中发现的问题指明正确审批人，并起草审批请求。
 
 ---
 
-## Matter context
+## 功能目的
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/commercial-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/commercial-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+中国法律实务中的合同审批从不由单人独立完成。律所采用三级审核制，企业法务采用分层审批制。本技能读取审批矩阵，将合同问题与审批层级匹配，指明审批人，起草可直接发送的审批请示。
 
 ---
 
-## Purpose
-
-Every contracts team has an escalation matrix, written or not. This skill reads the written one (in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`), matches a contract issue against it, names the approver, and drafts the ask so the lawyer isn't writing "hey do you have a sec" messages at 5pm.
-
-## Load the matrix
-
-**Which side?** Before matching to the matrix, determine which side the company is on for the contract whose issue is being escalated. Usually obvious: if the counterparty is a vendor/supplier providing goods or services, you're purchasing-side. If the counterparty is a customer buying your product/service, you're sales-side. If it's not obvious, ask. Read the matching playbook section (`### Sales-side playbook` or `### Purchasing-side playbook`) to evaluate whether the term is inside fallbacks or triggers an automatic escalation — a term that's fine on one side can be a hard-no on the other. Note which side in the drafted ask so the approver knows which playbook was applied.
-
-Read `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` → `## Escalation`. If it's missing or vague, say so — the cold-start interview should have captured this, and if it didn't, the practice profile needs editing.
-
-Expected structure:
-
-| Can approve | Threshold | Escalates to | Via |
-|---|---|---|---|
-| Paralegal | Standard terms, <$50K | Counsel | Slack |
-| Counsel | Non-standard but within fallbacks, <$500K | GC | Slack or email |
-| GC | Everything else | CFO/Board | Meeting |
-
-Plus **automatic escalation triggers** — things that escalate regardless of dollar value. Typically: unlimited liability, IP assignment, anything on the "never accept" lists.
-
-## Workflow
-
-### Step 1: Characterize the issue
-
-What's being escalated?
-
-- **Dollar threshold:** Contract value exceeds someone's approval authority
-- **Term deviation:** A term is outside the playbook fallbacks — someone more senior needs to decide whether to accept
-- **Automatic trigger:** One of the always-escalate items is present
-- **Business decision:** Not a legal call — needs the business owner, not legal leadership
-
-Don't escalate things that are actually fine. If the term is within the fallbacks in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`, it doesn't need to go up.
-
-### Step 2: Match to the matrix
+## 中国律所三级审核制
 
 ```
-Is the issue an automatic trigger?
-  → YES: escalate to [person named for that trigger]
-  → NO: continue
-
-Is the contract value above the reviewer's threshold?
-  → YES: escalate to whoever has authority at that dollar level
-  → NO: continue
-
-Is the term deviation outside all documented fallbacks?
-  → YES: escalate to whoever can approve non-standard terms
-  → NO: reviewer can approve — no escalation needed
+第一级 初审：律师助理 / 初级律师
+  → 格式审查、主体资格初步核验、条款完整性检查
+    → 第二级 实质审查：主办律师
+      → 法律风险全面分析、条款公平性评估、合规审查、出具审查意见初稿
+        → 第三级 复核：合伙人
+          → 重大风险把关、商业条款协调沟通、审查意见终审
+          → 对外出具正式法律意见书 / 合同审查意见书
 ```
 
-### Step 3: Name the approver
+**升级路径：**
+- 初级律师遇到超高金额/复杂结构 → 主办律师
+- 主办律师遇到"永不接受"清单条款 → 合伙人
+- 合伙人遇到客户特殊指示/利益冲突 → 律所管理委员会
 
-Be specific. Not "escalate to legal leadership" — name the person or role from `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`. If the matrix doesn't name anyone for this situation, say so: "The escalation matrix doesn't cover [situation]. Suggest asking [GC name] who owns this."
+## 企业法务四级审批制
 
-### Step 4: Draft the ask
+```
+第一级：法务专员
+  → 标准条款合同、50万元以下、无异常风险
+第二级：法务经理
+  → 非标准但可协商条款、50万-500万元
+第三级：法务总监
+  → 重大非标准条款、500万-5000万元、涉知识产权归属
+第四级：总法律顾问 / 总经理 / 董事会
+  → 红线风险条款、5000万元以上、跨境交易、涉及集团重大利益
+```
 
-The approver should be able to decide from the message alone — no "let me pull up the contract."
+**跨部门会签：**
+- 财务部：审查付款条件、金额、税票
+- 技术部：审查技术规格、验收标准
+- 业务部门：确认商业条款可行性
+
+---
+
+## 审批矩阵
+
+### 合同金额分档审批
+
+| 合同金额（人民币） | 审批人 | 角色 |
+|---|---|---|
+| 50万元以下 | 法务经理 | 一级审批 |
+| 50万-500万元 | 法务总监 | 二级审批 |
+| 500万-5000万元 | 总法律顾问 | 三级审批 |
+| 5000万元以上 | 总经理/董事会 | 四级审批 |
+
+### 条款偏离自动升级
+
+| 条款偏离程度 | 审批人 |
+|---|---|
+| 在次级方案范围内（可协商接受） | 当前审查人可审批 |
+| 超出次级方案但非红线 | 升级至上一级审批人 |
+| 红线条款（"永不接受"清单） | 自动升级至总法律顾问/合伙人 |
+
+### 自动升级触发项（不论金额）
+
+以下情形**不论合同金额**均自动升级至总法律顾问/合伙人：
+
+1. **无限责任条款**：任何排除全部责任上限的约定
+2. **知识产权转让**：将我方核心知识产权转让给对方
+3. **境外管辖**：约定境外法院管辖或境外仲裁
+4. **排除中国法律适用**：约定适用外国法律且无合理连接点
+5. **违约金远超法定标准**：违约金预估超过实际损失30%以上（《民法典》第585条）
+6. **竞业限制范围过宽**：超出合理地域、行业、期限范围
+7. **合同相对方为失信被执行人**：经中国执行信息公开网查询确认
+8. **涉国有资产或上市公司重大交易**：需符合国资管理规定及上市公司信息披露规则
+
+---
+
+## 工作流
+
+### 步骤1：加载审批矩阵
+
+读取团队 `CLAUDE.md` 中的审批矩阵配置。若缺失或模糊，提示用户需先配置。
+
+### 步骤2：界定问题特征
+
+对待升级的问题进行分类：
+
+| 问题类型 | 判断标准 | 升级路径 |
+|---|---|---|
+| 金额超标 | 合同金额超出当前审查人审批权限 | 金额分档路径 |
+| 条款偏离 | 条款超出审查手册次级方案范围 | 上一级审批人 |
+| 自动触发项 | 出现"不论金额"清单上的条款 | 直接至总法律顾问/合伙人 |
+| 商业决策 | 非法律判断——需要业务负责人裁定 | 业务部门负责人 |
+| 跨部门事项 | 涉及财务/技术/税务等多个部门 | 多部门联合会签 |
+
+**关键判断：条款是否真的需要升级？**
+- 在审查手册次级方案范围内 → 不需升级，审查人可直接处理
+- 超出次级方案范围 → 升级至上一级
+- 在"永不接受"清单上 → 自动升级至总法律顾问/合伙人
+- 审查手册未覆盖的条款类型 → 升级并备注，同时询问审查律师该类条款的标准姿态以日后统一
+
+### 步骤3：指明具体审批人
+
+不要笼统说"升级至法务管理层"——必须从审批矩阵中指明具体姓名/职位。
+
+如矩阵未覆盖此具体情形：
+> 审批矩阵未覆盖[具体情形]。建议由[法务总监姓名]决定该由谁审批。是否需要我同时起草一份给法务总监的请示？
+
+### 步骤4：起草审批请示
+
+审批请示应包含审批人做出判断所需的全部信息——无需审批人回头查阅合同原文。
+
+#### 格式一：律所模式（律师→主办律师→合伙人）
 
 ```markdown
-**Escalating to:** [name]
-**Via:** [Slack #channel / email / meeting — per `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`]
-**Urgency:** [deadline if there is one]
+**致：** [合伙人姓名]
+**自：** [主办律师姓名]
+**日期：** [YYYY-MM-DD]
+**案号 / 合同编号：** [如适用]
 
 ---
 
-Hey [name] —
+[合伙人姓名]律师：
 
-Need your call on the [Counterparty] [agreement type]. [One sentence on deal context.]
+关于[客户名称/业务部门]拟与[合同相对方]签署的[合同类型]，经实质审查，存在以下需请您复核的重大事项。
 
-**The issue:** [Plain English, one paragraph. What they want, why it's outside
-our standard, what the risk actually is.]
+## 一、交易背景
 
-**What the contract says:**
-> "[exact quote]"
+[一段话说明商业背景——什么业务、为什么签这个合同、大致金额范围]
 
-**What our playbook says:** [quote from `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`]
+## 二、需复核事项
 
-**Options:**
-1. **Accept** — [one line on why this might be okay]
-2. **Push back with:** "[proposed counter-language]" — [one line on likely counterparty reaction]
-3. **Walk** — [one line on whether that's realistic given the business context]
+### [问题1标题] — 合同第[X]条
 
-**My recommendation:** [which option and why, briefly]
+**对方立场：**
+> "[原文引用]"
 
-**Need a decision by:** [date, if there is a deadline]
+**我方审查意见：**
+[引用审查手册中的标准立场，说明差距在哪里]
 
-[Link to full review memo]
+**法律风险分析：**
+[通俗语言说明——如果按对方版本签署，实际会发生什么、法律后果是什么]
+
+**可选方案：**
+1. **坚持我方立场** — [具体的反驳措辞] — [预期对方可能反应]
+2. **接受对方立场** — [基于商业背景，接受是否有可行理由]
+3. **折中方案** — "[折中措辞]" — [折中后双方各让步什么]
+
+**主办律师建议：** [推荐方案及简要理由]
+
+### [问题2标题] — 合同第[X]条
+[同上格式]
+
+## 三、审查结论初稿
+
+[附完整的合同审查意见书初稿]
+
+## 四、决策时限
+
+如有可能，请在[日期]前反馈，因对方要求[截止期限/商业原因]。
+
+---
+
+[主办律师姓名]
+[日期]
 ```
 
-### Step 5: Record the escalation
+#### 格式二：企业法务模式（向管理层报批）
 
-If this team uses a ticket system or [CLM] approval workflows, log it. If not, note in the review memo that the escalation was sent, to whom, and when. The next person who reads the memo should see the status.
+```markdown
+**呈报：** [总法律顾问/法务总监姓名]
+**呈报人：** [法务经理姓名]
+**日期：** [YYYY-MM-DD]
+**合同编号：** [如适用]
 
-## Calibration: when in doubt, escalate with a note
+---
 
-The cost of an unnecessary escalation is ~30 seconds of the approver's time — they read, say "fine, proceed," and the record shows they saw it. The cost of a missed escalation is signing an unapproved term, which is a one-way door. The costs are not symmetric. **When in doubt, escalate.**
+## 合同审批呈报单
 
-The calibration for what warrants escalation lives in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`, not in this skill. Check the playbook's stated position, its fallbacks, and its "automatic escalation regardless of dollar value" list:
+### 一、合同基本信息
 
-- **Clearly inside the fallback range:** no escalation needed.
-- **Clearly outside the range, or on the automatic-escalation list:** escalate.
-- **Uncertain — the term is ambiguous, novel, or arguably inside the range but the argument is a stretch:** escalate anyway, and note the uncertainty explicitly. The draft flags the specific question the approver needs to decide and why the skill couldn't confidently place it inside the fallback. The approver narrows; the skill does not.
+| 项目 | 内容 |
+|---|---|
+| 合同名称 | |
+| 合同相对方 | |
+| 合同金额 | |
+| 合同期限 | |
+| 业务部门 | |
+| 采购/合作原因 | |
 
-Do not suppress an escalation because over-escalation might train approvers to skim. That's an approver-experience problem the attorney solves by adjusting thresholds in the playbook, not a problem the skill solves by making its own subjective call on a term it's uncertain about.
+### 二、需呈报决策事项
 
-If a term comes up that the playbook doesn't address, don't guess the threshold — ask the reviewing attorney whether this class of issue should escalate, and offer to record the answer in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` so future reviews are consistent.
+#### 事项一：[标题]
 
-## What this skill does not do
+**问题描述**：[通俗语言，一段话。对方要求什么，超出我方标准的原因，实际商业/法律风险]
 
-- It does not approve anything. It routes.
-- It does not decide between the options. The draft includes a recommendation but the approver decides.
-- It does not send the escalation message — it drafts it. The lawyer sends it after reading.
+**合同原文**：
+> "[原文引用]"
+
+**法务部意见**：
+[引用审查手册立场，说明法务部评估结论]
+
+**可选方案**：
+1. 方案A：[描述] —— 利弊简要分析
+2. 方案B：[描述] —— 利弊简要分析
+3. 方案C：[描述] —— 利弊简要分析
+
+**法务部推荐**：[推荐哪个方案及理由]
+
+#### 事项二：[标题]
+[同上格式]
+
+### 三、财务部意见（如涉及）
+[财务部就付款条件、金额、税票等的意见]
+
+### 四、决策时限
+请在[日期]前批复，因[原因]。
+
+---
+
+法务部：[署名]
+日期：
+```
+
+### 步骤5：记录升级
+
+升级一旦起草，必须在审查备忘录中记录状态，确保后续查阅者能看到完整审批链：
+
+```markdown
+## 审批状态记录
+
+| 审批层级 | 审批人 | 审批状态 | 上报日期 | 批复日期 | 批复结果 |
+|---|---|---|---|---|---|
+| 一级 | [法务经理] | [已批复/待批复] | [日期] | [日期] | [同意/附条件同意/退回修改] |
+| 二级 | [法务总监] | [待上报] | — | — | — |
+| 自动触发 | [总法律顾问] | [审批中] | [日期] | — | — |
+```
+
+### 步骤6：不要发送
+
+审批请示起草后，**由律师审阅后亲自发送**。本技能仅负责起草和路由指引，不直接发出审批请求。
+
+---
+
+## 校准规则
+
+### 存疑时，升级并说明
+
+```
+不必要的升级代价 ≈ 30秒（审批人看一眼 → "没问题，继续" → 记录已阅）
+遗漏升级的代价 ≈ 签下未经批准的条款 → 可能不可逆
+代价不对称 → 存疑则升级
+```
+
+### 具体校准标准
+
+| 情形 | 动作 |
+|---|---|
+| 条款在审查手册次级方案范围内 | 不升级，审查人直接处理 |
+| 条款明确超出次级方案范围 | 升级至上一级审批人 |
+| 条款在"自动触发项"清单上 | 升级至总法律顾问/合伙人 |
+| 条款模糊、新颖，在次级方案边界上 | 仍然升级，并明确标注："本条款处于次级方案边界——审批人需判断是否纳入范围" |
+| 审查手册未覆盖此条款类型 | 升级，并询问审查律师应制定何种标准姿态 |
+
+### 不要因为担心审批人厌烦过度升级而压制升级
+
+这是审批人体验的管理问题，由律师通过调整审查手册阈值来解决，不通过技能对边界条款做主观判断来解决。错判一个本应升级的条款的代价远大于多报一个最终获批的条款。
+
+---
+
+## 本技能不做什么
+
+- 不批准任何条款——只做路由和起草
+- 不在各方案之间做出最终决策——草案含建议但由审批人决定
+- 不发送升级消息——只起草，律师审阅后亲自发送
+- 不替代律师对条款的专业判断——本技能基于审查手册做匹配，条款本身的法律定性由审查律师完成
+
+## 操作示例
+
+```
+/commercial-legal:升级审批
+技术服务合同第8条约定无限责任——需要谁审批，怎么报批？
+```
+
+```
+/commercial-legal:升级审批
+参考：供应商合同审查意见书-XX公司-2026-05-14
+问题：责任上限条款 + 知识产权归属
+```
+
+**输出：** 完整的审批请示草案 + 审批路由路径 + 审查备忘录中应记录的审批状态条目

@@ -1,194 +1,106 @@
 ---
-name: status
+name: 案件状态报告
 description: >
-  Case status summary by audience — client-facing (plain language), internal
-  (for the professor), or court-ready (formal caption format per local rules).
-  Same facts, different framing and depth. Use when a student needs to update
-  the client, brief the professor, or prepare a court status report.
-argument-hint: "[client | internal | court]"
+  按受众分类的案件状态摘要——面向当事人（通俗语言、清晰行动项）、
+  面向指导教师（完整法律分析、需要审查决定的事项）、
+  面向合作律所（专业格式、转介衔接事项）。
+  同样的事实基础，不同的表达深度和格式。当学生需要向当事人汇报进展、
+  向指导教师提交案件汇报或与合作律所沟通案件状态时使用。
+argument-hint: "[当事人 | 内部 | 律所]"
 ---
 
-# /status
+# /案件状态报告
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style, plain-language standards, jurisdiction.
-2. Use the workflow below. Read case notes.
-3. Generate for the specified audience:
-   - `client` — plain language, what happened/next/you do/reach us
-   - `internal` — procedural posture, done since last check-in, upcoming, needs professor input, student's assessment
-   - `court` — formal status report in caption format per local rules
-4. Supervision routing per audience (client-facing and court-ready usually flag).
+## 目的
 
-```
-/legal-clinic:status client
-```
+法律援助案件办理中，不同受众需要不同格式和深度的案件状态信息：
+- **面向当事人：** 清晰、可操作、无术语，满足《法律援助法》(2022)第47条规定的通报义务
+- **面向指导教师：** 完整、精确，便于做出指导决策
+- **面向合作律所：** 专业格式，便于转介案件的有效衔接
 
-```
-/legal-clinic:status internal
-```
+本技能从案件文件中提取核心事实，以三种受众格式分别呈现。
+不适用美国法院的"status conference"或"case management statement"格式。
 
-```
-/legal-clinic:status court
-```
+## 工作流
 
----
+1. **读取案件文件。** 接案笔录（intake-record.md）、案件办理日志（case-log.md）、沟通记录（comms-log.md）、案件笔记（notes.md）。
+2. **提取当前状态。** 案件所处阶段、最近事件、即将到期期限、下一步行动。
+3. **按受众格式化输出。**
 
-# Status: Audience-Aware Case Summaries
+## 三种受众格式
 
-## Purpose
+### 当事人格式（通俗语言）
 
-Clinics generate enormous numbers of status updates — to clients, to professors, to co-counsel, to courts. Same case, same facts, completely different documents. This skill takes the case notes and produces the right summary for the right reader.
+面向法律援助当事人。适用案件进展告知：
+- 不使用法律术语，用日常语言解释
+- 告知：已经做了什么、现在案件到了哪个阶段、接下来会发生什么、您需要做什么
+- 简短句子、清晰段落
+- 严格按照《法律援助法》(2022)第47条要求，保障当事人知情权
+- 对于法律援助重点关注的当事人群体（农民工/老年人/未成年人/残疾人），特别注意语言可及性
+- 行动项明确：当事人需要做什么、何时之前完成、如何完成
 
-## Load context
+### 内部格式（面向指导教师）
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style, plain-language standards (for client-facing), jurisdiction.
-Case notes for facts.
+面向诊所指导教师。用于案件汇报和指导决策：
+- 完整的案件事实陈述和程序历史
+- 法律分析：争议焦点、适用法律、分析意见
+- 新识别的问题和风险
+- 已完成的工作和下一步建议（需要指导教师决策的事项以 `[review]` 标记）
+- 期限状态和预警
+- 需要指导教师审查或批准的具体事项清单
 
-## Audience modes
+### 律所格式（面向合作律所）
 
-### Client-facing
+面向合作律师事务所。用于疑难案件转介和协作衔接：
+- 专业法律格式
+- 案情概述（含关键事实和程序节点）
+- 法律援助诊所已完成的办理工作
+- 转介原因和需要律所协助的具体事项
+- 案件材料和证据的交接清单
+- 当事人特殊情况备注（在不违反保密义务的范围内）
+- 诊所联系人和后续配合方式
 
-**Reader:** The client. Probably stressed. Possibly unfamiliar with legal process. Reading level per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` plain-language standards (default 6th grade).
-
-**Include:**
-- What's happened since they last heard from the clinic
-- What's happening next and when
-- What (if anything) they need to do
-- How to reach the clinic
-
-**Don't include:**
-- Legal analysis (they don't need to know the IRAC)
-- Weaknesses in their case (unless it's time to have that conversation — and that's a call for the professor, not a status update)
-- Jargon
-
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires student review and supervision step per plugin config]`
-
-Check your jurisdiction's student practice rule for required law-student sign-off language; some jurisdictions require specific forms.
+## 输出模板
 
 ```markdown
-Dear [Client],
+[AI辅助草稿——需学生分析及指导教师审查]
 
-I wanted to update you on your case.
+# 案件状态报告：[当事人姓名] — [案由简述]
 
-**What's happened:** [Plain English. "We filed your answer with the court on
-[date]" not "The responsive pleading was submitted."]
+**报告日期：** [YYYY-MM-DD]
+**受众：** [当事人/内部/律所]
+**制作人：** [学生姓名]
+**指导教师：** [姓名]
 
-**What's next:** [What and when. "The court scheduled a hearing for [date] at
-[time]. You need to be there." Or: "We're waiting for the landlord's lawyer
-to respond. That could take a few weeks."]
+## 概要
+[受众适配的一段落概述]
 
-**What you need to do:** [Specific and clear. Or: "Nothing right now — we'll
-let you know when we need something from you."]
+## 当前状态
+[案件当前处于什么阶段、等待什么]
 
-**How to reach us:** [Clinic phone, hours, student name]
+## 程序历史
+- [日期]：[事件]（如：X月X日立案、X月X日开庭等）
 
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name]
+## 期限情况
+| 期限 | 日期 | 状态 |
+|------|------|------|
+| [ ] | [ ] | [进行中/已完成/已逾期] |
+
+## 下一阶段
+[接下来会发生什么、预计时间]
+
+## 行动事项
+[谁需要做什么、何时完成]
 ```
 
-**Before sending:** sending a client status update is a consequential action. The gate is the supervision workflow in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check confirming a licensed supervising attorney owns the setup. Confirm the draft has been reviewed per the supervision protocol (queue / flag / lighter-touch) and all internal review labels (`[AI-ASSISTED DRAFT]`, `[VERIFY]`, etc.) have been removed from the client-facing copy.
+## 输出格式说明
 
-### Internal (for the professor)
+- 面向当事人的版本在指导教师审查通过后对外发送，去除 `[AI辅助草稿]` 标签
+- 面向指导教师的内部版本保留标签，是内部工作文件
+- 面向律所的版本去除内部教学标记，保持专业格式
 
-**Reader:** The supervising professor. Knows the law. Wants to know where the case stands and what the student needs from them.
+## 本技能不做的事
 
-**Include:**
-- Procedural status (where in the life of the case)
-- What's been done since last check-in
-- What's coming up (deadlines, hearings)
-- Issues needing professor input
-- Student's assessment (how it's going, concerns)
-
-```markdown
-# Status: [Client] — [Matter] — [date]
-
-**Student:** [name] | **Procedural posture:** [pre-filing / answer filed /
-discovery / motion pending / etc.]
-
-## Since last check-in
-
-- [What's been done]
-
-## Upcoming
-
-| Date | What | Action needed by |
-|---|---|---|
-| [date] | [deadline/hearing] | [date] |
-
-## Needs professor input
-
-- [Question or decision point — specific]
-
-## Student's assessment
-
-[How it's going. Strengths, concerns, strategic questions. This is where the
-student's thinking shows.]
-
----
-[AI-ASSISTED DRAFT — student should revise the assessment section especially;
-that's your thinking, not a summary of notes]
-```
-
-### Court-ready
-
-**Reader:** A judge or clerk. Formal. Specific to what the court needs (often a status report ordered by the court, or a statement in advance of a status conference).
-
-**Include:**
-- Procedural history (briefly)
-- Current status of discovery/motions/settlement
-- What's outstanding
-- Proposed next steps or scheduling
-
-**Format:** Per local rules. Caption, signature block, certificate of service if filed.
-
-```markdown
-═══════════════════════════════════════════════════════════════════════
-  AI-ASSISTED DRAFT — requires student analysis and attorney review
-  Court filings ALWAYS require professor review before filing
-═══════════════════════════════════════════════════════════════════════
-
-[Caption per jurisdiction — VERIFY against current local rules]
-
-STATUS REPORT
-
-[Party] respectfully submits this status report pursuant to [the court's
-order of [date] / local rule [X] / in advance of the status conference
-scheduled for [date]].
-
-1. Procedural history: [brief]
-
-2. Current status: [discovery status / motion status / settlement status]
-
-3. Outstanding matters: [what's pending]
-
-4. Proposed next steps: [scheduling, if the court wants input]
-
-[Signature block — student attorney under supervision of [Professor]]
-
-[Certificate of service if filing]
-
----
-
-[VERIFY: caption format, local status report requirements, service
-requirements — per current [Court] rules]
-```
-
-## Supervision routing
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`:
-- Client-facing → usually a flag trigger (client communication)
-- Internal → no flag (it's going to the professor anyway)
-- Court-ready → always flagged if formal queue enabled (court filings)
-
-## What this skill does NOT do
-
-- **Decide what to tell the client.** Especially on bad news or case weaknesses — that's a conversation for the student and professor to have, then the student to have with the client. Status updates are status, not strategic advice.
-- **File anything with a court.** Drafts the document; professor reviews; filing per clinic procedure.
-- **Replace the student's assessment in internal status.** The "student's assessment" section is the student's thinking — the draft can scaffold it but can't write it.
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
+- 不生成应向法院提交的正式程序文书
+- 不替代指导教师审查——所有面向当事人和律所的版本须经审查通过
+- 不使用美国法院的status conference、case management statement或pretrial report格式

@@ -1,8 +1,8 @@
 {
-  "name": "product-legal",
-  "version": "1.0.2",
-  "description": "Reviews product launches against your risk calibration, answers 'is this a problem?' questions in minutes, checks marketing copy for claims that need substantiation, and flags upcoming launches that need legal eyes before anyone asks.",
+  "name": "产品合规",
+  "version": "1.0.0",
+  "description": "按中国法框架审查产品上线：消费者权益、广告合规、价格法、反不正当竞争、产品质量、未成年人保护、直播/短视频合规、游戏/电竞合规、平台责任。快速分诊「这有没有问题?」，检查营销文案中的广告法禁止用语与引证真实性。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

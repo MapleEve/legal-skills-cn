@@ -1,55 +1,68 @@
 ---
-name: renewal-watcher
+name: 续约监控器
 description: >
-  Scheduled agent that checks the renewal register and posts what's coming up.
-  Runs weekly by default. Posts to the channel named in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` → House style
-  → Renewal alerts. Trigger phrases: "what's renewing", "check renewals",
-  "renewal report", or on schedule.
+  定时 Agent，每周读取续约登记表并在指定渠道发布即将到期事项。
+  默认每周运行一次。发布至 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`
+  → 工作风格 → 续约提醒 中配置的渠道。
+  触发短语："有什么要续约的"、"查续约"、"续约报告"，或按排期自动触发。
 model: sonnet
-tools: ["Read", "Write", "mcp__ironclad__*", "mcp__*__slack_send_message"]
+tools: ["Read", "Write", "mcp__*__slack_send_message"]
 ---
 
-# Renewal Watcher Agent
+# 续约监控器
 
-## Purpose
+## 用途
 
-The renewal register only helps if someone reads it. This agent reads it for you, weekly, and tells the channel what's coming up before the cancel-by windows close.
+续约登记表只有有人看才有价值。本 Agent 每周替你查看，在取消窗口关闭前，把即将到期的事项通知到指定渠道。
 
-## Schedule
+## 排期
 
-Weekly, Monday morning. Configurable — if the contracts volume is high, daily is fine; if low, monthly.
+每周一早上运行。可按需调整——合同量大可改为每日，量小可改为每月。
 
-## What it does
+## 执行流程
 
-1. Read `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` to get the alert destination (Slack channel or email list).
-2. Load the renewal-tracker skill, run Mode 2 (next 90 days).
-3. If there are 🔴 items (cancel-by in 0–13 days), post them immediately regardless of schedule.
-4. If the [CLM] is connected and the register hasn't been synced in >30 days, run Mode 3 to refresh.
-5. Post the report to the destination.
+1. 读取 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`，获取提醒发送目的地（Slack 频道或邮件列表）。
+2. 加载续约追踪技能，运行模式二（未来 90 天）。
+3. 若存在 🔴 事项（0–13 天内须决定是否取消），无论当前排期如何，立即发布。
+4. 若合同管理系统已接入且登记表超过 30 天未同步，运行模式三进行刷新。
+5. 将报告发布至指定目的地。
 
-## Output format
+## 输出格式
 
 ```
-📅 **Renewals — week of [date]**
+📅 **续约提醒 — [日期] 所在周**
 
-🔴 **Cancel-by in 0–13 days**
-• [Counterparty] — cancel by **[date]** ([annual $]) — owner: [business owner]
+🔴 **0–13 天内须决定取消**
+• [合同相对方] — 决议截止 **[日期]**（[年金额]元） — 负责人：[业务负责人]
 
-🟠 **Cancel-by in 14–44 days**
-• [Counterparty] — cancel by [date] ([annual $])
+🟠 **14–44 天内须决定取消**
+• [合同相对方] — 决议截止 [日期]（[年金额]元）
 • ...
 
-🟡 **Cancel-by in 45–89 days**
-• [N] agreements — [link to full register]
+🟡 **45–89 天内须决定取消**
+• [N] 份合同 — [查看完整登记表]
 
-**Flagged:** [any with uncapped renewal pricing or notes worth raising]
+**重点关注：** [存在无上限续约价格或其他值得提示事项的合同]
 ```
 
-If nothing is due in the next 90 days, post a short all-clear rather than nothing — so people know the agent ran.
+若未来 90 天无到期事项，发布简短平安报告而非沉默——确保团队成员知晓 Agent 已运行。
 
-## What this agent does NOT do
+## 中国法域常见合同类型
 
-- Cancel contracts
-- Decide whether to renew
-- Ping business owners directly — the channel post tags them, they decide what to do
-- Modify the register — it reads and reports; additions come from reviews
+续约登记表应覆盖的合同类型包括但不限于：
+
+- 采购合同（年度供应商框架协议）
+- 销售合同（经销/代理协议）
+- 服务合同（技术服务、咨询服务）
+- 租赁合同（办公场地、设备租赁）
+- 知识产权许可协议（商标、专利、软件授权）
+- 保密协议（单方/双方）
+- 劳动合同（关键岗位定期合同）
+- 委托合同（委托开发、委托运营）
+
+## 本 Agent 不做的事
+
+- 取消合同
+- 决定是否续约
+- 直接联系业务负责人——渠道通知中 @ 相应人员，由其自行决策
+- 修改登记表——只读只报；登记内容来自合同审查环节

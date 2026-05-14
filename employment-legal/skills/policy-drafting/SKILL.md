@@ -1,131 +1,208 @@
 ---
-name: policy-drafting
+name: 政策起草
 description: >
-  Draft an employment policy with state supplements where law differs across
-  the jurisdictional footprint. Use when the user says "draft a [topic]
-  policy", "we need a policy on", "update our [topic] policy", or names a
-  policy gap.
-argument-hint: "[policy topic — e.g., 'remote work', 'parental leave', 'PTO']"
+  起草用人单位劳动规章制度及各地市补充——完整贯彻《劳动合同法》第4条
+  民主程序：草案→职工代表大会或全体职工讨论→与工会或职工代表协商→
+  公示/告知→生效。为管辖范围内法律有差异的地区生成地方补充。
+  当用户说"起草一份[主题]制度"、"我们需要一个关于……的制度"、
+  "更新我们的[主题]制度"、"员工手册要加一个制度"或指出制度缺口时使用。
+argument-hint: "[制度主题——例如，'考勤管理制度'、'绩效考核办法'、'保密制度']"
 ---
 
-# /policy-drafting
+# 政策起草（劳动规章制度）
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → jurisdictional footprint, handbook location.
-2. Use the workflow below.
-3. Draft core policy. Check each jurisdiction in footprint for required variants.
-4. Output: core policy + state supplements. Flag where law is currently shifting.
+## 目的
+
+一个对北京合适的制度可能对广东是错误的（或不必要的）。此技能起草核心制度，在范围内需要不同规则的省/市生成地方补充，并在整个流程中贯彻《劳动合同法》第4条的民主程序要求。
+
+**关键法律背景——规章制度不是单方发布的文件：**
+《劳动合同法》第4条规定，用人单位在制定、修改或者决定涉及劳动者切身利益的规章制度或者重大事项时，应当经职工代表大会或者全体职工讨论，提出方案和意见，与工会或者职工代表平等协商确定。制度制定后应公示或告知劳动者。
+
+未经民主程序的规章制度在劳动争议中可能不被仲裁庭/法院采信作为审理依据。
+
+## 加载上下文
+
+读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中的管辖范围、员工手册位置和格式、公司组织架构（确认是否有职工代表大会/工会）。
 
 ---
 
-## Matter context
+## 工作流
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/employment-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+### 步骤1：界定制度范围
 
----
+- 制度是什么？（考勤管理、绩效考核、奖惩管理、保密、竞业限制、培训管理、差旅报销等）
+- 为什么现在？（法律要求、管理需要、事件触发、制度缺口）
+- 适用于谁？（全体员工、特定职位、特定地点、特定工龄段）
+- 是否属于"涉及劳动者切身利益"的制度？（《劳动合同法》第4条——劳动报酬、工作时间、休息休假、劳动安全卫生、保险福利、职工培训、劳动纪律、劳动定额管理——是→必须经民主程序；否→建议仍经民主程序以增强效力）
 
-## Purpose
+### 步骤2：管辖扫描
 
-A policy that's right for California may be wrong (or unnecessary) in Texas. This skill drafts a core policy and generates state supplements where the footprint requires different rules.
+对于范围内的每个省/市，检查：此管辖对此主题是否有特定规则？
 
-## Load context
+**具有管辖差异的常见主题：**
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → jurisdictional footprint, handbook location and format.
-
-## Workflow
-
-### Step 1: Scope the policy
-
-- What's the policy for? (Remote work, parental leave, social media, etc.)
-- Why now? (Legal requirement, incident, growth, gap noticed)
-- Who does it apply to? (All employees, certain roles, certain locations)
-
-### Step 2: Jurisdictional scan
-
-For each state/country in the footprint, check: does this jurisdiction have a specific rule on this topic?
-
-**Common topics with jurisdictional variance:**
-
-| Topic | Variance |
+| 主题 | 管辖差异说明 |
 |---|---|
-| Paid leave | State mandates (CA, NY, CO, WA, etc.) with different accrual rates, uses, carryover |
-| Parental leave | State programs layer on top of FMLA (CA PFL, NY PFL, etc.) |
-| Meal and rest breaks | CA is the outlier (penalty pay); most states minimal |
-| Expense reimbursement | CA requires; most states don't |
-| Pay transparency | Growing list of states requiring ranges in postings |
-| Non-competes | See hiring-review skill — unenforceable in some states |
-| Final pay | Timing varies widely |
+| 带薪年休假 | 《企业职工带薪年休假实施办法》全国统一（累计工作满1年不满10年→5天；10-20年→10天；≥20年→15天），但部分地方对未休年假工资报酬有细化规定 |
+| 产假/育儿假 | 国家基础98天，各地奖励假天数不同（北京30天、上海30天、广东80天、浙江30天等） |
+| 婚假 | 国家基础3天，各地奖励假天数不同（北京10天含3天、上海10天、广东3天等） |
+| 高温补贴 | 各地标准不同，支付月份也不同（如广东6-10月、北京6-8月） |
+| 最低工资 | 各省市标准不同，每年调整 |
+| 医疗期 | 《企业职工患病或非因工负伤医疗期规定》全国统一（按工龄3-24个月） |
+| 加班费基数 | 各地计算口径有差异——有的以合同约定工资为基数，有的以实际工资为基数 |
+| 社保缴费基数 | 各地上下限不同（社平工资60%-300%） |
+| 竞业限制补偿金 | 法定为≥30%月均工资且≥最低工资，个别地方有更高标准 |
 
-If the topic has no jurisdictional variance (dress code, say), skip this step.
+如果主题没有管辖差异（如通用的行为准则），跳过此步骤。
 
-### Step 3: Draft the core policy
+### 步骤3：嵌入民主程序节点
 
-One policy. Applies everywhere. Clear and readable — employees should understand it without a lawyer.
+在制度草案中嵌入以下程序节点标记，确保制定流程完整：
 
-Structure:
-- Purpose (one sentence — why this policy exists)
-- Scope (who it applies to)
-- The rule (what's required/permitted/prohibited)
-- Process (how to request, who approves, what happens if)
-- Questions (who to ask)
+```
+【民主程序节点】
 
-Avoid: "heretofore," "notwithstanding," nested exceptions. This is a handbook policy, not a contract.
+节点1：草案完成 ──────── 【当前阶段】
 
-### Step 4: State supplements
+节点2：提交职工代表大会/全体职工讨论
+        ｜—— 会议通知（提前？日）
+        ｜—— 会议纪要（记录讨论意见）
+        ｜—— 修改对照表（原草案 vs. 修改后）
 
-For each jurisdiction where the rule differs, a supplement:
+节点3：与工会/职工代表协商
+        ｜—— 协商纪要
+        ｜—— 工会书面意见（如设立工会）
 
-```markdown
-### [State] Supplement
+节点4：公示/告知
+        ｜—— 公示方式（OA公告/邮件群发/公示栏/员工手册/签收表）
+        ｜—— 公示期（建议不少于7日）
+        ｜—— 告知记录（签收回执或电子确认）
 
-Employees working in [State] are subject to the following in addition to / instead of the core policy:
-
-- [Specific difference]
-- [Cite the state law if helpful]
+节点5：生效 ──────── 制度生效日期
 ```
 
-Keep supplements tight. Only what's different — don't repeat the core.
+### 步骤4：起草核心制度
 
-### Step 5: Cross-check
+一个制度。适用于所有地方。清晰可读——员工无需律师就能理解。
 
-- Does this policy conflict with anything already in the handbook?
-- Does it promise more than the company intends to deliver? (A policy is a promise — courts hold employers to handbook promises.)
-- Does it inadvertently create a contract? (Some states treat handbook policies as contractual — include the standard "this is not a contract" language if the handbook doesn't already.)
+结构：
+- **制度名称与文号**（便于引用和版本管理）
+- **目的与依据**（一句话——为什么存在此制度，依据哪些法律法规）
+- **适用范围**（适用于谁、覆盖哪些实体/地点）
+- **定义**（制度中关键术语的含义）
+- **正文**（什么是要求/允许/禁止的——按逻辑分章/条）
+- **执行与监督**（谁负责执行、如何监督、违规处理方式）
+- **附则**（解释权归属、生效日期、与既有制度的关系）
+- **附件**（相关表单模板、流程图等）
 
-## Output
+避免：嵌套的例外条款、无法量化的标准、与法律法规抵触的内容。制度是企业内部管理文件，不是法律条文——但必须与法律法规保持一致。
+
+### 步骤5：地方补充
+
+对于规则有差异的每个管辖，生成补充：
 
 ```markdown
-# [Policy Name]
+## [省/市]补充规定
 
-## Core Policy
+在[省/市]工作的员工，在核心制度基础上适用以下特别规定：
 
-[Full text]
+| 事项 | 核心制度规定 | [省/市]特别规定 | 法律依据 |
+|---|---|---|---|
+| [事项1] | ... | ... | [地方法规名称+条文] |
+| [事项2] | ... | ... | ... |
 
-## State Supplements
+**注意：** 如地方法规与核心制度不一致，以对劳动者更有利的为准（《劳动合同法》第1条——保护劳动者合法权益）。
+```
 
-### [State 1]
-[Supplement]
+### 步骤6：交叉检查
 
-### [State 2]
-[Supplement]
+- 此制度是否与员工手册中已有内容冲突？
+- 是否与现行法律法规抵触？（《劳动合同法》第38条——制度违法→劳动者可据此解除合同并索要经济补偿）
+- 是否承诺超出公司意图交付的内容？（制度可被仲裁庭/法院引用来约束用人单位）
+- 是否无意中创造了合同义务？（避免使用"保证""承诺""必将"等措辞）
+- 惩罚条款是否合理？（罚款、降薪等惩罚措施的法律效力存疑——避免直接规定罚款，用绩效扣减/纪律处分替代）
+- 程序性条款是否可操作？（"严重违反规章制度"应尽量具体列举情形，否则仲裁庭可能不采信）
+- 民主程序要求是否已内置为节点？（见步骤3）
 
 ---
 
-## Drafting Notes (internal — remove before handbook insertion)
+## 输出
 
-- **Jurisdictional scan:** [which states checked, which have variance]
-- **Conflicts with existing handbook:** [none | list]
-- **Law currently shifting:** [any state where this is in flux]
-- **Review cadence:** [when to revisit — annual, or when X happens]
+```markdown
+# [制度名称]
+制度编号：[公司缩写]-HR-[年份]-[序号]
+版本：V1.0
+制定日期：[日期]
+
+---
+
+## 核心制度
+
+[全文——按步骤4的结构]
+
+---
+
+## 地方补充
+
+### [省/市1]
+[补充规定]
+
+### [省/市2]
+[补充规定]
+
+---
+
+## 附则
+
+本制度自[日期]起施行。此前相关制度与本制度不一致的，以本制度为准。
+本制度由[人力资源部/法务部]负责解释。
+
+---
+
+## 草案制定说明（内部——制度发布前移除此部分）
+
+### 一、制定背景
+[为什么制定此制度]
+
+### 二、法律依据
+[上位法律法规及条文]
+
+### 三、管辖扫描
+| 管辖 | 是否有地方差异 | 差异内容 | 处理方式 |
+|---|---|---|---|
+| [北京] | 有/无 | ... | 核心制度已覆盖/已制定补充规定 |
+| [上海] | 有/无 | ... | ... |
+| [广东] | 有/无 | ... | ... |
+
+### 四、与既有制度的关系
+- 与现行员工手册：[无冲突 / 存在以下冲突需调整：...]
+- 废止/替代的制度：[列表]
+
+### 五、民主程序状态追踪
+
+| 程序节点 | 状态 | 完成日期 | 备注 |
+|---|---|---|---|
+| 草案完成 | ✅/⬜ | [日期] | —— |
+| 职工代表大会/全体职工讨论 | ⬜ | —— | 计划日期：[日期] |
+| 与工会/职工代表协商 | ⬜ | —— | 计划日期：[日期] |
+| 公示/告知 | ⬜ | —— | 计划公示方式：[...] |
+| 生效 | ⬜ | —— | 计划生效日期：[日期] |
+
+### 六、审查建议
+- [任何需法务/外部律师审查的重点条款]
+
+### 七、法律变化监控
+- [任何此主题处于变化中的省/市]
+- 定期审查节奏：[每年/每半年/当相关法律修订时]
 ```
 
-> **Draft, not a policy in effect.** This is a drafting aid for attorney review, not a policy you can publish. Publishing a handbook policy has legal consequences — in several states it can bind the company as a contractual promise, and wage/leave/accommodation policies are routinely read against the employer. A licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction reviews, edits as needed, and takes professional responsibility before the policy is rolled out. Do not publish or distribute this draft unreviewed.
+> **草案，不是生效制度。** 这是供律师和管理层审查的起草辅助，不是可以发布的制度。发布劳动规章制度具有法律后果——制度中的承诺可能被认定为合同义务，未经民主程序的制度在仲裁/诉讼中可能不被采信。执业律师应审查、编辑并在制度发布前承担执业责任。未经审查和民主程序，不得发布或分发此草案。
 
-## Handoff
+---
 
-To handbook-updates skill: when this policy is approved, it diffs against the current handbook and flags what changes.
+## 此技能不做什么
 
-## What this skill does not do
-
-- Approve the policy. It drafts; a human approves.
-- Roll out the policy. Communication to employees is an HR workflow.
-- Cover every jurisdiction on earth — only the ones in the footprint. If the footprint expands, re-run.
+- 不替代民主程序——制度草案需经职代会讨论和工会协商。
+- 不批准制度——它起草；民主程序和决策层批准。
+- 不向员工公布制度——公示/告知是HR工作流。
+- 不覆盖每个管辖——仅范围内的那些。如果范围扩大，重新运行。

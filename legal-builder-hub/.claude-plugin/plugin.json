@@ -1,8 +1,8 @@
 {
-  "name": "legal-builder-hub",
-  "version": "1.0.2",
-  "description": "Finds, evaluates, and installs community legal skills \u2014 with a security review gate before anything lands in your environment.",
+  "name": "法律技能管理",
+  "version": "1.0.0",
+  "description": "内部法律技能管理工具——安装、更新、质量审查、禁用、卸载技能。每项技能落地前经过安全审查。当前中国法律科技生态中尚无公开的社区技能注册表，本插件以内部技能生命周期管理为主要功能。",
   "author": {
-    "name": "Anthropic"
+    "name": "MapleEve"
   }
 }

@@ -1,178 +1,126 @@
 ---
-name: irac-practice
+name: 案例分析写作训练
 description: >
-  Grade an IRAC essay for structure, issue-spotting, rule accuracy, analysis
-  depth, and organization. Does NOT rewrite the essay or show a model answer;
-  tracks patterns across sessions. Use when the user says "grade my IRAC",
-  "check my essay", or "I wrote this, give me feedback".
-argument-hint: "[paste essay OR path to draft OR --generate-hypo]"
+  对中国法案例分析框架写的主观题答案进行评分——评估结构、问题识别、
+  法条准确性、分析深度和组织逻辑。不重写文章或展示标准答案；
+  跨训练追踪薄弱模式。适用于法学院案例分析题和法考主观题训练。
+  当用户说"给我的案例分析打分"、"检查我的写作"或"我写了这个，给我反馈"时使用。
+argument-hint: "[粘贴文章 或 草稿路径 或 --generate-hypo]"
 ---
 
-# /irac-practice
+# /案例分析写作训练
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → classes, exam formats, outline locations, learning style.
-2. Apply the framework below.
-3. Establish mode: student-provided hypo + answer, OR skill-generated hypo with student's answer.
-4. Read the answer closely. Map against expected IRAC components.
-5. Output structured feedback: issues spotted/missed, rule accuracy, analysis depth, organization, grade band, top 3 fixes, at most 1-2 labeled example phrasings (never a full IRAC model).
-6. Append to `~/.claude/plugins/config/claude-for-legal/law-student/irac-sessions/[student]/tracker.md` for pattern detection. Surface patterns after 3+ sessions.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 课程、考试格式、知识体系位置、学习风格。
+2. 使用以下框架。
+3. 确定模式：学生提供案例问题+答案，或技能生成案例问题、学生作答。
+4. 仔细阅读答案。对照中国法案例分析框架各组成部分进行映射。
+5. 输出结构化反馈：已识别/遗漏的问题、法条准确性、分析深度、组织结构、评分等级、前3项改进、最多1-2个带标注的示例措辞（非完整标准答案）。
+6. 追加到跟踪文件用于模式检测。3次以上训练后展示变化规律。
 
 ---
 
-## Real-matter check
+## 真实事项检查
 
-If the question the student is asking sounds like it's about a REAL situation — their lease, their parking ticket, their family's business, their friend's arrest, a real dollar amount, a real deadline, a real party name — stop.
+对任何看起来像真实案件的问题——立即停止并提醒学生找真正的律师。法学生不得提供法律意见。
 
-> "This sounds like a real situation, not a hypothetical. I can't give you legal advice, and you can't give it either — you're not a lawyer yet. If this is real, [the person] needs an actual lawyer: legal aid, your school's clinic, a lawyer referral service (your jurisdiction's bar association, law society, or legal aid body), or (if there's money) a private attorney. I'm happy to help you understand the general legal concepts involved, but that's study, not advice."
+## 目的
 
-Watch for: real names, real addresses, real dates, specific dollar amounts, "my landlord/boss/parent/friend," "I got a ticket/letter/notice," deadlines measured in days. Any one of these is a trigger.
+中国法案例分析（或称"鉴定式案例分析"）是法学院考试和法考主观题的核心技能。学生需要练习：
+1. 识别案件中的法律问题
+2. 准确引用法条
+3. 将法律适用于案件事实
+4. 得出逻辑严密的结论
 
-## Purpose
+本技能评分——不重写，不展示"标准答案"。评分发现薄弱点，学生自己修正。
 
-1L writing is mostly IRAC. 2L-3L writing that touches legal analysis is IRAC under the hood. The exam rewards structure as much as content. This skill grades *structure* — did you spot the issues, did you state the rules correctly, did you apply rules to facts or just restate both?
+## 中国法案例分析框架
 
-**Does not rewrite the essay.** Ever. The whole point is that you learn by writing, getting specific structural feedback, and rewriting yourself.
+中国的案例分析适用自己的方法框架，与普通法系的IRAC不同。以下是中国法学院和法考普遍适用的框架：
 
-## Confidence discipline
+### 鉴定式案例分析框架（中国法学院常用）
 
-- Structure grading (did you IRAC? did you organize? did you use topic sentences?) — confident. Structure is structure.
-- Issue-spotting feedback (did you spot the issue presented?) — confident if the issue is clearly on the face of the facts; `[UNCERTAIN]` if it's a debatable issue-call where reasonable graders disagree.
-- Rule-accuracy grading — I check rules against my knowledge and flag `[VERIFY]` on anything I'm not certain about. I do not silently fail your correct rule statement because I wasn't sure.
-- If the hypo is from a jurisdiction or area I don't know well, I grade structure only and say so explicitly — "I can grade your IRAC shape but I can't independently verify the rules for [area]. Cross-check with your outline."
+**框架结构：**
 
-## Load context
+1. **案件事实梳理** —— 提取法律关系主体、客体、法律事实、时间节点
+2. **法律问题识别** —— 识别案件中涉及的所有法律争议点
+3. **请求权基础/法条检索** —— 找到适用的法条（如《民法典》第XX条），此为分析的法律依据
+4. **构成要件分析** —— 逐项分析法条各构成要件是否满足
+5. **法律适用** —— 将案件事实涵摄到法条要件之下
+6. **结论** —— 得出当事人享有什么权利、承担什么义务
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, exam formats, outline locations, learning style
-- `~/.claude/plugins/config/claude-for-legal/law-student/irac-sessions/[student]/tracker.md` if exists — pattern tracking across sessions
-- Student-provided hypo (if practicing on a specific prompt) and their written answer
+### 法考主观题答题框架
 
-## Workflow
+**框架结构：**
 
-### Step 1: Establish what we're grading
+1. **结论先行** —— 先给出结论（如"构成善意取得""不构成正当防卫"）
+2. **法条依据** —— 引用具体法条（"依据《民法典》第311条..."）
+3. **构成要件拆解+事实涵摄** —— 逐个要件分析是否满足+案件事实如何对应
+4. **综合结论** —— 回扣结论，必要时提及例外/争议观点
 
-Two modes:
+## 加载上下文
 
-- **Student-provided hypo:** user pastes (or points at) a hypo they're practicing on, then pastes their answer. Skill grades against the hypo.
-- **Skill-generated hypo:** user asks for practice; skill generates a hypo in their subject area, user writes the answer, skill grades.
+课程、考试格式（法学院期末考试/法考主观题）、知识体系位置、学习风格。
 
-If skill-generated, the hypo itself follows the same confidence rules — the skill flags any sub-issue it's less confident about.
+## 模式
 
-### Step 2: Read the answer closely
+- **学生提供案例问题+答案：** 最常见的训练模式。学生已拿到问题并写了答案。
+- **技能生成案例问题：** 技能基于课程/科目生成中国法案例问题，学生写出答案，技能评分。
 
-Don't skim. Read the student's answer as if grading it. Map it against expected IRAC components:
+## 评分维度（中国法案例分析）
 
-- **Issues:** what issues did they spot? (List them.) What issues are in the hypo that they didn't spot?
-- **Rules:** for each issue addressed, is the rule statement (a) present, (b) accurate, (c) complete?
-- **Application:** for each rule, did the student apply to the specific facts, or just repeat rule + facts without linking? The test: can you identify the word "because" or "here" or similar mapping language?
-- **Conclusion:** did they reach one? Is it responsive to the call?
-- **Organization:** IRAC / CRAC order? Topic sentences? Paragraph breaks that make sense?
+对每个维度评分（1-5）：
 
-### Step 3: Structured feedback
+1. **问题识别**：是否找到了所有主要法律问题？是否遗漏了隐藏问题（如关联法律关系）？
+2. **法条准确性**：引用的法条是否准确？法条编号是否正确？是否引用了最新版本？
+3. **构成要件分析**：是否将法条的构成要件拆解清晰？是否逐项对照了案件事实？
+4. **事实涵摄**：是否将案件事实正确涵摄到法条要件之下？分析是否有深度？
+5. **结论逻辑**：结论是否从分析中合理推导？是否回应了问题？
+6. **组织结构**：是否遵循了清晰的案例分析框架？逻辑是否通顺？
 
-Output per component. No rewriting. Specific, not generic.
+## 反馈格式
 
 ```markdown
-# IRAC Grade — [date]
+# 案例分析写作反馈 — [科目/题型]
 
-**Hypo:** [summary or pointer]
-**Student answer length:** [N words]
-**Expected issues:** [list — from the hypo]
+**整体评分：** [1-5] / [等级描述]
 
----
+## 各维度评分
 
-## Issue spotting
+| 维度 | 得分 | 评语 |
+|---|---|---|
+| 问题识别 | X/5 | [简评——找到了哪些，漏了哪些] |
+| 法条准确性 | X/5 | [简评——引用的法条是否正确、完整] |
+| 构成要件分析 | X/5 | [简评——拆解是否清晰] |
+| 事实涵摄 | X/5 | [简评——事实与法条要件的对应是否准确] |
+| 结论逻辑 | X/5 | [简评——推导是否严密] |
+| 组织结构 | X/5 | [简评——表达是否清晰] |
 
-**Spotted:** [list]
-**Missed:** [list — these are points left on the table]
-**Mis-identified:** [if the student called something an issue that isn't]
+## 遗漏的法律问题
+- [学生未识别的问题及依据]
 
-[If an issue is [UNCERTAIN: debatable issue-call], note: "your grader might agree or disagree here; defensible read."]
+## 法条引用问题
+- [引用的法条是否正确/是否遗漏相关法条/是否法条编号有误]
 
-## Rule statements
+## 前3项改进建议
+1. [最重要的改进] — 具体、可操作
+2. [第二重要的改进] — 具体、可操作
+3. [第三重要的改进] — 具体、可操作
 
-For each issue addressed:
-
-- **[Issue 1]:** [Accurate / partially correct / wrong / missing element] — [what's off, one sentence] — [VERIFY if skill less than confident on rule]
-- **[Issue 2]:** ...
-
-## Analysis
-
-For each rule the student stated:
-
-- **[Issue 1] — did you apply?** [Yes, applied to [specific facts] | Partially — you mentioned [facts] but didn't link to rule element | No — you restated rule then facts without mapping]
-- [If not applied well: "what you needed to do: connect [specific fact] to [specific rule element]. Not 'defendant acted negligently because of the facts' — 'defendant breached the duty of care because [specific fact] means [specific conclusion about the element].'"]
-
-## Organization
-
-- **Order:** IRAC? CRAC? Something else?
-- **Paragraph structure:** topic sentence leading? Or buried?
-- **Transitions:** do issues flow, or is it a wall of text?
-- **Call responsiveness:** did you answer what was asked?
-
-## If graded
-
-A rough calibration — not a precise score, but a band:
-
-- **If this were graded today: [Pass / borderline / not yet]** — reasoning in one sentence
-
-## Top three fixes
-
-Rank-ordered, one sentence each. What to rewrite if you only had time for three changes.
-
-1.
-2.
-3.
-
-## Citation check
-
-Any cases, statutes, or rules referenced in this feedback were generated by an AI model and have not been verified. Before you rely on them in a rewrite or a graded essay, look them up on Westlaw, Fastcase, CourtListener, or your school's research tool. AI-generated citations are sometimes fabricated or misquoted.
-
-## Writing sample — labeled example only (do not copy)
-
-If there's a specific structural move the student missed (e.g., rule-application mapping), show ONE example sentence or paragraph that illustrates the move. Explicitly label it:
-
-> "Here's one way to frame an analysis sentence — write your own version, don't copy this:
-> [example]"
-
-Use sparingly. One per grade, max two. Never a full IRAC example.
-
-**Never on the student's actual substantive issue.** Example phrasings illustrate the structural move in generic placeholder form (e.g., "[fact] means [conclusion about element] because [reasoning]"). They cannot show what an analysis sentence or paragraph would look like on the exact hypo or issue the student is writing about — that crosses from "seeing the move" into "being handed the answer." If the student is writing about negligence in a car accident hypo, the example must use a different subject area or abstract placeholders, not a negligence analysis sentence.
+## 示例措辞（参考）
+[最多1-2个带标注的示例——从来不是完整标准答案]
 ```
 
-### Step 4: Track patterns
+## 模式追踪
 
-Append to `~/.claude/plugins/config/claude-for-legal/law-student/irac-sessions/[student]/tracker.md`:
+3次以上训练后检测：
+- 学生是否在相同维度反复失分？（如每次都在"问题识别"上失分）
+- 是否在特定科目上反复出错？（如物权法/合同法/刑法分则特定罪名）
+- 是否反复遗漏某类问题？（如总是漏掉程序法问题、总是忽略诉讼时效）
+- 展示规律并提供针对性建议。
 
-```markdown
-## [date] — [subject / hypo topic]
-- Issues missed: [list]
-- Rule accuracy: [% or qualitative]
-- Analysis gap: [specific pattern — e.g., "restates rule without applying"]
-- Organization: [ok / weak / strong]
-```
+## 本技能不做的事
 
-After 3+ sessions, surface patterns:
-- "You keep missing counterarguments — three sessions in a row."
-- "You're strong on Issue + Rule but consistently weak on Application."
-- "Your organization is strong; the gap is at rule-accuracy. Drill black-letter rules with /law-student:flashcards."
-
-Pattern detection is the long-term value of this skill. One-off feedback helps one essay; pattern feedback changes how you study.
-
-## Integration with other skills
-
-- **legal-writing:** for non-IRAC writing (memos, briefs, papers), use `/law-student:legal-writing` instead
-- **socratic-drill:** if issue-spotting is the recurring gap, `/law-student:socratic-drill` on issue-spotting for the subject before more essay practice
-- **flashcards:** if rule accuracy is the gap, flashcards are the right tool
-- **outline-builder:** if the student's rule is genuinely wrong in their outline, fixing the outline fixes many future IRACs
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- **Rewrite the student's answer.** Ever. No exceptions. Labeled example phrasings (one or two, clearly marked) are permitted to illustrate a structural move; they cannot be copied into the student's answer.
-- **Show a model answer.** The student has to build the model in their head. Showing one short-circuits the learning.
-- **Grade content correctness on jurisdictions or areas the skill doesn't know well.** In those cases, skill grades structure only and says so — "I can grade your IRAC shape but can't verify rules here."
-- **Give a precise numeric score.** Pass/borderline/not-yet bands only. Grading is qualitative; precision is false precision.
-- **Substitute for a professor's grading.** Professors have rubrics and preferences this skill doesn't know. Use feedback to improve; don't treat it as the final word.
+- **不重写文章。**反馈是对学生工作的评价，不是标准答案。
+- **不展示法考"标准答案"。**学生需要学习自己写，而非模仿。特别是法考主观题没有官方公布的标准答案。
+- **不在第1次训练前就做模式分析。**
+- **不提供法律意见。**所有案例都是虚构的。

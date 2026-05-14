@@ -1,32 +1,31 @@
-# Company Profile
+# 机构画像
 
-*Shared by all Claude for Legal plugins. The first plugin you set up writes this; the rest read it.
-Edit directly or re-run any plugin's `/setup` to update.*
+*由所有 Claude for Legal CN 插件共享。第一个插件 setup 时写入，其余插件读取。可直接编辑或重新运行任意插件的 `/setup` 更新。*
 
-**Practice setting:** [Solo/small firm | Midsize/large firm | In-house | Government/legal aid/clinic]
-**Name:** [Company or firm name]
-**Industry:** [What the company does / the firm's primary practice areas]
-**What we sell / deliver:** [Products, services, who to — or "N/A, law firm"]
-**Size:** [Employee count / lawyers / relevant headcount]
+**执业场景：** [个人执业/小型律所 | 中型/大型律所 | 企业法务 | 政府/法律援助/诊所]
+**名称：** [公司或律所名称]
+**行业：** [公司主营业务 / 律所主要业务领域]
+**产品/服务：** [产品或服务描述、面向客户群体，律所填"N/A"]
+**规模：** [员工人数/律师人数/相关人数]
 
-## Geographic and regulatory footprint
+## 地理与监管覆盖
 
-**Jurisdictions we operate in:** [e.g., US (CA, NY, TX), UK, EU (DE, FR), AU, SG]
-**Primary jurisdiction:** [Where the bulk of work happens]
-**Regulators we're subject to:** [SEC, FTC, ICO, EDPB, ASIC, OAIC, etc. — only what applies]
-**Open regulatory matters:** [or none]
+**运营地区：** [中国境内（北京/上海/广东/深圳/江苏/浙江等），或境外（香港/新加坡/欧盟/美国等）]
+**主要管辖地：** [主要业务所在地]
+**监管机构：** [市场监管总局/网信办/工信部/证监会/金融监管总局/药监局等，仅填适用者]
+**监管事项：** [有无正在进行的监管调查/问询]
 
-## Risk posture
+## 风险偏好
 
-**Overall risk appetite:** [Conservative / middle / aggressive]
-**What keeps us up at night:** [The thing that would be a very bad day]
-**The question leadership always asks:** [or not known yet]
+**整体风险偏好：** [稳健 / 中性 / 积极]
+**最大的担心：** [最不希望发生的合规/诉讼/商业风险事件]
+**管理层最常问的问题：** [或"暂不清楚"]
 
-## Key people
+## 关键人员
 
-**GC / Head of Legal:** [Name]
-**Escalation chain:** [Name → Name → Name, or "set per plugin"]
+**法务总监/总法律顾问：** [姓名]
+**升级链条：** [姓名 → 姓名 → 姓名，或"各插件单独设定"]
 
 ---
 
-*Per-plugin practice profiles (playbooks, review frameworks, house style, matter workspaces) live alongside this file in each plugin's folder. This file holds the facts that are true regardless of which plugin you're using.*
+*各插件的业务画像（审查手册、审查框架、文书风格、案件工作区）与本文件并列存放于各插件目录。本文件存放跨插件共享的基础事实。*

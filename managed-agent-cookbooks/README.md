@@ -8,11 +8,11 @@ Run `../scripts/deploy-managed-agent.sh <slug>` to upload skills, create leaf wo
 
 | Agent | Vertical plugin | What it watches | CMA steering event | Leaf workers |
 |---|---|---|---|---|
-| [`reg-monitor`](./reg-monitor/) | regulatory-legal | Regulatory feeds (Federal Register, agency RSS, TR) | `Check feeds as-of <date>, materiality: <threshold>` | feed-reader · materiality-filter · **digest-writer** |
-| [`renewal-watcher`](./renewal-watcher/) | commercial-legal | Contract repository (Ironclad) for renewal and cancel-by deadlines | `Scan renewals <X>–<Y> days out, flag playbook deviations` | repo-reader · deadline-calculator · **alert-writer** |
-| [`diligence-grid`](./diligence-grid/) | corporate-legal | Virtual data room (Box, Datasite, Intralinks, iManage) for new uploads + batch review | `Review folder <path> against schema <schema-id>` | doc-reader · extractor · normalizer · **grid-writer** |
-| [`launch-radar`](./launch-radar/) | product-legal | Product roadmap / launch tracker (Jira, Linear, Asana) for launches needing legal review | `Scan tracker for launches in next <N> weeks` | tracker-reader · risk-classifier · **memo-writer** |
-| [`docket-watcher`](./docket-watcher/) | litigation-legal | Court dockets (Trellis, CourtListener) for new filings, deadlines, and deliverables | `Watch docket <case-id> in <court>, matter <matter-id>` | docket-reader · deadline-mapper · **tracker-writer** |
+| [`reg-monitor`](./reg-monitor/) | regulatory-legal | 国家法律法规数据库、国务院政策文件库、北大法宝/威科先行 | `Check feeds as-of <date>, materiality: <threshold>` | feed-reader · materiality-filter · **digest-writer** |
+| [`renewal-watcher`](./renewal-watcher/) | commercial-legal | 合同管理系统续约与解约期限 | `Scan renewals <X>–<Y> days out, flag playbook deviations` | repo-reader · deadline-calculator · **alert-writer** |
+| [`diligence-grid`](./diligence-grid/) | corporate-legal | 企业网盘、数据室系统、文档管理系统 | `Review folder <path> against schema <schema-id>` | doc-reader · extractor · normalizer · **grid-writer** |
+| [`launch-radar`](./launch-radar/) | product-legal | 项目管理工具（Jira、Linear、Asana）上线跟踪 | `Scan tracker for launches in next <N> weeks` | tracker-reader · risk-classifier · **memo-writer** |
+| [`docket-watcher`](./docket-watcher/) | litigation-legal | 中国裁判文书网、北大法宝 | `Watch docket <case-id> in <court>, matter <matter-id>` | docket-reader · deadline-mapper · **tracker-writer** |
 
 **Bold** leaf = the only worker with `Write`.
 
@@ -44,9 +44,9 @@ Legal documents and court filings are **untrusted input.** Every cookbook uses a
 
 The orchestrator holds no Write and reads no raw documents. It routes, it does not handle.
 
-## Work product and privilege
+## 工作成果与保密义务
 
-Everything these agents produce is **attorney work product** in a normal deployment. The headless append in every manifest instructs the agent to prepend the work-product header from the user's plugin configuration. Confirm the header with your legal team before deploying. If your deployment processes material that should not be retained, review Anthropic's data retention settings and your own storage retention before turning this on.
+本代理产出的内容为律师工作成果，受中国《律师法》第38条保密义务及委托合同保密条款保护。
 
 ## What you get and don't get
 

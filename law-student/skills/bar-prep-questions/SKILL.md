@@ -1,270 +1,204 @@
 ---
-name: bar-prep-questions
+name: 法考训练
 description: >
-  Bar prep questions — MBE or essay, targeted at your weak subjects and bar
-  jurisdiction. Tracks misses and comes back to patterns. Use when the user
-  says "bar prep", "MBE questions", "practice essay", or "test me for the
-  bar".
-argument-hint: "[subject, or --mbe / --essay / --session <n>]"
+  法律职业资格考试（法考）备考训练——客观题与主观题，针对薄弱科目和考试类别。
+  追踪错题并回顾模式。当用户说"法考备考"、"客观题练习"、
+  "练习主观题"或"给我出法考题"时使用。
+argument-hint: "[科目，或 --客观题 / --主观题 / --session <n>]"
 ---
 
-# /bar-prep-questions
-
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → bar jurisdiction, exam format (NextGen / traditional UBE / state-specific), weak subjects, prep course.
-2. Also load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists — it tells you what subject is scheduled for today and what subtopics are still weak.
-3. Apply the framework below.
-4. **Exam-type gate (do not skip).** If exam format or jurisdiction isn't in the practice profile, ask before generating anything. The NextGen Bar Exam and the traditional UBE test materially different subjects — studying the wrong list is the one mistake that isn't recoverable. Point the student at the NCBE's jurisdiction page (<https://www.ncbex.org/>) to confirm their exam format and subject scope.
-5. **Jurisdiction-rule gate.** If the student's jurisdiction has a state-specific component (CA, LA, NY Law Exam, FL state essay, VA, etc.) AND the subject is one where majority-vs-state rules diverge (Evidence, PR, Civ Pro, Criminal), ask whether this session is UBE/majority-rule, state-specific, or mixed. Do not silently default.
-6. Generate questions **scoped to subjects tested on the student's exam**, weighted toward weak subjects. Label each question by rule body (`[UBE/majority]` or `[CA-specific]` / `[NY-specific]` / etc.) when running mixed.
-7. When rules diverge between UBE/majority and the student's jurisdiction, explain the split explicitly in the answer — see `## Jurisdiction handling` below.
-8. After each answer: explain why right/wrong. Track patterns in misses.
-9. `--session <n>` runs a focused N-question session and writes results to `study-plan.yaml` under `session_history`.
-
----
-
-## Real-matter check
-
-If the question the student is asking sounds like it's about a REAL situation — their lease, their parking ticket, their family's business, their friend's arrest, a real dollar amount, a real deadline, a real party name — stop.
-
-> "This sounds like a real situation, not a hypothetical. I can't give you legal advice, and you can't give it either — you're not a lawyer yet. If this is real, [the person] needs an actual lawyer: legal aid, your school's clinic, a lawyer referral service (your jurisdiction's bar association, law society, or legal aid body), or (if there's money) a private attorney. I'm happy to help you understand the general legal concepts involved, but that's study, not advice."
-
-Watch for: real names, real addresses, real dates, specific dollar amounts, "my landlord/boss/parent/friend," "I got a ticket/letter/notice," deadlines measured in days. Any one of these is a trigger.
-
-## Purpose
-
-The bar exam tests a defined body of subjects. This skill drills you on them — weighted toward your weak spots.
-
-## Exam type — ask first, do not assume
-
-**The bar exam is in transition.** As of the July 2026 administration, the NextGen Bar Exam (developed by the NCBE) has launched in some jurisdictions, while others continue to administer the traditional Uniform Bar Exam (UBE). State-specific exams (California, Louisiana, Puerto Rico, etc.) are their own thing. The subject scope is materially different between the NextGen and the traditional UBE — **subjects no longer independently tested on the NextGen include Trusts & Estates, Family Law, Conflict of Laws, and Secured Transactions** (some underlying concepts may appear inside integrated "foundational concepts and skills" questions, but they are not standalone tested subjects the way they were on MEE).
-
-Do not assume the subject list. Before generating any questions:
-
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` and read the bar jurisdiction and bar date.
-2. If the practice profile does not specify which exam format the student is sitting for (NextGen / traditional UBE / state-specific), **ask**:
-
-   > Which bar exam are you sitting for?
-   > 1. **NextGen Bar Exam** (NCBE, launched July 2026 in some jurisdictions)
-   > 2. **Traditional Uniform Bar Exam (UBE)** (MBE + MEE + MPT)
-   > 3. **State-specific exam** (California, Louisiana, Puerto Rico, Washington, etc. — tell me which)
-   >
-   > And which jurisdiction? The scope of what's tested depends on both.
-
-3. **Point the student at the authoritative source.** Jurisdiction-by-jurisdiction exam format (and whether a given state has moved to NextGen) is on the NCBE's website at <https://www.ncbex.org/> under "Exams" → jurisdiction information. The NextGen subject outline lives at <https://www.ncbex.org/exams/nextgen>. The traditional UBE subjects (MBE and MEE) are at <https://www.ncbex.org/exams/mbe> and <https://www.ncbex.org/exams/mee>.
-
-> **Verify your jurisdiction's exam format and subject list against the NCBE's current outline before studying. This is the single most important thing you can get right** — studying the wrong subject list is the one mistake this skill can't undo for you. If your prep course (Barbri/Themis/Kaplan) and the NCBE outline disagree, go with the NCBE outline and tell your prep course.
-
-Scope every question-generation session to the subjects actually tested on the student's exam. If the practice profile lists a weak subject that is not tested on their exam (e.g., Secured Transactions for a NextGen jurisdiction), flag it:
-
-> You listed Secured Transactions as a weak essay subject, but the NextGen Bar Exam doesn't test it as a standalone subject. Do you want to (a) skip it, (b) drill the UCC Article 9 concepts that may appear inside integrated NextGen questions, or (c) drill it anyway because you're curious / auditing the area?
-
-## Jurisdiction handling
-
-The bar exam is not one exam. It is a family of exams. Rules that are "correct" on one are "wrong" on another. Getting this right matters more than almost anything else this skill does.
-
-### Two things to distinguish
-
-1. **Exam structure.** What does the student's jurisdiction administer?
-   - **Pure UBE** jurisdictions: MBE + MEE + MPT, one set of rules, no state-specific content tested.
-   - **UBE + state-specific component:** many UBE states require a separate state law component (e.g., NY Law Exam, DC Mandatory Course). These are pass/fail or supplementary, not graded into the UBE score.
-   - **Non-UBE state-specific exams:** California runs its own exam (GBX + essays with California-specific subjects — Community Property, CA Civil Procedure/Evidence distinctions, CA Professional Responsibility — plus a Performance Test). Louisiana runs a civil-law exam that shares almost nothing with the UBE. Florida, Virginia, and several others keep state-specific essay days alongside or instead of the MEE.
-   - **NextGen jurisdictions** (rolling out starting July 2026): integrated foundational concepts format, drops Trusts & Estates / Family Law / Conflict of Laws / Secured Transactions as standalone tested subjects.
-
-   Before generating questions, confirm structure via the `## Exam type` gate above. Do not assume.
-
-2. **Rule content — where majority rule, UBE default, and the student's jurisdiction's rule can diverge.** Common divergence areas:
-   - **Criminal law:** common-law vs. MPC vs. state code (e.g., CA Penal Code on murder degrees, felony murder scope, consent defenses).
-   - **Evidence:** FRE vs. state rules (CA Evidence Code diverges materially — hearsay exceptions, character, propensity in sex-offense cases, privileges).
-   - **Civil procedure:** FRCP vs. state (CA Code of Civil Procedure — 170.6 peremptory challenges, demurrers vs. 12(b)(6), different discovery scope).
-   - **Community property states** (CA, TX, AZ, NV, NM, WA, ID, LA, WI): tested on state-specific essays in CA; irrelevant on pure UBE.
-   - **Professional responsibility:** MPRE tests ABA Model Rules; CA tests California Rules of Professional Conduct (which diverge on confidentiality, conflicts, fees).
-
-### Rule when generating questions
-
-For every question, internally classify by which body of rules applies:
-
-- **General / federal / majority-rule questions** (MBE-style, federal courts, FRE, FRCP, constitutional, common-law core): the "correct answer" is the UBE/majority rule. State.
-- **Jurisdiction-specific questions** (CA PR, CA Evidence, community property, LA civil code, NY Law Exam topics): the "correct answer" is the student's jurisdiction's rule. State that.
-
-### Divergence tags — per-rule, not per-subject
-
-**Tag divergences at the rule level, not the subject level.** "[CA does not materially diverge on this rule]" stamped on every question in a subject is noise — a student sees the same tag on every Contracts question and stops reading. Scope the tag to the specific rule being tested.
-
-Rules to apply when emitting divergence tags:
-
-- If the specific rule tested in a question has no material CA/NY/LA/etc. divergence, tag **at the rule level** within that question: `[CA does not diverge on UCC § 2-207 — this answer holds on the CA bar.]`
-- If the specific rule tested has a material divergence, fire the `**Your jurisdiction (X) diverges:**` block per the format above. Do not use a subject-level tag when a rule-level divergence exists.
-- Do NOT blanket-apply a subject-level tag like "[CA does not materially diverge on this subject]" across all questions in a subject. Contracts-as-a-subject has both divergent rules (CA statute of frauds specific carve-outs, CA-specific consumer contract rules) and non-divergent ones (UCC § 2-207, Restatement § 71 consideration), and stamping them all with the same tag hides the divergences that matter.
-- If a question is CA-specific by construction (e.g., a CA Community Property question on a state-specific essay day), skip the tag — the CA-specific framing is already explicit.
-
-Short rule: the tag lives inside the question (at the rule being tested), not outside it (at the subject level).
-
-### Rule when the rules diverge
-
-When a question's answer differs between the majority/UBE rule and the student's jurisdiction's rule, the explanation must say so explicitly:
-
-```markdown
-**Correct: C**
-
-**Why C (UBE/majority rule):** [rule + application]
-
-**Your jurisdiction (CA) diverges:** Under [California Evidence Code § X / CRPC Rule Y / CA Penal Code § Z], the rule is [jurisdiction-specific rule]. Under that rule, the answer would be [A/B/C/D].
-
-**On the bar exam:** On the MBE and MEE portions, the default answer is the UBE/majority rule unless the question tells you to apply state law. On a state-specific essay day (e.g., California's essay subjects, NY Law Exam, Florida state essay), the default is your jurisdiction's rule. Check the call of the question.
-
-**Rule to remember:** [one-line takeaway flagging the split]
-```
-
-If the student sits for a state-specific exam day (CA, LA, FL state essay, VA, NY Law Exam, etc.), weight some sessions toward state-specific content. Ask:
-
-> You're sitting for California. Do you want this session to be (a) MBE-style federal/majority rule, (b) California-specific essay subjects (Community Property, CA Evidence, CA PR, CA Civ Pro), or (c) mixed?
-
-Never silently default to one. If the student says "mixed" or doesn't answer, generate a mix and label each question `[MBE / UBE default]` or `[CA-specific]` so they know which body of rules governs.
-
-### When unsure of the jurisdiction's rule
-
-The skill does not know every state's idiosyncrasies with confidence. If the student's jurisdiction has a known divergence but the skill is not confident on the specific current rule, flag it: `[UNCERTAIN: CA's exact rule here — verify against CA-specific prep materials (e.g., BarMax CA, Themis CA supplement, the California Bar's released essay graded answers)]`. Do not invent. The cost of a wrong California rule stated confidently is higher than the cost of flagging uncertainty.
-
-## Confidence discipline
-
-Every question generated states a rule. A wrong rule stated confidently is worse than no question. The rule for this skill:
-
-- **Confident:** rule is black-letter in the subject; write the question normally.
-- **Uncertain:** rule varies by jurisdiction, is a minority rule, or I'm not sure I've got it exactly right — flag inline with `[UNCERTAIN: specific reason]` and tell the student to verify against their prep course materials before relying on the question.
-- **Don't know:** don't invent a question. Say "I don't have a reliable rule for this area; skip or use your prep course." Do not fabricate.
-
-Every MBE question answer explanation carries the same rule: if the "why C is correct" rule isn't one the skill is confident on, flag `[VERIFY: rule — confirm against Barbri/Themis/Kaplan outline]`. Use liberally.
-
-## Load context
-
-`~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → bar jurisdiction, exam format (NextGen / traditional UBE / state-specific), weak subjects, prep course. If exam format isn't specified, run the "Exam type" gate above before continuing. If jurisdiction is specified, apply the `## Jurisdiction handling` rules — label questions by which rule body governs, and flag divergences explicitly.
-
-Also load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists (written by the `study-plan` skill). If the plan has a session scheduled for today or specifies weak subjects to weight, honor it.
-
-## Session mode
-
-`--session <n>` runs a focused N-question session on a specific subject, tracks performance, and writes session results back to `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` under `session_history` so the study plan adapts.
-
-Trigger phrasing the student might use: "let's do 5 questions on Contracts", "run me 10 Evidence questions", "/law-student:session Evidence 10".
-
-**Session flow:**
-
-1. Confirm subject, N, and MBE-vs-essay (or mixed). If the student's jurisdiction has a state-specific component and the subject is one where rules diverge (Evidence, PR, Civ Pro, Criminal), ask whether to run UBE/majority rule, state-specific rule, or mixed.
-2. Generate N questions. Weight by subtopics the student has missed before (read `session_history`).
-3. Present them one at a time. After each, show correct answer + why each wrong answer is wrong, with jurisdiction handling per the rules above.
-4. At session end, report:
-
-```markdown
-## Session: [Subject], [N] questions
-
-**Score:** [X]/[N] ([percentage])
-**Missed:** [list — subtopic + what went wrong]
-**Weak subtopics:** [the 2-3 subtopics where misses clustered]
-**Strong subtopics:** [where the student nailed it]
-
-**Pattern vs. prior sessions:** [if session_history has prior sessions on this subject: "Hearsay exceptions missed in 3 of last 4 sessions — this is stuck. Route to /law-student:socratic-drill." Or: "Improvement from 40% to 70% on Evidence. Still shaky on character evidence."]
-
-**Study plan update:** Weak subtopics added to priority list. Next scheduled [Subject] session: [date from study-plan.yaml].
-```
-
-5. Append session results to `study-plan.yaml` under `session_history`:
-
-```yaml
-session_history:
-  - date: 2026-05-08
-    subject: Evidence
-    type: bar-prep-mbe
-    n_questions: 10
-    score: 6
-    weak_subtopics: [hearsay-exceptions, character-evidence]
-    jurisdiction_mode: mixed  # or ube / state-specific
-```
-
-If no `study-plan.yaml` exists, write session history to `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml` instead so future sessions can still weight appropriately.
-
-## MBE mode
-
-> **Note on "MBE" terminology.** The traditional UBE uses the MBE (Multistate Bar Examination) for the multiple-choice portion. The NextGen Bar Exam replaces the MBE with its own integrated multiple-choice + short-answer question sets. If the student is sitting for the NextGen, generate NextGen-style questions (integrated foundational concepts across subjects, some shorter scenarios with selected-response answers) rather than classic MBE questions, and say so. Use the student's NCBE-listed subject outline as the subject universe.
-
-### Generate questions
-
-Classic MBE format (traditional UBE): fact pattern + call + four answer choices, one correct.
-NextGen format: refer the student to released NextGen sample questions on the NCBE site for the current authoritative format and mimic that structure.
-
-Subject distribution: weight toward weak subjects **within the subjects actually tested on the student's exam**. If `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` says weak on Evidence and Civ Pro, 60% of questions come from those.
-
-Difficulty: bar-level. Not law school issue-spotter difficulty (which is higher). Bar questions are about knowing the black-letter rule and applying it cleanly.
-
-### After each answer
-
-Show correct answer + why each wrong answer is wrong.
-
-```markdown
-**Correct: C**
-
-**Why C:** [the rule + application]
-
-**Why not A:** [what rule it's testing and why it's wrong here]
-**Why not B:** [same]
-**Why not D:** [same]
-
-**Rule to remember:** [the one-line takeaway]
+# 法考训练
+
+## 程序步骤
+
+1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 考试类别、考试格式、薄弱科目、备考机构。
+2. 如存在则加载学习计划——告知今天安排的科目和仍然薄弱的子主题。
+3. 按标志路由：
+   - `--客观题`：运行N道法考客观题（选择题）。每题后解释对/错。
+   - `--主观题`：运行N道法考主观题（案例分析/论述/法律文书）。按主观题评分标准评分。
+   - `--session <n>`：集中的N道题训练，按先前错题 + 薄弱子主题优先。
+4. 追踪错题。3次以上训练后展示错题模式并更新薄弱科目优先级。
 
 ---
 
-**Citation check.** Rules and any cases cited in the explanation were generated by an AI model and have not been verified. Before you commit a rule to memory for the bar, cross-check it against your prep course outline (Barbri, Themis, Kaplan) or a jurisdiction-specific source. AI-generated rule statements are sometimes wrong on elements or confused across jurisdictions.
-```
+## 真实事项检查
 
-### Track patterns
+对任何看起来像真实情况的问题——立即停止并提醒学生找真正的律师。
 
-Keep a running tally: which subjects, which sub-topics, which wrong-answer traps. After a session:
+## 目的
 
-> "You missed 3 of 5 Evidence questions, all on hearsay exceptions. That's a pattern. Let's drill hearsay specifically."
+法考需要肌肉记忆。规则必须快速、准确地回忆和运用。本技能生成针对薄弱科目的题目，解释对/错，追踪错误模式，让学习计划根据实际表现动态调整。
 
-## Essay mode
+## 加载上下文
 
-### Generate a prompt
+考试类别（客观题/主观题/两阶段均需）、薄弱科目、备考机构偏好（瑞达/厚大/众合/柏杜等）、学习计划。
 
-Bar essay format for the student's exam and jurisdiction.
-- **Traditional UBE states:** MEE format.
-- **NextGen jurisdictions:** NextGen integrated performance task / short-answer format (per current NCBE released samples).
-- **State-specific exams:** that state's essay format (California, Louisiana, etc.).
+## 法考科目体系
 
-Subject per weak areas or user choice — **constrained to subjects tested on the student's exam.**
+### 客观题考试科目
 
-### Grade
+**试卷一（公法卷）：**
+- 法治理论（习近平法治思想）
+- 法理学
+- 宪法
+- 中国法律史
+- 国际法
+- 司法制度和法律职业道德
+- 刑法
+- 刑事诉讼法
+- 行政法与行政诉讼法
 
-After the student writes:
+**试卷二（私法卷）：**
+- 民法
+- 知识产权法
+- 商法
+- 经济法
+- 环境资源法
+- 劳动与社会保障法
+- 国际私法
+- 国际经济法
+- 民事诉讼法（含仲裁制度）
 
-- Issue spotting: what did they spot, what did they miss
-- Rule statements: accurate? Complete?
-- Analysis: did they apply the rule to the facts, or just restate both?
-- Organization: IRAC/CRAC or equivalent? Readable?
+### 主观题考试科目
 
-Bar grading is about competence, not brilliance. A complete, organized, accurate answer passes. A brilliant but incomplete answer doesn't.
+- 法治理论（论述题）
+- 刑法（案例分析）
+- 刑事诉讼法（案例分析）
+- 民法（案例分析）
+- 民事诉讼法（含仲裁制度）（案例分析）
+- 行政法与行政诉讼法（案例分析）
+- 商法（选做）（案例分析）
+
+## 法考题型说明
+
+### 客观题（机考）
+
+- **单项选择题**：每题1分，4选1，每题所设选项中只有一个正确答案
+- **多项选择题**：每题2分，4选2-4，每题所设选项中至少有两个正确答案（多选、少选、错选均不得分）
+- **不定项选择题**：每题2分，4选？，每题所设选项中至少有一个正确答案（多选、少选、错选均不得分）
+
+### 主观题
+
+- **论述题**：通常考查法治理论，要求论据充分、逻辑严密、文字通顺
+- **案例分析题**：给定案件事实，要求识别法律问题、引用法条、运用法律分析
+- **法律文书题**：撰写起诉状、答辩状、判决书等法律文书
+
+## 客观题模式
+
+### 题目格式
+
+法考客观题：单项选择题/多项选择题/不定项选择题。题干 + 选项。测试：快速的规则回忆和运用。
+
+### 训练流程
+
+1. 展示题目。等待学生回答。
+2. 学生回答后：展示正确答案。
+3. 解释：
+   - 为什么正确答案是对的（法条依据 + 法理分析）
+   - 为什么每个干扰项是错的（考点辨析）
+4. 如答错：标记科目和子主题。记录到错题库（错题类型：规则未知/规则运用错误/命题陷阱未识别）。
+5. 下一题。
+
+### 考点分布
+
+- 按法考各科目实际分值权重加权出题
+- 薄弱科目 → 出题量上浮30%-50%
+- 薄弱子主题 → 在所属科目内更高频出现
+- 连续答对的子主题 → 降低频率，测试其他薄弱点
+
+## 主观题模式
+
+### 题目格式
+
+法考主观题：案例分析题/论述题/法律文书题。给定材料，学生书写完整答案。
+
+### 主观题评分标准
+
+**案例分析四步评分法：**
+
+| 评分维度 | 权重 | 评分标准 |
+|----------|------|----------|
+| **问题识别** | 25% | 是否完整识别事实中涉及的所有法律问题 |
+| **规则陈述** | 25% | 是否准确援引法条（法条编号+核心表述） |
+| **规则运用** | 30% | 是否将法律规定正确运用于具体事实，推理逻辑是否严密 |
+| **结论表达** | 20% | 结论是否清晰明确，法律文书格式是否规范，文字是否通顺 |
+
+**论述题评分要点：**
+- 观点明确，立场清晰
+- 论据充分，引用法律/政策依据
+- 逻辑结构完整（总-分-总）
+- 语言表达规范、无语法错误
+
+### 训练流程
+
+1. 展示题目（案例分析/论述/法律文书）。给出建议答题时间。
+2. 学生完成并提交答案。
+3. 按四步评分法逐项评分。
+4. 不展示"标准答案"——反馈告诉学生哪里薄弱（问题遗漏？规则记错？运用不当？），学生自行修正。
+5. 记录错题类型。
+
+## 错题追踪与自适应训练
+
+### 错题记录格式
+
+| 字段 | 说明 |
+|------|------|
+| 科目 | 所属法考科目 |
+| 子主题 | 具体知识点 |
+| 错题类型 | 规则未知 / 规则运用错误 / 命题陷阱未识别 / 问题遗漏 |
+| 日期 | 错题发生日期 |
+| 重复次数 | 同一子主题连续/累计错误次数 |
+
+### 自适应训练规则
+
+- 单次训练后：更新错题库
+- 3次以上训练后：生成《错题模式报告》，汇总高频错误科目和子主题
+- 薄弱科目连续3次正确率 ≥ 80%：从薄弱列表中移出
+- 每次训练优先从活跃薄弱科目中出题（占比 ≥ 60%），其余从已掌握科目中随机抽取以维持记忆
+
+### 进度报告模板
 
 ```markdown
-## Essay feedback
+## 法考训练进度报告（第[N]次训练后）
 
-**Issues spotted:** [X] of [Y]
-**Missed:** [list — these are points left on the table]
+**训练次数：** [N]次
+**累计做题量：** 客观题[N] 主观题[N]
 
-**Rule statements:** [Accurate / close / wrong — for each issue]
+### 各科目掌握度
 
-**Analysis:** [Did they actually apply, or just list rule + facts?]
+| 科目 | 正确率 | 做题量 | 状态 |
+|------|--------|--------|------|
+| 民法 | 85% | 50 | ✅ 已掌握 |
+| 刑法 | 72% | 40 | ⚠️ 关注 |
+| 行政法 | 55% | 30 | 🔴 薄弱 |
 
-**Organization:** [Clear or muddled]
+### 错题模式
 
-**If this were graded:** [Pass / borderline / not yet — with what to fix]
+**高频错误类型：** [规则未知/运用错误/陷阱未识别/问题遗漏]
+**高频错误子主题：** [列出]
+
+### 建议
+
+- 建议专攻：[薄弱科目及子主题]
+- 建议回顾：[具体法条/司法解释]
 ```
 
-## Schedule integration
+## 题目来源准则
 
-If the student has a study schedule: weight questions toward what's on the schedule for this week. Fresh material gets drilled.
+| 来源 | 可信度 | 标注 |
+|------|--------|------|
+| 学生上传的教材/知识体系/历年真题 | 高 | 无需标注 |
+| 备考机构教材对应考点 | 中高 | 标注参考机构 |
+| AI知识生成无具体素材来源的题目 | 需核实 | 标记 `[需核实]` |
+| 法条引用 | - | 始终标记法条编号 |
 
-## What this skill does not do
+## 与备考机构的配合
 
-- Replace a bar prep course. Barbri/Themis/Kaplan have the full curriculum. This is supplemental drilling.
-- Predict the bar exam. Nobody can. Study everything.
-- Pass the bar for you. Obviously.
-- **State rules it isn't confident on without flagging.** If I'm not sure the rule is right, you will see `[UNCERTAIN]` or `[VERIFY]` — check the cited rule against your prep course before relying on the question. A wrong rule I state confidently is a worse study session than one I skip.
+如学生使用备考机构课程（瑞达/厚大/众合/柏杜），参考其教学进度和教材体系。生成的题目应与机构教材覆盖的考点一致，出题风格可参考该机构模拟题的命题风格。
+
+## 本技能不做的事
+
+- 不声称题目来自真实法考——它们是练习用的模拟题
+- 不替代正式备考课程——这是辅助训练工具
+- 不被要求"直接给答案"而不先让学生做题
+- 不对真实案件提供法律意见

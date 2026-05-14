@@ -1,158 +1,140 @@
 ---
-name: flashcards
+name: 闪卡
 description: >
-  Generate or drill flashcards for black-letter memorization — Leitner-style
-  buckets, per-subject markdown storage, drill mode with self-assessment. Use
-  when the user says "drill flashcards", "make flashcards from", "quiz me on
-  cards", or wants to memorize rules.
-argument-hint: "[subject] [--generate | --drill | --review | --stats | --session <n>]"
+  生成或练习闪卡以记忆法条和法学概念——艾宾浩斯记忆法分桶管理、
+  按科目Markdown存储、带自我评估的练习模式。
+  当用户说"练习闪卡"、"从笔记生成闪卡"、"考我卡片"或想系统记忆法条时使用。
+argument-hint: "[科目] [--generate | --drill | --review | --stats | --session <n>]"
 ---
 
-# /flashcards
+# /闪卡
 
-1. Load `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, weak subjects, outline locations.
-2. Apply the framework below.
-3. Route by flag:
-   - `--generate`: build cards from source (outline path, notes, casebook) per card-writing rules. Write to `~/.claude/plugins/config/claude-for-legal/law-student/flashcards/[subject]/cards.md`.
-   - `--drill` (default): prioritize due cards + new; show Q, wait for answer, show A, take self-assessment, update buckets + next review.
-   - `--review`: browse deck by bucket.
-   - `--stats`: progress snapshot; flag stuck cards for verbal drill.
-   - `--session <n>`: focused N-card session, prioritized by prior misses + due cards; appends results to `study-plan.yaml` → `session_history`.
-4. Apply confidence discipline: flag every card generated from knowledge-without-source with `[VERIFY]`.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 当前课程、薄弱科目、知识体系位置。
+2. 使用以下框架。
+3. 按标志路由：
+   - `--generate`：从素材（知识体系路径、课堂笔记、教材/法条）构建卡片。写入 `flashcards/[科目]/cards.md`。
+   - `--drill`（默认）：优先到期的卡片+新卡片；展示问题→等待回答→展示答案→自我评估→更新分桶+下次复习时间。
+   - `--review`：按桶浏览牌组，展示各桶分布。
+   - `--stats`：进度快照；标记卡住的卡片供口头研习。
+   - `--session <n>`：集中的N张卡片训练，按先前错题+到期卡片优先。
+4. 应用可信度准则：标记每张无素材来源的卡片为 `[需核实：请对照法条/教材确认]`。
 
 ---
 
-## Real-matter check
+## 真实事项检查
 
-If the question the student is asking sounds like it's about a REAL situation — their lease, their parking ticket, their family's business, their friend's arrest, a real dollar amount, a real deadline, a real party name — stop.
+对任何看起来像真实案件的问题——立即停止并提醒学生找真正的律师。法学生不得提供法律意见——《律师法》禁止非律师从事法律服务。
 
-> "This sounds like a real situation, not a hypothetical. I can't give you legal advice, and you can't give it either — you're not a lawyer yet. If this is real, [the person] needs an actual lawyer: legal aid, your school's clinic, a lawyer referral service (your jurisdiction's bar association, law society, or legal aid body), or (if there's money) a private attorney. I'm happy to help you understand the general legal concepts involved, but that's study, not advice."
+## 目的
 
-Watch for: real names, real addresses, real dates, specific dollar amounts, "my landlord/boss/parent/friend," "I got a ticket/letter/notice," deadlines measured in days. Any one of these is a trigger.
+中国法学学习和法考备考中，法条记忆和概念辨析是基本功。法学知识体系用于综合理解；闪卡用于快速回忆。法考客观题尤其奖励快速的法条定位和概念辨析能力。
 
-## Purpose
+本技能从您的知识体系（或课堂笔记或教材摘录）生成卡片，按艾宾浩斯记忆法间隔复习法练习，追踪什么掌握了、什么还没掌握。
 
-Outlines are for synthesis; flashcards are for memorization. The bar exam and most law school exams reward fast rule recall. This skill generates cards from your outline (or notes or casebook excerpts), drills them with light spacing, and tracks what's stuck and what hasn't.
+## 中国法学闪卡类型
 
-**Not a full SRS system.** Simple Leitner-style buckets. Good enough to study, light enough to maintain. If you want Anki, use Anki; this is for when you're in chat and want a quick drill.
+### 类型1：法条卡片
+- 正面：法条编号或适用场景
+- 背面：法条原文关键内容+出处
+- 示例：正面"合同无效的法定情形？"，背面"《民法典》第144/146/153/154条...（列举）"
 
-## Confidence discipline
+### 类型2：概念辨析卡片
+- 正面：两个易混概念的对比提示
+- 背面：对比表
+- 示例：正面"除斥期间 vs 诉讼时效"，背面"[定义+期限+起算+效力+适用范围的对比]"
 
-Same rule as the other content-generating skills:
+### 类型3：构成要件卡片
+- 正面：法律制度名称
+- 背面：构成要件列表
+- 示例：正面"善意取得的构成要件？"，背面"1.无权处分 2.受让人善意 3.合理价格 4.完成公示（交付/登记）——《民法典》第311条"
 
-- If generating cards from a source you provide (outline, notes, casebook excerpt), the card's Q and A come from that source. Confident.
-- If generating cards from my knowledge without a source, I flag every card that states a rule I'm not fully confident on with `[VERIFY: rule — confirm against source]`. You should check before committing to the card as a learning target.
-- If I don't know an area well, I generate fewer cards rather than inventing. Better to have 8 good cards than 20 where 5 are wrong.
+### 类型4：案例分析卡片
+- 正面：简短案例事实+问题
+- 背面：分析+结论+法条依据
 
-## Load context
+## 可信度准则
 
-- `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → current classes, weak subjects, existing outlines
-- `~/.claude/plugins/config/claude-for-legal/law-student/flashcards/[subject]/cards.md` if it exists (incremental build)
-- User-provided source (outline path, notes, casebook excerpt) if given
+- 如从学生提供的素材（教材/课堂笔记/法条原文）生成：可信度高。
+- 如从AI知识生成无素材来源的卡片：标记 `[需核实：规则来源 — 请对照法条/教材确认]`。
+- 如对某法域或知识点不熟悉：宁少勿错。8张好卡片胜过20张中有5张错的。
 
-## Modes
+## 加载上下文
 
-Flag: `--generate | --drill | --review | --stats | --session <n>` (default: prompt)
+当前课程、薄弱科目、已有知识体系；如存在则读取已有卡片文件。
 
-### `--session <n>` — focused N-card session
+## 卡片制作规则
 
-For when the student says "let's do 5 cards on Contracts" or runs `/law-student:session Contracts 5 --flashcards`.
+### 生成模式
 
-- Load `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml` if it exists and read `session_history` for this subject.
-- Prioritize: cards previously marked wrong > due cards > new cards.
-- Run N cards one at a time per the `--drill` flow.
-- At session end, append results to `study-plan.yaml` → `session_history`:
+从素材中提取每个可独立记忆的知识点为一张卡片。适合闪卡的内容：法条关键数字（期限/金额/百分比）、构成要件列表、概念定义、易混概念辨析、罪名要件。
 
-```yaml
-session_history:
-  - date: 2026-05-08
-    subject: Contracts
-    type: flashcards
-    n_cards: 5
-    right: 3
-    partial: 1
-    wrong: 1
-    stuck_topics: [parol-evidence-rule]
-```
+**好的卡片示例：**
+- "一般诉讼时效期间？"→"3年（《民法典》第188条）"
+- "正当防卫的条件？"→"5项条件列表"
 
-- If no `study-plan.yaml`, write to `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml` instead.
+**差的卡片示例：**
+- "解释民法典合同编"——太大，不适合单张闪卡
+- "论述罪刑法定原则"——需要理解性论述，不适合闪卡
 
-### `--generate` — create cards
-
-**Inputs:**
-- Subject (class name or topic)
-- Source (outline path, notes, or "use my existing outline from ~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md")
-- Optional: card count target (default 10-20 per session)
-
-**Card structure:**
+### 存储格式
 
 ```markdown
-### Card [N]
-**Q:** [question — one concept, one card]
-**A:** [answer — the rule, one or two sentences]
-**Source:** [outline section, casebook page, class note date]
-**Bucket:** new
-**Last reviewed:** —
-**Next review:** [today's date]
-**Notes:** [optional — distinctions, exceptions, traps]
+## [卡片ID]
+
+**科目：** [民法/刑法/行政法/民诉/刑诉/商经/理论法/三国法]
+**正面：** [提示——问题、法条编号、概念名称]
+**背面：** [答案——法条原文摘要、构成要件、关键数字]
+**桶：** [1-5]
+**下次复习：** [YYYY-MM-DD]
+**来源：** [出处——教材/法条/笔记/具体引用]
+**易混点：** [如有——与该卡片关联的易混概念卡片ID列表]
 ```
 
-**Card-writing rules:**
-1. **One concept per card.** "Elements of negligence" becomes 4 cards, not 1.
-2. **Front is a question, not a topic.** "Negligence duty" bad. "What are the four elements of negligence?" good.
-3. **Back is a rule, not a paragraph.** If the answer needs a paragraph, split into multiple cards.
-4. **Cite the source** so you can re-check during drill.
+## 练习模式
 
-**Citation check.** When cards are generated from my knowledge rather than a source you pasted, the rule and any case/statute cited on the back were generated by an AI model and have not been verified. Before you memorize a card, confirm it against your outline, casebook, or a research tool (Westlaw, Fastcase, CourtListener). A wrong card drilled to mastery is worse than no card.
+### 练习流程
 
-### `--drill` — study session
+1. 显示正面（提示）。
+2. 学生回答（口头或打字）。
+3. 显示背面（答案）。
+4. 学生自我评估：不会（完全不知道）/不熟（想不完整/不确定）/会（准确回答）。
+5. 更新桶位置和下次复习日期（不会→桶1，不熟→降1桶，会→升1桶）。
 
-**Prioritization:**
-1. Cards where `next_review <= today` AND bucket != mastered
-2. New cards not yet attempted
-3. If no cards due and no new cards: ask if user wants review of mastered cards (for decay prevention)
+**间隔规则（艾宾浩斯记忆法）：**
 
-**Drill flow per card:**
-1. Show Q. Wait for answer.
-2. User answers (or types "skip" / "don't know")
-3. Show A.
-4. User self-assesses: `right` / `partial` / `wrong` / `don't know`
-5. Update bucket + next review per the table below:
-
-| Self-assessment | Bucket change | Next review |
+| 桶 | 复习间隔 | 说明 |
 |---|---|---|
-| right | up one (new → learning → review → mastered) | +1d new, +3d learning, +7d review, +21d mastered |
-| partial | same bucket | +1d |
-| wrong | down one (review → learning; learning → new; new stays new) | today +4h |
-| don't know | down one | today +4h |
+| 1 | 1天 | 刚学，需要高频复习 |
+| 2 | 3天 | 有初步印象 |
+| 3 | 7天 | 基本掌握 |
+| 4 | 14天 | 熟练掌握 |
+| 5 | 30天 | 长期记忆 |
 
-### `--review` — browse deck
+### 练习优先级
 
-Show all cards in a subject. Grouped by bucket. Useful for scanning what's in the deck and manually adjusting card content.
+练习时按以下优先级选择卡片：
+1. 到期卡片（过了下次复习日期的）
+2. 错题卡片（前一轮评估为"不会"的）
+3. 桶1-2的卡片（还在短期记忆阶段）
+4. 新卡片（从未练习过）
 
-### `--stats` — progress snapshot
+## 进度与统计
 
-Per subject: total cards, bucket distribution, due today, reviewed this week. Highlight any cards that have bounced down to `new` more than twice — those are the stuck concepts worth drilling verbally via `/law-student:socratic-drill`.
+统计模式显示：
+- 总卡片数/各科目卡片数
+- 各桶分布（可视化进度条）
+- 到期卡片数（需立即复习）
+- 卡住的卡片（在同一桶停留超过3轮的——建议转为理解性学习而非机械记忆）
+- 各科目掌握率
 
-## Integration with other skills
+## 集成
 
-- **outline-builder:** after building or extending an outline, offer to generate flashcards from the new material
-- **socratic-drill:** if a card has been wrong 2+ times, route it to `/law-student:socratic-drill` for verbal working-through — flashcards aren't enough for concepts you don't actually understand
-- **bar-prep-questions:** bar prep subjects with poor flashcard stats weight higher in MBE drilling
+- 配合知识体系使用（从知识体系提取关键法条/概念生成卡片）
+- 配合学习训练使用（`/session --闪卡` 模式）
+- 配合问答式研习使用（卡住的卡片改为对话式深究）
 
-## Storage
+## 本技能不做的事
 
-```
-flashcards/
-└── [subject]/
-    └── cards.md
-```
-
-One file per subject. Cards are markdown. Bucket/review metadata is inline per card. Not optimal for very large decks (>500) but fine for typical law school deck sizes.
-
-## What this skill does not do
-
-- **Replace Anki.** If you already have a flashcard habit, keep it. This is for when you're in chat and want to drill without switching apps.
-- **Invent cards to hit a count target.** If I can only generate 8 confident cards from your source, you get 8. Padding with `[VERIFY]`-heavy guesses is worse than a smaller deck.
-- **Enforce study discipline.** Missed review days compound; the skill just shows what's due. You decide whether to drill.
-- **Teach you the rule.** Cards are for drilling what you've already studied. If a card is consistently wrong, the problem is upstream — use `/law-student:socratic-drill` or re-read the source.
+- 不替代完整的间隔复习系统（如Anki等专业SRS工具）
+- 不从错误素材生成卡片而不标记
+- 不替代理解性学习——闪卡是记忆工具，不能替代对法律概念的理解

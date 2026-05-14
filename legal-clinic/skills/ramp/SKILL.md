@@ -1,136 +1,105 @@
 ---
-name: ramp
+name: 学生上岗培训
 description: >
-  Student semester onboarding — clinic procedures, tool walkthrough, practice
-  exercises before real cases. Reads the handbook the professor uploaded at
-  setup and teaches it interactively. Use when a new clinic student says
-  "onboard me", "I'm new to the clinic", "getting started", or at the start of
-  each semester; pass --card for the one-page reference.
-argument-hint: "[--card for the one-page reference]"
+  法律援助诊所学生学期上岗培训——中国法律援助制度概述、诊所规章制度、
+  办案流程、文书规范、职业道德（保密义务/利益冲突/禁止私下收费）、
+  法院立案流程导览。读取指导教师上传的诊所手册并交互式教学。
+  当新学生加入诊所、说"带我上岗"或每学期实训开始时使用；
+  传--card获取一页参考卡。
+argument-hint: "[--card 获取一页参考卡]"
 ---
 
-# /ramp
+# /学生上岗培训
 
-1. Check `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` is set up. If placeholders: "Ask [professor] to run `/legal-clinic:cold-start-interview` first."
-2. Use the walkthrough below.
-3. Walk through: clinic context (from handbook) → commands → practice exercises (fake intake, practice draft, research roadmap) → verification habits.
-4. `--card`: generate the one-page reference card.
+## 目的
 
-```
-/legal-clinic:ramp
-```
+法律援助诊所在《法律援助法》(2022)和《法律援助志愿者管理办法》框架下运行。
+学生在接触真实当事人之前需要了解中国法律援助制度、诊所规章制度和基本办案技能。
 
-```
-/legal-clinic:ramp --card
-```
+本技能不同于美国法学院诊所的Orientation（后者围绕ABA规则和"student practice rule"组织），
+而是围绕中国法律援助体系的核心内容展开。
 
----
+## 法律框架
 
-# Ramp: Semester Onboarding
+中国高校法律援助诊所的法律基础和运行依据：
+- **《法律援助法》(2022年1月1日起施行)：** 全面规范法律援助制度，明确法律援助范围、申请程序、实施和保障
+- **《法律援助条例》(司法部)：** 法律援助的具体实施细则
+- **《法律援助志愿者管理办法》：** 规范法律援助志愿者的招募、培训、管理和权益保障
+- **中华全国律师协会《法律援助指引》：** 行业层面法律援助工作规范
+- **《律师法》：** 律师执业规范（保密义务第38条、利益冲突第39-41条、禁止私下收费等）
+- **《民事诉讼法》《刑事诉讼法》《行政诉讼法》：** 各类程序的基本规则
 
-## Purpose
+## 工作流
 
-Every semester, the clinic loses its entire workforce and rebuilds from scratch. New students need to learn procedures, case management, filing conventions, and practice-area basics before they're useful. Traditionally that takes weeks of reading PDFs and asking the professor the same questions every semester.
+1. **读取诊所配置。** 加载 `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → 诊所类型、业务领域、指导教师信息、学期安排。
+2. **读取诊所手册。** 如指导教师已上传至种子文件。
+3. **按培训模块交互式引导。** 每个模块包含知识讲解+理解确认提问。
 
-This skill is the guided walkthrough. It reads what the professor uploaded during cold-start — the handbook, the filing guides, the local rules — and teaches it interactively, with practice exercises so students try the tools in a low-stakes setting before a real client is on the line.
+## 培训内容模块
 
-**Audience: students.** Professors don't run this (they run `/cold-start-interview`).
+### 模块一：中国法律援助制度概述
+- 法律援助的性质、目的和基本原则
+- 《法律援助法》规定的法律援助范围（第31-32条）
+- 法律援助的申请条件和程序
+- 法律援助志愿者的法律地位和权利（学生＝法律援助志愿者，非执业律师）
+- 理解确认：什么案件可以申请法律援助？学生能否单独以律师名义出庭？
 
-## Load context
+### 模块二：本诊所规章制度
+- 诊所使命和当事人群体画像
+- 执业范围——能做和不能做的事
+- 学生工作规则：考勤、协作、档案管理
+- 诊所办公室纪律和信息安全
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → clinic profile, practice areas, jurisdiction, handbook path, supervision style, practice-area templates.
+### 模块三：办案流程
+- 来访接案流程（来访登记→法律援助条件审查→利益冲突检查→签订授权委托书→指派承办→办理→结案归档）
+- 指导教师指派和分工机制
+- 案件讨论会制度
+- 中国法院办案流程基础（立案→举证→开庭→判决）
 
-If that file is missing or still has placeholders: "The clinic hasn't been set up yet. Ask [supervising professor] to run `/cold-start-interview` first."
+### 模块四：文书规范
+- 常用法律文书格式（起诉状/答辩状/上诉状/法律咨询记录/案件办理日志等）
+- 文书写作基本规范（格式/语言/逻辑）
+- AI辅助草稿的使用边界和标注要求
 
-## The walkthrough
+### 模块五：职业道德与执业纪律
+- 《律师法》第38条：保密义务——不得泄露当事人隐私和商业秘密
+  - 注意：学生不是律师，但在法律援助工作中参照适用律师职业道德规范
+- 《律师法》第39-41条：利益冲突禁止——同一案件不得代理双方当事人
+- 禁止私下收费：法律援助不得收取任何费用（《法律援助法》第9条）
+- 禁止以律师名义执业——学生对外身份为"法律援助志愿者"，不得自称律师
+- 当事人隐私保护——案件材料不得带离诊所、不得在公共场所讨论案情
+- 利益冲突的识别和报告义务
 
-### Opening
+### 模块六：当事人沟通
+- 首次接待当事人的礼仪和注意事项
+- 通俗语言沟通——面对法律知识有限的当事人如何解释法律概念
+- 当事人情绪管理和安全事项（如涉及家庭暴力的当事人）
+- 电话和微信沟通的边界设定
 
-> Welcome to [clinic name]. I'm going to walk you through how this clinic works and how to use these tools — about twenty minutes, and you can pause anytime. By the end you'll have run a practice intake, drafted a practice document, and you'll know what to do when you get your first real case.
->
-> One thing up front: everything I generate is a starting point, not a final answer. You do the analysis. [Professor] reviews your work [per supervision style]. I handle the formatting and the first draft so you spend your time on the lawyering, not on writing "Dear Judge" for the twentieth time.
+### 模块七：法院立案实操导览
+- 民事诉讼立案材料清单（以当地法院为准）
+- 立案流程和缴费（法援案件免收诉讼费）
+- 庭审旁听注意事项
 
-### Part 1: This clinic (5 min)
+### 模块八：实训演练
+- 在做真实案件前给予模拟案件练习
+- 模拟来访接待：给定案例背景，学生扮演接待角色
+- 模拟文书起草：给定事实，学生起草起诉状/法律咨询记录
+- 模拟案例讨论：给定案件争议，学生口头分析论证
 
-Read from `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` and the ingested handbook. Cover, interactively:
+## 参考卡模式（--card）
 
-- **Practice areas** — what the clinic handles, what it doesn't (and where to refer if someone walks in with an out-of-scope issue)
-- **Clients** — who they are, what they're facing, languages
-- **Jurisdiction** — which courts, which judges, what the local quirks are
-- **Case management** — how cases are tracked, where files live, what a well-documented case looks like
-- **Supervision** — how review works in this clinic (per the supervision style in CLAUDE.md). Be specific: "Before anything goes to a client or a court, [it goes in the review queue / you check with Professor X / etc.]"
+一页速查卡包含：
+- 诊所联系方式和工作时间
+- 关键期限速查表（诉讼时效3年/上诉期15天判决、10天裁定/申请执行2年/法援审查7日等）
+- 指导教师联系方式和审查提交方式
+- 常用网站（国家法律法规数据库/北大法宝/中国裁判文书网/法信）
+- 职业道德红线（禁止泄露/禁止冲突代理/禁止收费/禁止以律师名义执业/禁止私自接触对方当事人）
+- 常见问题FAQs
 
-Don't lecture — check understanding. "So if a client comes in with an eviction notice but also mentions they're undocumented, what do you do?" (Answer: both issues get noted in intake; the immigration question may need a referral or a flag to the professor, depending on the clinic's scope.)
+## 本技能不做的事
 
-### Part 2: The commands (5 min)
-
-Walk through each command the student will actually use:
-
-| Command | When you use it | What you get |
-|---|---|---|
-| `/client-intake` | Client interview | Formatted case summary with issues spotted, conflict flags, triage |
-| `/draft [doc type]` | Need a first draft of a common document | Practice-area template filled from case notes — *starting point, not final* |
-| `/memo` | Need to analyze a case internally | IRAC-format memo with research gaps flagged |
-| `/research-start [issue]` | Starting legal research | Roadmap: statutes to check, case law areas, search terms — *leads, not authoritative cites* |
-| `/status [audience]` | Updating someone on a case | Summary tailored to client / professor / court |
-| `/client-letter [type]` | Routine correspondence | Appointment confirm, doc request, status update from templates |
-
-For each: what it does, what it explicitly doesn't do, what the student verifies before relying on it.
-
-### Part 3: Practice exercises (8-10 min)
-
-**Low-stakes. Fake client. Real tools.**
-
-**Exercise 1 — Practice intake:**
-> Here's a fake client scenario: [practice-area-appropriate hypo — e.g., for a housing clinic, "Maria got a 3-day notice to quit last Tuesday. She's two months behind on rent after losing her job. The apartment has had a broken heater since November. She has two kids."]
->
-> Run `/client-intake` and interview me as if I'm Maria. I'll answer as Maria would. At the end, look at the case summary it produces — what issues did it spot? Did it catch the habitability defense?
-
-Debrief: what the intake caught, what the *student* should have probed deeper on, what gets flagged for the professor.
-
-**Exercise 2 — Practice draft:**
-> Using Maria's intake, run `/draft eviction-answer`. You'll get a first draft.
->
-> Read it. What's right about it? What's wrong? What would you change before showing it to [Professor]?
-
-The point: the draft is competent but not final. The student learns to read critically, not accept.
-
-**Exercise 3 — Research roadmap:**
-> Run `/research-start "habitability defense to eviction in [state]"`. You'll get a roadmap — statutes, case law areas, search terms.
->
-> None of those citations are verified. That's on purpose. Pick one statute from the roadmap and tell me how you'd verify it's current and applies here.
-
-The point: `/research-start` is a starting place, not a citation. The student still does the research.
-
-### Part 4: Verification habits (2 min)
-
-The habits that matter:
-
-- **Every output is a starting point.** If it went to a client or a court without you reading it critically, something went wrong.
-- **Verify every citation** before it goes in anything. `/research-start` gives leads, not authorities.
-- **Check jurisdiction-specific details.** The plugin knows your state from setup, but local court quirks change — double-check against current local rules.
-- **When uncertain, it says so.** If an output has a `[UNCERTAIN: ...]` flag, that's a prompt to research or ask the professor, not to delete the flag and move on.
-- **[Supervision reminder per CLAUDE.md style]** — what gets reviewed before it goes out, and how.
-
-### Closing
-
-> That's it. You've run an intake, drafted a document, and built a research roadmap. Your first real case will feel similar, except the client is real and the professor is reading your work.
->
-> The one-page reference card: `/ramp --card`
-
-## `/ramp --card`
-
-Generate the one-page student reference card per the one-page card spec. Contents:
-
-- The commands (table from Part 2, condensed)
-- What Claude can help with / what it can't (starting points yes, final work product no, authoritative citations no)
-- Verification habits (the bullets from Part 4)
-- Who to ask when stuck (professor name from CLAUDE.md)
-
-Printable. One page. Hand it out on day one.
-
-## What this skill does NOT do
-
-- Replace the professor's orientation. It covers procedures and tools; the professor covers judgment, strategy, and the things you only learn by watching someone good do it.
-- Teach substantive law. Practice-area *orientation*, not a doctrinal course.
-- Certify the student as ready. The professor decides when a student takes a real case.
+- 不替代诊所手册全文阅读
+- 不替代法学院法律职业道德课程
+- 不替代指导教师的线下实训教学
+- 不讲解美国ABA规则或各州学生执业规则

@@ -1,271 +1,115 @@
 ---
-name: demand-intake
-description: Pre-drafting context gathering for a demand letter — parties, facts, basis, leverage, BATNA, and privilege filters — written to a structured intake.md the demand-draft skill reads. Use when the user wants to prep a demand letter, run intake before drafting, or capture context for a payment demand, breach/cure notice, cease-and-desist, employment separation, or preservation demand.
-argument-hint: "[title] [--full]"
+name: 律师函起草前立案
+description: 起草律师函前的背景收集——当事人、事实、法律依据、协商筹码、最佳替代方案和保密筛选——写入结构化的立案信息文件供起草律师函技能读取。适用场景：用户准备发送律师函、起草前立案，或为付款催收、违约补正、停止侵权、劳动关系或证据保全律师函记录背景信息。
+argument-hint: "[标题] [--full]"
 ---
 
-# /demand-intake
+# /律师函立案
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → demand-letter practice, landscape, risk calibration.
-2. Follow the workflow and reference below.
-3. Run the adaptive intake (core 8 always; strategic block if material or `--full`).
-4. Generate slug from title + counterparty + year-month.
-5. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md`.
-6. Confirm with user: "Intake saved. Run `/litigation-legal:demand-draft [slug]` when ready."
-
----
-
-# Demand Intake
-
-## Purpose
-
-The drafting is downstream. The value is in the pre-writing — forcing the questions a careless letter skips. Leverage, BATNA, downside tolerance, privilege filters, the actual audience. A demand letter sent without thinking about those is worse than no letter.
-
-## Load context
-
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Demand-letter practice (insurance-tender timing, materiality threshold for matter creation, any seed-doc templates), landscape (counterparty type, repeat-adversary patterns), risk calibration (to pre-estimate materiality), house style. **Tone, compliance period, marking, signer are NOT practice-level defaults — they are set per matter in the `## Posture for this matter` step below.**
-
-## Flags
-
-- `--full` → run the complete intake regardless of materiality heuristics (for counsel who wants thorough every time)
-
-## The intake
-
-### Posture for this matter (ask FIRST, before the core)
-
-> **Posture for this matter.** Demand-letter tone and terms are case-by-case, not a practice default. Ask:
-> - **Tone:** measured / assertive / aggressive? (depends on the relationship, the amount, and whether litigation is likely)
-> - **Response window:** what's reasonable given the claim? (14 days is common for payment demands; 30 days for cure; 7 days for cease-and-desist — but the contract or protocol may set it)
-> - **Marking:** does this need a "without prejudice" or "without prejudice save as to costs" marking? (settlement communications do; assertions of claim often don't; jurisdiction matters — ask if unsure)
-> - **Signer:** you, the client, the GC, instructed solicitor/counsel?
-> Don't assume. Read the prior demand correspondence in the matter file if there is any — it establishes the register.
-
-Record the answers in the intake under a `## Posture` section before `## Parties`. These answers govern the rest of the intake and the downstream draft — do not fall back to a practice-level default if the user left any of them blank; ask again.
-
-### Core — always asked (8 questions)
-
-**1. Demand type**
-`payment | breach-cure | cease-desist | employment-separation | preservation | other`
-
-**2. Parties**
-- **Sender:** our company (and any specific entity if multi-entity)
-- **Recipient:** counterparty — name, entity, address
-- **Recipient audience:** who actually reads (GC? CEO? individual? in-house legal?)
-- **Relationship:** `customer | vendor | ex-employee | competitor | third-party | other`
-
-**3. Triggering event**
-- What happened and when (dates matter — statute-of-limitations, notice periods)
-- Evidence available (contracts, emails, records, witnesses)
-
-*Seed doc opportunity: "If you can share the underlying contract, correspondence, or evidence, the draft will be materially sharper. Paths work."*
-
-**4. Legal / contractual basis**
-- Which provisions — specific contract sections if applicable
-- Governing law (jurisdiction, choice-of-law clause)
-- Statutes or rules relied on (placeholders OK — the draft will flag `[CITE:___]` anyway)
-
-**5. Desired outcome**
-- Specific asks. Not "resolution" — payment of $X by date Y; cessation of specific activity Z; cure within N days; return of specific property.
-- If multiple asks, order them (primary vs. fallback)
-
-**6. Deadlines**
-- External deadline driving this (SoL, ongoing harm window, business event)
-- Demand compliance deadline — how long we give the recipient. Use the response window captured in `## Posture for this matter` above; do not fall back to a practice-level default.
-
-**7. Prior outreach**
-- Has this been raised informally? When, by whom, in what form?
-- Any response so far?
-- Why is escalation to a demand letter happening now?
-
-**8. Distribution**
-- Delivery method (ask; no practice-level default)
-- Signer — captured in `## Posture for this matter` above
-- Copies — internal stakeholders, insurance carrier (if tendering pre-demand per practice-level tender-timing rule), counsel
-
-### Strategic — asked if material, or if `--full`
-
-Materiality heuristic: ask the strategic block if any of the following are true.
-
-- Demand type is `cease-desist`, `breach-cure`, `employment-separation`, or `preservation`
-- Desired outcome dollar value ≥ the medium-severity band from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` risk calibration
-- Counterparty is a customer, competitor, or frequent adversary per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` landscape
-- User ran with `--full`
-
-**Explicit skip option.** When the strategic block is triggered, the user can decline to answer it. Ask plainly:
-
-> This is a material demand by the heuristic. The strategic block (leverage, BATNA, tone, privilege filters) is where most of the pre-writing value lives. Skipping it produces a thinner draft.
-> - **Answer now** — walk the strategic block (5-7 min)
-> - **Answer partial** — walk the subset you feel prepared for
-> - **Skip** — proceed to draft with only the core block; I'll flag `strategic_block: skipped` in the intake
-
-If the user chooses Skip, the intake file records it:
-
-```yaml
-strategic_block: skipped        # answered | partial | skipped
-skipped_reason: string | null   # captured if user provided one
-```
-
-The draft skill honors the skip — pre-draft gate runs regardless, but sections that depend on strategic-block answers get `[SME VERIFY: leverage/tone/privilege not captured in intake]` markers. The `/demand-draft` command also prompts a second time, asking whether the user wants to complete the strategic block before drafting.
-
-**9. Leverage and BATNA**
-- What gives us negotiating power (contractual rights, factual leverage, reputational, commercial)
-- What if they refuse — are we prepared to litigate? Go public? Accept a smaller outcome?
-- Their likely BATNA — what's their best alternative? (If they don't think we'll sue, the demand is weak.)
-
-**10. Downside tolerance**
-- Reputational exposure if this becomes public
-- Precedent risk — does this letter set a pattern that affects other matters?
-- Regulatory / disclosure implications (is this the kind of dispute that becomes a 10-Q item?)
-- Insurance implications — does sending without tendering waive coverage?
-
-**11. Tone posture**
-- Already captured in `## Posture for this matter` above. Here, probe the trade-off if the user chose a stronger tone than the facts seem to warrant, or a weaker tone than the facts seem to warrant.
-- Worth naming explicitly: aggressive tone burns the relationship. If you want to keep the business relationship but need to protect the legal position, `measured` is usually the right call.
-
-**12. Settlement-communication posture**
-- Research the settlement-communication protections applicable in the forum (FRE 408 in federal, the state equivalent otherwise). Is this letter a settlement communication that should be protected? Or an assertion of rights that shouldn't be?
-- If protected: the draft will include the settlement-communication marker and will be structured so the substance (a discussion of compromise) — not just the label — supports the posture.
-- Protection attaches from conduct and context, not merely from labeling. The marker is a belt-and-suspenders choice.
-
-**13. Privilege filters**
-- What's in our internal analysis that must NOT appear in the letter? (Facts we haven't verified, our doubts about our case, strategic reasoning, prior settlement discussions)
-- A single badly-worded sentence can waive privilege on related analysis. Be explicit about what stays out.
-
-**14. Admission and accord-and-satisfaction risk**
-- Anything in the letter that the counterparty could later characterize as an admission of fact or liability?
-- Does this demand risk inadvertently satisfying (or purporting to accept) a separate claim? (Accord-and-satisfaction: cashing a check marked "payment in full" can end a disputed debt.)
-
-## Writing the intake
-
-### Slug
-
-`[type]-[counterparty-short]-[yyyy-mm]`. Confirm uniqueness in `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/`.
-
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[slug]/intake.md`
-
-```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
-
-# Demand Intake: [title]
-
-**Slug:** [slug]
-**Demand type:** [type]
-**Drafted by:** [counsel]
-**Opened:** [YYYY-MM-DD]
-**Status:** intake | ready-to-draft | drafted | sent | closed
-**Strategic block:** answered | partial | skipped
-**Skipped reason:** [if applicable]
+1. 加载 CLAUDE.md → 律师函惯例、场景、风险校准。
+2. 遵循以下工作流程和参考。
+3. 运行自适应立案（核心8问始终问；策略块在重要或 `--full` 时问）。
+4. 从标题+对方+年-月生成标识。
+5. 写入立案信息文件。
+6. 与用户确认。
 
 ---
 
-## Posture
+# 律师函立案
 
-- **Tone:** [measured / assertive / aggressive — with one-line rationale tied to the relationship and the amount]
-- **Response window:** [N days — tied to the claim / contract / protocol]
-- **Marking:** [none / without prejudice / without prejudice save as to costs / other — with rationale]
-- **Signer:** [name / role — you / client / GC / instructed counsel]
+## 目的
 
-*This is the per-matter posture captured at intake. The draft skill reads from here.*
+律师函是诉讼的前置动作，价值在于发送前的充分评估——追问一封草率的律师函会跳过的问题：对方偿付能力、诉讼时效是否临近、证据是否充分、法律依据是否明确、发送后对方可能的反应。一封发送前没想过这些的律师函，不如不发。
 
----
+中国律师函实务要点：律所抬头、案号、委托声明、事实陈述、法律分析、律师意见、具体要求、署名盖章、日期。律师函不产生诉讼时效中断效果——如需中断时效，须另行提起诉讼或申请仲裁。
 
-## Parties
+## 加载上下文
 
-- **Sender:** [our entity]
-- **Recipient:** [counterparty, entity, address]
-- **Recipient audience:** [who reads]
-- **Relationship:** [type]
+CLAUDE.md → 律师函惯例、场景、风险校准、律所风格。**语气、履行期、标注、签署人非执业层面默认——在以下"本案姿态"步骤中按案设定。**
 
-## Triggering event
+## 标志
 
-[What happened, when, evidence]
+- `--full` → 无论重要程度启发式如何，运行完整立案
 
-## Legal / contractual basis
+## 立案信息
 
-[Provisions, governing law, statutes]
+### 本案姿态（最先问，在核心之前）
 
-## Desired outcome
+> **本案姿态：**
+> - **语气：** 审慎/坚定/强硬？
+> - **回应窗口：** 多少天合理？
+> - **标注：** 是否需要"调解协商专用"标注？
+> - **签署人：** 您、委托人、律所主任、受指示律师？
 
-[Specific asks in priority order]
+将答案记录在立案信息的 `## 姿态` 章节下。
 
-## Deadlines
+### 核心——始终询问（8问）
 
-- **External:** [SoL, ongoing harm window]
-- **Compliance:** [how long we give them]
+**1. 律师函类型：** 付款催收 | 违约补正 | 停止侵权 | 劳动关系 | 证据保全 | 其他
 
-## Prior outreach
+**2. 当事人：** 发送方、接收方、接收方受众（谁实际阅读）、双方关系类型、接收方是否有代理律师
 
-[History, most recent first]
+**3. 触发事件：** 发生什么和时间（日期重要——诉讼时效、通知期限）、可用证据（合同、付款记录、聊天记录、邮件往来等）
 
-## Distribution
+**4. 法律/合同依据：** 具体条款、适用法律、《民法典》或相关法条、司法解释依据
 
-- **Delivery:** [method]
-- **Signer:** [name/role]
-- **Copies:** [list]
+**5. 期望结果：** 具体请求（如支付欠款、停止侵权、恢复原状、赔偿损失），优先级排序
 
----
+**6. 截止日期：** 诉讼时效截止日、持续损害窗口（如侵权行为仍在继续）、律师函履行截止日期
 
-## Strategic (if applicable)
+**7. 先前往来：** 是否非正式沟通过？何时、由谁、以何形式？对方任何回应？为何现在升级到律师函？
 
-### Leverage & BATNA
+**8. 送达方式：** EMS法院专递/挂号信/电子邮件/当面送达、签署人、抄送对象
 
-[Our power, their likely response]
+### 策略——如重要或 `--full` 时询问
 
-### Downside tolerance
+重要程度启发式：如有以下任一条件，询问策略块。
 
-[Reputational, precedent, regulatory, insurance]
+- 律师函类型为停止侵权、违约补正、劳动关系或证据保全
+- 争议金额较大
+- 对方当事人为竞争对手、大型企业或政府机关
+- 用户使用 `--full`
 
-### Tone posture
+**显式跳过选项。** 当策略块被触发，用户可拒绝。明问：
 
-[relationship-preserving / measured / scorched-earth — with rationale]
+> 按启发式，这是一份重要的律师函。策略块（筹码、最佳替代方案、语气、保密筛选）是起草前价值所在。跳过导致更薄的草稿。
+> - **现在回答** —— 走策略块（5-7分钟）
+> - **部分回答** —— 走您准备好的子集
+> - **跳过** —— 仅核心块继续；在立案信息中标注 `策略块: 已跳过`
 
-### Settlement-communication posture
+**9. 筹码和最佳替代方案：** 什么给己方协商力量？如对方拒绝——己方准备起诉吗？起诉的法院管辖、诉讼成本、时间预估？
 
-[Protected or not in the forum — with reasoning. Cite primary source per the applicable rule (FRE 408 or state equivalent).]
+**10. 底线容忍度：** 如公开将承受的商誉风险、先例风险、监管/披露影响、保险影响
 
-### Privilege filters
+**11. 语气姿态：** 已在上面记录。此处探查事实是否支撑所选语气。
 
-[What CANNOT appear in the draft]
+**12. 对方偿付能力评估：** 对方是否有能力履行？是否有转移财产风险？是否需要同步申请财产保全？
 
-### Admission / accord-and-satisfaction risk
+**13. 诉讼时效审查：** 争议是否在诉讼时效期间内（一般3年）？是否有诉讼时效中断/中止情形？发函后是否计划同步启动诉讼或仲裁以中断时效？
 
-[Specific risks flagged]
+**14. 保密筛选：** 己方内部分析的什么内容**不得**出现在律师函中？
 
----
+**15. 自认风险：** 律师函中任何内容是否可能被对方后续定性为事实自认或责任自认？是否可能被用作对己方不利的证据？
 
-## Seed documents
+## 写入立案信息
 
-| Doc | Path |
-|---|---|
-| [underlying contract] | [path or "not shared"] |
-| [prior correspondence] | [path or "not shared"] |
-| [evidence] | [path or "not shared"] |
+### 标识
 
----
+`[类型]-[对方简称]-[年-月]`。确认独特性。
 
-## Materiality assessment
+### 立案信息文件模板
 
-**Auto-heuristic says:** [material / immaterial — with reasoning]
-**User call:** [material / immaterial / TBD at post-send]
-```
+含工作成果抬头、姿态、当事人、触发事件、法律/合同依据、期望结果、截止日期、先前往来、送达方式、策略块、种子文件、重要程度评估。
 
-## Confirm before writing
+写入前向用户展示。标注薄弱处（证据不足、诉讼时效临近、法律依据不够明确等）。
 
-Show the user the draft intake. Flag anything thin:
+## 移交起草
 
-> Here's the intake. I notice [thin spots]. Before I save, anything to add?
+结尾："立案信息已保存。就绪时：`/litigation-legal:起草律师函 [标识]`"
 
-## Handoff to drafting
+## 本技能不做什么
 
-End with:
-> Intake saved. When ready: `/litigation-legal:demand-draft [slug]`
-
-## Close with the next-steps decision tree
-
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- Draft the letter. That's `demand-draft` — the two steps are intentionally separate so counsel can pause for business input, outside counsel consult, or insurance tender before drafting.
-- Decide whether to send the letter. Some intake sessions end with "actually, don't send — let's negotiate directly." That's a valid outcome; the intake record still has value.
-- Run the conflicts check. If the counterparty is a customer or known entity, flag that this should clear conflicts (per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`) before sending — but the check itself lives in the matter-intake workflow or outside this skill.
+- 起草律师函。那是"起草律师函"技能——两步有意分离。
+- 决定是否发送律师函。某些立案会议以"算了，不发——直接协商或起诉"结束。这是有效结果。
+- 运转利益冲突检索。本技能记录立案信息；利益冲突检索由律所内部流程处理。
+- 中断诉讼时效。仅发送律师函不中断诉讼时效——需另行告知用户必要时起诉或申请仲裁。

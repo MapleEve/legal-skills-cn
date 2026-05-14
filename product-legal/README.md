@@ -1,105 +1,87 @@
-# Product Counsel Plugin
+# 产品合规插件
 
-Product legal workflows: launch review, marketing claims review, feature risk assessment, and fast "is this a problem?" triage. Built around a risk calibration learned from your actual launch review history — what blocks at *your* company, not generically.
+产品合规法务工作流：上线审查、营销文案审查、功能风险评估、以及"这有没有问题？"快速分诊。基于中国法框架构建，覆盖消费者权益保护、广告合规、价格法、反不正当竞争、产品质量、未成年人保护、直播/短视频合规及游戏/电竞合规等审查维度。
 
-**Every output is a draft for attorney review — cited, flagged, and gated — not a legal conclusion.** The plugin does the work: reads the documents, applies your playbook, finds the issues, drafts the memo. A lawyer reviews, verifies, and decides. Citations are tagged by source so you know which ones came from a research tool and which ones need checking. Privilege markers are applied conservatively so nothing waives by accident. Consequential actions — filing, sending, executing — are gated behind explicit confirmation.
+**所有输出均为供法务审核的草稿——附引用标注、风险标记和门槛控制——不构成正式法律意见。** 本插件负责执行工作：阅读文件、套用你的审查清单、发现问题、草拟备忘录。由法务人员进行审核、核实并做出决定。引用来源均标注出处标签，便于区分哪些来自研究工具、哪些需要核验。
 
-## Who this is for
+## 适用角色
 
-| Role | Primary workflows |
+| 角色 | 主要工作流 |
 |---|---|
-| **Product counsel** | Launch review, feature risk assessment, calibration maintenance |
-| **Product managers** | "Is this a problem?" triage self-serve |
-| **Marketing** | Claims review before ship |
-| **GC / Legal leadership** | Feature risk assessments for escalated items |
+| **产品法务** | 上线审查、功能风险评估、风险校准维护 |
+| **产品经理** | "这有没有问题？"自助分诊 |
+| **市场营销** | 上线前文案审查 |
+| **法务总监/法务负责人** | 升级事项的功能风险评估 |
 
-## First run: the cold-start interview
+## 首次使用：冷启动访谈
 
-Connects to your launch tracker (Jira/Linear), reads ten of your past launch reviews, learns what you actually block vs. what you wave through. Builds a risk calibration table that every other skill reads from.
+连接你的项目管理工具（Jira/Linear/飞书多维表格），读取过往上线审查记录，学习你的实际风险判断标准——什么真正拦截、什么放行。生成一份风险校准表，后续所有功能均基于此表运行。
 
-Your configuration is stored at `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` and survives plugin updates.
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md`，插件更新时配置不会丢失。
 
 ```
 /product-legal:cold-start-interview
 ```
 
-## Commands
+## 命令
 
-| Command | Does |
+| 命令 | 功能 |
 |---|---|
-| `/product-legal:cold-start-interview` | Cold-start interview |
-| `/product-legal:launch-review [PRD or ticket]` | Full launch review against your framework |
-| `/product-legal:marketing-claims-review [copy]` | Marketing claims review |
-| `/product-legal:is-this-a-problem [question]` | Fast "is this a problem?" answer |
-| `/product-legal:matter-workspace` | Manage matter workspaces (multi-client private practice only) — new, list, switch, close, none |
+| `/product-legal:cold-start-interview` | 冷启动访谈 |
+| `/product-legal:launch-review [PRD或需求单]` | 按审查框架进行完整上线审查 |
+| `/product-legal:marketing-claims-review [文案]` | 营销文案审查 |
+| `/product-legal:is-this-a-problem [问题]` | "这有没有问题？"快速分诊 |
+| `/product-legal:matter-workspace` | 管理项目工作区（仅限多客户律所场景） |
 
-## Skills
+## 技能
 
-| Skill | Purpose |
+| 技能 | 用途 |
 |---|---|
-| **cold-start-interview** | Writes ~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md from interview + past launch reviews |
-| **launch-review** | Category-by-category review, calibrated to your company |
-| **marketing-claims-review** | Claims taxonomy: puffery/factual/comparative/implied/absolute |
-| **feature-risk-assessment** | Deep dive on one issue when launch review isn't enough |
-| **is-this-a-problem** | Same-minute triage for the quick Slack question |
-| **matter-workspace** | Create, list, switch, and close matter workspaces for multi-client practices; isolates each client/matter so context does not leak across them |
+| **cold-start-interview** | 通过访谈+过往上线审查记录生成配置 |
+| **launch-review** | 按维度逐项审查，与你的风险校准表对齐 |
+| **marketing-claims-review** | 文案分类：吹嘘/事实性/比较性/暗示性/绝对化用语 |
+| **feature-risk-assessment** | 针对单一问题的深度分析（上线审查不够用时） |
+| **is-this-a-problem** | 即时分诊，用于快速的Slack/飞书问答 |
+| **matter-workspace** | 创建、列出、切换、关闭项目工作区 |
 
-## Interactive commands vs. scheduled agents
+## 交互命令 vs. 定时代理
 
-The commands above run when you invoke them — for when you're working a matter. The agents below run on a schedule — for what moves while you're not looking:
+上述命令在你主动调用时运行——日常工作中使用。以下代理按计划自动运行——捕捉你不在看时的变化：
 
-| Agent | What it watches | Default cadence |
+| 代理 | 监控内容 | 默认频率 |
 |---|---|---|
-| **launch-watcher** | Launch tracker (Jira/Linear) for upcoming launches that likely need legal review; filters tickets with launch dates in the next 30 days per the calibration table | Daily |
+| **launch-watcher** | 项目管理工具中近期可能需法务审查的上线需求（过滤30天内上线日期且匹配风险校准表触发条件的需求） | 每日 |
 
-## Integrations
-
-**Connect a research tool first — the citation guardrails depend on it.** Without one, every cite is tagged `[verify]` and the reviewer note above each deliverable records that sources weren't verified. Skills work either way; a research tool (CourtListener) just shifts verification work off your plate.
-
-Ships with connectors configured in `.mcp.json`:
-
-- **Slack** — search messages, read channels, find discussions (general bucket)
-- **Google Drive** — search, read, and fetch documents (general bucket)
-- **Linear** — issue tracking and project management
-- **Atlassian** — Jira issues and Confluence pages
-- **Asana** — tasks and project tracking
-
-With a tracker connected: cold-start pulls launch history, launch-review pulls ticket context, launch-watcher agent monitors the calendar.
-
-## Quick start
+## 快速上手
 
 ```
 /product-legal:cold-start-interview
 ```
 
-Then:
+然后：
 
 ```
-/product-legal:is-this-a-problem "Can we A/B test the pricing page?"
+/product-legal:is-this-a-problem "定价页可以做A/B测试吗？"
 ```
 
-→ Same-minute answer calibrated to your risk table.
+→ 即时回复，已根据你的风险校准表对齐。
 
 ```
 /product-legal:launch-review PROJ-1234
 ```
 
-→ Full review, category-by-category, with action items.
+→ 完整审查，逐维度分析，附带行动项。
 
-## How it learns
+## 如何学习
 
-Your practice profile at `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` isn't static — it improves as you use the plugin. Skills tell you when an output used a default you should tune. You can re-run setup, edit the file directly, or tell a skill to record a new position.
+你的实务配置 `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` 不是静态的——它会随着你使用插件而改进。当某项输出使用了你应该调整的默认值时，技能会提示你。你可以重新运行设置、直接编辑文件，或告诉技能记录新的立场。
 
-## Notes
+## 注意事项
 
-- The calibration table is the whole thing. If it's wrong, every review is wrong. Re-run setup when your risk posture changes (new regulator, new consent decree, new GC).
-- `is-this-a-problem` is designed for PMs to self-serve. It answers fast and routes to a real review when it should.
-- Feature risk assessment is for the 10% of launches that need depth. Most don't — don't generate paperwork.
+- 风险校准表是整个插件运转的核心。如果它错了，每次审查都会错。当你的风险姿态发生变化时（新监管要求、新合规事件、新法务负责人），重新运行设置。
+- `is-this-a-problem` 为产品经理自助使用而设计。它快速回答并路由到正式审查（当必要时）。
+- 功能风险评估针对约10%需要深度的上线需求。大多数不需要——不要制造多余的文书工作。
 
-## Prerequisites
+## 配置
 
-Some features reference external integrations (document management, launch trackers, eDiscovery, case management, regulatory feeds). These are not bundled — if you have an MCP server for one of these in your environment, the relevant features will use it. Without one, the plugin falls back to file upload and manual workflows. Run `/product-legal:cold-start-interview --check-integrations` to see what's available in your environment.
-
-## Configuration
-
-Your configuration is stored at `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` and survives plugin updates — you only run setup once.
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md`，插件更新时配置不会丢失——你只需运行一次设置。

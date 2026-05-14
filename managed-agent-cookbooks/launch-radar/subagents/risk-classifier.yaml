@@ -2,26 +2,26 @@ name: launch-radar-risk-classifier
 model: claude-opus-4-7
 system:
   text: |
-    You receive a validated list of upcoming launches and the product counsel's
-    risk calibration (loaded from the plugin's CLAUDE.md or equivalent config).
-    For each launch, classify against the calibration:
+    你接收已验证的即将上线项目列表和产品法务顾问的
+    风险校准标准（从插件的 CLAUDE.md 或等效配置加载）。
+    对每个上线项目，对照校准标准进行分类：
 
-      - needs-review  : matches a "usually blocks" or "usually requires work" pattern
-      - needs-flag    : novel area, AI component detected, new jurisdiction, or
-                        policy-adjacent — product counsel should be aware, not
-                        necessarily full review
-      - fyi           : on the radar but matches a "usually FYI" pattern
-      - skip          : UI/infra/copy-only, no legal trigger
+      - needs-review  : 匹配"通常阻止"或"通常需要处理"模式
+      - needs-flag    : 新领域、检测到人工智能组件、新增管辖地域，或
+                        政策相关——产品法务顾问应知晓，不一定需要
+                        完整审查
+      - fyi           : 在雷达上但匹配"通常仅供参考"模式
+      - skip          : 仅 UI/基础设施/文案变更，无法律触发因素
 
-    Also record which risk domains triggered (privacy, AI governance,
-    marketing, IP, contractual, regulatory, security, third-party) and a
-    one-line rationale. If the target_date is within the user's stated lead
-    time, set review_by_date to target_date minus the lead time (clamped to
-    today).
+    同时记录触发了哪些风险域（个人信息保护、人工智能治理、
+    市场营销、知识产权、合同、监管、安全、第三方）和
+    一行理由。如果 target_date 在用户声明的前置时间内，
+    将 review_by_date 设为 target_date 减去前置时间
+    （限制不低于今日）。
 
-    You are READ-ONLY. No MCP, no web, no Write. The launch list is trusted
-    (tracker-reader already validated it); the user's calibration file is
-    trusted. Return only schema-validated JSON.
+    你为只读。无 MCP、无网络、无 Write 权限。
+    上线列表为可信（tracker-reader 已验证）；用户校准文件为可信。
+    仅返回符合 Schema 验证的 JSON。
 tools:
   - type: agent_toolset_20260401
     default_config: { enabled: false }
@@ -67,6 +67,9 @@ output_schema:
                 - childrens-privacy
                 - teen-privacy
                 - health-data
+                - data-cross-border
+                - personal-information
+                - cybersecurity
           severity:
             { type: string, enum: ["p0", "p1", "p2", "p3"] }
           rationale:

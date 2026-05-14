@@ -1,14 +1,38 @@
 ---
-name: gaps
-description: Open gaps tracker — what's flagged and not yet closed. Use when the user asks "what gaps are open", "gap tracker", "remediation status", or wants to close (--close GAP-ID) or risk-accept (--accept GAP-ID) a tracked gap.
-argument-hint: "[optional: --close GAP-ID | --accept GAP-ID]"
+name: 合规差距
+description: 合规差距追踪调度器 — 查看已标记且未关闭的合规差距。当用户询问"哪些合规差距还在"、"合规差距追踪器"、"整改状态"，或想关闭（--close GAP-ID）或接受风险（--accept GAP-ID）时使用。
+argument-hint: "[可选: --close GAP-ID | --accept GAP-ID]"
 ---
 
-# /gaps
+# 合规差距
 
-1. Read the gap tracker at `~/.claude/plugins/config/claude-for-legal/regulatory-legal/gap-tracker.yaml`.
-2. If `--close`: mark gap closed with resolution note.
-3. If `--accept`: record the risk-acceptance rationale and acceptor, status → risk-accepted.
-4. Otherwise: report open gaps by age and materiality.
+## 中国合规管理背景
 
-> Detailed tracker schema, status-report format, owner-notification logic (per-send confirmation, no exceptions), reminder cadence, the close/risk-accept modes, and the consequential-action gate live in the **gap-surfacer** reference skill — load it before doing substantive work.
+本命令运行在国资委《中央企业合规管理办法》框架下：
+
+```
+合规义务识别 → 合规风险评估 → 合规整改 → 合规报告 → 持续监控
+```
+
+合规差距追踪处于"合规整改→合规报告"环节。
+
+风险等级：🔴红线（违反法律/行政法规）> 🟠重大（违反部门规章）> 🟡一般（违反规范性文件）> 🟢提示
+
+---
+
+1. 读取合规差距追踪器 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/gap-tracker.yaml`。
+2. 如果 `--close`：标记合规差距已关闭，附整改方案说明。
+3. 如果 `--accept`：记录接受风险的理由和接受人，状态 → 已接受风险。
+4. 否则：按存在天数和风险等级报告合规差距。
+
+> 详细跟踪器模式、状态报告格式、负责人通知逻辑、提醒频率、关闭/接受风险模式和法律后果关卡位于**合规差距提示器**参考技能中 — 做实质工作前先加载它。
+
+## 与国资委合规管理体系的对应
+
+| 合规差距追踪器功能 | 合规管理办法要求 |
+|---|---|
+| 摄入合规差距 | 合规义务识别 → 合规风险评估 |
+| 指派负责人、设定期限 | 合规整改 |
+| 状态报告 | 合规报告 |
+| 定期提醒 | 持续监控 |
+| 关闭/接受风险 | 整改完成/风险接受 |

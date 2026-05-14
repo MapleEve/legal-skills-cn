@@ -1,7 +1,62 @@
-.DS_Store
-*.skill
+# 安全 / 本地配置
+AGENTS.local.md
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# 项目本地输出
 /logs/
 /outputs/
 /.claude/
+*.skill
+
+# Remotion README 视觉资产本地工作区与中间产物
+/remotion/readme-visuals/
+/tmp/readme-visuals/
+
+# 临时 / 进度文件
+tmp/
+.full-review/
+.full-review-archive/
+.worktrees/
+
+# Node / Python 缓存
+node_modules/
+dist/
+build/
+out/
+.cache/
+.remotion/
 __pycache__/
 *.pyc
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*

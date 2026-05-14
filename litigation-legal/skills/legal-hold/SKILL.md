@@ -1,238 +1,243 @@
 ---
-name: legal-hold
-description: Issue, refresh, release, or report on legal holds — drafts the hold notice as .docx, updates legal_hold fields in _log.yaml, and calendars the next refresh. Use when the user says "issue a hold", "refresh hold", "release hold", or asks for a portfolio-wide hold status report.
-argument-hint: "[slug] [--issue | --refresh | --release | --status]"
+name: 证据保全
+description: 帮助律师申请诉前/诉中证据保全或财产保全——撰写保全申请书，整理担保材料，追踪保全裁定及执行。基于《民事诉讼法》第84条（证据保全）和第103-104条（财产保全）。适用场景：用户说"申请证据保全""申请财产保全""诉前保全""写保全申请书"或"这个案子需要保全"。
+argument-hint: "[案件标识] [--证据 | --财产] [--诉前 | --诉中]"
 ---
 
-# /legal-hold
+# /证据保全
 
-1. If `--status` (no slug): read `_log.yaml`, produce portfolio-wide hold report.
-2. Otherwise: load `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` + log row.
-3. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → privilege markings, hold template pointer, escalation norms.
-4. Follow the workflow and reference below.
-5. Route by flag:
-   - `--issue`: capture scope, custodians, date range, systems. Draft `legal-hold-v1.docx`. Update `legal_hold` fields. Append history entry. Set `next_refresh` (default +6mo).
-   - `--refresh`: capture scope/custodian changes. Draft next version. Update `last_refresh` + `next_refresh`. Flag departed custodians.
-   - `--release`: capture release date, retention instruction. Draft release notice. Set `released:` field.
-6. Confirm before writing. Show the user the draft notice and the log diff.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 律所保全实务惯例。
+2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` → 案件类型、管辖法院、标的、对方当事人信息。
+3. 遵循以下工作流程和参考。
+4. 识别保全过程：申请→担保→法院裁定→执行。
+5. 起草保全申请书（含被保全财产/证据信息、保全范围、担保方案）。
+6. 整理配套材料清单（担保函/保函、财产线索、证据信息等）。
 
 ---
 
-# Legal Hold
+# 证据保全与财产保全
 
-## Purpose
+## 中国法下的保全制度
 
-A legal hold is the most mechanical high-stakes document in-house counsel writes. The notice itself is templated. The failure modes are operational: issued too late, scoped too narrowly, never refreshed, never released. This skill owns all four phases: **issue → refresh → (release) → track**.
+中国民事诉讼中的保全分为两类，适用不同的法律规范和程序：
 
-The portfolio already flags missing holds; this skill writes them.
+### 证据保全（《民事诉讼法》第84条）
 
-## Jurisdiction assumption
+**适用条件：** 证据可能灭失或者以后难以取得的情况下，当事人可以申请保全。
 
-Preservation duties vary materially by forum. Federal common law (via Zubulake / Residential Funding / Rule 37(e)) differs from state practice; states differ from each other on trigger timing, scope, sanctions, and spoliation remedies; regulatory preservation obligations overlay civil rules in some matters (SEC Rule 17a-4, HIPAA, etc.). The trigger, scope, and sanctions exposure cited in the draft are a starting-point read for the forum named in the matter — confirm with counsel before issuing, refreshing, or releasing.
+**程序：**
+1. 当事人向法院提交证据保全申请书
+2. 法院审查（是否需要担保由法院裁量）
+3. 法院作出裁定（诉前保全须在48小时内作出裁定）
+4. 法院执行保全措施（查封、扣押、拍照、录像、复制、鉴定、勘验等）
 
-## Load context
+**诉前证据保全：** 利害关系人可以在提起诉讼前向证据所在地、被申请人住所地或对案件有管辖权的法院申请。申请人应当提供担保。申请人在法院采取保全措施后30日内不依法提起诉讼的，法院应当解除保全。
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — log row (legal_hold fields + status)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — matter context (counterparty, facts, key custodians from internal_owners)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — house style for litigation hold template pointer, privilege marking, escalation norms
+### 财产保全（《民事诉讼法》第103-104条）
 
-**Conflicts gate — unbypassable.** Before issuing, refreshing, or releasing a hold, check `_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+**适用条件：** 因一方当事人的行为或其他原因，使判决难以执行或造成当事人其他损害的，对方当事人可以申请财产保全。
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't issue, refresh, or release a legal hold on a matter that hasn't been intaken — the conflicts check is the gate, and a hold issued against an unmanaged matter has no `_log.yaml` row to track `last_refresh` / `next_refresh` / `released` against."
+**程序：**
+1. 申请人向法院提交财产保全申请书
+2. **申请人须提供担保**（诉前财产保全必须提供担保；诉中财产保全由法院裁量是否要求担保）
+3. 法院在48小时内作出裁定（诉前）；诉中情况紧急的亦在48小时内裁定
+4. 裁定采取保全措施的，立即开始执行
+5. 被申请人提供担保的，法院应当解除保全
 
-Do not proceed on an unintaken matter. Intake is what runs conflicts and writes the `_log.yaml` row the `--refresh` / `--release` / `--status` flags operate against.
+**保全范围：** 限于请求的范围，或与本案有关的财物（《民诉法》第105条）。
 
-## Modes
+**申请错误的责任：** 申请有错误的，申请人应当赔偿被申请人因保全所遭受的损失（《民诉法》第108条）。
 
-The command takes a flag: `--issue | --refresh | --release | --status`. Default (no flag) → prompt.
+---
 
-### `--issue` — first issuance
+## 目的
 
-Required when `legal_hold.issued == false` and the matter is active or reasonably anticipated.
+保全申请是诉讼中的高风险文书——保全范围过宽则需承担申请错误赔偿风险，保全范围过窄则无法有效保障判决执行。本技能帮助律师系统化地准备保全申请材料。
 
-**Before issuing the hold to custodians (the consequential act):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+## 加载上下文
 
-> Issuing a legal hold has legal consequences — the scope, custodian list, and timing create the preservation record the company will be judged on if spoliation is argued later. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> [Generate a 1-page summary: the matter and trigger, the proposed scope and custodians, the forum-specific preservation rule researched, known spoliation exposure, what could go wrong (too broad / too narrow), what to ask the attorney.]
->
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 案件类型、标的额、管辖法院、对方当事人信息
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 律所保全实务惯例、常用担保方式
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 案件状态和已有保全记录
 
-Do not send the notice without an explicit yes. Drafting and scoping do not require the gate — issuance does.
+**利益冲突审查关——不可跳过。** 在起草保全申请前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-**Research the applicable preservation rule before issuing.** Identify the jurisdiction and the source of the preservation duty (common law, rule of civil procedure, regulatory preservation obligation, contractual). Confirm the currently operative trigger standard (when the duty attaches), scope standard (what must be preserved), and sanctions exposure (spoliation doctrine for the forum). Cite primary sources. Note that federal and state law can differ materially on trigger timing, scope, and remedy — flag the forum you're relying on. If uncertain, say so and get outside-counsel sign-off before issuing.
+> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:案件立案`，这样利益冲突审查就会运行，案件工作空间也能建立。我不会在未立案的案件上起草保全申请——利益冲突审查是入门关。"
 
-> **External deliverable:** the notice below is sent to custodians. Do NOT include a `PRIVILEGED & CONFIDENTIAL — ATTORNEY WORK PRODUCT — PREPARED AT THE DIRECTION OF COUNSEL` header on the outgoing notice; use the attorney-client marking in the template. Confirm the correct marking for your jurisdiction and matter.
+不得在未立案案件上继续。立案运行冲突审查并写入本技能所读取的 `_log.yaml` 行。
 
-**Inputs:**
-1. **Scope** — categories of documents, data, communications. Start specific: contracts with counterparty, all communications referencing [project/subject], related financial records, calendar entries. `[SME VERIFY — scope too broad = operational burden; too narrow = spoliation risk]`
-2. **Custodians** — named individuals likely to hold responsive material. Pull suggestions from matter.md internal_owners and from common roles (business lead, HR partner if employment, CISO if data). `[SME VERIFY — the custodian list is the difference between defensible preservation and a gap argument]`
-3. **Date range** — when to start preserving from (usually: triggering event or earlier), through the present + ongoing.
-4. **Systems** — email, Slack/Teams, file shares, devices (including BYOD if applicable), Jira/Asana, CRM, legacy systems.
-5. **Urgency** — if litigation already served or demand received with threat of suit, this goes out today.
-6. **Effective date** — date of the hold.
+## 工作流程
 
-**Draft the notice** to each custodian, using the house template in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` if one is configured; otherwise the default template below.
+### 第1步：确认保全类型和时机
 
-**Default hold notice template:**
+询问以下关键信息（不可跳过）：
+
+1. **保全类型：** 证据保全 / 财产保全 / 两者兼需
+2. **保全时机：** 诉前保全 / 诉中保全
+3. **管辖法院：** 哪个法院有管辖权？
+4. **紧急性：** 是否需要法院在48小时内裁定？
+
+**诉前 vs 诉中判断标准：**
+- 诉前：尚未立案，情况紧急，不立即申请保全将使合法权益受到难以弥补的损害
+- 诉中：已立案，在诉讼过程中发现需要保全
+
+### 第2步：收集保全所需信息
+
+**财产保全需收集：**
+
+1. **被申请人身份信息：** 名称/姓名、统一社会信用代码/身份证号、住所地/经常居住地
+2. **财产线索：**
+   - 银行账户（开户行、账号、户名）
+   - 不动产（坐落、权属证明/房产证号）
+   - 动产（车辆车牌号、设备型号/存放地点）
+   - 股权（公司名称、持股比例、登记机关）
+   - 到期债权（债务人名称、债权金额、债权凭证）
+   - 其他财产（知识产权、微信/支付宝账户等）
+3. **保全金额：** 诉讼请求金额（保全金额一般不超过诉讼请求金额）
+
+**证据保全需收集：**
+
+1. **证据描述：** 证据的类型、内容、存放位置
+2. **保管人/持有人信息：** 证据由谁持有或控制
+3. **灭失/难以取得的风险说明：** 说明为什么该证据可能灭失或以后难以取得（如：对方可能销毁、电子数据可能被删除、证人即将出国定居等）
+
+### 第3步：准备担保方案
+
+**担保方式选项：**
+
+1. **现金担保：** 存入法院指定账户，一般按保全金额的20%-30%提供
+2. **保险公司保函（诉讼保全责任险）：** 目前实践中使用最为广泛，向保险公司投保诉讼保全责任险，费率通常为保额的3‰-8‰
+3. **银行保函：** 由银行出具担保函
+4. **第三人保证：** 由符合条件的第三人提供保证
+5. **财产担保：** 以申请人自有不动产、动产等提供担保
+
+**提示：** 诉前保全必须提供担保；诉中保全法院可裁量是否要求提供担保（实践中大额财产保全通常要求提供担保）。
+
+> 具体担保金额和方式须与承办法院确认——各地法院要求存在差异。
+
+### 第4步：起草保全申请书
+
+#### 财产保全申请书格式
 
 ```
-[PRIVILEGED & CONFIDENTIAL — ATTORNEY-CLIENT COMMUNICATION]
+财产保全申请书
 
-DATE: [effective date]
-TO: [custodian name]
-FROM: [signer — per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` default]
-RE: LITIGATION HOLD NOTICE — [matter short name]
+申请人：[姓名/名称]，[性别]，[出生日期]，[民族]，
+住所地：[地址]，联系电话：[电话]
+[如为法人：法定代表人：__，职务：__]
+委托代理人：[姓名]，[律所名称]律师，联系电话：[电话]
 
-You are receiving this notice because [company] has determined that [one-
-sentence description of the dispute / investigation, avoiding prejudicial
-detail]. The law requires preservation of documents and communications
-potentially relevant to this matter.
+被申请人：[姓名/名称]，[性别]，[出生日期]，
+住所地：[地址]，联系电话：[电话]
 
-EFFECTIVE IMMEDIATELY, you must preserve:
+申请事项：
+请求贵院依法查封/扣押/冻结被申请人名下价值人民币__元的财产。
 
-1. All documents, emails, text messages, Slack/Teams messages, and other
-   communications relating to [scope bullet 1].
-2. [scope bullet 2]
-3. [scope bullet 3]
-...
+事实与理由：
+[案件基本事实简述]
+[申请保全的原因——不立即保全将使判决难以执行或造成其他损害]
+[被保全财产信息——列明已知的财产线索]
 
-This preservation obligation applies to:
-- Email (including sent, archived, deleted folders)
-- Slack/Teams/messaging platforms
-- Shared drives and cloud storage
-- Personal devices used for company business (BYOD)
-- Paper documents
-- Voicemails
-- Calendar entries and meeting notes
+申请人愿以[担保方式]提供担保。如申请有错误，申请人愿意赔偿被申请人因保全所遭受的损失。
 
-DO NOT:
-- Delete, modify, destroy, or dispose of any potentially responsive material
-- Auto-delete or "Inbox Zero" any email or messaging
+此致
+[__人民法院]
 
-Coordinate with [legal contact] before sharing this notice with direct reports
-or IT.
-
-Direct questions about this notice or your preservation obligations to [legal
-contact]. You may continue to discuss the underlying business subject matter
-with colleagues as needed for your work, but do not discuss this legal notice,
-the litigation, or legal strategy.
-
-IF YOU ARE UNSURE whether something is covered, ERR ON THE SIDE OF PRESERVING.
-
-Please acknowledge receipt of this notice by [reply / link / form] within
-three business days. If you have questions, contact [signer email].
-
-This notice remains in effect until you receive written notice of its
-release. You may be asked to reaffirm compliance at periodic intervals.
-
-[Signer signature block]
+申请人：（签名/盖章）
+委托代理人：（签名）
+年  月  日
 ```
 
-**Send gate (closing note on the draft):** Append to the in-chat preview of the notice — stripped before the notice goes to custodians:
+#### 证据保全申请书格式
 
-> This is a draft legal hold notice for attorney review, not a notice ready to issue. Issuing a hold triggers preservation obligations the company will be judged on in any later spoliation argument, and the notice itself may be discoverable. A licensed attorney reviews, approves, and issues. Do not distribute this draft unreviewed.
+```
+证据保全申请书
 
-**Writes:**
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/legal-hold-v1.docx` via the `docx` skill
-- Appends to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`:
-  ```
-  ## [YYYY-MM-DD] — Legal hold issued
+申请人：[同上]
 
-  Hold issued to [N] custodians: [list].
-  Scope: [one-line summary].
-  Next refresh: [YYYY-MM-DD (default issued + 6 months)].
-  ```
-- Updates `_log.yaml` row:
-  ```yaml
-  legal_hold:
-    issued: true
-    issued_date: [YYYY-MM-DD]
-    scope: "[one-line summary]"
-    custodians: [list]
-    last_refresh: [YYYY-MM-DD]   # same as issued_date on first issuance
-    next_refresh: [YYYY-MM-DD]   # default: issued_date + 6 months
-    released: null
-  ```
+被申请人：[同上]
 
-### `--refresh` — periodic reaffirmation
+申请事项：
+请求贵院对以下证据采取保全措施：
+1. [证据名称/描述]，存放于[地点/持有人]，保全方式：[如：扣押/复制/拍照/录像/鉴定]
+2. [证据名称/描述]...
 
-Refresh cadence: default 6 months; adjustable per matter. When `next_refresh < today` (or user invokes manually), the skill drafts a refresh notice.
+事实与理由：
+[案件基本事实简述]
+[该证据的证明对象及与本案的关联]
+[说明该证据可能灭失或以后难以取得的具体情形]
+[如为诉前证据保全，说明紧急性]
 
-**Inputs:**
-1. Any **scope changes** since last refresh (new topics surfaced in discovery, new custodians, new systems).
-2. Any **custodians to add or remove** (departures need special handling — see below).
-3. Re-confirmation language.
+此致
+[__人民法院]
 
-**Refresh notice template:** similar to issuance; opens with "This is a reaffirmation of the legal hold originally issued [date]." Lists current scope (amended if needed). Requests re-acknowledgment.
-
-**Departed custodians:** if a custodian has left the company since last refresh, the skill flags this as a preservation action item — the departing employee's files and email archive need to be preserved at IT level, not just via notice to the individual. Records this in history.md as a separate entry requiring action.
-
-**Writes:**
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/legal-hold-v[N].docx` (next version number)
-- `history.md` entry
-- `_log.yaml`: updates `last_refresh` and `next_refresh` fields; modifies `custodians` list if changed
-
-### `--release` — close the hold
-
-Usually at matter close. Confirm the matter is truly over (not on appeal, not likely to reopen, statute of limitations passed on related claims).
-
-**Before releasing the hold (the consequential act — preservation obligations resume normal retention):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
-
-> Releasing a legal hold has legal consequences — once released, custodians may begin deleting material. Release at the wrong time creates spoliation exposure. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> [Generate a 1-page summary: the matter status, why release is proposed now, related-claim / appeal / SOL exposure, custodian impact, what could go wrong, what to ask the attorney.]
->
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
-
-Do not send the release notice without an explicit yes.
-
-**Inputs:**
-1. Confirmation of release authority (usually the signer or GC).
-2. Release date.
-3. Retention instruction — what happens to the material that was under hold? (Return to normal retention? Continue preserving for defined period? Transfer to archive?)
-
-**Release notice template:** one paragraph, formal. "The litigation hold issued [date] regarding [matter] is released effective [date]. Normal retention resumes."
-
-**Writes:**
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/legal-hold-release.docx`
-- `history.md` entry
-- `_log.yaml`: sets `released: [YYYY-MM-DD]`
-
-### `--status` — report across the portfolio
-
-Read `_log.yaml`. Produce a report:
-
-```markdown
-# Legal Hold Status — [today]
-
-## Active holds
-
-| Matter | Issued | Last refresh | Next refresh | Custodians | Status |
-|---|---|---|---|---|---|
-| [slug] | [date] | [date] | [date] | [N] | [ok / ⚠️ refresh due / ❌ overdue] |
-
-## ⚠️ Attention
-
-- **Refresh overdue:** [list slugs where next_refresh < today]
-- **Refresh due within 30 days:** [list]
-- **Matters active without hold issued:** [list — high/critical risk first]
-- **Matters closed with hold still active:** [list — consider release]
-
-## Recently released
-
-[last 5 released holds with dates]
+申请人：（签名/盖章）
+委托代理人：（签名）
+年  月  日
 ```
 
-This is a separate command invocation (`/legal-hold --status` with no slug) OR invoked by `/portfolio-status` as a section in the portfolio rollup.
+### 第5步：整理配套材料清单
 
-## Integration with portfolio-status
+向用户列出需要一并提交的材料：
 
-The `portfolio-status` skill already flags "Hold not issued on active litigation." This skill is what resolves those flags. Worth cross-referencing in the briefing when a matter is opened: if `legal_hold.issued == false`, `/matter-intake` closes by offering to run `/legal-hold --issue`.
+```
+保全申请配套材料清单：
+□ 保全申请书（N份，被申请人人数+1）
+□ 申请人身份证明（营业执照副本/身份证复印件）
+□ 授权委托书及所函
+□ 担保材料（保函/保单/现金缴款凭证）
+□ 财产线索证明材料
+□ 起诉状副本（诉中保全）或 拟起诉的起诉状（诉前保全）
+□ 案件受理通知书（诉中保全）
+□ 证据材料（证明保全必要性的初步证据）
+```
 
-## What this skill does not do
+### 第6步：更新案件档案
 
-- **Enforce preservation.** It issues the notice; IT/custodians preserve. The skill flags when a custodian leaves (so IT can preserve at system level) but doesn't reach into systems.
-- **Make scope calls alone.** The skill proposes scope from matter context; the user confirms. Scope too broad = operational burden. Scope too narrow = spoliation risk. User's judgment.
-- **Auto-refresh without review.** Even when `next_refresh` comes up, the user reviews scope changes before the refresh notice goes out.
-- **Send the notice.** Drafts .docx; user sends via email per house convention. (Future integration: Gmail/O365 MCP could send directly after user review.)
+保全申请提交后，更新案件档案和办案日志：
+
+```
+办案日志条目：
+## [年-月-日] —— 提交保全申请
+
+保全类型：[证据保全/财产保全/两者]
+保全时机：[诉前/诉中]
+保全金额：[金额]（如为财产保全）
+担保方式：[方式]
+受理法院：[法院名称]
+裁定结果：[待裁定/已裁定——裁定书号__]
+执行情况：[待执行/已执行——执行日期__]
+```
+
+在 `_log.yaml` 中追加保全相关字段（如需）。
+
+---
+
+## 特殊情况处理
+
+### 情况一：情况紧急需诉前保全
+
+1. 确认申请人是否有管辖权依据
+2. 准备紧急情况说明（为什么要48小时内裁定）
+3. 确认担保可立即到位
+4. 提示申请人：保全后30日内须起诉，否则法院解除保全
+
+### 情况二：被申请人财产线索未知
+
+1. 建议申请人先行调查（公开渠道查询不动产、股权、知识产权等）
+2. 向法院申请调查令调取被申请人财产信息（部分法院支持）
+3. 律师凭案件受理通知书向相关部门查询
+
+### 情况三：被申请人提供担保要求解除保全
+
+1. 审查对方担保的充分性和可实现性
+2. 如担保确实充分，解除保全；如不充分，向法院提出异议
+
+---
+
+## 本技能不做什么
+
+- **不执行保全。** 仅起草申请和整理材料；由律师向法院提交，法院执行保全。
+- **不单独决定保全范围。** 技能根据案件标的和财产线索提议范围；用户确认。保全范围过大导致申请错误风险，过小则不能保障判决执行。
+- **不提供担保。** 担保由申请人提供（现金/保函/保险）；技能仅提示担保方案选项。
+- **不替代法院审查。** 是否裁定保全及保全范围由法院依法审查决定。

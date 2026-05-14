@@ -1,39 +1,71 @@
 ---
-name: investigation-add
+name: 调查添加
 description: >
-  Add data to an open investigation — documents, interview notes, or
-  observations. Processes batches against the documented pull criteria,
-  surfaces significant items, and logs everything reviewed for coverage
-  verification. Use when new evidence, interview notes, or document
-  productions come in for an open investigation.
-argument-hint: "[matter name or slug, then paste or attach data]"
+  向开放调查添加数据——文件证据、访谈笔录或观察记录。按证据提取标准处理批次、
+  揭示重要项目、记录所有已审查内容以便覆盖验证。当新证据、访谈笔录
+  或文件产出到达开放调查时使用。
+argument-hint: "[案件名称或简码，然后粘贴或附上数据]"
 ---
 
-# /investigation-add
+# /调查添加
 
-Adds data to an open investigation log. Processes document batches using
-documented pull criteria, surfaces significant items, logs everything
-reviewed for coverage verification.
+向开放调查日志添加数据。使用证据提取标准处理文档批次、揭示重要项目、记录所有已审查内容以便覆盖验证。
 
-## Instructions
+## 中国法下证据采集注意事项
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`.
-2. Load the `internal-investigation` reference skill and run Mode 2 (Add data).
-3. After processing, show the surface ratio and list of surfaced items.
-4. Prompt to update the sources checklist if the data covers a checklist item.
+在中国法下，证据采集和保存应特别注意：
+- 电子证据的提取应符合《关于办理刑事案件收集提取和审查判断电子数据若干问题的规定》
+- 证人访谈应制作书面笔录，由证人签字确认
+- 证据原件与复制件的保管链应完整记录
+- 如涉及个人隐私或商业秘密，应标注保密级别
 
-## Examples
+## 指示
+
+1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。
+2. 加载`内部调查`参考技能并运行模式2（添加数据）。
+3. 处理后，显示揭示比例和已揭示项目列表。
+4. 如果数据覆盖了证据收集清单上的项目，提示更新清单状态。
+
+## 添加数据类型
+
+### 文件证据
+- 劳动合同及补充协议
+- 规章制度（确认是否已完成民主程序+公示）
+- 邮件往来
+- 即时通讯记录（微信/企业微信/钉钉/飞书）
+- 财务凭证
+- 审批记录
+
+### 访谈材料
+- 访谈通知书
+- 访谈笔录（含访谈时间/地点/参与人/签字）
+- 补充说明材料
+- 被调查对象的陈述和申辩
+
+### 其他材料
+- 录音录像（注意录音合法性问题——未经对方同意秘密录音的证据效力存疑）
+- 门禁/考勤记录
+- 监控视频
+- 第三方鉴定报告
+
+## 工作流
+
+1. 接收证据材料 → 编号登记
+2. 审查材料内容 → 提取关键事实 → 记录日志条目
+3. 核对证据收集清单 → 更新覆盖状态
+4. 标注证据的可靠性/相关性/合法性评估
+5. 标记与其他证据的矛盾或印证关系
+
+## 示例
 
 ```
-/employment-legal:investigation-add [matter name]
-[paste interview notes]
+/employment-legal:调查添加 [案件名称]
+[粘贴访谈笔录]
 ```
 
 ```
-/employment-legal:investigation-add [matter name]
-[attach email export]
+/employment-legal:调查添加 [案件名称]
+[附上邮件导出文件]
 ```
 
-> Detailed needle-finding process, log entry format, surface-ratio rules, and
-> sources-checklist tracking live in the `internal-investigation` reference
-> skill — load it before doing substantive work.
+> 详细的证据处理流程、日志条目格式、揭示比例规则和证据收集清单追踪位于`内部调查`参考技能中——在做实质性工作之前加载它。

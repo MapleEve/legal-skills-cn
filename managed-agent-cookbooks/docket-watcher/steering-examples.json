@@ -1,5 +1,5 @@
 [
-  { "event": "Watch docket 2:26-cv-00315 in N.D. Cal., matter M-2026-042", "description": "Single-matter federal docket sweep" },
-  { "event": "Daily sweep: all active matters with hearings in next 14 days", "description": "Scheduled portfolio sweep for near-term hearings" },
-  { "event": "New filing detected: Motion to Dismiss in matter M-2026-042, compute opposition deadline", "description": "Event-triggered deadline computation for a specific filing" }
+  { "event": "查看案件 (2024)京0105民初12345号，案件编号 M-2026-042 的卷宗", "description": "单案联邦法院卷宗扫描" },
+  { "event": "每日巡检：未来14天内有庭审安排的全部在办案件", "description": "按计划对近期庭审案件进行组合扫描" },
+  { "event": "检测到新增文书：案件 M-2026-042 中的驳回起诉申请，计算答辩期限", "description": "针对特定文书的事件触发式期限计算" }
 ]

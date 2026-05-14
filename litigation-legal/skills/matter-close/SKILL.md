@@ -1,130 +1,169 @@
 ---
-name: matter-close
-description: Close a matter — capture outcome, final exposure, and lessons, then archive it out of the active portfolio without deleting the record. Use when the user wants to close a matter, says "[matter] is done", or needs to record a settlement, dismissal, judgment, withdrawal, or consolidation outcome.
-argument-hint: "[slug]"
+name: 案件结案
+description: 结案——记录结果、最终敞口和经验教训，然后归档移出活跃案件组合，不删除记录。适用场景：用户欲结案、说"[案件]结束了"或需记录判决/调解/撤诉/驳回/和解/移送等结果。
+argument-hint: "[标识]"
 ---
 
-# /matter-close
+# /案件结案
 
-1. Follow the workflow and reference below.
-2. Confirm slug and current status.
-3. Capture outcome: resolution type (settled, dismissed, judgment for/against, withdrawn, consolidated), date, final exposure/cost, lessons.
-4. Update `_log.yaml`: `status: closed`, add `closed: YYYY-MM-DD` and `outcome:` fields.
-5. Append final entry to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`.
-6. Matter stays in `_log.yaml` and `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/` — not deleted. `/portfolio-status` filters it from active rollups.
+1. 遵循以下工作流程和参考。
+2. 确认标识和当前状态。
+3. 记录结果：结案类型、日期、最终敞口/费用、经验教训。
+4. 更新 `_log.yaml`：`状态: 已结案`，添加 `结案日期: 年-月-日` 和 `结果:` 字段。
+5. 追加最终条目至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`。
+6. 案件保留在 `_log.yaml` 和 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/` 中——不删除。`/案件组合概况` 将其过滤出活跃汇总。
 
 ---
 
-# Matter Close
+# 案件结案
 
-## Purpose
+## 目的
 
-Matters end. The outcome is the single most valuable data point the portfolio generates — it calibrates the risk framework for future matters. Closing a matter captures the outcome structurally so the record is useful, not just archived.
+案件会结束。结果是案件组合产生的最有价值数据点——它校准未来案件的风险框架。结案时结构化记录结果，使记录有用，而非仅归档。
 
-## Load context
+中国律师实务：结案包括撰写结案报告、费用结算、退还多余律师费、归还客户原件、按《律师业务档案管理办法》归档（至少保存10年）。结案类型区分：判决胜诉/判决败诉/调解/撤诉/和解/驳回起诉/移送管辖。
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — find the row
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — reference (intake context)
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — append target
+## 加载上下文
 
-**Conflicts gate — unbypassable.** Before closing, check `_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 查找行
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 参考（立案背景）
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 追加目标
 
-> "I don't see [matter slug] in the matter log. Nothing to close — either the slug is wrong or the matter was never intaken through `/litigation-legal:matter-intake`. Check the slug first; if it genuinely was never intaken, there's no row to update and no file structure to close."
+**利益冲突检索关——不可跳过。** 结案前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-## Input
+> "我在案件登记簿中未找到[案件标识]。无可结案——要么标识错误，要么案件从未通过 `/litigation-legal:案件立案` 立案。先检查标识；若确实从未立案，则无行可更新、无文件结构可结案。"
 
-Slug (required).
+## 输入
 
-## The close
+标识（必需）。
 
-### 1. Resolution type
+## 结案
 
-- `settled` — with counterparty, dollar amount, structural terms
-- `dismissed` — with or without prejudice, by what mechanism
-- `judgment-for-us` — at what stage, appeal exposure
-- `judgment-against-us` — at what stage, appeal status, exposure crystallized
-- `withdrawn` — by counterparty, circumstances
-- `consolidated` — merged into another matter (provide slug of parent)
-- `other` — with explanation
+### 1. 结案类型
 
-### 2. Resolution date
+中国民事诉讼实务结案类型：
 
-The date the matter actually ended (settlement executed, order issued, dismissal filed).
+- `判决胜诉` —— 一审/二审判决支持己方全部或主要诉求；记录生效日期、上诉期是否已过
+- `判决败诉` —— 一审/二审判决驳回己方诉求；记录是否上诉、上诉期截止日
+- `调解结案` —— 法院出具民事调解书；记录调解内容、履行期限
+- `撤诉` —— 原告/申请人撤回起诉/申请；记录是否可再诉（撤诉后一般可再诉，除按撤诉处理等情形）
+- `和解后撤诉` —— 双方庭外和解后原告撤诉；记录和解协议要点
+- `驳回起诉` —— 法院裁定驳回起诉（程序性裁定）；记录理由（管辖/主体不适格/一事不再理等）
+- `移送管辖` —— 案件移送其他法院/仲裁机构；记录受移送机构
+- `其他` —— 附说明
 
-### 3. Final exposure
+### 2. 结案日期
 
-- Actual cost to company (settlement amount + fees + injunctive/structural cost)
-- vs. initial exposure range at intake (did we call it?)
-- Reserve accuracy (if reserved): booked vs. actual
+案件实际结束的日期：
+- 判决/裁定生效日
+- 调解书签收日
+- 撤诉裁定作出日
+- 和解协议签署日
 
-### 4. Lessons
+### 3. 最终敞口
 
-Two or three sentences. What did we get right? What did we misjudge? Anything the intake should have flagged earlier?
+- 公司/客户实际成本（判决/调解金额 + 律师费 + 诉讼费/仲裁费 + 保全费 + 其他费用）
+- 对比立案时初始敞口区间（是否预测准确？）
+- 拨备准确性（如已计提拨备）：账面 vs. 实际
+- 如涉及执行，执行到位金额
 
-This is the part future counsel will reread. Be honest. "Misjudged likelihood — plaintiff firm was more aggressive than expected" is worth more than "resolved favorably."
+### 4. 经验教训
 
-### 5. Seed doc prompt
+两到三句。哪些做对了？哪些判断失误？立案时是否应更早标注什么？哪些证据应更早收集？管辖选择是否恰当？
 
-Settlement agreement, final order, dismissal — path if available. Not required.
+这是未来律师会重温的部分。诚实。"误判了对方举证能力——对方关键证据超出预期"比"顺利解决"更有价值。
 
-## Writing
+### 5. 后续事项
 
-**Before closing the matter (the consequential act — the matter is archived and active tracking ends):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`. If the Role is Non-lawyer:
+- **上诉期管理：** 如判决败诉且拟上诉，确认上诉期截止日（判决15天/裁定10天）
+- **执行申请：** 如胜诉判决，确认申请执行截止日（判决生效后2年内）
+- **再审评估：** 是否满足《民事诉讼法》第211条再审事由
+- **费用结算：** 律师费结算情况、多退少补状态
+- **原件归还：** 客户原件是否已归还
+- **归档：** 案件档案是否已整理归档
 
-> Closing a matter has legal consequences — it ends active tracking, may affect any associated legal hold (run `/legal-hold --release` separately if appropriate), and establishes the final record the company relies on. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+### 6. 种子文件提示
+
+判决书/裁定书/调解书/和解协议/撤诉裁定——如有路径。非必需但强烈建议。
+
+## 写入
+
+**结案前（结果性行为——案件归档，活跃追踪终止）：** 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。若角色为非律师：
+
+> 结案具有法律后果——它终止活跃追踪、触发归档义务（《律师业务档案管理办法》要求至少保存10年），并建立律所/公司依赖的最终记录。您是否已与律师审查？若是，继续。若否，以下是带给律师的简要说明：
 >
-> [Generate a 1-page summary: the matter, resolution type and terms, final exposure vs. initial, reserve accuracy, related matters or appeals still live, what could go wrong with premature closure, what to ask the attorney.]
+> [生成1页摘要：案件、结案类型和条款、最终敞口对比初始敞口、拨备准确性、仍在进行的关联案件或上诉、过早结案可能出错之处、向律师询问的问题。]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> 若您需要在贵管辖区寻找执业律师：中华全国律师协会或地方律师协会是最快的起点。
 
-Do not write the close fields or append the close entry without an explicit yes.
+未经明确同意，不得写入结案字段或追加结案条目。
 
-### Update `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 更新 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
 
 ```yaml
-status: closed
-closed: [YYYY-MM-DD]
-outcome: [resolution-type]
-final_cost: [dollar amount]
-last_updated: [today]   # close is the last touch; record it
+状态: 已结案
+结案日期: [年-月-日]
+结果: [结案类型]
+最终费用: [金额]
+最近更新: [今日]   # 结案为最后接触；记录之
 ```
 
-Retain all existing fields. Do not delete the row.
+保留所有既有字段。不删除行。
 
-### Append final entry to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`
+### 追加最终条目至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`
 
 ```markdown
-## [YYYY-MM-DD] — Matter closed: [resolution-type]
+## [年-月-日] —— 案件结案：[结案类型]
 
-**Resolution:** [narrative — what happened, on what terms]
-**Final cost:** [amount + structural terms if any]
-**vs. initial exposure:** [compare to matter.md intake range]
-**Reserve accuracy:** [if applicable]
+**结果：** [叙述——法院/仲裁庭裁决内容、调解/和解内容]
+**案号：** [法院案号，如有]
+**最终费用：** [金额明细 —— 判决/调解金额 + 律师费 + 诉讼/仲裁费 + 保全费]
+**对比初始敞口：** [对比案件档案.md立案区间]
+**拨备准确性：** [如适用]
 
-**Lessons:**
-[2-3 sentences — honest retrospective]
+**经验教训：**
+[2-3句——诚实回顾]
 
-**Related doc:** [settlement agreement / final order / etc., if provided]
+**后续事项：**
+- [ ] 上诉期管理 —— [截止日/不适用]
+- [ ] 执行申请 —— [截止日/不适用]
+- [ ] 费用结算 —— [已完成/待处理]
+- [ ] 原件归还 —— [已完成/不适用]
+- [ ] 归档 —— [待完成 —— 至少保存10年 per《律师业务档案管理办法》]
+
+**关联文件：** [判决书/调解书/和解协议等，如有]
 ```
 
-### Touch `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md`
+### 触及 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md`
 
-Add a closing block at the end (don't modify earlier sections — they're the historical intake):
+在末尾添加结案块（不修改前文各节——它们是历史立案信息）：
 
 ```markdown
 ---
 
-## Closed [YYYY-MM-DD]
+## 已结案 [年-月-日]
 
-[Resolution summary in one paragraph. Pointer to the final history entry for detail.]
+[结果概述一段。指引至最终日志条目了解详情。]
 ```
 
-## Confirm
+## 归档提醒
 
-Show the user the full close entry and the yaml changes before writing.
+结案后提示：
 
-## What this skill does not do
+> 案件已结案。按《律师业务档案管理办法》，律师业务档案应自结案年度起至少保存10年。请确认：
+> - [ ] 结案报告已撰写
+> - [ ] 费用已结算，多余费用已退还
+> - [ ] 客户原件已归还
+> - [ ] 纸质档案已整理装订
+> - [ ] 电子档案已备份
 
-- Delete matters. Closed matters stay in `_log.yaml` and on disk — they're the training set for the portfolio's judgment.
-- Re-open. If a closed matter comes back (appeal, related litigation), open a new matter that references the closed one in `matter.md`.
-- Summarize lessons the user didn't say. If the user skips the lessons section, leave it empty rather than invent.
+## 确认
+
+写入前向用户展示完整结案条目和yaml变更。
+
+## 本技能不做什么
+
+- 删除案件。已结案件保留在 `_log.yaml` 和磁盘中——它们是案件组合判断的训练集。
+- 重新开启。若已结案件回归（上诉、再审、关联诉讼），另立新案并在 `案件档案.md` 中引用已结案件。
+- 概括用户未说的经验教训。若用户跳过经验教训部分，留空而非发明。
+- 决定是否上诉/再审。这些由律师在内部讨论中决策；本技能记录最终结果而非启动新程序。

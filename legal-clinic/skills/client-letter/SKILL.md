@@ -1,166 +1,94 @@
 ---
-name: client-letter
+name: 当事人函件
 description: >
-  Routine client correspondence from templates — appointment confirmations,
-  document requests, brief "we filed it" updates. Plain language, required
-  elements, supervision routing. NOT substantive advice. Use when a student
-  needs to send routine correspondence, an appointment confirmation, a
-  document request letter, or a brief status note to a client.
-argument-hint: "[appointment | doc-request | update]"
+  生成法律援助诊所常用当事人函件——法律咨询答复函、案件进展告知函、
+  风险提示函。通俗语言、必备要素清晰、行动项明确。非实质性法律建议，
+  不包含美国ABA式的免责声明。当学生需向当事人发送常规函件时使用。
+argument-hint: "[咨询答复 | 进展告知 | 风险提示 | 文件请求]"
 ---
 
-# /client-letter
+# /当事人函件
 
-1. Load `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → plain-language standards, supervision style, clinic contact info.
-2. Use the templates and workflow below.
-3. Match type to template. Plain-language check.
-4. Output with AI-assisted label, supervision routing.
+## 目的
 
-Scope: routine only. Substantive advice → `/status client` or a conversation with the professor.
+与法律援助当事人的书面沟通应清晰、专业、无法律术语。《法律援助法》(2022)第47条
+要求法律援助机构向受援人通报法律援助事项办理情况，保障当事人知情权。
+《律师法》第38条要求律师保守执业中知悉的当事人秘密。
+
+本技能按模板生成函件草稿，提交给指导教师审查。与当事人沟通函件在中国法律援助诊所
+中使用中国法律文件格式，不包含美国ABA-style disclaimer、"non-lawyer notice"等元素。
+
+## 中国法律援助当事人函件类型
+
+### 1. 法律咨询答复函
+对当事人口头或书面咨询的正式书面答复。
+- 咨询问题概述
+- 法律分析（通俗语言，不引用法条原文，用日常语言解释）
+- 建议和选项（可以做什么、每种选择的利弊）
+- 风险提示
+- 后续行动建议
+
+### 2. 案件进展告知函
+向当事人通报案件办理进展。
+- 已完成的办理工作（如已立案/已提交证据/已开庭等）
+- 当前所处阶段
+- 下一步预计时间和可能走向
+- 需要当事人配合的事项（如补充材料、出庭等）
+
+### 3. 风险提示函
+在案件存在重大风险时向当事人书面提示。
+- 案件存在的风险点（如证据不足/诉讼时效争议/对方无财产可供执行等）
+- 可能的不利后果
+- 当事人需要知晓的关键事项
+- 建议和替代方案
+
+### 4. 文件/材料请求函
+请求当事人提供补充材料。
+- 需要什么材料、为什么需要
+- 提交方式（当面/邮寄/拍照发送）
+- 提交期限
+- 不提交的后果
+
+## 工作流
+
+1. **从事项工作区加载当事人和案件信息。** 读取接案笔录（intake-record.md）、案件文件。
+2. **确定函件类型。** 咨询答复 / 进展告知 / 风险提示 / 文件请求。
+3. **按模板生成函件草稿。** 通俗语言、关键信息完整、当事人行动项明确。
+4. **标记审查项。** 任何需要指导教师审查的实质性内容以 `[review]` 标记。
+5. **路由到指导教师审查队列。** 未经审查通过不得发送。
+
+## 格式要求（中国法律援助诊所标准）
+
+- **语言：** 通俗语言，初中及以上阅读水平即可理解。避免"据此""前揭""兹""之""倘"等文言或生僻用语。
+- **必备要素：** 案件编号、当事人姓名、函件日期、诊所名称、核心信息（发生了什么/下一步是什么/你需要做什么）、诊所联系方式、指导教师署名。
+- **禁止要素：** 不写美国式的"this letter does not constitute legal advice"免责声明、不写"attorney-client privilege"声明、不写ABA规则引用。如需保密提示，使用"本函所涉信息涉及您的个人隐私，请妥善保管。"
+- **内部标签：** 草稿阶段保留 `[AI辅助草稿——需学生分析及指导教师审查]` 标签。指导教师审查通过、对外发送时去除该标签。
+
+## 当事人函件模板要素
 
 ```
-/legal-clinic:client-letter appointment
+[诊所全称]
+[地址/电话/邮箱]
+
+案件编号：[ ]
+函件日期：[ ]
+
+[当事人姓名]：
+
+[正文]
+
+如有疑问，请通过以下方式联系本诊所：
+电话：[ ]
+地址：[ ]
+工作时间：[ ]
+
+[指导教师姓名/职务]
+[诊所盖章处]
 ```
 
-```
-/legal-clinic:client-letter doc-request
-```
+## 本技能不做的事
 
----
-
-# Client Letter: Routine Correspondence
-
-## Purpose
-
-Clinics send a lot of routine correspondence: "your appointment is Tuesday at 2pm," "please bring your lease," "we filed your answer." This skill handles those from templates so students aren't typing the same letter every week.
-
-**Scope: routine only.** Substantive advice, bad news, case strategy — those are `/status client` or a conversation, not a template letter.
-
-## Load context
-
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → plain-language standards, supervision style, clinic contact info.
-
-## Pedagogy check
-
-Read the supervisor guide for this practice area at `~/.claude/plugins/config/claude-for-legal/legal-clinic/guides/<practice-area>.md`. Check the `pedagogy_posture` setting:
-
-- **`guide` (default):** Produce the structure and the checklist (required elements, plain-language targets, sign-off per student practice rule). Ask the student to draft each section. Give feedback on their draft (register, reading level, required elements, what they missed). Offer to fill a section only when the student has tried once.
-- **`assist`:** Produce the letter. Flag items for student review. The student edits and learns by reviewing.
-- **`teach`:** Don't produce the letter. Ask the student to draft it. Give feedback. Ask leading questions when they're stuck. Only show a model paragraph after two attempts, and only the section they're stuck on. Track what they got right and wrong so the supervisor can see progress.
-
-If no guide exists, use `guide`. If the guide exists but doesn't set a posture, use `guide`.
-
-Whatever the posture, the output always includes: "**Pedagogy mode: [assist/guide/teach]** — set by your supervisor's guide. This means I [description of what the student did vs what the skill did]."
-
-## Sign-off and student-attorney disclosure
-
-Check your jurisdiction's student practice rule for required disclosure language in letters signed by a law student. Some jurisdictions require specific forms; most require that the student identify themselves as a law student / certified legal intern and identify the supervising attorney. The templates below use a generic form — conform the sign-off to your rule before sending.
-
-## Letter types
-
-> **Review label goes OUTSIDE the letter.** The `[AI-ASSISTED DRAFT — requires review per plugin config supervision step]` tag is a note to the student, not part of the letter body. Place it above the rendered template (or in a header the student deletes before sending), never inside the fenced letter content. If it ends up in the client-facing copy, the skill has failed.
-
-### Appointment confirmation
-
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires review per plugin config supervision step]`
-
-```markdown
-Dear [Client],
-
-This confirms your appointment with [Clinic name]:
-
-**Date:** [date]
-**Time:** [time]
-**Where:** [address / room / or "by phone at [number]"]
-**With:** [student name]
-
-**Please bring:** [documents needed — from case notes or leave as prompt
-for student to fill]
-
-If you need to reschedule, call us at [clinic phone] at least 24 hours before.
-
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name] | [phone] | [hours]
-```
-
-### Document request
-
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires review per plugin config supervision step]`
-
-```markdown
-Dear [Client],
-
-To move your case forward, we need the following documents from you:
-
-- [Document 1 — e.g., "Your lease agreement"]
-- [Document 2 — e.g., "The notice you received from your landlord"]
-- [Document 3]
-
-**How to get them to us:** [drop off at clinic / email to [address] / bring
-to next appointment]
-
-**Please send by:** [date — if there's a deadline, say why: "We need these
-by [date] so we can file your answer before the court deadline."]
-
-If you don't have some of these or aren't sure what we mean, call us at
-[clinic phone] and we can help.
-
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name] | [phone] | [hours]
-```
-
-### Brief status update
-
-For routine "we filed it" / "we're waiting" updates. (Fuller status updates → `/status client`.)
-
-*Review label for the student (not for the client — strip before sending):*
-`[AI-ASSISTED DRAFT — requires review per plugin config supervision step]`
-
-```markdown
-Dear [Client],
-
-Quick update: [one-line what happened — "We filed your answer with the court
-on [date]" / "We sent the demand letter to your landlord on [date]"].
-
-**What's next:** [one line — "We're waiting for their response" / "The court
-will schedule a hearing and let us know the date"].
-
-You don't need to do anything right now. We'll let you know when we do.
-
-[Student name]
-Law Student, Certified Legal Intern
-Under the supervision of [Supervising Attorney]
-[Clinic name] | [phone] | [hours]
-```
-
-## Before sending
-
-Sending a letter to a client is a consequential action. This plugin's gate is the supervision workflow described in `## Supervision style` in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`, reinforced by the Part 0 role check that confirms a licensed supervising attorney owns the clinic setup. That gate still holds: every letter clears review before it leaves the clinic.
-
-Before sending any of the letters above, confirm:
-
-1. The draft has been reviewed per the supervision protocol in `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` (queue / flag / lighter-touch).
-2. All internal review labels (`[AI-ASSISTED DRAFT]`, any `[VERIFY]` or `[FACT NEEDED]` tags) have been removed from the client-facing copy.
-3. The sign-off conforms to your jurisdiction's student practice rule for law-student-signed correspondence.
-
-**This is a student draft for supervising-attorney review, not a final letter.** Sending it has legal consequences for the client and may constitute legal advice or communication on the client's behalf. A licensed supervising attorney reviews, edits, and signs off before the letter leaves the clinic. Do not send without supervisor approval.
-
-## Plain-language check
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` standards. Short sentences. No jargon. Reading level target enforced. If a template above includes a legal term the client might not know, explain it the first time: "We filed your 'answer' — that's the document that tells the court your side of the story."
-
-## Supervision routing
-
-Per `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md`. Routine correspondence may or may not be a flag trigger depending on the supervision style the professor chose. If lighter-touch: these go out after student review without a queue step. If formal queue: even routine letters queue.
-
-## What this skill does NOT do
-
-- **Substantive advice.** If the letter would say "here's what I think about your case" or "here's what you should do," that's not routine — that's `/status client` or a conversation with the professor first.
-- **Bad news.** Case closing, adverse ruling, can't-help — those need thought, not a template. Flag for professor.
-- **Anything to opposing counsel or a court.** Different audience, different skill (`/draft` or `/status court`).
+- 不生成实质性法律建议函件（与当事人沟通法律分析意见需经指导教师个案审核）
+- 不替代指导教师审查——所有对外函件须经审查通过方可发送
+- 不直接发送函件——仅起草供审查
+- 不在函件中添加美国ABA-style或non-lawyer disclaimers

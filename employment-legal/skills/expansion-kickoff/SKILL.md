@@ -1,41 +1,62 @@
 ---
-name: expansion-kickoff
+name: 地域扩张启动
 description: >
-  Kick off international expansion planning for a new country — gathers intake,
-  runs EOR vs. entity framing, drafts cross-functional questions, surfaces
-  country-specific flags, and creates a persistent tracker. Use when someone
-  says "we're hiring in [country]", "expansion to [country]", or "first hire
-  in [country]".
-argument-hint: "[country name]"
+  为中国企业启动国内跨省/市扩张规划——调研目标地域劳动法规（最低工资、
+  社保缴费基数/比例、产假天数、公积金缴存比例等）、做合规差距分析、
+  起草跨部门待办事项、生成持续追踪器。
+  当有人说"我们要在[省/市]招人"、"扩张到[省/市]"、"在[省/市]首次招人"时使用。
+argument-hint: "[省/市名称]"
 ---
 
-# /expansion-kickoff
+# /地域扩张启动
 
-Starts an international expansion project for a new country — gathers intake,
-runs EOR vs. entity framing, drafts cross-functional questions, surfaces
-country-specific flags, and creates a persistent tracker.
+为中国企业启动国内跨省/市扩张项目——调研目标地域劳动法规、做合规差距分析、起草跨部门待办事项、生成持续追踪器。
 
-## Instructions
+## 指示
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → jurisdictional footprint, escalation table.
-2. Load the `international-expansion` reference skill and run the full workflow.
-3. If a tracker file already exists for this country (`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`),
-   flag it: "An expansion tracker for [country] already exists. Use
-   `/employment-legal:expansion-update [country]` to update it, or confirm
-   you want to start over."
-4. Create `~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml` on completion.
+1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→现有管辖范围、升级表。
+2. 加载`地域扩张`参考技能并运行完整工作流。
+3. 如果此省/市已存在追踪器文件（`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`），
+   标记："[省/市]的扩张追踪器已存在。使用`/employment-legal:扩张更新 [省/市]`来更新它，或确认您想重新开始。"
+4. 完成后创建`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`。
 
-## Examples
+## 中国国内跨省/市扩张核心调研维度
+
+以下是中国法下跨省/市扩张必须调研的核心差异维度：
+
+### 基础合规数据
+| 维度 | 基准（国家层面） | 目标省/市差异 |
+|---|---|---|
+| 最低工资（月/小时） | 人社部令第21号，各省自行公布 | [目标省/市当前标准] |
+| 社保缴费基数上下限 | 各省自行确定 | [目标省/市标准] |
+| 社保费率（五险） | 国家指导费率，地方微调 | [养老/医疗/失业/工伤/生育] |
+| 住房公积金缴存比例 | 5%-12%，地方确定区间 | [目标省/市比例区间] |
+| 产假天数 | 国家98天+地方奖励 | [目标省/市奖励天数] |
+| 陪产假/护理假 | 各地自行规定 | [目标省/市天数] |
+| 高温津贴 | 各省标准及发放月份不同 | [标准+月份] |
+| 医疗期计算 | 有地方差异 | [目标省/市规则] |
+| 劳动合同解除地方规定 | 《劳动合同法》为基础 | [特殊规定] |
+
+### 劳动用工模式选择
+- **直接雇佣**：在当地注册分公司或子公司
+- **劳务派遣**：三性岗位（临时性/辅助性/替代性），比例不超过用工总量10%
+- **劳务外包**：注意避免"假外包真派遣"风险
+- **远程办公**：劳动关系所在地认定（劳动合同履行地vs用人单位所在地）
+
+### 劳动争议环境评估
+- 目标省/市劳动仲裁委的裁判倾向
+- 当地劳动争议高发类型
+- 当地法院对用人单位规章制度的审查力度
+
+## 示例
 
 ```
-/employment-legal:expansion-kickoff Germany
+/employment-legal:地域扩张启动 成都
 ```
 
 ```
-/employment-legal:expansion-kickoff
-(skill will ask which country)
+/employment-legal:地域扩张启动
+（技能将询问哪个省/市）
 ```
 
-> Detailed EOR vs. entity framework, cross-functional questions, briefing
-> templates, and tracker schema live in the `international-expansion`
-> reference skill — load it before doing substantive work.
+> 详细的合规差距分析框架、跨部门问题清单和追踪器模式位于`地域扩张`参考技能中——在做实质性工作之前加载它。

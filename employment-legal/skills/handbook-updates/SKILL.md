@@ -1,107 +1,158 @@
 ---
-name: handbook-updates
+name: 规章制度更新
 description: >
-  Diff a proposed handbook change against the current version, flag ripple
-  effects and state supplement impacts. Use when user says "update the
-  handbook", "add this to the handbook", "handbook change", or has a policy
-  ready for insertion.
+  按《劳动合同法》第4条民主程序对劳动规章制度进行增量更新。
+  将提议的规章制度变更与现行版本做diff，标记连锁影响和省/市补充需求。
+  当用户说"更新员工手册"、"修改规章制度"、"将此纳入规章制度"时使用。
 ---
 
-# Handbook Updates
+# 规章制度更新
 
-## Matter context
+## 案件上下文
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/employment-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+**案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务的默认设置），跳过本段——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问："这是哪个案件的？运行`/employment-legal:案件工作空间 切换 <slug>`或者说`执业级别`。"加载活跃案件的`案件.md`获取案件特定的上下文和例外设置。将输出写入案件文件夹`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。
 
 ---
 
-## Purpose
+## 目的
 
-Handbook changes have ripple effects. Change the PTO policy and you've affected the final pay calculation, the leave policy cross-reference, and three state supplements. This skill finds the ripples before they become inconsistencies.
+在中国法下，劳动规章制度（员工手册）的制定和修改须经《劳动合同法》第4条规定的民主程序——用人单位拟定草案后，须经职工代表大会或全体职工讨论，提出方案和意见，与工会或职工代表平等协商确定，最后向全体劳动者公示或告知。跳过民主程序的规章制度在劳动争议中对劳动者不具约束力。
 
-## Load context
+本技能聚焦于规章制度的增量更新——每次修改都检查：民主程序是否完成、交叉引用是否断裂、跨省市补充是否需要同步更新、修改是否涉及既有权利减损。
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → handbook location, state supplements list, update cadence.
+## 加载上下文
 
-## Workflow
+`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→规章制度文件位置、跨省/市补充列表、更新频率、民主程序记录。
 
-### Step 1: Get the change
+## 工作流
 
-- What section is changing?
-- What's the new language?
-- Why? (Legal requirement, policy decision, cleanup)
+### 步骤1：获取变更
 
-### Step 2: Diff against current
+- 哪个章节在变更？
+- 新的文本是什么？
+- 变更原因：（上位法修订 / 地方新规 / 公司政策调整 / 劳动争议教训 / 合规清理）
 
-Read the current handbook section. Show the diff:
+### 步骤2：与现行版本做diff
+
+读取现行规章制度相关章节。展示diff：
 
 ```diff
-- [old language]
-+ [new language]
+- [旧文本]
++ [新文本]
 ```
 
-### Step 3: Find cross-references
+### 步骤3：交叉引用检查
 
-Search the handbook for references to the changed section:
+在规章制度全文搜索引用被修改章节的内容：
 
-- Other policies that cite this one ("see the PTO policy for accrual rates")
-- Defined terms that this section uses or defines
-- State supplements that modify this section
+- 其他政策中引用本章节的内容（如"参见考勤制度第X条"）
+- 本章节定义或引用的术语
+- 基于本章节的省/市补充规定
 
-Each cross-reference: does it still make sense after the change? Flag any that break.
+每个交叉引用：变更后是否依然成立？标注断裂的引用。
 
-### Step 4: State supplement impact
+### 步骤4：跨省/市补充影响分析
 
-For each state supplement in `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`:
+对于`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`中员工所在的每个省/市：
 
-- Does this supplement modify the section being changed?
-- Does the change make the supplement obsolete, wrong, or incomplete?
-- Does the change create a need for a *new* supplement in a state that didn't need one before?
+- 该省/市是否有针对被修改章节的补充规定？
+- 变更是否使补充规定过时、错误或不完整？
+- 变更是否为之前不需要补充的省/市带来了新补充的需求？
 
-### Step 5: Promise check
+重点关注的省/市差异维度：
+- 最低工资标准（各省不同）
+- 高温津贴标准及发放月份（各省不同）
+- 产假/陪产假天数（《女职工劳动保护特别规定》基准之上各省有延长）
+- 医疗期计算规则（有地方差异）
+- 劳动合同解除的提前通知期（部分省市有额外规定）
 
-Is the change reducing something the old version promised?
+### 步骤5：民主程序检查
 
-If yes: that's a risk. Some states treat handbook policies as contractual. Reducing a benefit may need more than just updating the document — advance notice, consideration, or in some cases it can't be done retroactively.
+本次变更是属于需要重新走民主程序的情形？
 
-Flag this. Don't block it — but flag it.
+根据《劳动合同法》第4条：
+- **需要民主程序**：涉及劳动者切身利益的规章制度或重大事项（劳动报酬、工作时间、休息休假、劳动安全卫生、保险福利、职工培训、劳动纪律、劳动定额管理）
+- **程序要求**：草案→职代会或全体职工讨论→提案和意见→与工会或职工代表平等协商确定→公示或告知
 
-## Output
+检查清单：
+- [ ] 本次变更是否属于第4条范围？如果是：
+  - [ ] 是否已拟定草案？
+  - [ ] 是否经职代会/全体职工讨论？
+  - [ ] 是否与工会或职工代表协商？
+  - [ ] 是否已向全体劳动者公示/告知？
+  - [ ] 公示方式：公告栏/内部网站/邮件/员工手册签收/其他
+
+### 步骤6：权利减损检查
+
+变更是否减少了既有规章制度中已承诺的权利或待遇？
+
+如果是：此变更风险较高。根据《劳动合同法》第4条及司法实践：
+- 单方面减损劳动者既有权利可能被认定为无效
+- 部分地区法院将员工手册政策视为劳动合同的补充
+- 减少福利可能需要：提前通知、与劳动者协商一致，或仅对新入职员工适用
+
+标记此种情况——不阻止变更，但必须标记风险。
+
+### 步骤7：经济补偿/劳动争议风险关联检查
+
+变更是否可能引起以下争议？
+- 协商→企业劳动争议调解委员会调解→劳动仲裁（前置程序）→法院诉讼
+- 劳动监察投诉/举报（向人社局劳动监察大队）
+- 经济补偿触发条件变更：是否影响N（第47条）/N+1（第40条）/2N（第87条）的计算逻辑？
+
+## 输出
 
 ```markdown
-## Handbook Update: [Section name]
+## 规章制度更新：[章节名称]
 
-### Change
+### 变更
 
 [diff]
 
-### Cross-reference impact
+### 民主程序合规状态
 
-| Section | References changed section | Still accurate? | Fix needed |
+| 步骤 | 状态 | 备注 |
+|---|---|---|
+| 草案拟定 | ✅/❌ | |
+| 职代会/全体职工讨论 | ✅/❌ | |
+| 工会/职工代表协商 | ✅/❌ | |
+| 公示/告知 | ✅/❌ | [方式] |
+
+### 交叉引用影响
+
+| 章节 | 引用方式 | 变更后是否仍准确？ | 需要修正的内容 |
 |---|---|---|---|
-| [name] | [how] | ✅/⚠️ | [what] |
+| [名称] | [如何引用] | ✅/⚠️/❌ | [具体问题] |
 
-### State supplement impact
+### 跨省/市补充影响
 
-| State | Current supplement | After change | Action |
+| 省/市 | 现有补充 | 变更后 | 需要行动 |
 |---|---|---|---|
-| [state] | [what it says] | [still valid / obsolete / needs update] | [none / update / new supplement needed] |
+| [省/市] | [内容摘要] | [仍有效/过时/需更新] | [无需/更新补充/新增补充] |
 
-### Promise check
+### 权利减损检查
 
-[If reducing a benefit: flag + jurisdictional risk note]
+[如涉及减损：标记+劳动争议风险说明+仲裁/诉讼可能性评估]
 
-### Ready to publish
+### 经济补偿关联影响
 
-- [ ] Cross-references updated
-- [ ] State supplements updated
-- [ ] [If benefit reduction: notice/consideration addressed]
-- [ ] Version number and date updated
-- [ ] Acknowledgment process (if required)
+[变更是否影响N/N+1/2N计算逻辑]
+
+### 待办事项
+
+- [ ] 交叉引用已更新
+- [ ] 省/市补充已同步
+- [ ] 民主程序已完成或已排期
+- [ ] [如涉及权利减损：协商方案已拟]
+- [ ] 版本号和生效日期已更新
+- [ ] 签收确认流程已设计
+- [ ] 旧版本已归档保留
 ```
 
-## What this skill does not do
+## 此技能不做什么
 
-- Approve handbook changes. HR/legal leadership does.
-- Communicate changes to employees.
-- Track acknowledgments.
+- 不批准规章制度变更——HR负责人/法务总监/管理层批准。
+- 不代行职代会或工会职能。
+- 不保障规章制度在劳动争议中必然被采信——法院/仲裁委做最终判断。
+- 不替代向员工传达变更的沟通工作。
+- 不追踪个别员工的签收确认。

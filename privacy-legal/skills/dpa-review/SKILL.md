@@ -1,245 +1,289 @@
 ---
-name: dpa-review
+name: 委托处理协议审查
 description: >
-  Review a Data Processing Agreement against your DPA playbook — auto-detects
-  whether you're processor or controller and applies the right half of the playbook.
-  Use when the user says "review this DPA", "check this data processing addendum",
-  "customer sent their DPA", "is this DPA okay", or attaches a DPA.
-argument-hint: "[file | Drive link | paste text]"
+  按委托处理协议操作手册审查个人信息委托处理协议——自动检测己方是
+  受托处理者还是个人信息处理者，并适用操作手册的对应审查标准。
+  适用场景：用户说"审查这份委托处理协议""检查数据处理附件"、
+  "客户发了他们的委托处理协议""这份委托处理协议可以吗"或附上委托处理协议。
+argument-hint: "[文件 | 链接 | 粘贴文本]"
 ---
 
-# /dpa-review
+# /委托处理协议审查
 
-1. Load `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → DPA playbook. If placeholders, stop and prompt setup.
-2. Get the DPA. Determine direction: are we processor (customer's DPA) or controller (vendor's)? Ask if ambiguous.
-3. Run the workflow below — term-by-term against the appropriate playbook row.
-4. Run privacy policy consistency check.
-5. Output: review memo with redlines. Save per house style.
+## 指示
+
+1. 加载执业画像中的委托处理协议操作手册。如为占位符，停止并提示配置。
+2. 获取委托处理协议文本。确定方向：己方是受托处理者（客户的委托处理协议）还是个人信息处理者（供应商的委托处理协议）？如模糊则询问。
+3. 运行工作流程——按操作手册对应条款逐条对比。
+4. 运行处理规则/隐私政策一致性检查。
+5. 输出：带有对比意见的审查备忘录。
 
 ```
-/privacy-legal:dpa-review customer-dpa.pdf
+/privacy-legal:委托处理协议审查 客户委托处理协议.pdf
 ```
 
 ---
 
-# DPA Review
+# 委托处理协议审查
 
-## Matter context
+## 目的
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/privacy-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/privacy-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+委托处理协议有两种形态，审查标准对每种几乎相反。当客户发送其委托处理协议时，己方在捍卫运营灵活性。当己方向供应商发送委托处理协议时，己方在保护己方（及己方客户）的数据。两种审查从同一执业画像操作手册开始，但从相反的方向审查。
 
----
+## 法律依据
 
-## Purpose
+依据《中华人民共和国个人信息保护法》第21条：
 
-DPAs come in two flavors and the review is nearly opposite for each. When a customer sends their DPA, we're defending our operational flexibility. When we send one to a vendor, we're protecting our (and our customers') data. Both reviews read from the same `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` playbook but from opposite rows.
-
-## First: which direction?
-
-Before anything else, establish:
-
-- **We are the processor** → customer is sending us their DPA → read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → "When we are the processor" table
-- **We are the controller** → we're sending a DPA to a vendor (or reviewing theirs) → read "When we are the controller" table
-
-If unclear, ask. Getting this wrong inverts every recommendation.
-
-## Jurisdiction assumption
-
-This review assumes the jurisdictional scope specified in your configuration. Privacy rules, response deadlines, and lawful bases vary materially by jurisdiction (GDPR vs. state consumer privacy laws vs. sectoral). If the controller, processor, or data subjects are in a different jurisdiction than configured, this review may not apply as written.
-
-## Load prior context on this counterparty / activity
-
-Before reviewing, check the outputs folder for prior work on this counterparty or processing activity. Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → `## Outputs` for the outputs folder path. Scan for:
-
-- **Prior `use-case-triage` results** for the same counterparty / processing activity — the triage produces a risk rating and conditions that this DPA review should honor or explicitly depart from.
-- **Prior `pia-generation` outputs** covering this counterparty / processing activity — the PIA may have flagged risk mitigations the DPA needs to implement.
-- **Prior `dpa-review` outputs** for the same counterparty — earlier DPA reviews set expectations about what was acceptable, what was flagged, and what was settled. A fresh review that silently contradicts the earlier one erodes trust in the work product.
-
-If a prior output is found, cite it in the review:
-
-> "Prior triage ([date]) rated this [risk level] and conditioned approval on [X]. This DPA review is consistent with that finding." — or —
-> "Prior triage ([date]) rated this [risk level]. This DPA review departs from that finding because [reason — new facts, different scope, contract term that changed the picture]."
-
-**Carry severity from the upstream output as a floor** per the cross-skill severity floor rule in `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → `## Shared guardrails`. A processing activity the triage rated 🔴 cannot be quietly downgraded to 🟢 in the DPA review; any demotion is stated and explained.
-
-If no prior output is found (new counterparty / new activity), say so explicitly in the review — "No prior triage or PIA on this counterparty in outputs folder" — so the reviewing attorney knows the check ran.
-
-## Load the playbook
-
-Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → `## DPA playbook`. Also read `## Privacy policy commitments` — the DPA can't contradict what the privacy policy promises.
-
-## Federal sectoral overlay (ask first, before the term-by-term walk)
-
-Before walking the term-by-term review, answer: **does the data flowing through this DPA include any federally-regulated category?** GDPR and state consumer-privacy law supply one floor; federal sectoral law often supplies another that does not appear in the generic DPA playbook. A DPA that is GDPR-complete can still be GLBA-blind, HIPAA-blind, or COPPA-blind, and a fintech / healthtech / edtech / kidtech counterparty will notice.
-
-> **Activity-based federal overlays — ask first:**
+> 个人信息处理者委托处理个人信息的，应当与受托人约定委托处理的目的、期限、处理方式、个人信息的种类、保护措施以及双方的权利和义务等，并对受托人的个人信息处理活动进行监督。
 >
-> Does this processing touch:
-> - **Financial account data or "nonpublic personal information" about consumers** (GLBA / Reg P)? If yes, the DPA needs: (a) an NPI-sharing restriction consistent with 15 U.S.C. § 6802(a)-(c) and Reg P (no sharing for marketing to non-affiliated third parties without opt-out / opt-in), (b) safeguards language aligned with the Safeguards Rule (16 C.F.R. Part 314), (c) incident notification that reaches FTC/OCC timing where applicable, (d) a clean carve-out so a CCPA § 1798.145(e) exemption doesn't accidentally waive GLBA-level obligations.
-> - **Protected health information held by a covered entity or business associate** (HIPAA Privacy / Security Rules)? If yes, the DPA needs: a Business Associate Agreement (BAA) layered with or integrated into the DPA per 45 C.F.R. § 164.504(e), breach notification timing aligned with HITECH (60 days to CE; CE 60 days to HHS; 500+ threshold for media), permitted-uses clause, subcontractor BAA flow-down. A commercial DPA without BAA flow-down for PHI is a defect.
-> - **Education records held by a school or a service provider acting for a school** (FERPA)? If yes, the DPA needs: a "school official" / directory-information framing consistent with 34 C.F.R. § 99.31, parental-consent flow-through, state student-privacy analog handling (NY Ed Law 2-d, CA SOPIPA, IL SOPPA).
-> - **Data from children under 13 collected by an operator of an online service directed to children or with actual knowledge** (COPPA)? If yes, the DPA needs: verifiable-parental-consent flow-through, retention limits, deletion-on-request machinery, prohibition on behavioral advertising absent VPC.
-> - **Another sectoral federal regime** (VPPA for video-viewing records, CPNI for carrier data, DPPA for DMV records, TCPA / Shaken-Stir for call/SMS, GLBA Reg S-P for broker-dealers, §5 FTC Act for unfair/deceptive practices around sensitive data)?
+> 受托人应当按照约定处理个人信息，不得超出约定的处理目的、处理方式等处理个人信息；委托合同不生效、无效、被撤销或者终止的，受托人应当将个人信息返还个人信息处理者或者予以删除，不得保留。
 >
-> If yes to any: the federal overlay usually supplies the controlling substantive restriction, not just an exemption from a state consumer privacy law. Research the currently-operative provision and cite it. A DPA that is "exempt" from CCPA under § 1798.145(e) because it is GLBA-covered is still subject to the GLBA restrictions — the CCPA exemption moves the governing framework, it doesn't eliminate it. Flag sectoral gaps in the deal-breakers list alongside GDPR / state-privacy gaps.
+> 未经个人信息处理者同意，受托人不得转委托他人处理个人信息。
 
-If no sectoral overlay applies, note that explicitly — "no federally-regulated data categories identified; sectoral overlay n/a" — so the reviewing attorney sees that the check happened, rather than wondering whether it was skipped.
+此外，受托人还应遵守第59条规定的义务：
+- 采取必要措施保障所处理的个人信息的安全
+- 协助个人信息处理者履行《个保法》规定的义务
+- 在发生个人信息安全事件时，及时向个人信息处理者通报
+- 在处理目的已实现或委托关系终止后，删除或归还个人信息
 
-## The term-by-term review
+## 首先：确定方向
 
-### Core terms (check every DPA)
+做任何事前，确定：
 
-Walk every DPA through these terms, clause by clause. The *specific* numeric and substantive positions (notice periods, breach timelines, acceptable/unacceptable floors) come from `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → `## DPA playbook`. The regulatory floors that any DPA has to clear come from primary law — **research the currently operative rule** for each applicable regime and cite primary sources before stating a floor.
+- **己方是受托处理者** → 客户向我们发送其委托处理协议 → 按"当己方是受托处理者"表审查
+- **己方是个人信息处理者** → 我们向供应商发送委托处理协议（或审查供应商的版本）→ 按"当己方是个人信息处理者"表审查
 
-> **No silent supplement.** If a research query to the configured legal research tool returns few or no results for a regime's breach window, transfer-mechanism requirement, subprocessor-change rule, or any other floor, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [regime / topic]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) flag as unverified and stop. Which would you like?" A lawyer decides whether to accept lower-confidence sources.
+如不明确，询问。搞错方向会颠倒每项建议。
+
+## 加载相同对手方/处理活动的先前上下文
+
+审查前，检查输出文件夹中关于此对手方或处理活动的先前工作：
+- **先前分诊结果**：分诊产出的风险评级和条件
+- **先前影响评估输出**：覆盖此对手方/处理活动的影响评估
+- **先前委托处理协议审查**：同一对手方的先前审查（避免结论静默矛盾）
+
+如未发现先前输出，在审查中明确说明——"输出文件夹中无此对手方的先前分诊或影响评估"。
+
+## 加载操作手册
+
+读取执业画像中的委托处理协议操作手册。同时读取处理规则/隐私政策承诺——委托处理协议不能与处理规则/隐私政策的承诺矛盾。
+
+## 行业法规叠加层（先问，在逐条审查前）
+
+逐条审查前，回答：**流经本委托处理协议的数据是否包含任何行业法规管类别？**
+
+> **基于活动的行业法规叠加——先问：**
 >
-> **Source attribution tiering.** Tag every citation in the review — regulatory floors, SCC versions, adequacy decisions, regulator guidance, case law — with its source. For model-knowledge citations, use one of three tiers rather than a single blanket "verify" tag:
+> 此处理是否触及：
+> - **敏感个人信息（《个保法》第28条）：** 生物识别、宗教信仰、特定身份、医疗健康、金融账户、行踪轨迹等 —— 如有，委托处理协议需符合严格保护要求
+> - **未满14周岁未成年人个人信息（《个保法》第31条）：** 需取得未成年人父母或其他监护人同意，按敏感个人信息标准保护
+> - **金融数据：** 叠加金融行业法规（如《个人金融信息保护技术规范》等）对委托处理的附加要求
+> - **医疗健康数据：** 叠加《基本医疗卫生与健康促进法》等行业法规，额外限制
+> - **重要数据：** 涉及《数据安全法》第21条的重要数据目录——叠加数据分类分级保护要求
+> - **国家核心数据：** 叠加更严格的保护措施
 >
-> - `[settled]` — stable, well-known statutory and regulatory references unlikely to have changed (e.g., GDPR Art. 28, Art. 33 72-hour breach notice, SCC Decision 2021/914 by number). Still verify before filing, but lower priority.
-> - `[verify]` — model-knowledge citations that are real but should be verified: specific implementing regulations, regulator guidance, case holdings, adequacy decisions, SCC modules and versions, UK Addendum / IDTA status, thresholds, effective dates.
-> - `[verify-pinpoint]` — pinpoint citations (specific subsection letters, clause numbers within SCCs, paragraph numbers, volume/page references) carry the highest fabrication risk and should ALWAYS be verified against a primary source.
->
-> Tool-retrieved citations keep their source tag (`[Westlaw]`, `[Commission / regulator site]`, or the MCP tool name); web-search citations remain `[web search — verify]`; user-supplied citations remain `[user provided]`. The tiering surfaces the real verification work — a reader who verifies everything verifies nothing. Never strip or collapse the tags.
+> 如任何一项为是：行业法规叠加层通常提供控制性实质限制。在差距清单中标注行业差距。
 
-| Term | Looking for | Playbook field | Common fights |
+如无行业法规叠加层适用，明确注明——"未识别行业法规管数据类别；行业叠加层不适用"。
+
+## 逐条审查
+
+### 核心条款（每份委托处理协议都审查）
+
+逐条逐款审阅。具体数值和实质立场来自执业画像操作手册。监管底限来自一手法律研究。
+
+| 条款 | 关注点 | 操作手册字段 | 常见争议 |
 |---|---|---|---|
-| **Roles** | Clear controller/processor designation; matches reality | — | Counterparty labels the relationship (e.g., "joint controller") in a way that doesn't match reality |
-| **Processing scope** | Limited to documented instructions; defined purposes | — | Open-ended scope expanders ("and related purposes") |
-| **Subprocessors** | Current list disclosed, change mechanism defined | Subprocessor changes | Blanket approval vs. veto vs. notice-only |
-| **Security measures** | Annex references specific controls or standards | Security standards | "appropriate technical and organizational measures" with no annex = empty promise |
-| **Breach notification** | Defined trigger ("discovery" vs "confirmation"), defined timeline | Breach notification | Timeline tightness; clock trigger; "without undue delay" is vague |
-| **Audit rights** | Method (report vs. on-site), frequency, notice, cost allocation | Audit rights | On-site audits on tight notice |
-| **International transfers** | Transfer mechanism identified, supplementary measures, transfer impact assessment reference | Transfers | Outdated or missing transfer mechanisms |
-| **Deletion/return** | Timeline post-termination, certification, backup carveout | Deletion on termination | "Commercially reasonable" deletion = ??? |
-| **Liability** | Within MSA cap or separate; carveouts | Liability for data | Uncapped data breach liability = existential |
+| **角色界定** | 明确个人信息处理者/受托处理者指定；匹配实际数据处理关系 | — | 对方以不匹配实质的方式标记角色（如将受托处理关系标记为"共同处理"） |
+| **处理目的和范围** | 限于合同约定的处理目的、期限和处理方式 | — | 开放式目的扩增条款（"及相关目的""为提升服务质量"等笼统表述） |
+| **个人信息种类** | 明确列明委托处理的个人信息类别和字段 | — | 笼统描述"用户数据"而非具体字段列表 |
+| **转委托** | 是否允许转委托；当前转委托受托人清单已披露；变更机制已定义 | 转委托变更机制 | 笼统批准 vs 同意权 vs 仅通知 vs 全面禁止 |
+| **安全措施** | 附件引用具体控制措施或命名标准 | 安全标准 | "行业标准安全措施"无具体说明 = 空洞承诺 |
+| **安全事件通知（第57条+第59条）** | 触发条件包括"发现"还是"确认"；通知时间线；是否包含72小时报告义务 | 安全事件通知 | 时间线紧迫度；"不合理延迟"等模糊表述 |
+| **审计权利** | 审计方式（独立报告 vs 现场审计）、频次、通知期限、费用承担 | 审计权利 | 紧通知的现场审计权 |
+| **个人信息出境** | 出境机制（安全评估/标准合同/认证）；补充措施；出境影响评估 | 个人信息出境（第38-40条） | 过时或缺失的传输机制 |
+| **删除/归还（第21条）** | 终止后的删除/归还时间线、认证方式、备份例外处理 | 终止时删除/归还 | "合理期限内"删除 = 模糊不清 |
+| **协助义务（第59条）** | 安全事件通知协助、影响评估协助、个人信息主体权利请求协助 | 协助义务 | 受托处理者对协助范围的不同理解 |
+| **责任分配** | 在主协议责任上限内还是独立责任条款 | 数据责任 | 无上限数据安全事件责任 = 存在性风险 |
 
-### When we're the processor: defensive review
+### 当己方是受托处理者：防御性审查
 
-Customer DPAs try to push operational burden onto us. For each clause below, compare the customer's ask to the playbook. Where the customer's ask is outside the playbook, push back to the team's standard position (from the config CLAUDE.md) and be ready to fall back to the acceptable position.
+客户委托处理协议试图将运营负担推给己方。对以下条款，将客户的要求与操作手册标准立场对比。当客户要求超出操作手册时，推回至标准立场并准备退至可接受替代立场。
 
-| Clause | Risk | Research / playbook lookup |
+| 条款 | 风险 | 审查要点 |
 |---|---|---|
-| Subprocessor approval right (veto) | Can't add infrastructure without customer-by-customer approval | Apply playbook position on subprocessor changes |
-| On-site audit on short notice | Unworkable at scale | Apply playbook position on audit rights |
-| Aggressive breach notification window | Often demands notice before we know what happened | Research the regulatory floor for each applicable regime (cite primary sources); compare to playbook position |
-| Hard data residency (single country/DC) | May not match architecture | Apply playbook position on data location; confirm what we can actually commit to |
-| Processor liability uncapped | Bet-the-company | Apply playbook position on liability for data |
-| Customer may issue binding "instructions" | Open-ended operational control | Define instructions as "documented in the Agreement or agreed in writing" |
-| Deletion on very short timeline | Backup and log retention makes this impossible | Apply playbook position on deletion on termination; document backup rotation carveout |
+| **转委托同意权（否决）** | 无法在未逐次获得客户批准的情况下增加基础设施/供应商 | 按操作手册转委托变更立场；区分事前同意与通知义务 |
+| **现场审计（紧通知）** | 规模上不可行；对多家客户服务时审计负担过重 | 按操作手册审计权利立场；协商审计方式（独立审计报告）和通知期限 |
+| **过紧的安全事件通知窗口** | 常要求在己方知道发生什么之前即通知 | 研究第57条法定底限（72小时报告义务），与合同条款对比 |
+| **硬数据本地化（单一国家/数据中心）** | 可能不匹配己方基础设施架构 | 按操作手册数据位置立场；确认己方实际能承诺的地理范围 |
+| **受托处理者无上限责任** | 赌上整个公司 | 按操作手册数据责任立场；应设置合理责任上限 |
+| **客户可发出有约束力"指令"** | 开放式运营控制 | 将指令限定为"协议中书面记录或书面同意"的范围 |
+| **不合理的删除/归还时间线** | 备份和日志保留使立即删除技术上不可能 | 按操作手册终止时删除立场；记录备份轮换例外和合理处理期限 |
 
-### When we're the controller: protective review
+### 当己方是个人信息处理者：保护性审查
 
-Vendor DPAs try to give us nothing. For each clause below, compare to the controller-side playbook.
+供应商的委托处理协议试图最小化其义务。对以下条款，与操作手册个人信息处理者侧标准对比。
 
-| Clause | Gap | Research / playbook lookup |
+| 条款 | 缺口 | 审查要点 |
 |---|---|---|
-| No subprocessor list | Don't know who touches our data | Require published current list + advance notice per playbook |
-| "Industry standard security" | Means nothing | Require annex with specific controls, or reference to a named standard (e.g., SOC 2, ISO 27001) |
-| No breach notification timeline | They tell us whenever | Research applicable regulatory floor; require playbook position |
-| No audit rights at all | Can't verify anything | Require at minimum an independent audit report per playbook |
-| Vendor can use data for "service improvement" | Potential training on our data | Strike; processing limited to providing the service to us |
-| No international transfer mechanism | No lawful transfer mechanism | **Research the currently operative transfer mechanism** for the corridor in question (origin/destination jurisdictions, applicable regime, any adequacy decision, any supplementary measures). Cite primary sources and verify currency. |
-| No deletion commitment | Data lives forever | Require playbook position on deletion + certification on request |
+| **无转委托受托人清单** | 不知道谁接触己方数据 | 要求披露当前转委托受托人清单 + 变更事前通知 |
+| **"行业标准安全措施"** | 毫无意义 | 要求附件含具体控制措施，或引用命名标准（如GB/T 35273信息安全技术个人信息安全规范） |
+| **无安全事件通知时间线** | 供应商可随意何时通知 | 要求明确通知时限（不晚于法律规定）；引用第57条向主管部门72小时报告义务 |
+| **完全无审计权利** | 无法核实任何事 | 至少要求按操作手册标准的独立第三方审计报告 |
+| **供应商可为"服务改进"使用数据** | 可能用己方数据训练模型/分析 | **删除**；处理限于为向己方提供服务之目的（第21条） |
+| **无个人信息出境机制** | 无合法传输基础 | 研究当前有效的传输机制；要求明确出境路径 |
+| **无删除/归还承诺** | 数据永久存在 | 要求操作手册的删除/归还立场 + 按请求出具删除证明 |
+| **无协助义务条款** | 供应商不承担第59条协助义务 | 写入第59条法定协助义务 |
 
-## Consistency check: privacy policy
+## 一致性检查：处理规则/隐私政策
 
-The DPA you sign can't promise something the privacy policy doesn't cover, and vice versa.
+委托处理协议不能承诺处理规则/隐私政策未涵盖的内容，反之亦然。
 
-- If the DPA commits to processing only for purposes X, Y, Z — does the privacy policy list those purposes?
-- If the privacy policy says "we never sell data" — does any DPA clause look like a sale under CCPA?
-- If the privacy policy names specific subprocessor categories — does the DPA subprocessor list match?
+- 如委托处理协议承诺仅为目的X、Y、Z处理——处理规则/隐私政策是否列出这些目的？
+- 如处理规则/隐私政策说"我们不出售/不对外提供数据"——任何委托处理协议条款是否与对外提供范围冲突？
+- 如处理规则/隐私政策列出受托处理者类别——委托处理协议的转委托清单是否匹配？
 
-Flag mismatches. They're usually the privacy policy being stale, not the DPA being wrong, but someone needs to fix one of them.
+标注不匹配。通常是处理规则/隐私政策过时，但总有一方需修复。
 
-## Redline granularity
+## 对比意见粒度
 
-**Edit at the smallest possible granularity.** A redline is a negotiation artifact, not a rewrite. Wholesale clause replacement signals "we threw out your drafting" — it's aggressive, it forces the counterparty to re-read the whole clause, and it discards the parts of their drafting that were fine. Surgical redlines — strike a word, insert a phrase, restructure a subclause — signal "we have specific asks" and are faster to read, understand, and accept.
+**以最小可能粒度提出修改。** 对比意见是谈判制品，非重写。
 
-Default to the smallest edit that achieves the playbook position:
-- Replace a **word** before a phrase. ("twelve (12)" → "twenty-four (24)")
-- Replace a **phrase** before a sentence. ("paid by the Buyer" → "paid and payable by the Buyer")
-- Restructure a **subclause** before replacing the sentence. (Add "(a)" and "(b)" to split a compound condition.)
-- Replace a **sentence** before replacing the clause.
-- Only replace a **whole clause** when the counterparty's version is so far from your position that surgical edits would be harder to read than a fresh draft — and when you do, say so in the transmittal: "We've replaced §8.2 rather than marking it up because the changes were extensive. Happy to walk you through the delta."
+默认使用达成操作手册立场的最小修改：
+- 先改**一个字**而非一个短语
+- 先改**一个短语**而非一个句子
+- 先重组**一个子条款**而非替换句子
+- 先替换**一个句子**而非替换条款
+- 仅在对方版本与己方立场差距大到逐个修改比新草稿更难理解时才替换**整个条款**
 
-When in doubt, smaller. A client who receives a surgical redline trusts that you read carefully. A client who receives a wholesale replacement wonders whether you read at all.
+收到逐字修改的客户信任你认真读了。收到整体替换的客户怀疑你是否读了。
 
-## Output
-
-Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` `## Outputs` (it differs by user role — see `## Who's using this`).
+## 输出
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs]
+[保密·律师工作成果]
 
-# DPA Review: [Counterparty]
+# 委托处理协议审查备忘录：[对手方名称]
 
-**Direction:** [We are processor / We are controller]
-**Reviewed:** [date]
-**Attached to:** [MSA / standalone]
-
----
-
-## Bottom line
-
-[Two sentences. Can we sign? What has to change?]
-
-**Issues:** [N]🟢 [N]🟡 [N]🟠 [N]🔴
+**审查日期：** [日期]
+**方向：** 己方是受托处理者 / 己方是个人信息处理者
+**关联主协议：** [主协议名称及日期]
 
 ---
 
-## Term-by-term
+## 底线
 
-[For each core term, use a standard deviation-memo format: what the
-counterparty's DPA says, what our playbook says, the gap, the risk, and the
-proposed redline language. Keep each term to a short self-contained block so a
-reviewer can skim.]
+[两句话：能否签署？什么必须修改？]
 
----
-
-## Privacy policy consistency
-
-[🟢 Consistent | 🟡 Flags: list]
+**问题摘要：** [N]🟢 [N]🟡 [N]🟠 [N]🔴
 
 ---
 
-## Recommended redlines
+## 行业法规叠加层
 
-[Consolidated — ready to send back]
+**结论：** [适用/不适用——引用判定的法规]
+[如适用，列出额外要求]
 
 ---
 
-## If they won't move
+## 逐条审查
 
-[For each issue: the fallback from the config CLAUDE.md, or escalation routing if no
-fallback exists]
+### 1. 角色界定
+**协议条款：** [原文摘要]
+**操作手册立场：** [立场]
+**差距：** [差距说明]
+**风险：** [风险]
+**建议修改：** [对比意见]
+
+### 2. 处理目的和范围
+[同上格式]
+
+### 3. 个人信息种类
+[同上格式]
+
+### 4. 转委托
+[同上格式]
+
+### 5. 安全措施
+[同上格式]
+
+### 6. 安全事件通知
+[同上格式]
+
+### 7. 审计权利
+[同上格式]
+
+### 8. 个人信息出境
+**触发？** 是/否
+[如果触发，详细分析出境路径]
+[如传输机制缺失：🔴——无合法传输基础]
+
+### 9. 删除/归还
+[同上格式]
+
+### 10. 协助义务（第59条）
+[同上格式]
+
+### 11. 责任分配
+[同上格式]
+
+---
+
+## 处理规则/隐私政策一致性检查
+
+| 处理规则承诺 | 委托处理协议是否一致 | 说明 |
+|---|---|---|
+| [承诺] | 🟢 一致 / 🟡 不一致 | |
+
+---
+
+## 推荐综合对比意见
+
+[合并后的对比意见——可发送给对方]
+
+---
+
+## 如对方不让步
+
+| 争议条款 | 替代底线（如操作手册提供） | 升级路由（如无替代底线） |
+|---|---|---|
+| [条款] | [可退让的位置] | [升级人/决策流程] |
+
+---
+
+## 下一步
+
+[决策树选项]
 ```
 
-## International transfers note
+## 个人信息出境特别说明
 
-If the DPA contemplates cross-border data transfers, **research the currently operative transfer mechanism requirements** for the applicable corridor(s). For each origin/destination pair, identify: the applicable regime, whether any adequacy decision is in force, which transfer mechanism is required or available (e.g., Standard Contractual Clauses and their applicable version/module, UK Addendum or IDTA, BCRs, derogations), whether a transfer impact assessment or equivalent is required, and what supplementary measures may be needed. Cite primary sources (regulation, Commission decision, regulator guidance, controlling case law) with pinpoint cites and verify currency — adequacy decisions, SCC versions, and required supplementary measures change through new Commission decisions, court rulings, and regulator guidance. Flag uncertainty for attorney verification.
+如委托处理协议涉及个人信息出境，分析：
 
-If a transfer mechanism is missing and there is an international transfer, that is a 🔴 — there is no lawful transfer mechanism.
+1. **适用法规：** 《个保法》第38-40条、《数据出境安全评估办法》、《个人信息出境标准合同办法》等
+2. **出境路径判断：**
+   - 安全评估（网信办）——重要数据/关键信息基础设施运营者/处理100万人以上个人信息/累计出境10万人以上或1万人以上敏感个人信息
+   - 标准合同备案 —— 非安全评估适用范围的一般个人信息出境
+   - 专业认证 —— 特定场景
+3. **如缺失出境机制：** 🔴——无合法传输基础，需在签署前确定出境路径
 
-## Gate: signing a DPA
+## 签署前关卡
 
-Reviewing a DPA is research. *Signing* it — or instructing someone to countersign on our behalf — is the consequential act.
+审查委托处理协议是研究工作。**签署**——或委托他人代表己方签署——才是产生法律后果的行为。
 
-**Before proceeding to sign or countersign a DPA (including returning an executed version, consenting to automatic execution on a counterparty platform, or instructing a signatory to execute):** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`. If the Role is Non-lawyer:
+**在继续签署或委托签署委托处理协议之前：** 读取执业画像中的使用人身份。如果角色为非律师：
 
-> Signing a DPA is a legal act — it binds the company to specific data-protection obligations that flow to regulators and data subjects. Have you reviewed this with an attorney? If yes, proceed. If no, here's a brief to bring to them:
+> 签署委托处理协议是法律行为——它将公司约束于流向监管机构和个人信息主体的特定个人信息保护义务。您是否已与律师审查过？如果已审查，继续。如果未审查，以下是一份带去给律师的简要说明：
 >
-> [Generate a 1-page summary: counterparty, direction (we are processor / controller), the terms that deviate from the playbook and how they were resolved, any open fallback decisions, and the three things to ask the attorney before executing.]
+> [生成1页摘要：对手方、方向（己方是受托处理者/个人信息处理者）、偏离操作手册的条款及如何解决、任何开放的替代底线决策、签署前三问。]
 >
-> If you need to find a licensed attorney, solicitor, barrister, or other authorised legal professional in your jurisdiction: your professional regulator's referral service is the fastest starting point (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent).
+> 如果您需要在贵司法管辖区寻找执业律师：中华全国律师协会或地方律师协会是最快的起点。
 
-Do not proceed past this gate without an explicit yes.
+不得在未获得明确同意的情况下越过此关。
 
-## Close with the next-steps decision tree
+## 本技能不做什么
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
-
-## What this skill does not do
-
-- It doesn't draft a DPA from scratch. If the answer is "use our template," pull the template from the seed docs path in the config CLAUDE.md.
-- It doesn't do the Transfer Impact Assessment itself — it flags when one is needed.
-- It doesn't decide whether to accept terms outside the fallbacks. It routes those per the escalation table.
+- 不从零起草委托处理协议。如果操作手册中配置了己方模板，拉取模板填充。
+- 不自行完成个人信息出境安全评估/标准合同备案——标注需要时提醒。
+- 不决定是否接受超出替代底线的条款。按升级表上报。
+- 不做独立的处理规则/隐私政策文本修订——标注差距，由其管理者修订。

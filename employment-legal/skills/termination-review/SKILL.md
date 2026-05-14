@@ -1,283 +1,210 @@
 ---
-name: termination-review
+name: 劳动合同解除审查
 description: >
-  Termination review — high-risk flag detection, severance + release, and
-  final pay timing by jurisdiction. Jurisdiction-specific rules and release
-  consideration periods are researched per review, not stored. Use when the
-  user says "reviewing a termination", "can we fire this person", "term
-  review", or describes a termination scenario.
-argument-hint: "[describe the termination, or attach documentation]"
+  劳动合同解除审查——按《劳动合同法》第36/39/40/41条分类审查解除类型、
+  扫描高风险标记（工伤/三期女职工/医疗期/职业病/临近退休）、
+  计算经济补偿金（N/N+1/2N）、审查竞业限制启动及离职手续完整性。
+  当用户说"审查解除"、"可以解除这个人吗"、"解除审查"、
+  "裁员审查"、"算一下经济补偿"或描述解除场景时使用。
+argument-hint: "[描述解除情景，或附加文件]"
 ---
 
-# /termination-review
+# 劳动合同解除审查
 
-1. Load `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → termination review triggers, high-risk flags, severance practice, jurisdiction rules.
-2. Use the workflow below.
-3. Walk the checklist. Check every high-risk flag.
-4. Final pay timing per employee's jurisdiction. Severance + release if applicable.
-5. If any high-risk flag fires: escalate per table, don't proceed without sign-off.
+## 目的
 
----
+大多数劳动合同解除是合规的。少数是等着发生的劳动争议。此技能在最终决定前运行检查清单，捕获第二类风险——违法解除、歧视性解除、报复性解除以及经济补偿金计算错误。
 
-## Matter context
+## 加载上下文
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/employment-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
+读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中的管辖范围、升级表及用户角色配置。
 
 ---
 
-## Purpose
+## 工作流
 
-Most terminations are fine. A few are lawsuits waiting to happen. This skill
-runs the checklist that catches the second kind before the decision is final.
-The skill does not state the law — every jurisdiction-specific rule and
-release-period requirement is researched and cited at the time of review.
+### 步骤1：确认解除类型
 
-## Load context
+劳动合同解除在中国法律下并非单一模式。首先确定解除路径：
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → termination review triggers, high-risk flags, standard severance,
-jurisdiction table.
-
-## Output header
-
-Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → `## Outputs` (it differs by user role — see `## Who's using this`). Match the memo format from seed term memos referenced in that config where one exists. The work-product header is always first.
-
-## Workflow
-
-### Step 1: The basic facts
-
-- Employee name (or role if staying abstract)
-- Jurisdiction (where they work)
-- Reason for termination (performance, misconduct, RIF, position elimination)
-- How long employed
-- Age (relevant to release requirements for older-worker protections)
-- Whether any other employees are being terminated as part of the same
-  decisional unit or program (relevant to group-termination release rules)
-- When is the planned term date
-
-### Step 2: High-risk flag scan
-
-This is the most important step. Check every flag from `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`. Default
-set:
-
-| Flag | Why it's high-risk | Check |
+| 类型 | 法律依据 | 要点 |
 |---|---|---|
-| **Recent complaint** | Retaliation claim | Has this employee filed any complaint (HR, ethics hotline, regulatory) recently? |
-| **Protected leave** | Leave-law interference/retaliation | Currently on or recently returned from protected leave (FMLA/state equivalents, disability, parental, military)? |
-| **Protected class + timing** | Discrimination claim | Protected class AND recently disclosed/visible (pregnancy announcement, religious accommodation request, disability disclosure)? |
-| **Whistleblower** | Federal and state whistleblower statutes | Has this employee raised concerns about illegality, safety, fraud? |
-| **Thin documentation** | "Why now?" problem | For performance terms: is there a PIP, written warnings, documented feedback? Or did this come out of nowhere? |
-| **Comparator problem** | Disparate treatment | Is someone else doing the same thing and not being terminated? |
-| **Contract/handbook promise** | Breach | Does the offer letter, handbook, or any writing promise a process that isn't being followed? |
-| **Exempt misclassification** | FLSA + state wage claim with liquidated damages | See the classification check below. Fires on state + classification + title. |
+| **协商解除** | 《劳动合同法》第36条 | 用人单位提出→支付经济补偿金N；劳动者提出→一般无需支付 |
+| **过失性解除** | 《劳动合同法》第39条 | 试用期不符合录用条件/严重违纪/严重失职/双重劳动关系/欺诈/刑事犯罪——无需支付经济补偿金 |
+| **无过失性解除** | 《劳动合同法》第40条 | 医疗期满/不胜任/客观情况重大变化——支付N或N+1（未提前30日通知） |
+| **经济性裁员** | 《劳动合同法》第41条 | 提前30日向工会或全体职工说明+向劳动行政部门报告——支付N |
+| **违法解除** | 《劳动合同法》第87条 | 违反上述规定解除→支付2N赔偿金 |
 
-**Exempt/non-exempt classification flag.** Fire this flag when ALL of the
-following are true:
+收集基本事实：
+- 员工姓名（或角色）
+- 工作地点（省/市）
+- 入职日期（计算工龄和补偿基数）
+- 解除原因（对应上述类型）
+- 月工资（用于计算经济补偿金基数——注意三倍封顶）
+- 是否涉及多名员工同时解除（与经济性裁员相关）
 
-1. The employee works in a state with a high exempt salary threshold — **CA,
-   NY, WA, CO, AK** (and any other state listed in
-   `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` →
-   `## Wage & hour` → Known classification risk areas as a high-threshold
-   state) — **AND**
-2. The employee is classified **exempt** (salaried, no overtime) — **AND**
-3. The employee's title contains **"supervisor," "lead," "coordinator,"
-   "analyst," "administrator,"** or **"specialist"** (case-insensitive, and
-   any equivalent-scope title the practice profile flags as risky).
+### 步骤2：高风险标记扫描
 
-When all three fire, emit:
+检查以下每个标记。任何一个标记触发→在解除进行前按升级表升级。
 
-> 🔴 **Potential exempt misclassification** — [title] earning $[X] in
-> [state]. The exempt salary threshold in [state] is approximately $[Y]
-> `[model knowledge — verify]`. Before termination, route to
-> `/employment-legal:wage-hour-qa` for a classification check — a misclassified
-> employee who's terminated has a ready-made FLSA and state-wage claim with
-> liquidated damages, attorneys' fees, and (in CA) PAGA exposure, which
-> the separation agreement may not be able to release cleanly. A terminated
-> plaintiff with unpaid-OT exposure is the most litigated wage-and-hour
-> fact pattern in these states.
+| 标记 | 法律依据 | 为何高风险 | 检查要点 |
+|---|---|---|---|
+| **不得解除情形** | 《劳动合同法》第42条 | 违法解除→2N赔偿金+恢复劳动关系 | 是否处于职业病观察期、工伤停工留薪期、医疗期、孕期/产期/哺乳期、连续工作满15年且距退休不足5年？ |
+| **工伤/职业病** | 《工伤保险条例》第14-16条 | 工伤职工特殊保护 | 是否认定工伤？劳动能力鉴定等级？1-4级不得解除；5-10级终止需支付一次性伤残就业补助金 |
+| **三期女职工** | 《劳动合同法》第42条、《女职工劳动保护特别规定》 | 违法解除→恢复劳动关系+补发工资 | 是否处于孕期、产期或哺乳期？不得依据第40/41条解除 |
+| **医疗期** | 《企业职工患病或非因工负伤医疗期规定》 | 医疗期内不得依据第40/41条解除 | 当前是否在医疗期？医疗期是否已满？ |
+| **近期投诉/举报** | 《劳动合同法》第38条 | 报复性解除→2N赔偿金 | 此员工最近是否提出投诉、举报或申请劳动仲裁？解除是否与投诉时间接近？ |
+| **工会职务** | 《工会法》第18条 | 工会干部特殊保护 | 是否为工会主席、副主席或委员？工会任期是否未满？（任期未满不得随意解除） |
+| **文件薄弱** | —— | "为什么是现在"问题 | 对于绩效解除（第40条第2项：不胜任）：是否有书面警告、培训或调岗记录、绩效改进计划、考核结果的书面反馈？不胜任→培训/调岗→仍不胜任→解除，流程是否走完？ |
+| **差别对待** | —— | 选择性执法→歧视性解除 | 是否有其他人存在类似行为/绩效但未被解除？如果有，差异原因是什么？ |
+| **规章制度效力** | 《劳动合同法》第4条 | 规章制度无效→解除依据无效 | 规章制度是否经民主程序（职代会讨论+工会协商+公示告知）？内容是否合法？严重违纪的情形和标准是否明确？ |
+| **集体合同覆盖** | 《劳动合同法》第54条 | 集体合同条款优先 | 员工是否受集体合同覆盖？集体合同是否有更优解除保护条款？ |
 
-Do not suppress this flag because the title "looks managerial" — the whole
-premise of the misclassification claim is that titles lie. Route to
-`/employment-legal:wage-hour-qa` for the actual duties-and-salary test.
+**任何标记触发→在解除进行前按升级表升级。** 不在之后。在之前。
 
-**If a back-pay number is being computed as part of this review (severance
-modeling, settlement posture, exposure estimate), do NOT compute it in this
-skill.** Route to `wage-hour-qa` → Step 2a and use its regular-rate
-scaffold: §207(e) inclusions (non-discretionary bonuses, commissions,
-shift diffs) in the regular rate, 0.5× premium when straight time was
-already paid for OT hours (else 1.5×), liquidated damages under §216(b),
-and 2-year / 3-year willful SOL under §255(a). Every back-pay number
-carries `[verify — consult wage-and-hour counsel before asserting or
-paying]`. A clean-looking wrong number here is the specific failure mode
-this scaffold prevents.
+### 步骤3：经济补偿金计算
 
-**Any flag fires → escalate per `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` before the term proceeds.** Not
-after. Before.
+根据解除类型确定补偿方案：
 
-### Step 3: Jurisdiction-specific requirements
+| 情形 | 计算方式 | 法律依据 |
+|---|---|---|
+| 协商解除（单位提出） | N | 第46条第2项 |
+| 过失性解除 | 0（无需支付） | —— |
+| 无过失性解除（提前30日通知） | N | 第46条第3项 |
+| 无过失性解除（未提前30日通知） | N+1（+1=代通知金=一个月工资） | 第40条 |
+| 经济性裁员 | N | 第46条第4项 |
+| 违法解除 | 2N | 第87条 |
+| 劳动合同期满终止（单位不续签） | N | 第46条第5项 |
 
-> **Research the applicable rules for the employee's jurisdiction before
-> finalizing the plan.** Specifically:
->
-> - Final-pay timing — this varies widely by state and often depends on
->   whether the employee was terminated or resigned. Research the currently
->   operative rule, including any waiting-time or late-pay penalties.
-> - Accrued-PTO payout — research whether the jurisdiction requires payout,
->   and any interaction with accrual-cap or use-it-or-lose-it policies.
-> - Required notices — research any jurisdiction-specific notices required at
->   termination (e.g., state unemployment, continuation-coverage notices
->   beyond federal COBRA, benefits continuation).
-> - Mass-layoff / plant-closing notices — research federal WARN Act and any
->   state "mini-WARN" or local ordinance that may apply if this is part of a
->   larger reduction. Coverage thresholds and notice periods differ.
->
-> Cite primary sources. Verify currency.
->
-> **No silent supplement.** If a research query to the configured legal research tool returns few or no results for the jurisdiction's final-pay, PTO, notice, or WARN rule, report what was found and stop. Do NOT fill the gap from web search or model knowledge without asking. Say: "The search returned [N] results from [tool]. Coverage appears thin for [jurisdiction / rule]. Options: (1) broaden the search query, (2) try a different research tool, (3) search the web — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) stop here and flag for attorney verification. Which would you like?" A lawyer decides whether to accept lower-confidence sources.
->
-> **Source attribution.** Tag every citation in the plan — final-pay rule, PTO rule, notices, WARN / mini-WARN, OWBPA consideration periods, state release restrictions — with where it came from: `[Westlaw]`, `[CourtListener]`, or the MCP tool name for citations retrieved from a legal research connector; `[web search — verify]` for web-search citations; `[model knowledge — verify]` for citations recalled from training data; `[user provided]` for citations the user supplied. Citations tagged `verify` carry higher fabrication risk and should be checked first. Never strip or collapse the tags.
+**N的计算**（《劳动合同法》第47条）：
+- 每满一年支付一个月工资
+- 六个月以上不满一年的，按一年计算
+- 不满六个月的，支付半个月工资
+- 月工资高于社平工资3倍的：上限为社平工资3倍×12年
+- 月工资：解除前12个月平均工资（含奖金、津贴、加班费等）
 
-### Step 4: Severance and release
+**不得重复计算：** N和2N只能取其一（第87条赔偿金=2×第47条补偿金）。
 
-Per `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → standard severance:
+### 步骤4：竞业限制评估
 
-- Is severance being offered? Per formula or discretionary?
-- Release required? (Usually yes if paying severance — that's the
-  consideration.)
+- 此员工是否为高管、高级技术人员或其他负有保密义务的人员？（第24条）
+- 劳动合同或保密协议中是否有竞业限制条款？
+- 如需启动竞业限制：补偿金≥劳动合同解除前12个月平均工资的30%且≥劳动合同履行地最低工资标准（最高法劳动争议司法解释一第36条）
+- 竞业限制期限≤2年（第24条）
+- 解除时明确通知员工是否启动竞业限制——沉默可能被认定为放弃
+- 解除竞业限制：用人单位需额外支付3个月竞业限制补偿金（司法解释一第39条）
 
-> **Research the applicable release-consideration rules.** If the employee is
-> 40 or over, federal law (OWBPA) imposes specific requirements that affect
-> the consideration period, revocation period, required advisements, and —
-> for group terminations — required decisional-unit disclosures. The specific
-> consideration period differs between an individual termination, a group
-> RIF, and a group exit incentive; the rule also depends on the employee's
-> age and the number of employees affected. Do not state the day count from
-> memory — research the currently operative rule for the specific situation
-> and cite primary sources. Also research any state-law analogs or parallel
-> release requirements. Verify currency.
+### 步骤5：离职手续检查清单
 
-Separately, consider whether any of the following apply to the release:
-- State-specific waiver restrictions (some states limit what can be released
-  or require specific language).
-- Federal or state restrictions on non-disclosure or non-disparagement
-  clauses that relate to sexual harassment, discrimination, or other
-  protected categories.
-- Separation-agreement rules on NLRA-protected activity.
+解除当日及之后必须完成的事项：
 
-### Step 5: Documentation check
+**当日：**
+- [ ] 解除劳动合同证明书（退工单）——注明解除日期、解除原因（谨慎措辞）
+- [ ] 最终工资结算（含未休年假折算——《企业职工带薪年休假实施办法》第12条）
+- [ ] 经济补偿金数额确认书（如有）
+- [ ] 资产归还（电脑、门禁卡、公章、公司文件等）
+- [ ] 系统权限终止（邮箱、OA、VPN、业务系统等）
 
-For performance terminations especially:
+**15日内（《劳动合同法》第50条）：**
+- [ ] 办理档案转移手续
+- [ ] 办理社会保险关系转移手续
+- [ ] 办理住房公积金转移或封存
 
-- Is there a paper trail? Written warnings, PIP, feedback docs?
-- Does the paper trail tell a consistent story?
-- Is there anything in writing that contradicts the reason (recent positive
-  review, bonus, promotion)?
+**解除协议（如适用）：**
+- [ ] 协商解除的书面协议——明确解除日期、补偿金额、支付时间、保密义务、不得诋毁条款
+- [ ] 竞业限制启动确认书（如启动）
+- [ ] 双方确认无其他未结劳动争议
 
-The "why now" question: if this person has been underperforming for a year,
-what changed? The answer should be documented.
+---
 
-## Output
-
-> **Research-connector pre-flight.** Before emitting the memo, check whether a legal research connector is reachable for this session — Westlaw, CourtListener, or any firm-configured research MCP. Collect this into the reviewer note per CLAUDE.md `## Outputs`: if no connector returns results in Step 3 (or none is configured at run time), record it in the **Sources:** line of the reviewer note — e.g., `not connected — cites from training knowledge; the highest-fabrication topics in termination-law memos are final-pay timing, OWBPA group/individual distinctions, state-specific NDA / non-disparagement rules (e.g., CA SB 331), and NLRB positions (e.g., McLaren Macomb) — spot-check those first`. Per-citation `[model knowledge — verify]` tags remain inline. Do not emit a standalone banner above the memo.
-
-> **Jurisdiction assumption.** This review assumes the employee's jurisdiction as stated in Step 1 and any defaults from `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` → Jurisdictional footprint. Employment rules, final-pay timing, release requirements, and notice obligations vary materially by jurisdiction. If the employee works in a different state or country, or if choice-of-law is contested, this analysis may not apply as written.
-
-Match the memo format from seed term memos referenced in `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`. If none:
+## 输出
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+## 劳动合同解除审查：[员工姓名/角色] — [日期]
 
-## Termination Review: [Role/Name] — [Date]
-
-**Jurisdiction:** [State]
-**Reason:** [Performance / Misconduct / RIF / Elimination]
-**Planned date:** [Date]
-
----
-
-### Bottom line
-
-[Can you proceed / Need to fix X first / Stop — one-sentence why]
+**管辖：** [省/市]
+**解除类型：** [第36条协商/第39条过失/第40条无过失/第41条裁员]
+**入职日期：** [日期]
+**计划解除日期：** [日期]
+**工龄：** [年/月]
 
 ---
 
-### High-risk flags
+### 底线
 
-[Every flag from Step 2. ✅ Clear or 🔴 FLAG with detail.]
-
-**Escalation:** [None needed | Escalate to [name] before proceeding — [which flag]]
+[可以继续 / 需要先修正X后继续 / 停止——附理由]
 
 ---
 
-### Jurisdiction requirements ([State])
+### 高风险标记扫描
 
-- Final pay: [researched rule and cite; state whether PTO is included per the
-  researched rule and any team policy]
-- Required notices: [list, each researched and cited]
-- Mass-layoff notice (if applicable): [researched rule and cite]
+| 标记 | 状态 | 说明 |
+|---|---|---|
+| 不得解除情形 | ✅/🔴 | ... |
+| 工伤/职业病 | ✅/🔴 | ... |
+| 三期女职工 | ✅/🔴 | ... |
+| 医疗期 | ✅/🔴 | ... |
+| 近期投诉/举报 | ✅/🔴 | ... |
+| 工会职务 | ✅/🔴 | ... |
+| 文件薄弱 | ✅/🔴 | ... |
+| 差别对待 | ✅/🔴 | ... |
+| 规章制度效力 | ✅/🔴 | ... |
+| 集体合同覆盖 | ✅/🔴 | ... |
 
----
-
-### Severance and release
-
-- Severance: [amount per formula / none]
-- Release: [required / not — if required, research and apply the
-  consideration-period, revocation-period, advisement, and (for groups)
-  decisional-unit-disclosure requirements that govern this specific
-  situation; cite primary sources and verify currency]
-- [Any state-law release rules or non-disclosure/non-disparagement
-  restrictions that apply]
+**升级：** [不需要 / 在继续前升级至[姓名]——[触发标记]]
 
 ---
 
-### Documentation
+### 经济补偿金计算
 
-[Assessment of paper trail. Gaps flagged.]
+- 解除前12个月平均工资：[金额] 元
+- 当地上年度社平工资：[金额] 元（3倍封顶：[金额] 元）
+- 计算基数：[金额] 元
+- N = [数字] 个月 × [基数] = [金额] 元
+- 代通知金（如适用）：[金额] 元
+- **合计应付：** [金额] 元
+- 法律依据：[第47条/第87条/...]
 
 ---
 
-### Go / No-go
+### 竞业限制
 
-[Clear to proceed | Proceed with changes below | Hold — escalation pending]
+- 是否受竞业限制约束：[是/否]
+- 如启动：期限 [≤2年]、月补偿 [≥30%月平均工资]
+- 是否需要启动确认书：[是/否]
 
-### Checklist for term day
+---
 
-- [ ] Final paycheck ready, correct amount, delivered per researched rule
-- [ ] Continuation-coverage notices (COBRA / state analogs) prepared
-- [ ] [State] unemployment notice prepared
-- [ ] Severance agreement (if applicable) with the consideration period
-      required for this specific situation
-- [ ] Return of property / access cutoff coordinated
-- [ ] [etc.]
+### 文件检查
+
+[书面轨迹的评估：警告信、绩效改进记录、培训记录。标记缺口。]
+
+---
+
+### 进行/不进行
+
+[可以继续 | 按以下更改继续 | 暂停——等待升级]
+
+### 解除当日检查清单
+
+- [ ] 最终工资已准备，金额正确（含未休年假折算）
+- [ ] 解除劳动合同证明书已准备
+- [ ] 经济补偿金数额确认书（如适用）
+- [ ] 竞业限制启动确认书（如启动）
+- [ ] 社保和公积金转移手续（15日内）
+- [ ] 档案转移（15日内）
+- [ ] 资产归还/权限终止已协调
 ```
 
-## Consequential-action gate (terminate an employee)
-
-**Before producing a "Go" recommendation or a term-day checklist marked ready:** Read `## Who's using this` in `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`. If the Role is **Non-lawyer**:
-
-> Terminating an employee has legal consequences — wrongful-termination, discrimination, retaliation, and wage-law claims all trace back to how this decision is structured. Have you reviewed this termination with an attorney? If yes, proceed. If no, here's a brief to bring to them:
->
-> - Employee, jurisdiction, reason, planned date
-> - Every high-risk flag the review surfaced (recent complaint, protected leave, protected class + timing, whistleblower, thin documentation, comparator, contract/handbook promise) — with detail
-> - Jurisdiction-specific findings (final pay, PTO, required notices, mass-layoff rules) and where they were cited from
-> - Severance/release analysis, including any OWBPA/older-worker-protection angles
-> - Open questions and what's unresolved
-> - What could go wrong (the claim theory this fact pattern supports)
-> - What to ask the attorney (is this a clean term; do we need more documentation first; does the release need specific language; do we need to stagger decisional units)
->
-> If you need to find an attorney, solicitor, barrister, or other authorised legal professional: contact your professional regulator (state bar in the US, SRA/Bar Standards Board in England & Wales, Law Society in Scotland/NI/Ireland/Canada/Australia, or your jurisdiction's equivalent) for a referral service. Employment is one of the practice areas where a short consult before the termination meeting consistently outvalues a post-termination claim defense.
-
-Do not produce a "Clear to proceed" output past this gate without an explicit yes. A marked-DRAFT flagged for attorney review is fine.
-
 ---
 
-## Close with the next-steps decision tree
+## 此技能不做什么
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+- 不做出解除决定——它检查决定。
+- 不进行解除谈话——管理者做。
+- 不从记忆中陈述解除规则——每个审查中研究并引用《劳动合同法》条文。
+- 不保证不产生劳动争议——它通过捕获明显风险点降低概率。
 
-## What this skill does not do
+## 以下一步决策树结束
 
-- Make the termination decision. It checks the decision.
-- Have the conversation. The manager does that.
-- State release or jurisdiction rules from memory — every rule is researched
-  and cited at the time of review.
-- Guarantee no lawsuit. It reduces the risk by catching the obvious problems.
+提供下一步选项：发出解除通知 / 签署协商解除协议 / 升级至法务负责人 / 补充文件后再审 / 其他。

@@ -1,279 +1,271 @@
 ---
-name: chronology
-description: Build or update a chronology from declared document sources and uploads — dated events extracted, de-duped, and tagged by significance per the matter theory. Use when the user asks to build a chronology or timeline from a production or matter file, says "chron from the production" or "what happened when", or needs a working, statement-of-facts, or witness-specific timeline.
-argument-hint: "[slug] [--format=working|sof|witness-[name]]"
+name: 大事记
+description: 从案件材料和证据材料中构建案件大事记/时间线——提取注明日期的事件，去重，按证据来源标注，根据案件策略按重要性标注（关键/相关/背景）。适用于撰写代理词、证据目录、庭审提纲等场景。适用场景：用户说"做大事记""整理案件时间线""从证据材料中提时间线"或需要"带证据引用的大事记"。
+argument-hint: "[案件标识] [--format=工作版|代理词版|证据目录版]"
 ---
 
-# /chronology
+# /大事记
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` → theory, pivot fact, key facts.
-2. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Document storage sources, default matter folder pattern.
-3. Follow the workflow and reference below.
-4. Identify sources in order: user-provided paths this session, default matter folder, declared sources from `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`.
-5. For readable sources: extract dated events. For unreachable sources: note in Gaps.
-6. De-dupe, merge with sources list per event.
-7. Tag significance (🔴/🟡/⚪) per matter theory.
-8. Write `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/chronology.md` (or format variant per flag).
-9. If prior version exists: version number increments, diff summary presented to user.
-10. Confirm before finalizing: "Here's what I built. Scan the 🔴 entries — anything I miscalled?"
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` → 案件策略、关键事实、争议焦点。
+2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 文件存储来源、默认案件文件夹。
+3. 遵循以下工作流程和参考。
+4. 按顺序识别来源：本次会话用户提供的路径、案件文件夹、已声明的来源。
+5. 对可读来源：提取注明日期的事件。对无法访问的来源：在"缺口"中注明。
+6. 去重，合并每个事件的来源列表。
+7. 按案件策略标注重要性（关键/相关/背景）。
+8. 写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/大事记.md`（或根据输出格式的变体）。
+9. 如果此前版本存在：版本号递增，向用户呈现差异摘要。
+10. 定稿前确认："这是我构建的内容。浏览关键事件——是否有我标注错误的？"
 
 ---
 
-# Chronology
+# 大事记（案件时间线）
 
-## Disclosed-document use restrictions
+## 中国法下大事记的用途
 
-Before working with a set of litigation documents, ask: "Were any of these documents obtained through disclosure or discovery in legal proceedings?" If yes:
+大事记是案件代理人组织案件事实的核心工具，服务于以下场景：
 
-- **England & Wales (CPR 31.22):** Documents obtained through disclosure are subject to the implied undertaking — you may only use them for the purpose of the proceedings in which they were disclosed, unless the court grants permission, the disclosing party consents, or the document has been read in open court. Using them for a different matter, a different claim, or a commercial purpose without permission is a contempt.
-- **US:** Protective orders and Rule 26(c) may impose similar restrictions. Check the order.
-- **Other jurisdictions:** Similar restrictions commonly apply. Check the local rule.
+1. **代理词** —— 事实陈述部分以大事记为基础，按时间顺序构建事实叙事
+2. **证据目录** —— 每项事件对应证据编号，确保事实与证据的对应关系
+3. **庭审提纲** —— 按时间线梳理争议焦点所涉关键事实，为法庭调查做准备
+4. **质证准备** —— 按时间线核对对方证据中的事实主张与已方记录是否一致
+5. **法律意见书** —— 为法律分析提供完整的事实基础
 
-Confirm: "This use is within the proceedings in which the documents were disclosed, or I have permission / consent, or the documents are now public." If not confirmed, flag it: "⚠️ Disclosed documents may have use restrictions. Confirm this use is permitted before proceeding."
+**核心要求：每项事件必须附证据来源引用。** 中国法院审查事实问题时，关注的是"主张的事实→是否有对应证据→证据是否真实且具有证明力"这一链条。大事记中缺失证据引用的事件可能在庭审中被对方质疑。
 
-## Purpose
+## 举证材料使用限制
 
-Facts happen in order. The chronology is the spine every narrative hangs on — the statement of facts in a brief, reserve memos, settlement memos, depo prep, witness prep. Building a chron by hand is slow; AI is good at structured extraction. The catch: garbage-in, garbage-out. This skill pulls from the sources the configuration declares and from whatever the user uploads.
+在处理诉讼文件前，询问："这些文件中是否有是通过举证交换程序取得的？"如果是：
 
-## Modes
+- **举证交换限制：** 通过举证交换程序取得的证据材料，仅可用于本案诉讼目的，未经法院许可不得用于其他案件或目的。
+- **保护令限制：** 法院签发的保护令可能对特定证据材料的使用范围施加限制。请查阅保护令的内容。
 
-This skill serves two practice settings. Pick a default from the user's `## Role` in the plugin's configuration CLAUDE.md; the user can override per-run with a flag.
+确认："本次使用属于本案诉讼目的的范围内，或已取得许可/同意。"如果未确认，标注："⚠️ 举证交换材料可能存在使用限制。继续前请确认本次使用被允许。"
 
-- **`--matter` mode (default for in-house litigation counsel).** Matter-history-focused. Reads the matter's case theory and key facts from `matter.md`, pulls from declared document-storage sources (Google Drive, SharePoint, Gmail, iManage, CLM — whatever the `## Landscape` section of CLAUDE.md declares), and treats `history.md` as the running internal log (decisions, holds, reserve memos — intentionally not in the chronology). Output is matter-centric: what happened across the dispute, tagged for advocacy use.
-- **`--documents` mode (default for firm associate / paralegal).** Production-document-focused. Reads the case theory from the configuration, then extracts from an eDiscovery export, a custodial file set, or a Bates-numbered production. Output is production-centric: what the documents show, with Bates citations, tagged per the case theory.
+## 目的
 
-Both modes converge on the same output structure (timeline, 🔴/🟡/⚪ significance tags, gaps, SoF variant). The difference is the source profile and the significance frame.
+事实按时间顺序发生。大事记是所有案件叙事依赖的脊梁——代理词中的事实陈述、庭审质证意见、和解方案中的事实分析。手工构建大事记耗时；AI擅长结构化提取。前提：输入质量决定输出质量。
 
-If `## Role` is `solo` or `other`, default to `--matter` but mention both modes on the first run and let the user pick.
+## 立场框架（重要性标注）
 
-## Side framing (significance tags)
+同一事件的重要程度因主张/抗辩立场不同而有差异。阅读执业画像中的 `## 立场`（以及案件档案中的案件立场）：
 
-The same event is significant in different ways depending on whether the practitioner is proving a claim or disproving it. Read `## Side` in the practice profile (and the per-matter posture if the matter overrides the default):
+- **原告/申请人视角** —— 关键事件：构成诉讼请求要件的事实（合同成立、履行、违约、损害、因果关系）、中断诉讼时效的事件、对方自认的事实。相关事件：辅助证明上述事实的背景事件。背景：仅提供时间定位的次要事件。
+- **被告/被申请人视角** —— 关键事件：打破原告诉讼请求要件的事实（免责事由、对方违约在先、时效届满、管辖异议基础）、支持己方抗辩的事实。相关事件：削弱对方叙事的事件。背景：其他。
+- **两者兼有/因案而异** —— 请用户按每次大事记选择适用哪方框架进行重要性标注。时间线本身是中立的，只有重要性解读随立场变化。
 
-- **Plaintiff (offensive framing)** — 🔴 marks events that *establish* elements of the claim (liability, causation, damages, notice), *close* gaps the defense will try to open, or *start* statute-of-limitations clocks in the plaintiff's favor. 🟡 marks events that support the claim but are subject to impeachment. ⚪ is background context.
-- **Defense (defensive framing)** — 🔴 marks events that *break* elements of the claim (failure of causation, notice, reliance), *open* statute-of-limitations or jurisdictional defenses, or *support* affirmative defenses (release, waiver, assumption of risk, comparative fault). 🟡 marks events that undermine the plaintiff's narrative. ⚪ is background.
-- **Both / varies** — ask the user per-chronology which side's framing to apply for significance tags. The underlying timeline is side-neutral; only the significance read changes.
+在输出顶端注明所适用框架：`重要性标注适用[原告/被告]视角。`
 
-Note the applied framing at the top of the output: `Significance tags applied from [plaintiff / defense] perspective.` When producing a Statement of Facts variant, use the side default unless the user specifies otherwise.
+## 加载上下文
 
-## Load context
+- 插件配置 CLAUDE.md → 案件策略语境、文件来源、工作成果抬头
+- 本案此前的 `大事记.md`（如存在）
+- 用户上传或会话中提供的任何文件路径
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` → 案件策略、关键事实、争议焦点、关键日期
+- 默认案件文件夹 → 本案文件存储位置
 
-Common:
-- Plugin configuration CLAUDE.md → case theory context (in-house: `## Landscape` for document sources; firm associate: `## Case theory` and `## Document review` for platform + custodians), `## Outputs` for the work-product header, `## Decision posture` for the privilege-flagging rule.
-- Prior `chronology.md` for this matter, if it exists.
-- Any files the user uploads or paths they provide in-session.
+**利益冲突审查关——不可跳过。** 构建大事记前，检查 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` 中案件标识。如果案件不在 `_log.yaml` 中，拒绝并路由：
 
-`--matter` mode also reads:
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` → case theory, key facts, pivot fact (for significance tagging), key dates.
-- Default matter folder pattern from CLAUDE.md → where docs for this slug live.
+> "我在案件登记簿中未找到[案件标识]。请先执行 `/litigation-legal:案件立案`，这样利益冲突审查就会运行，案件工作空间也能建立。我不会在未立案的案件上构建大事记——利益冲突审查是入门关。"
 
-`--documents` mode also reads:
-- eDiscovery platform metadata if a connector is available (Everlaw, Relativity, DISCO, Aurora) — by custodian + date range.
-- Bates-range manifest or production index if the user points at one.
+不得在未立案案件上继续。仅针对无案件标识的临时文件集的工作可豁免此关，但其输出应视为立案前研究。
 
-**Conflicts gate — unbypassable (`--matter` mode).** Before building the chronology, check `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+## 工作流程
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't build a chronology on a matter that hasn't been intaken — the conflicts check is the gate."
+### 第0步：保密审查关（最先运行，每次必行）
 
-Do not proceed on an unintaken matter. Intake is what runs conflicts and writes the `_log.yaml` row this skill reads from. `--documents` mode (running against an ad-hoc document set without a matter slug) is exempt from the gate, but its outputs should be treated as pre-matter research and not filed as if matter work product.
+大事记工作从文件中提取内容。文件往往包含保密信息（律师-委托人保密、工作成果、共同利益/联合代理）。从保密文件中提取内容写入可能后续分发的大事记，可能导致保密权的放弃。
 
-## Workflow
+在用户选择保密处理方式前，本技能不提取内容：
 
-### Step 0: Privilege gate (runs first, every time)
-
-Chronology work pulls from documents. Documents are often privileged (attorney-client, work product, common interest, joint defense) — in-house matter files often are by default; eDiscovery productions, especially rolling productions or common-interest productions, often contain privileged or unreviewed material. Extracting content from a privileged document into a chronology that later gets shared can *risk* waiver, depending on who receives it and under what doctrine (common-interest, joint-defense, Kovel, and work-product protections may apply). Waiver analysis is fact-specific — get counsel sign-off before distributing.
-
-The skill will not extract until the user picks a privilege posture:
-
-> Before I extract: how have the sources been privilege-screened?
+> 提取前：来源如何经过保密筛选？
 >
-> - **A. All sources cleared** — you've already screened these. I extract without privilege flags. Output is discovery-ready posture; still marked work product.
+> - **A. 所有来源已通过筛选** —— 您已筛选过。我提取内容不加保密标注。输出为代理就绪状态；仍标记为工作成果。
 >
-> - **B. Mixed or not yet screened** — I extract and tag every entry with a `priv` flag: `ok` (sourced from clearly non-privileged material), `flag` (sourced from potentially privileged material — A/C, WP, common interest), or `review` (source unclear). Flagged entries are visually marked in the output, and the Statement-of-Facts variant filters them out by default.
+> - **B. 混合或尚未筛选** —— 我提取内容并为每条加保密标注：`已筛选`（来源不涉密）、`涉密`（来源可能涉密——律师-委托人保密、工作成果等），或`待审核`（来源不清）。标注条目在输出中视觉标记，代理词版变体默认过滤排除涉密条目。
 >
-> - **C. Abort — screen first** — pause the skill. Screen the sources. Return and re-run.
+> - **C. 中止——先筛选** —— 暂停本技能。筛选来源。返回后重新运行。
 
-Record the choice in the chronology header as `privilege_posture: A-cleared | B-mixed | C-aborted`. If B or C, record the rationale briefly.
+在大事记抬头中记录选择为 `保密姿态: A | B | C`。
 
-**Why a gate and not just a warning:** a warning gets read once and forgotten. A gate forces the posture decision into the record, which means every chronology file carries its own provenance — anyone reading it later knows whether entries were derived from privilege-screened material.
+**为何设关而非仅警告：** 警告读一次就会被遗忘。把关迫使姿态决定进入记录。
 
-### Step 1: Identify document sources
+### 第1步：识别文件来源
 
-**`--matter` mode:**
+1. **用户提供路径** —— 本次会话中提交的内容（文件路径、文件夹）
+2. **默认案件文件夹** —— 来自 CLAUDE.md 的文件存储模式，按案件标识展开
+3. **已声明来源** —— CLAUDE.md 中声明的文件存储来源
+4. **询问** —— 如果来源看起来薄弱，提示："我可以从现有材料构建，但大事记将不完整。还有其他需要我查阅的吗？关键合同、邮件、微信记录、函件？"
 
-1. **User-provided paths** — anything dropped in this session (file paths, drive links, email exports).
-2. **Default matter folder** — from CLAUDE.md's document-storage pattern, expanded for this slug (e.g., `G:/Legal/Matters/acme-v-us-2026`).
-3. **Declared sources** — the `Document storage` table in CLAUDE.md, filtered to ones this matter might touch (e.g., Gmail archive for sender-side communications, SharePoint legal folder).
-4. **Ask** — if sources look thin, prompt: "I can build from what I have, but the chronology will be incomplete. Anything else to point me at? Key emails, contracts, internal memos, production letters?"
+### 第2步：提取+读取
 
-**`--documents` mode:**
+对每项有可读文件的来源：
 
-1. **Production export / Bates set** — the user points at the production directory or a manifest; the skill reads by Bates range + date.
-2. **eDiscovery connector** — if an MCP connector is available (Everlaw, Relativity, DISCO, Aurora), pull by custodian + date range.
-3. **Custodial files** — if the user provides raw custodial mailboxes or drive exports, read those too.
-4. **Ask** — if coverage looks thin for a key custodian or date range, prompt.
+- **PDF、邮件 (.eml)、.docx、.txt** —— 直接读取
+- **微信/钉钉/飞书聊天记录** —— 如用户导出为可读格式（PDF/文本），直接读取
+- **图片（截图）** —— 标注"图片——无法自动提取文本"，提示用户提供文字版
+- **扫描件** —— 标注"扫描件——OCR识别可靠性有限，需人工核对"
 
-### Step 2: Pull + read
+如果本技能无法访问已声明来源，在输出的"缺口"章节显式命名而非静默跳过。
 
-For each source with readable files:
+**禁止静默补充。** 如果案件某时期的来源覆盖不足，报告发现并停止。不得未经询问从网络搜索或模型知识填充空白。说："来源为[时期]返回[N]条事件。覆盖似乎不足。选项：(1)指向其他来源，(2)搜索网络获取该窗口的公开信息——结果标注为`[网络搜索——请核实]`，或(3)在此停止并注明缺口。您选择哪一个？"
 
-- **PDFs, emails (.eml), .docx, .txt** — read directly.
-- **Email archives (Gmail, Outlook)** — if an MCP connector is authenticated, query by date range + counterparty / key terms; otherwise the user exports relevant threads to a folder.
-- **eDiscovery platforms (Everlaw, Relativity, DISCO, Aurora)** — if connector is available, pull by custodian + date range; otherwise the user provides an export.
+**来源标注。** 每条大事记条目标出事件来源：文件路径、证据编号或已声明文件存储来源。对无法追溯至已检索文件的任何事件或日期，内嵌标注：`[网络搜索——请核实]`、`[模型知识——核实]`或`[律师提供]`。
 
-If the skill can't access a declared source, name it explicitly in the output's Gaps section rather than silently proceeding.
+### 第3步：提取事件
 
-**No silent supplement.** If source coverage for an era of the matter is thin — fewer documents than expected for a claimed time window, a custodian whose mailbox isn't accessible, a production that hasn't landed — report what was found and stop. Do NOT fill gaps from web search, public record search, or model knowledge about the matter without asking. Say: "Sources returned [N] events for [period / custodian]. Coverage appears thin. Options: (1) point me at additional sources (Bates, folder, mailbox), (2) try a different MCP connector if configured, (3) search the web for public-record events in this window — results will be tagged `[web search — verify]` and should be checked against a primary source before relying, or (4) stop here and note the gap. Which would you like?" A lawyer decides whether to accept lower-confidence sources; the skill does not decide for them.
+对每份文件，识别注明日期的事件：
 
-**Source attribution.** Tag every chronology entry with where the event came from: the file path, Bates number, MCP connector, or declared document-storage source for events extracted from retrieved documents (already captured in the Sources column). For any event or date that cannot be traced to a retrieved document — e.g., a fact recalled from model training data, a public-record event found via web search — tag it inline: `[web search — verify]`, `[model knowledge — verify]`, or `[user provided]` where the user stated the fact in-session. Entries tagged `verify` carry higher fabrication risk than document-sourced entries and should be checked first. Never strip or collapse the tags — they are counsel's fastest signal about which entries to verify before pulling them into a brief or SoF.
+- **合同文件：** `[日期] [合同名称]签订/生效/变更/终止`
+- **函件/律师函：** `[日期] [发函方]向[收函方]发出[主题]函`
+- **付款记录：** `[日期] [付款方]向[收款方]支付/收到[金额]`
+- **邮件：** `[日期] [发件人]告知[收件人][主题]`
+- **微信/即时通讯：** `[日期] [发送方]向[接收方]表示[内容摘要]`
+- **法院文书：** `[日期] [法院名称]作出/送达[文书类型]`
+- **开庭记录：** `[日期] [案件]在[法院]开庭审理 庭审笔录第__页`
+- **关键行为：** `[日期] [行为主体]实施了[行为描述]`
 
-**Tagging reaches every section that states a legal conclusion, deadline, or computed date — not just timeline entries.** The timeline is sourced from documents. The Gaps section, the Key events section, the Theory tie lines, and any statement of limitations, tolling event, filing deadline, discovery cutoff, or privilege determination are legal analysis the skill writes from model knowledge unless sourced. Every such statement carries a provenance tag: `[computed from: <rule cited with tag>]`, `[model knowledge — verify]`, `[user provided]`, or a research-connector tag if retrieved in this session. A statute-of-limitations window with no tag defaults to `[model knowledge — verify]`. A "key event" line that characterizes a fact's legal significance is analysis and needs the tag. The rule is simple: if it's an assertion about the law, not an assertion about what a document says, it must carry the same provenance tag the timeline entries do. When no research connector is reachable and the skill is computing deadlines or citing rules, record it in the **Sources:** line of the reviewer note (see plugin CLAUDE.md `## Outputs`) — do not emit a standalone banner.
+每份文件提取一条或多条事件。
 
-### Step 3: Extract events
+### 第4步：去重
 
-For each document, identify dated events:
+同一事件出现在多份文件中的，合并为一个事件，列出所有来源。例如：一份合同签订同时有合同文本、邮件确认、会议纪要三个来源——合并为一条事件，三个来源并列。
 
-- **Email:** `[date] [sender] told [recipient] [subject/content]`
-- **Meeting:** `[date] [attendees] met about [topic]` (per calendar entry or notes)
-- **Decision:** `[date] [decision-maker] decided [what]` (per memorializing doc)
-- **Filing / pleading:** `[date] [party] filed [motion/complaint/response]`
-- **External event:** `[date] [thing happened]` (contract signed, product launched, regulator acted, event crossed a threshold)
+### 第5步：按案件策略标注重要性
 
-One event per document usually. Occasionally zero (undated or no event established). Sometimes multiple (meeting summary covering several decisions).
+从 `案件档案.md` 读取争议焦点和关键事实。标注每个事件：
 
-**Privilege flag per entry (only when privilege_posture == B-mixed). Three-state rule — never silently decide a subjective privilege test isn't met:**
+- **关键** —— 事件直接构成争议焦点的一部分，或对己方有利/不利的关键事实
+- **相关** —— 背景信息、辅助证据、支撑但非决定性的事件
+- **背景** —— 仅提供时间定位的次要事件，不进入核心法律文书
 
-- `priv: ok` — source is **confidently** non-privileged (filings, regulatory correspondence, public docs, counterparty communications without our counsel). Used only when there's no plausible privilege theory.
-- `priv: flag` — source is confidently or likely privileged (communications with counsel, work-product memos, privileged drafts, joint-defense material). **Default for anything uncertain** — if the dominant-purpose call is close, or litigation contemplation is borderline, or the content is mixed, it goes here, not in `ok`.
-- `priv: review` — source unclear on its face, but the skill could not make the call at all (no sender/recipient metadata, unreadable, etc.).
+**纪律：** 300条全标"关键"的大事记等于没标注。"关键"预留用于真正能够影响案件走向的事件。不确定时，使用"相关"。
 
-When `priv: flag` or `priv: review`, add `[SME VERIFY: privilege status]` inline so the counsel sees it during review. Under-flagging waives privilege (one-way door); over-flagging is corrected by counsel in review (two-way door). Prefer the recoverable error.
+### 第6步：写入
 
-### Step 4: De-dupe
+默认输出为工作版大事记。变体按需产出。
 
-The same event surfaces in multiple documents: a meeting is on three calendars and produces a summary email — that's **one event with four sources**, not four events. Merge. The merged entry cites all sources.
+## 输出格式
 
-### Step 5: Tag significance — per case theory
+### 工作版大事记（默认）
 
-Read the pivot fact and key facts from `matter.md` (`--matter` mode) or from the configuration's `## Case theory` section (`--documents` mode). Tag each event:
-
-- 🔴 **Key** — event is part of the pivot fact or a key fact for/against us
-- 🟡 **Relevant** — context, pattern evidence, supports a secondary argument
-- ⚪ **Background** — useful for completeness, not going in the brief
-
-**Discipline:** a chronology of 300 entries with 300 🔴 tags has no tags. Reserve 🔴 for events that would genuinely move a factfinder. If in doubt, 🟡.
-
-**Borderline tagging:** when an entry sits between 🔴 and 🟡 (or 🟡 and ⚪), tag at the lower significance and add `[SME VERIFY — borderline significance call]` inline. Counsel's judgment will override the skill's call. A chronology that confidently over-tags is less useful than one that surfaces its uncertainty.
-
-### Step 6: Write
-
-Default output is the working chronology. Variants on request.
-
-## Output formats
-
-### Working chronology (default)
-
-Location: `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/chronology.md`. Complete, tagged, annotated. The reference doc counsel works from.
+位置：`~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/大事记.md`。完整、标注、注释。律师工作中参考的文件。
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-> **Privilege inheritance.** This chronology is derived from matter documents that may be attorney-client-privileged, work-product-protected, common-interest / joint-defense material, or a mix. It inherits the sources' protection status. Distributing it beyond the privilege circle — to business stakeholders outside the engagement, to opposing counsel, to a regulator — can waive protection over both the chronology and the underlying sources. Store with privileged matter material, mark consistently with house privilege conventions, and make distribution decisions deliberately. The privilege-posture choice captured below is the provenance stamp for any later distribution call.
+> **保密继承。** 本大事记源自可能涉及保密信息的案件材料。它继承了来源的保护状态。在保密圈外分发可能放弃保护。与案件材料一起存储。
 
-# Chronology — [Matter Name]
+# 大事记 —— [案件名称]
 
-> Significance tags (🔴/🟡/⚪) and privilege flags (🔒) are first-pass reads requiring `[SME VERIFY]` before use in any external work product (briefs, SoF, board memo, outside counsel deliverable).
+> 重要性标注（关键/相关/背景）为初审结果，在用于任何对外工作成果前需经 `[律师审核]`。
 
-**Matter:** [slug]
-**Mode:** matter | documents
-**Built:** [YYYY-MM-DD]
-**Sources:** [N] documents across [source types]
-**Entries:** [N] ([N] 🔴 / [N] 🟡 / [N] ⚪)
-**Pivot fact:** [one sentence]
-**Privilege posture:** A-cleared | B-mixed | C-aborted
-**Flagged entries:** [N] 🔒 *(only present when posture == B-mixed)*
+**案件标识：** [标识]
+**构建日期：** [年-月-日]
+**来源：** [N]份文件，涵盖[来源类型]
+**条目：** [N]条（[N]关键 / [N]相关 / [N]背景）
+**争议焦点：** [一句话——如法院已归纳则使用法院表述]
+**保密姿态：** A | B | C
+**重要性标注视角：** [原告/被告]
 
 ---
 
-## Timeline
+## 时间线
 
-| Date | Event | Tag | 🔒 | Sources |
+| 日期 | 事件 | 重要性 | 证据来源 | 备注 |
 |---|---|---|---|---|
-| [YYYY-MM-DD] | [what happened, one sentence] | 🔴/🟡/⚪ | [blank / 🔒-flag / 🔒-review] | [file paths or Bates] |
+| 2025-03-01 | [当事人]与[当事人]签订《__合同》 | 关键 | 证据1（合同，案卷第5-12页） | |
+| 2025-06-15 | [当事人]向[当事人]支付__元 | 关键 | 证据2（银行转账凭证，案卷第15页） | |
+| 2025-09-01 | [当事人]向[当事人]发送催告函 | 相关 | 证据3（催告函及EMS签收回执，案卷第18-20页） | [核实：快递签收人是否为本人] |
 
 ---
 
-## Key events (🔴 only)
+## 关键事件详情
 
-[Pulled out, each with a line on why it matters to the theory.]
-
-### [date] — [event title]
-- What: [one line]
-- Theory tie: [why this matters]
-- Sources: [list]
-
----
-
-## Gaps
-
-**Date ranges with no events:**
-[ranges — where are documents for this period?]
-
-**Expected but missing:**
-[events we'd expect to see documented but don't — e.g., "contract amendments between 2024-06 and 2025-03 — not produced"]
-
-**Unreadable sources:**
-[sources declared in CLAUDE.md but not accessible this run — e.g., "Everlaw production — no MCP connector; export needed"]
+### 2025-03-01 —— [事件标题]
+- 内容：[完整描述]
+- 与案件策略的关联：[为何此事件关键]
+- 证据来源：[列表，附证据编号和案卷页码]
+- 法律意义：[如：合同成立时间、诉讼时效起算点]
 
 ---
 
-## Marker discipline
+## 证据引用索引
 
-- `[VERIFY: factual assertion — date, attendees, content]` — not yet confirmed against the underlying doc
-- `[UNCERTAIN: legal characterization — e.g., whether an event establishes a regulatory trigger]`
-- `[CITE NEEDED: Bates / exhibit / depo page:line]`
-- `[SME VERIFY: privilege status | borderline significance call]` — counsel judgment needed
+| 证据编号 | 证据名称 | 在大事记中引用的条目 | 案卷页码 |
+|---|---|---|---|
+| 证据1 | | 事件1, 事件3 | |
+| 证据2 | | 事件2 | |
 
 ---
 
-## Version
-- v[N] built on [date] from [source summary]
-- v[N-1] built on [date] (prior, superseded)
+## 缺口
+
+**无事件的日期区间：**
+[区间——该期间的文件在哪里？]
+
+**期望但缺失的事件：**
+[我们期望看到记录但没有的事件]
+
+**不可读来源：**
+[声明但本次运行无法访问的来源]
+
+---
+
+## 标注纪律
+
+- `[待核实：事实主张]` —— 尚未与底层证据确认
+- `[不确定：法律定性]`
+- `[需补引用：证据编号/案卷页码]`
+- `[需律师审核：——]` —— 需律师专业判断
+
+---
+
+## 版本
+- v[N] 于[日期]构建，来源摘要：[摘要]
+- v[N-1] 于[日期]构建（前版，已替换）
 ```
 
-### Statement-of-facts chronology (on request)
+### 代理词版大事记（按需）
 
-Filter to 🔴 and relevant 🟡 only. Present as prose in chronological narrative order — the skeleton for a brief's fact section. Each paragraph is one event or tightly linked cluster, with record citations.
+仅筛选关键和相关事件。以时间叙事顺序用散文体呈现——为代理词"事实与理由"章节提供骨架。每段为一个事件或紧密关联的事件群，附证据引用（证据编号+案卷页码）。
 
-**Privilege filter default:** when `privilege_posture == B-mixed`, 🔒-flagged and 🔒-review entries are **excluded** by default. The SoF variant is intended for eventual external use (briefs, disclosures, negotiating counterparty) — 🔒 entries don't belong there until counsel confirms privilege status. If the user wants 🔒 entries included anyway, require explicit `--include-flagged` acknowledgment; capture the acknowledgment in the output header as permanent record.
+此版本直接服务于代理词撰写——律师可直接复制改写为代理词的事实陈述部分。
 
-### Witness-specific chronology (on request)
+### 证据目录版大事记（按需）
 
-Filter to events where a named witness is sender, recipient, attendee, or subject. Feeds witness prep and helps reconstruct what a witness knew when.
+严格按时间顺序排列，每条事件对应一个证据编号。格式适用于法院提交的证据目录。
 
-## Incremental builds
+```
+| 序号 | 证据编号 | 证据名称 | 证据来源 | 证明对象 | 对应事件日期 | 页码 |
+|---|---|---|---|---|---|---|
+| 1 | 证1 | 《__合同》 | 原告留存 | 双方成立__法律关系 | 2025-03-01 | 1-5 |
+| 2 | 证2 | 银行转账凭证 | 银行调取 | 原告已履行付款义务 | 2025-06-15 | 6 |
+```
 
-If `chronology.md` exists:
+## 增量构建
 
-- Read prior version
-- Build new chronology from current sources
-- Diff: new events (since last build), modified entries (new sources added to existing events), removed entries (rare; note why)
-- Preserve the prior version number; write new version with `v[N+1]`
-- Output summary of what changed
+如 `大事记.md` 存在：
 
-## Integration with matter.md / history.md
+- 读取前版
+- 从当前来源构建新大事记
+- 差异对比：新增事件、修改条目（已有事件新增来源）、删除条目（罕见；注明原因）
+- 保留前版版本号；以 `v[N+1]` 写入新版
+- 输出变更摘要
 
-**Intentionally separate** (in-house `--matter` mode). `history.md` is counsel's running log — decisions, updates, procedural milestones, internal strategy notes. `chronology.md` is the advocacy-facing timeline of facts. They overlap but don't merge:
+## 与案件档案.md / 办案日志.md 的关系
 
-- A hold was issued → goes in history.md (internal action). Usually not in chronology (not a fact of the dispute).
-- The counterparty sent a breach notice on March 14 → goes in chronology.md (🟡 — establishes their knowledge). Also in history.md if the intake referenced it.
-- Our reserve recommendation memo was drafted → history.md only.
+**有意分离。** `办案日志.md` 是律师的运行记录——决策、收案、程序节点、内部策略说明。`大事记.md` 是代理面向的事实时间线。两者有重叠但不合并：
 
-When counsel wants history events in the chronology, they can paste them. The default is they stay separate.
+- 向法院提交律师代理合同 → 入办案日志.md（内部行为）。不入大事记（不属于争议事实）。
+- 对方于3月14日发送违约通知 → 入大事记.md（关键——建立对方的知悉）。如立案中引用了，也入办案日志.md。
+- 己方撰写内部法律分析备忘录 → 仅入办案日志.md。
 
-## What this skill does not do
+当律师希望办案日志事件入大事记时，可手动添加。默认保持分离。
 
-- **Resolve contradictions.** When two documents say different things about when an event happened, both entries go in with a flag. Resolution is counsel's call; may require witness interview or further discovery.
-- **Invent events not in the sources.** If it's not in the documents (and not in matter.md or the configuration as a captured fact), it's not in the chronology — but "Gaps" might call it out as missing.
-- **Guarantee completeness.** A chronology is only as good as the sources. If the eDiscovery production is ongoing and only 20% has landed, the chronology reflects that. Name the limitation.
-- **Decide privilege status for the user.** The Step 0 gate forces the posture choice; the per-entry `priv` flag captures first-pass classification. Actual privilege determinations are counsel's call per `[SME VERIFY]` flags.
+## 本技能不做什么
+
+- **解决事实矛盾。** 当两份证据对同一事件发生时间有不同记载时，两版均入条目并标注矛盾。解决问题需律师判断；可能需要证人询问或进一步举证。
+- **编造不存在的事件。** 如果不在文件中，就不在大事记中——但"缺口"可标注缺失。
+- **保证完整性。** 大事记与来源一样好。如果证据交换仍在进行，大事记反映这一现实。
+- **替律师决定保密状态。** 第0步关强制姿态选择；每条保密标注捕捉初审分类。实际保密判断是律师的决定。

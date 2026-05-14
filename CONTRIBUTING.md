@@ -1,82 +1,38 @@
-# Contributing to Claude for Legal
+# 贡献指南：Claude for Legal CN
 
-Notes for anyone writing or editing a plugin in this repo. Keep this short — the
-design principles that matter most for the quality of the output, not a style
-guide.
+写给在本仓库中编写或编辑插件的每个人。保持简洁——仅列出对输出质量影响最大的设计原则，而非风格指南。
 
-## Before your first PR
+## 首次 PR 前
 
-Sign the CLA. The first time you open a pull request, the CLA Assistant bot will
-comment with a link to the [CLA](CLA.md) and ask you to confirm. Reply with
-`I have read the CLA Document and I hereby sign the CLA` and the check will pass.
-You only need to do this once.
+签署 CLA（贡献者许可协议）。首次提交 Pull Request 时，CLA Assistant 机器人会评论并附上 [CLA](CLA.md) 链接，请你确认。回复 `I have read the CLA Document and I hereby sign the CLA` 即可通过检查。只需完成一次。
 
-## Design principle: SKILL.md encodes the right behavior; CLAUDE.md guardrails
-are the net
+## 设计原则：SKILL.md 编码正确行为；CLAUDE.md 护栏为安全网
 
-Every plugin in this repo ships with two layers of instruction:
+本仓库每个插件以两层指令方式发布：
 
-1. **`<plugin>/skills/<skill>/SKILL.md`** — what this specific skill does, step by
-   step. The narrow, task-specific scaffold.
-2. **`<plugin>/CLAUDE.md`** — the shared guardrails and the practice profile.
-   "Scaffolding, not blinders," source-tag discipline, "verify user-stated legal
-   facts," premise verification, destination check, cross-skill severity floor,
-   pre-flight citation banner. The wide, plugin-level safety net.
+1. **`<插件名>/skills/<技能名>/SKILL.md`**——此特定技能做什么，按步骤描述。狭窄的、任务特定的脚手架。
+2. **`<插件名>/CLAUDE.md`**——共享护栏和业务档案。"脚手架而非蒙眼布"原则、来源标注纪律、"核实用户陈述的法律事实"、前提验证、目标检查、跨技能严重性底线、调用前引文横幅。宽阔的、插件级安全网。
 
-**If a skill's correct output depends on a CLAUDE.md guardrail catching a
-mistake the SKILL.md would have made, that's a design smell.** The SKILL.md
-should tell the model what to do directly; the guardrails should catch what the
-SKILL.md missed. Every time a guardrail has to rescue a skill, we're relying on
-the guardrail firing consistently — and on a bad run, a weaker model, a terser
-prompt, or a future editor who reads only the skill text, the rescue doesn't
-happen.
+**如果一个技能的正确输出依赖于 CLAUDE.md 护栏来拦截 SKILL.md 本身会犯的错误，这是设计异味。** SKILL.md 应直接告知模型该做什么；护栏应拦截 SKILL.md 遗漏的内容。每次护栏必须出手补救技能时，我们都把正确性寄托于护栏始终触发——而在一次糟糕的运行中、在一个更弱的模型上、在一个更简化的提示词中、或者在一个只读了技能文本的未来编辑者面前，这种补救不会发生。
 
-**Rule of thumb: if a QA test passes only because a guardrail fired, add the
-behavior to the SKILL.md directly.** The guardrail stays (belt and suspenders),
-but the skill now carries the knowledge it needs on its own.
+**经验法则：如果一项质量检查只有依赖护栏触发才能通过，就把该行为直接写进 SKILL.md。** 护栏保留（双保险），但技能现在独自承担它需要的知识。
 
-Examples of this rule in practice:
+该原则在实践中的例子：
 
-- A design patent question should not pass an infringement triage only because
-  "Scaffolding, not blinders" lets the model override the utility-patent
-  workflow. The skill should branch on the D-prefix itself and route to the
-  ordinary-observer test.
-- A renewal cancel-by date that falls on a Sunday should not land on the user's
-  calendar correctly only because the user thought to ask about weekdays. The
-  register schema and the Mode 2 output should carry the business-day roll-back
-  themselves.
-- An FLSA back-pay computation should not get the regular-rate formula right
-  only because the model happens to remember §207(e). The skill should have a
-  §207(e) checklist that forces the inclusions, the 0.5× vs. 1.5× posture, the
-  liquidated-damages doubling, and the SOL lookback into every answer.
+- 外观设计专利问题不应仅因"脚手架而非蒙眼布"让模型覆盖发明专利工作流才通过侵权筛查。技能应识别外观设计前缀并自行路由到整体观察综合判断标准。
+- 续展截止日落在周末不应仅因用户想到询问工作日调整才正确写入日历。登记簿 schema 和模式二输出应自行承载工作日顺延规则。
+- 加班费追索计算不应仅因模型恰好记得《工资支付暂行规定》才算出正确的工资基数。技能应内置基数核定清单，强制将各项津贴纳入、区分 0.5 倍与 1.5 倍补发口径、惩罚性赔偿加倍计算、以及诉讼时效回溯覆盖到每一次回答。
 
-## A few concrete things that follow
+## 几条具体推论
 
-- **Put the doctrine in the skill.** If a skill's mode covers patents, cover
-  design patents. If it covers overtime, cover the regular-rate formula. Not a
-  pointer to "and also think about" — the actual checklist.
-- **Attach provenance tags to numbers, not to paragraphs.** `[model calculation
-  — verify against the notice clause]` next to the date; `[verify — consult
-  wage-and-hour counsel before asserting or paying]` on the line the back-pay
-  number appears. Tags on surrounding prose get lost; tags on the load-bearing
-  digit do not.
-- **Make the decline pathway a scaffold, not an escape hatch.** If the right
-  answer to some category of question is "I decline to compute," bake that into
-  the skill as a hard gate. `legal-clinic`'s `/deadlines` do-not-compute rule is
-  the pattern: stated plainly, non-overridable, owned by the skill.
-- **Write the gate header so the gate is default-on.** If there is an
-  exemption, phrase the heading as the gate and narrow the exemption in a
-  sub-bullet, not the other way around. A load-bearing parenthetical is a bug
-  waiting to be reintroduced by the next edit.
+- **把法律规则放进技能。** 如果技能模式覆盖专利，就覆盖外观设计专利。如果覆盖加班，就覆盖工资基数核定。不是一句"也想想这个"的提示——是实实在在的清单。
+- **把来源标记贴在数字上，而不是贴在段落上。** `[模型计算——请对照合同通知条款核实]` 放在日期旁边；`[需核实——在主张或支付前咨询劳动法律师]` 放在追索金额那行。标记放在包裹性文字上会丢失；放在关键数字上不会。
+- **让拒绝路径成为脚手架，而非逃生舱。** 如果对某类问题的正确答案是"我拒绝计算"，就把这一点作为硬门槛写进技能。`法律援助诊所` 的 `/deadlines` 禁止计算规则就是范本：清晰表述、不可覆盖、由技能自主控制。
+- **写门槛标题时要让门槛默认开启。** 如果存在豁免情形，用门槛作为标题，在子条目中缩小豁免范围，而不是反过来。一个承载核心规则的括号是等着下一次编辑重新引入的 Bug。
 
-## Workflow notes
+## 工作流注意事项
 
-- **Read the plugin's `CLAUDE.md` before editing any skill in that plugin.** The
-  practice profile, the integrations table, the shared guardrails, and the
-  decision-posture statement all shape what the skill should say and omit.
-- **Bump the plugin version on a material change.** Patch bumps for behavior
-  additions; minor bumps for new skills or new required inputs.
-- **Run the validators.** `scripts/validate.py` and `scripts/lint-tool-scope.py`
-  check the structural invariants the plugin loader depends on.
-- **Do not remove the shared guardrails from CLAUDE.md.** The net stays. The
-  goal is a skill that doesn't need the net, not a plugin without one.
+- **编辑插件中任何技能之前，先阅读该插件的 `CLAUDE.md`。** 业务档案、集成表、共享护栏以及决策立场声明，共同决定了技能应该说什么、省略什么。
+- **实质性变更时升级插件版本号。** 行为新增为修订号升级；新技能或新必填输入为次版本号升级。
+- **运行校验器。** `scripts/validate.py` 和 `scripts/lint-tool-scope.py` 检查插件加载器所依赖的结构不变量。
+- **不要从 CLAUDE.md 中移除共享护栏。** 安全网保留。目标是写出不需要安全网的技能，而不是写出没有安全网的插件。

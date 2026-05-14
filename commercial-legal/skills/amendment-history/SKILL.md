@@ -1,298 +1,253 @@
 ---
-name: amendment-history
+name: 合同变更追溯
 description: >
-  Trace how a contract has changed across its base agreement and all amendments —
-  either a summary of all changes over time, or a provision trace for a specific
-  clause. Use when the user says "what changed in this contract over time", "show
-  me the amendment history", "where's the latest [clause]", "how has [provision]
-  evolved", or uploads multiple versions of an agreement.
-argument-hint: "[file(s) | [CLM ID (coming soon)] | [repository link (coming soon)]] [--provision <clause name>]"
+  追溯合同自原始协议至全部补充协议/变更协议的演变过程——
+  汇总全部变更的时间线摘要，也可针对特定条款逐版追溯。
+  适用于用户说"这份合同历次改了什么"、"给我看变更历史"、"最新的[某条款]在哪"、
+  "[某条款]如何演变的"，或上传同一协议的多份版本。
+argument-hint: "[文件 | [CLM ID（即将推出）] | [文档库链接（即将推出）]] [--provision <条款名称>]"
 ---
 
-# /amendment-history
+# /合同变更追溯
 
-Loads a base agreement and all amendments, then either summarizes what
-changed over time or traces a specific provision to its current
-controlling language.
+加载原始协议及全部补充协议/变更协议，汇总合同历次变更，或针对某一特定条款进行逐版追溯，找到当前有效的条款表述。
 
-## Instructions
+## 操作流程
 
-1. **Get the documents:** From file upload, [CLM ID (coming soon)], or [repository link (coming soon)]. Accept multiple files in one invocation. If none
-   provided, ask.
+1. **获取文件。** 从文件上传、[CLM ID（即将推出）]或[文档库链接（即将推出）]获取。一次接受多个文件。如未提供，请要求提供。
 
-2. **Detect the mode** by parsing the request per the mode
-   detection rules below. If a provision name is clearly stated, go straight
-   to Mode 2. If no provision is mentioned, run Mode 1. Ask only if
-   genuinely ambiguous.
+2. **检测模式。** 按下述模式检测规则解析请求。如明确提及某条款名称，直接进入模式二。如未提及具体条款，执行模式一。仅在确实存在歧义时才询问。
 
-3. **Run the workflow below.** Follow it fully.
+3. **执行对应工作流。** 完整执行，不跳过步骤。
 
-4. **Offer follow-ups after output:**
-   - "Want me to trace another provision?"
-   - "Want a full playbook review of the current agreement as amended?"
-     (routes to vendor-agreement-review)
-   - "Want a stakeholder summary of the key changes?"
-     (routes to stakeholder-summary)
+4. **输出后提供后续选项：**
+   - "需要我追溯另一个条款吗？"
+   - "需要对当前有效版本（含历次变更）做一次完整的审查手册审查吗？"（路由至供应商协议审查）
+   - "需要生成一份面向业务干系人的关键变更摘要吗？"（路由至干系人摘要）
 
-## Examples
+## 示例
 
 ```
-/commercial-legal:amendment-history acme-msa.pdf amendment-1.pdf amendment-2.pdf
+/commercial-legal:合同变更追溯 acme-框架协议.pdf 补充协议-1.pdf 补充协议-2.pdf
 ```
 
 ```
-/commercial-legal:amendment-history --provision indemnity
+/commercial-legal:合同变更追溯 --provision 赔偿
 ```
 
 ```
-/commercial-legal:amendment-history
-[paste agreement and amendment text]
+/commercial-legal:合同变更追溯
+[粘贴协议及补充协议文本]
 ```
 
 ---
 
-## Matter context
+## 事项上下文
 
-**Matter context.** Check `## Matter workspaces` in the practice-level CLAUDE.md. If `Enabled` is `✗` (the default for in-house users), skip the rest of this paragraph — skills use practice-level context and the matter machinery is invisible. If enabled and there is no active matter, ask: "Which matter is this for? Run `/commercial-legal:matter-workspace switch <slug>` or say `practice-level`." Load the active matter's `matter.md` for matter-specific context and overrides. Write outputs to the matter folder at `~/.claude/plugins/config/claude-for-legal/commercial-legal/matters/<matter-slug>/`. Never read another matter's files unless `Cross-matter context` is `on`.
-
----
-
-## Purpose
-
-Contracts accumulate amendments. By the third amendment, nobody remembers
-what the original said or which version of a clause controls. This skill
-reads the base agreement and all amendments in chronological order and
-either summarizes what changed across the whole contract or traces a
-specific provision through every version to find the current controlling
-language.
-
-## Mode detection
-
-Parse the user's request to determine which mode to run. Do not ask
-which mode unless the request is genuinely ambiguous.
-
-**Mode 1 — Summary** (no specific provision mentioned)
-Trigger phrases: "what changed", "amendment history", "show me changes
-over time", "summarize amendments", "what does this contract look like now"
-
-**Mode 2 — Provision trace** (specific clause or topic named)
-Trigger phrases: "where's the [clause]", "latest [provision]", "how did
-[term] change", "find the indemnity", "what does it say now about [topic]"
-
-Common provision mappings:
-- "indemnity" / "indemnification" → indemnification section
-- "liability" / "liability cap" → limitation of liability
-- "termination" → term and termination
-- "data" / "privacy" / "DPA" → data protection provisions
-- "IP" / "intellectual property" → IP ownership and licenses
-- "price" / "fees" / "payment" → payment terms
-- "auto-renewal" / "renewal" → renewal mechanics
-
-If the term is ambiguous and maps to more than one provision, list the
-candidates and ask which one:
-> "I found [N] provisions related to [term] — [list them]. Which one?"
-
-If the overall request is ambiguous between modes, ask one question:
-> "Summary of all changes across the contract, or trace a specific
-> provision — like indemnity, liability, or termination?"
+**事项上下文。** 检查业务级 CLAUDE.md 中的 `## 事项工作区`。若 `已启用` 为 `✗`（法务内部用户的默认状态），跳过本段——各技能使用业务级上下文，事项机制对用户不可见。若已启用且无活跃事项，询问："本事项归属于哪个案件？运行 `/commercial-legal:事项工作区 switch <slug>` 或回复 `业务级`。"加载活跃事项的 `matter.md` 获取事项特定上下文及覆盖配置。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal/commercial-legal/matters/<matter-slug>/`。除非 `跨事项上下文` 为 `on`，否则永不读取其他事项的文件。
 
 ---
 
-## Step 1: Load and order the documents
+## 功能目的
 
-Accept documents from any of these sources:
+合同随着补充协议越来越多，签完第三份补充协议后，没人记得原始协议写了什么，也不知道当前哪条条款有效。本技能按时间顺序读取原始协议和全部补充协议，汇总整个合同发生的变更，或追溯某特定条款的每个版本，找出当前有效的表述。
 
-**[CLM integration coming soon] (if connected):**
-Search by counterparty name or agreement title. Pull the base agreement
-and all amendments. Record metadata typically includes execution dates —
-use these to establish chronological order.
+## 模式检测
 
-**[Document repository integration coming soon] (if connected):**
-Search by counterparty name or filename. Look for files matching patterns
-like "Amendment", "Addendum", "Amendment No. 1", "First Amendment", or
-numbered suffixes. Pull all matches and sort by file date or filename
-numbering.
+解析用户请求以确定执行哪个模式。除非请求确实存在歧义，否则不要询问。
 
-**Direct upload:**
-User provides files directly. In most cases the ordering is
-self-explanatory from document titles (e.g., "Amendment No. 1",
-"Second Amendment", "Addendum A") or dates visible in the filename
-or document header — proceed without asking.
+**模式一 —— 摘要**（未提及具体条款）
+触发："改了什么"、"变更历史"、"给我看历次变更"、"汇总补充协议"、"这份合同现在的版本是什么样的"
 
-Only ask the user to confirm ordering if:
-- Filenames give no indication of sequence (e.g., "agreement-final.pdf",
-  "agreement-v2.pdf", "agreement-markup.pdf")
-- Dates are absent from both filenames and document headers
-- Two documents appear to be the same amendment version
+**模式二 —— 条款追溯**（明确提及具体条款或主题）
+触发："[某条款]在哪"、"最新的[某条款]"、"[某条款]怎么改的"、"找赔偿条款"、"关于[某主题]现在怎么说的"
 
-If ordering was inferred rather than confirmed, note confidence at the
-top of the output only where uncertain:
-> "Order inferred from document titles — one item I was less certain
-> about: [specific document]. Confirm if this affects your review."
+常见条款映射：
+- "赔偿"/"补偿" → 赔偿/补偿条款
+- "责任"/"责任上限" → 责任限制
+- "终止"/"解除" → 合同期限与终止
+- "数据"/"隐私"/"个人信息" → 数据保护条款
+- "知识产权" → 知识产权归属与许可
+- "价格"/"费用"/"付款" → 付款条件
+- "自动续约"/"续约" → 续约机制
 
-**Ordering rules:**
-- Always establish chronological order before reading content.
-- If execution dates are available in metadata, use them.
-- If not, look for dates in the document header or recitals
-  ("This Amendment, dated as of...").
-- Amendments often reference the agreement they modify ("this Amendment
-  to the Master Services Agreement dated [X]") — use these references
-  to confirm the chain.
+若术语模糊，可映射至多个条款，列出候选并请用户确认：
+> "我找到[N]个与[术语]相关的条款——[列出]。您要查哪一个？"
+
+若总体请求在两种模式间存在歧义，问一个问题：
+> "是要汇总整个合同的历次变更，还是追溯某个具体条款——例如赔偿、责任或终止？"
 
 ---
 
-## Privilege inheritance
+## 步骤一：加载并排序文件
 
-This skill reads the base agreement and amendments — often privileged or confidential in their own right, and typically used for privileged analysis. The output inherits the source's privilege and confidentiality status. Prepend the work-product header from `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` `## Outputs` to every output below, distribute only within the privilege circle, and store it where privileged materials live. Strip the header before any external delivery.
+从以下任一来源接收文件：
 
-## Step 2: Read and index
+**[CLM集成即将推出]（如已连接）：**
+按合同相对方名称或协议标题搜索。拉取原始协议和全部补充协议。记录的元数据通常包含签署日期——用这些日期确定时间顺序。
 
-Read each document in chronological order. For each, extract:
-- Document type (base agreement, amendment number, addendum, etc.)
-- Execution date
-- Parties (confirm they match across documents — flag if a new party
-  was added or a party name changed)
-- A list of provisions explicitly modified, added, or deleted
+**[文档库集成即将推出]（如已连接）：**
+按合同相对方名称或文件名搜索。匹配"补充协议"、"变更协议"、"补充协议第1号"、"第一份补充协议"或带编号后缀的文件名模式。拉取全部匹配文件，按文件日期或文件名编号排序。
 
-Build a working index before producing output. Use it internally to
-drive the output — do not show it to the user.
+**直接上传：**
+用户直接提供文件。大多数情况下，文件标题（如"补充协议第1号"、"第二份补充协议"、"变更函A"）或文件头中可见的日期已能明确排序——直接进行，无需询问。
+
+仅在以下情况下才请用户确认顺序：
+- 文件名不能体现先后顺序（如"协议-终版.pdf"、"协议-v2.pdf"、"协议-修订版.pdf"）
+- 文件名和文件头中均无日期
+- 两份文件看起来是同一补充协议版本
+
+若排序为推断得出（未经确认），仅在不确定处才在输出顶部标注置信度：
+> "排序依据文件标题推断——其中一项不太确定：[具体文件]。如影响您的审查请确认。"
+
+**排序规则：**
+- 读取内容前始终先确定时间顺序。
+- 若元数据中有签署日期，优先使用。
+- 若无，则在文件头或鉴于条款中查找日期（"本补充协议签订于……"）。
+- 补充协议通常引用其修改的协议（"本补充协议针对签订于[X]的框架协议"）——用这些引用确认链条。
 
 ---
 
-## Mode 1: Summary of all changes
+## 保密特权继承
 
-### Section reference rule
+本技能读取原始协议和补充协议——这些文件本身通常具有保密性或在律师-客户特权保护范围内，通常用于受特权保护的分析。输出继承源文件的特权和保密状态。在每份输出前加上工作成果标题，仅在特权圈内分发，并将其存储在特权材料存放处。任何对外交付前，移除标题。
 
-Every finding must include an inline section reference so the reader
-can verify against the source document without searching:
+## 步骤二：读取并索引
 
-  "Termination for convenience (§12.3): Added. Customer may terminate
-  on 90 days written notice with no fee after the initial term."
+按时间顺序逐份读取。对每份文件，提取：
+- 文件类型（原始协议、第N号补充协议、变更函等）
+- 签署日期
+- 当事方（确认各文件一致——若新增当事方或当事方名称变更，予以标注）
+- 明确修改、新增或删除的条款清单
 
-If a provision spans multiple sections or the section number changed
-across amendments, cite all references:
-  "Indemnification (§9.1 base; §9.1 restated in Amendment 5)"
+在输出前建立工作索引。内部使用以驱动输出——不向用户展示。
 
-### Output format
+---
+
+## 模式一：所有变更摘要
+
+### 条款引用规则
+
+每项发现必须包含行内条款引用，以便读者在源文件中核实而无需检索：
+
+  "任意解除权（第12.3条）：新增。客户可在初始期限后提前90日书面通知终止，无需支付费用。"
+
+若某条款涉及多个条款编号或条款编号在补充协议中发生变更，引用全部参考信息：
+  "赔偿（原协议第9.1条；补充协议5中重述为第9.1条）"
+
+### 输出格式
 
 ```markdown
-# Amendment History: [Counterparty] — [Agreement type]
+# 合同变更历史：[合同相对方] — [协议类型]
 
-**Base agreement:** [date]
-**Amendments:** [N] ([date of first] → [date of last])
-**Last amended:** [date]
-
----
-
-## What changed — chronological
-
-### Amendment 1 — [date]
-**Purpose:** [one sentence — why this amendment existed, from recitals
-or clear from context. If not stated, omit rather than guess.]
-
-**Material changes:**
-- [Provision] (§[X.X]): [what it said before → what it says now,
-  in plain English]
-- [New provision added] (§[X.X]): [what it does]
-- [Provision deleted] (§[X.X]): [what was removed and why it matters]
-
-### Amendment 2 — [date]
-[same structure]
-
-[repeat for each amendment]
+**原始协议：** [日期]
+**补充/变更协议：** [N]份（[首份日期] → [最后一份日期]）
+**最后变更日期：** [日期]
 
 ---
 
-## Net current state
+## 变更内容 —— 按时间顺序
 
-| Provision | Current position | §Ref | Last changed |
+### 补充协议1 — [日期]
+**变更目的：** [一句话——说明本补充协议的原因，来自鉴于条款或上下文。若未说明，省略而不猜测。]
+
+**实质性变更：**
+- [条款]（第[X.X]条）：[原表述 → 现表述，用通俗语言]
+- [新增条款]（第[X.X]条）：[其作用]
+- [删除条款]（第[X.X]条）：[删除内容及其重要性]
+
+### 补充协议2 — [日期]
+[同上结构]
+
+[逐份重复]
+
+---
+
+## 当前净有效状态
+
+| 条款 | 当前立场 | 条款引用 | 最后变更 |
 |---|---|---|---|
-| [clause] | [plain English summary] | §[X.X] | Amendment N, [date] |
-| [clause] | [unchanged from base] | §[X.X] | Base agreement |
+| [条款] | [通俗摘要] | 第[X.X]条 | 补充协议N，[日期] |
+| [条款] | [自原协议未变] | 第[X.X]条 | 原始协议 |
 
 ---
 
-## Watch items
-[Flag anything that looks inconsistent — e.g., an amendment modifying
-a provision that was already deleted, contradictory language between
-amendments, a party name that changed without a formal assignment,
-or a provision where the section number shifted across documents.
-Include section references on every flag.]
+## 关注事项
+[标注任何看似不一致的情况——如某份补充协议修改了一个已被删除的条款、各补充协议之间的矛盾表述、当事方名称变更但无正式转让手续、或条款编号在文件间变动。每项标注均需含条款引用。]
 ```
 
 ---
 
-## Mode 2: Provision trace
+## 模式二：条款追溯
 
-### Output format
+### 输出格式
 
-Show only what changed. Do not list amendments where the provision
-was untouched — skip them entirely.
+仅显示变更内容。不要列出条款未被触及的补充协议——直接跳过。
 
 ```markdown
-# Provision Trace: [Provision name]
-## [Counterparty] — [Agreement type]
+# 条款追溯：[条款名称]
+## [合同相对方] — [协议类型]
 
 ---
 
-### Original — [Base agreement date], §[X.X]
-> "[exact quote]"
+### 原始版本 — [原始协议日期]，第[X.X]条
+> "[原文引用]"
 
-*Plain English:* [one sentence]
-
----
-
-### Amendment [N] — [date], §[X.X]
-
-**Was:**
-> "[exact quote of prior language]"
-
-**Now:**
-> "[exact quote of replacement language]"
-
-*What changed:* [one sentence — practical effect on the parties]
+*通俗表述：* [一句话]
 
 ---
 
-[Only subsequent amendments that touched this provision appear here.
-All others are omitted.]
+### 补充协议[N] — [日期]，第[X.X]条
+
+**原为：**
+> "[先前表述原文引用]"
+
+**现为：**
+> "[替换后表述原文引用]"
+
+*变更内容：* [一句话——对各方产生的实际影响]
 
 ---
 
-## Current controlling language
-
-**§[X.X] — [source document, date]**
-> "[exact quote]"
-
-*Plain English:* [one sentence]
+[仅后续触及本条款的补充协议在此出现。其余全部省略。]
 
 ---
 
-## Watch items
-[Flags, inconsistencies, open questions — with section references.
-Common items to check: whether the provision is subject to or carved
-out of the liability cap; whether the section number shifted across
-amendments; whether the amendment language conflicts with another
-provision.]
+## 当前有效条款
+
+**第[X.X]条 — [来源文件，日期]**
+> "[原文引用]"
+
+*通俗表述：* [一句话]
+
+---
+
+## 关注事项
+[标注、不一致、未决问题——含条款引用。常见检查项：该条款是否受责任上限约束或被排除在外；条款编号在补充协议间是否变动；补充协议表述是否与其他条款冲突。]
 ```
 
-If the provision was never amended after the base agreement:
-> "This provision has not been modified by any amendment. Original
-> language controls. §[X.X], base agreement, [date]."
+若该条款在原始协议之后从未被修改过：
+> "该条款未被任何补充协议修改。原始表述继续有效。第[X.X]条，原始协议，[日期]。"
 
 ---
 
-## Close with the next-steps decision tree
+## 法律依据
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+本技能的变更追溯基于《中华人民共和国民法典》：
+- **第五百四十三条**：当事人协商一致，可以变更合同。
+- **第五百四十四条**：当事人对合同变更的内容约定不明确的，推定为未变更。
 
-## What this skill does not do
+当补充协议表述与原始协议存在冲突且约定不明时，按《民法典》第544条推定为未变更，予以标记并建议法务确认。
 
-- It does not determine which document controls in the event of a
-  conflict between the base agreement and an amendment — that is a
-  legal interpretation question. It flags conflicts and routes to Legal.
-- It does not draft new amendments.
-- It does not compare against the playbook in `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` — that is the
-  vendor-agreement-review skill's job. This skill is purely historical.
-- It does not infer what an amendment means if the language is
-  ambiguous — it quotes exactly and flags ambiguity for Legal.
+---
+
+## 以下一步决策树收尾
+
+按 CLAUDE.md `## 输出` 的要求以下一步决策树收尾。根据本技能刚产出的内容定制选项——五个默认分支（起草X、升级、获取更多信息、观察等待、其他事项）是起点而非固定模板。决策树即输出；由律师选择。
+
+## 本技能不做什么
+
+- 不判断在原始协议与补充协议存在冲突时哪份文件优先——这属于法律解释问题。它标注冲突并路由至法务。
+- 不起草新的补充协议。
+- 不与审查手册对比——那是供应商协议审查技能的工作。本技能纯粹是历史追溯。
+- 若表述不明确，不推断补充协议的含义——原文引用并标注不明确之处供法务判断。

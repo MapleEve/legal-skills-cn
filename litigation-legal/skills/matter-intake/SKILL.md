@@ -1,310 +1,351 @@
 ---
-name: matter-intake
-description: Intake a new matter — uniform questions covering identification, conflicts, source, risk triage, materiality, outside counsel, owners, legal hold, and key dates; writes matter.md and history.md and appends a structured row to _log.yaml. Use when the user says "new matter", "intake this matter", or wants to bring a new matter into the portfolio.
-argument-hint: "[optional matter name]"
+name: 案件立案
+description: 新案件收案立案——统一完成收案审批、利益冲突检索、风险分诊、重要性评估、委托代理合同、授权委托书、收费协议；写入案件档案.md和办案日志.md，追加结构化行至_log.yaml。适用场景：用户说"新案件""立案""收案"或欲将新案件纳入案件管理。
+argument-hint: "[可选 案件名称]"
 ---
 
-# /matter-intake
+# /案件立案
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration (for triage), landscape (for context, conflicts method), stakeholders (for who to loop in).
-2. Follow the workflow and reference below.
-3. Run the uniform intake: identification, conflicts check, source, risk triage, materiality, outside counsel, internal owners, legal hold, key dates, initial posture.
-4. Generate slug from matter name (lowercase, hyphens, year).
-5. Create `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — full narrative intake.
-6. Create `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — seeded with the intake as the first entry.
-7. Append structured row to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`.
-8. Confirm with the user: "Here's the row I'll write — any edits?"
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准（用于分诊）、执业场景（利益冲突方法）、利益相关方。
+2. 遵循以下工作流程和参考。
+3. 运行统一收案程序：识别、利益冲突检索、来源、风险评估、重要性、委托代理、收费方案、关键日期、初始诉讼策略。
+4. 从案件名称生成标识（小写、连字符、年份）。
+5. 创建 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 完整叙述性立案档案。
+6. 创建 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 以收案为第一条记录种子。
+7. 追加结构化行至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`。
+8. 与用户确认："这是我即将写入的内容——有需要修改的吗？"
 
 ---
 
-# Matter Intake
+# 案件立案（收案）
 
-## Purpose
+## 目的
 
-Every new matter goes through the same intake so the portfolio stays comparable. Uniform rows in `_log.yaml` let the status skill roll up. Narrative in `matter.md` captures what the row can't. History file seeded here becomes the event record.
+每个新案件通过相同的标准收案程序，使案件管理保持一致性和可比较性。本技能对应中国律师事务所的"收案"环节——确保每一件案件在正式接受代理前，完成利益冲突检索、案件风险评估、委托代理合同签署和收费确认。
 
-## Load context
+## 中国律所收案流程概述
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (triage thresholds, materiality, settlement ladder), landscape (stakeholders, outside counsel bench).
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — to confirm slug uniqueness.
+中国律师事务所的收案标准流程通常为：
 
-## The intake
+1. **意向沟通** —— 与潜在委托人初步沟通了解案情
+2. **利益冲突检索** —— 检索是否与现有客户或前客户存在利益冲突
+3. **案件初步评估** —— 评估案件法律关系和可能的结果
+4. **收案审批** —— 所内审批（通常由合伙人或收案委员会审批）
+5. **签署委托代理合同** —— 明确代理范围、费用、双方权利义务
+6. **签署授权委托书** —— 委托人授权律所指派律师代理诉讼
+7. **收费确认** —— 按收费方式收取律师费
+8. **建立案件档案** —— 正式录入案件管理系统
 
-### 1. Identification
+## 加载上下文
 
-- Matter name (as commonly referenced, e.g., "Acme v. Us 2026")
-- Counterparty
-- Matter type: `contract | employment | ip | regulatory | investigation | product | other`
-- Our role: `plaintiff | defendant | claimant | respondent | investigated`
-  - If the practice profile's `## Side` is `plaintiff`, `defense`, or a "both — default X" variant, pre-fill the role from that default and confirm. If `## Side` is `varies by matter`, ask cold. Never silently assume a posture the practice profile hasn't set.
-  - The role drives downstream skills: plaintiff-posture matters route risk triage to case value / contingency economics; defense-posture matters route to exposure / reserves / insurance tender.
-- Jurisdiction (court, arbitration forum, or regulatory body)
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（分诊阈值、重要性）、执业场景（利益相关方）。
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 确认标识唯一性。
 
-### 2. Conflicts check
+## 收案程序
 
-Before going further, run the conflicts step per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → Conflicts clearance.
+### 1. 案件识别
 
-- **Status:** `cleared | pending | not-run | waived`
-- **Method:** match what `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` declares (`corporate-legal | outside-counsel | system-check | informal | other`). If the declared method is `informal`, say so — the record still captures that a counsel's-judgment check was the basis.
-- **Cleared by:** name / team / firm
-- **Cleared date:** YYYY-MM-DD
-- **Checked against:** brief list of the specific names/entities run (counterparty, known affiliates, adverse counsel if known, key witnesses). Thin is fine; "no" is not.
-- **Notes:** anything flagged but cleared (e.g., "Smith on our board sat on counterparty's board 2019–2021 — cleared as non-overlapping to this matter").
+- 案件名称（日常称呼，如"某公司诉某公司合同纠纷 2026"）
+- 对方当事人
+- 案件类型：`合同纠纷 | 劳动争议 | 知识产权 | 行政监管 | 刑事 | 公司纠纷 | 侵权责任 | 其他`
+- 己方角色：`原告 | 被告 | 申请人 | 被申请人`
+  - 若执业画像 `## 立场` 为 `原告`、`被告`或"两者——默认X"变体，从默认值预填角色并确认。若 `## 立场` 为 `因案而异`，直接询问。
+  - 角色驱动下游策略：原告案件侧重诉讼请求构建和证据组织；被告案件侧重抗辩策略和时效/管辖审查。
+- 管辖（法院、仲裁机构或行政监管机关）
+- 案由（按《民事案件案由规定》确定）
 
-Behavior by status:
+### 2. 利益冲突检索
 
-- `cleared` → proceed.
-- `pending` → proceed with intake; flag prominently in `matter.md` and in the log row that conflicts are outstanding; surface again on every `/matter-update` and in `/portfolio-status` until resolved.
-- `waived` → rare; requires a conflict-waiver rationale (writing the waiver is outside this skill — capture that one exists, who signed it, and where it lives).
-- `not-run` → **STOP. This is a gate.** The skill will not create `matter.md`, `history.md`, or a `_log.yaml` entry until the conflicts posture is resolved. Three acceptable paths:
+继续之前，必须运行利益冲突检索。这是中国律师事务所执业合规的核心要求。
 
-  **Path 1 — Run conflicts now.** Pause this intake. Clear per `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` Conflicts clearance. Return with `status: cleared` or `status: waived` with rationale.
+- **状态：** `已通过 | 待定 | 未执行 | 已豁免`
+- **检索方式：** `律所系统检索 | 人工检索 | 外聘律师自行检索`
+- **检索人：** 姓名/团队
+- **检索日期：** 年-月-日
+- **检索对象：** 对方当事人、已知关联方、对方律师（如已知）、关键证人
+- **备注：** 任何标注但已通过的事项（如"我方曾于2019年代理对方关联公司某案件——已结案且不涉及相同的实质性法律问题"）
 
-  **Path 2 — Mark pending with owner + due date.** Allowed only when `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` Conflicts clearance declares parallel-intake acceptable. Capture: who is running conflicts, when they're expected to return, what entities they're checking. Intake proceeds; matter row carries `conflicts.status: pending`; `/portfolio-status` flags it every run; `/matter-update` re-prompts until resolved.
+**中国律所利益冲突核心判断：**
 
-  **Path 3 — Bypass with documented rationale.** Only if the user explicitly acknowledges the bypass. Record in `conflicts.override`:
+1. 同一律所不得在同一案件中代理双方当事人（绝对禁止）
+2. 同一律所不得在当前案件中代理与原客户的对方当事人（需前客户书面豁免）
+3. 律师本人或其近亲属与案件有利害关系的，应在检索中注明
 
-  ```yaml
-  conflicts:
-    status: not-run               # preserved as-is
-    override:
-      by: [user name]
-      date: [YYYY-MM-DD]
-      rationale: [why conflicts were bypassed — permanent record; does not auto-expire]
-  ```
+按状态行为：
 
-  This field is visible in every `/portfolio-status`, every `/matter` briefing, and every `/matter-update` until removed. It is never removed by the skill — only by explicit user edit to `_log.yaml` after conflicts are actually cleared.
+- `已通过` → 继续。
+- `待定` → 继续收案；在案件中显著标注冲突检索待决；每次案件更新时提示，直至解决。
+- `已豁免` → 需有书面豁免文件（前客户的书面同意）。
+- `未执行` → **停止。此为入门关。** 技能不会创建案件档案和日志条目，直至冲突状态解决。三条路径：
 
-  **Do not proceed silently.** "I'll do it later" is not an acceptable response. One of Path 1/2/3 must be chosen, and the choice is captured in the record.
+  **路径1 —— 立即执行冲突检索。** 暂停本收案。按律所利益冲突检索规则执行。以 `状态: 已通过` 或 `状态: 已豁免` 附理由返回。
 
-This step is not about the skill deciding whether a conflict exists — that's the user's/firm's judgment. It's about making sure the check happened and the record reflects it.
+  **路径2 —— 标注待定并指定负责人+截止日期。** 仅在律所制度允许并行收案时可用。记录：谁在执行检索、预期何时回复、正在检索哪些实体。收案继续；案件行携带 `冲突检索.状态: 待定`。
 
-### 3. Source
+  **路径3 —— 绕过并附书面理由。** 仅当用户明确承认绕过。记录绕过人、日期和理由。此记录在每次案件概况中可见，直至冲突检索实际完成。
 
-How did this arrive?
-- `demand-letter | complaint-served | subpoena | regulator-inquiry | internal-report | pre-suit-threat`
-- *Seed doc opportunity:* "If you have the initiating document (complaint, demand, subpoena), attach or share the path. It sharpens the intake."
+  **不得静默继续。** "稍后再说"不是可接受的回应。
 
-### 4. Risk triage — against house calibration
+本步骤并非关于技能判断是否存在冲突——是律所的判断。而是关于确保检索已发生且记录反映了这一事实。
 
-- Severity: high | medium | low (reference the `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` severity bands)
-- Likelihood: high | medium | low (reference the `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` likelihood bands)
-- Resulting risk rating (per the matrix): high | medium | low | critical
-- Damages exposure range (best estimate)
-- Non-monetary exposure (injunction? consent decree? publicity? precedent?)
+### 3. 案件来源
 
-If the risk calibration in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` is thin, don't fake precision. Use the user's gut and note the thinness.
+案件是如何进入律所的？
 
-### 5. Materiality
+- `老客户委托 | 新客户自行上门 | 同行介绍 | 其他律师转介 | 招投标/竞标 | 法律援助指派`
+- *提示：* "如有启动文件（起诉状、合同、律师函、法院文书），附加或提供路径。使收案信息更精确。"
 
-Against the house thresholds in `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`:
-- `reserved | disclosed | monitored | none`
-- If `reserved`: reserve amount and whether finance has been notified
-- If `disclosed`: filing and footnote location
+### 4. 案件风险评估
 
-### 6. Outside counsel
+对照律所风险校准标准进行评估：
 
-- Firm
-- Lead partner
-- **Lead partner email** (used by `/oc-status` to draft status requests)
-- Engagement letter status: `signed | pending | none`
-- Budget authorization: amount and approver
-- *Seed doc opportunity:* "Engagement letter path, if signed."
+- **严重性：** 高 | 中 | 低（参照律所严重性定义——通常基于争议标的额、对客户业务的影响、社会关注度等）
+- **可能性：** 高 | 中 | 低（胜诉可能性评估——基于现有事实和法律适用分析）
+- **综合风险评级：** 高 | 中 | 低 | 严重
+- **标的金额区间**（最佳估计）
+- **非金钱风险敞口：** 声誉影响？行政处罚风险？刑事风险？先例效应？
 
-If risk is medium or higher and no outside counsel is assigned — flag it.
+**案件风险评估应关注的核心问题：**
 
-### 7. Internal owners
+1. **诉讼时效审查** —— 《民法典》第188条规定的3年普通诉讼时效是否已经届满？是否存在时效中断/中止情形？
+2. **管辖审查** —— 受案法院是否有管辖权？是否存在有效的管辖协议/仲裁协议？
+3. **对方偿付能力** —— 如胜诉，判决能否实际执行？对方是否有可执行财产？（影响风险代理可行性判断）
+4. **举证难度** —— 已方主张的核心事实是否有充分证据支持？证据是否存在瑕疵？
+5. **法律适用** —— 适用的法律是否明确？是否存在有争议的法律适用问题？
 
-From `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` landscape — which internal stakeholders are involved?
-- Business lead
-- HR partner (if employment)
-- Comms contact (if reputational risk)
-- CISO (if data or cyber)
-- Other
+若律所风险校准标准薄弱，不伪造精度。使用律师直觉并注明薄弱。
 
-### 8. Legal hold
+### 5. 重要性评估
 
-- Issued? If yes: date, scope, custodians (list of names).
-- Next refresh date (default: six months from issuance; adjust per matter).
-- If no and this is active litigation or reasonably anticipated: flag urgently; offer to run `/litigation-legal:legal-hold [slug] --issue` after intake completes.
-- *Seed doc opportunity:* "Hold notice, if issued."
+对照律所重要性阈值：
 
-### 9. Key dates
+- 是否构成重大诉讼/仲裁事项（需向客户提示或由其履行披露义务）？
+- 对于上市公司客户，是否触及信息披露标准？
+- 评估等级：`重大 | 一般 | 较小`
 
-- Response deadline (answer, objection, opposition)
-- Next hearing / conference
-- Statute of limitations cutoff (if applicable)
-- Any regulatory deadlines
+### 6. 委托代理与收费
 
-### 10. Initial posture
+**委托代理合同**必须包含：
+- 委托人与律所全称
+- 代理事项和代理权限（一般代理 / 特别授权代理）
+- 承办律师姓名
+- 律师费金额及支付方式
+- 合同期限
+- 双方权利义务
+- 合同的变更与解除
 
-One-paragraph theory:
-- What's our story?
-- What's theirs?
-- What's the pivot fact?
-- Initial posture: `fight | settle | investigate | wait`
+**授权委托书**必须明确：
+- 委托人名称
+- 受委托律所名称及律师姓名
+- 代理权限（一般代理 / 特别授权）
+- 特别授权的内容（如授权和解、调解、代为承认/放弃/变更诉讼请求、代为上诉、代为签收法律文书等）
 
-## Writing the outputs
+**中国律师收费方式：**
 
-### Slug
+1. **计件收费** —— 按件收取固定费用，适用于不涉及财产关系的案件
+2. **按标的额比例收费** —— 按争议标的额的一定比例收取，实行分段累计
+3. **风险代理** —— 按最终实现债权或减免债务金额的一定比例收取
+   - 风险代理费上限：标的额的30%（《律师服务收费管理办法》第13条）
+   - 禁止风险代理的案件类型：刑事案件、行政案件、国家赔偿案件、群体性诉讼案件、婚姻继承案件、请求给付劳动报酬/社会保险待遇/最低生活保障待遇的案件
+4. **计时收费** —— 按律师工作时间计费
 
-Lowercase, hyphens, year at the end. Examples: `acme-v-us-2026`, `employment-smith-2026`, `ftc-inquiry-2026`.
+收费方案的确定需考虑：案件复杂程度、律师工作量预估、客户支付能力、收费标准合规性。
 
-Confirm slug is unique in `_log.yaml` before writing.
+### 7. 内部负责人（按律所/公司法务场景）
 
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md`
+- 主办律师 / 团队负责人
+- 合伙人（监管案件的合伙人）
+- 协办律师 / 律师助理
+
+### 8. 证据保全需求
+
+- 是否需要申请证据保全或财产保全？若有：优先级别和紧迫性
+- 收案完成后提议启动保全准备流程（如适用）
+- *提示机会：* "本案是否有关键证据可能灭失或被对方转移？如有，建议考虑申请证据保全/财产保全。"
+
+### 9. 关键日期
+
+- 答辩期截止日（被告收案场景——收到起诉状副本后15日内）
+- 举证期限截止日（法院指定的举证期限届满日）
+- 开庭日期（如已排期）
+- 诉讼时效届满日（如临近）
+- 上诉期限（如为上诉案件）
+
+### 10. 初始诉讼策略
+
+一段案件策略概述：
+- 己方核心论点是什么？
+- 对方可能的核心论点是什么？
+- 关键事实是什么？
+- 初始姿态：`对抗 | 调解/和解 | 观望`
+
+## 写入产出
+
+### 标识
+
+小写、连字符、年份结尾。示例：`acme-contract-2026`、`zhangsan-labor-2026`。
+
+写入前确认标识在 `_log.yaml` 中唯一。
+
+### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md`
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-# [Matter Name]
+# [案件名称]
 
-**Slug:** [slug]
-**Opened:** [YYYY-MM-DD]
-**Our role:** [plaintiff/defendant/etc.]
-**Status:** [status]
-
----
-
-## Identification
-
-[counterparty, jurisdiction, matter type, source]
-
-## Conflicts
-
-**Status:** [cleared / pending / not-run / waived]
-**Method:** [corporate-legal / outside-counsel / system-check / informal / other]
-**Cleared by:** [name]
-**Cleared date:** [YYYY-MM-DD]
-**Checked against:** [entities run]
-**Notes:** [any flags cleared, waiver reference if applicable]
-
-## Risk triage
-
-**Severity:** [band] — [why, with reference to house severity definitions]
-**Likelihood:** [band] — [why]
-**Risk rating:** [high/medium/low/critical]
-**Exposure:** [dollar range + non-monetary]
-
-## Materiality
-
-[reserved/disclosed/monitored/none — with reserve amount, disclosure location, or reasoning if "none"]
-
-## Outside counsel
-
-[firm, lead, engagement status, budget]
-
-## Internal owners
-
-[stakeholders and why each is involved]
-
-## Legal hold
-
-[status, date, scope]
-
-## Key dates
-
-[list]
-
-## Initial theory
-
-[one paragraph: our story, their story, pivot fact, initial posture] `[SME VERIFY — theory at intake is a working hypothesis; confirm with outside counsel before any filing or material communication that assumes this framing]`
-
-## Open questions
-
-[anything not yet known that matters — e.g., "insurance tender pending", "unclear whether we have coverage for X"]
+**标识：** [标识]
+**收案日期：** [年-月-日]
+**己方角色：** [原告/被告等]
+**状态：** [状态]
+**案由：** [按《民事案件案由规定》]
 
 ---
 
-## Seed documents
+## 案件识别
 
-| Doc | Path / pointer |
+[对方当事人、管辖法院、案件类型、案件来源]
+
+## 利益冲突检索
+
+**状态：** [已通过 / 待定 / 未执行 / 已豁免]
+**检索方式：** [律所系统检索 / 人工检索 / 外聘律师自行检索]
+**检索人：** [姓名]
+**检索日期：** [年-月-日]
+**检索对象：** [已执行检索的实体]
+**备注：** [任何标注但已通过的事项、豁免引用（如适用）]
+
+## 风险评估
+
+**严重性：** [区间] —— [原因]
+**胜诉可能性：** [区间] —— [原因]
+**综合风险评级：** [高/中/低/严重]
+**标的金额：** [金额区间]
+**非金钱风险：** [声誉/行政处罚/其他]
+
+## 关键审查事项
+
+**诉讼时效：** [是否届满 / 时效中断情况]
+**管辖：** [是否成立 / 是否有管辖协议]
+**对方偿付能力：** [评估]
+**举证难度：** [评估]
+
+## 重要性
+
+[重大/一般/较小 —— 附理由]
+
+## 委托代理信息
+
+**委托代理合同：** [已签署 / 待签] 合同编号：[__]
+**授权委托书：** [已取得 / 待取得] 代理权限：[一般代理 / 特别授权]
+**承办律师：** [姓名]
+**协办律师/助理：** [姓名]
+**收费方式：** [计件收费 / 按标的额收费 / 风险代理 / 计时收费]
+**律师费：** [金额及支付安排]
+
+## 关键日期
+
+| 事项 | 日期 | 备注 |
+|---|---|---|
+| 答辩期截止 | [年-月-日] | |
+| 举证期限届满 | [年-月-日] | |
+| 开庭 | [年-月-日] | |
+| 诉讼时效届满 | [年-月-日] | |
+
+## 初始诉讼策略
+
+[一段：己方论点、对方论点、关键事实、初始姿态] `[审核——收案时的策略为初步判断；在正式提交诉讼文书前由主办律师/合伙人确认]`
+
+## 待解决问题
+
+[任何尚未知晓但重要的事项]
+
+---
+
+## 相关文件
+
+| 文件 | 路径/指针 |
 |---|---|
-| [e.g., complaint] | [path or "not yet shared"] |
+| 起诉状/答辩状 | [路径或"尚未起草"] |
+| 委托代理合同 | [路径或"待签署"] |
+| 授权委托书 | [路径或"待取得"] |
 ```
 
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md`
+### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`
 
-Seed the history file with the intake as entry zero:
+以收案为第一条记录种子：
 
 ```markdown
-# History: [Matter Name]
+# 办案日志：[案件名称]
 
-Append-only event log. Most recent at top.
+仅追加事件日志。最新在最前。
 
 ---
 
-## [YYYY-MM-DD] — Matter opened
+## [年-月-日] —— 案件收案立案
 
-[Source, who brought it in, initial triage summary, outside counsel assigned, legal hold issued yes/no.]
+[来源、委托人、初步评估摘要、承办律师指派、收费安排]
 ```
 
-### Append to `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 追加至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
 
-Add a row per the schema. Example:
+按模式添加行。示例：
 
 ```yaml
-- id: acme-v-us-2026
-  name: "Acme Corp v. Company"
-  type: contract
-  role: defendant
-  counterparty: "Acme Corp"
-  jurisdiction: "N.D. Cal."
-  # status is derived from source:
-  #   source: pre-suit-threat | demand-letter           → status: threatened
-  #   source: complaint-served | subpoena | regulator-inquiry → status: active
-  #   source: internal-report                           → status: threatened (default) or active if formal process has started
-  status: active
-  stage: pleadings
-  source: complaint-served
-  outside_counsel:
-    firm: "Wilson Sonsini"
-    lead: "J. Reyes"
-    email: "jreyes@wsgr.example.com"
-    engagement: signed
+- id: acme-contract-2026
+  name: "某公司诉某公司合同纠纷"
+  type: 合同纠纷
+  role: 被告
+  counterparty: "某公司"
+  jurisdiction: "北京市朝阳区人民法院"
+  status: 活跃
+  stage: 立案
+  source: 已送达起诉状
+  counsel:
+    lead: "李律师"
+    assistant: "王律师"
+    firm: "某律师事务所"
+  engagement:
+    status: 已签署
+    fee_type: 按标的额收费
   conflicts:
-    status: cleared
-    method: corporate-legal
-    cleared_by: "K. Patel"
+    status: 已通过
+    method: 律所系统检索
+    cleared_by: "李律师"
     cleared_date: 2026-04-20
-    override:                   # populated only on Path 3 bypass
+    override:
       by: null
       date: null
       rationale: null
-  risk: high
-  materiality: reserved
-  exposure_range: "$2M–$5M"
-  internal_owners:
-    business_lead: "Jane Smith"
-    hr_partner: null
-    comms_contact: null
-  legal_hold:
-    issued: true
-    issued_date: 2026-02-15
-    scope: "Sales org 2023–2026"
-    custodians: ["Jane Smith", "R. Chen", "T. Patel"]
-    last_refresh: 2026-02-15
-    next_refresh: 2026-08-15
-    released: null
+  risk: 高
+  materiality: 重大
+  exposure_range: "200万-500万元"
+  limitation:
+    expiry: 2027-03-15
+    interrupted: true
+    interrupt_event: "2026-03-15发送律师函催告"
+  preservation:
+    evidence_preservation: false
+    property_preservation: false
   related_matters: []
   opened: 2026-04-20
   next_deadline: 2026-05-15
   last_updated: 2026-04-20
-  path: matters/acme-v-us-2026/
+  path: matters/acme-contract-2026/
 ```
 
-## Confirm before writing
+## 写入前确认
 
-Show the user the row and the matter.md content:
+向用户展示日志行和案件档案内容：
 
-> Here's what I'll write. Flag anything wrong or thin before I commit.
+> 以下是我即将写入的内容。提交前标注任何错误或薄弱处。
 
-## Close with the next-steps decision tree
+## 以下一步决策树结束
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+以 CLAUDE.md `## 输出` 规定的下一步决策树结束。根据本技能刚产出的内容自定义选项——默认分支（起草诉讼文书、申请保全、获取更多事实、观望等待、其他）是起点，非强制。
 
-## What this skill does not do
+## 本技能不做什么
 
-- **Run the conflicts check itself.** It records the result, status, method, and the entities checked. The actual clearance happens in whatever system (or judgment) the house practice profile declares. If the user says "cleared," the skill takes that at face value and captures the metadata.
-- Decide the initial theory. It captures what the user says; it doesn't invent one.
-- Issue the legal hold. Flags it if missing. User issues it.
+- **自行执行利益冲突检索。** 记录检索结果、状态、方式和检索的实体。实际检索在律所系统中进行。若用户说"已通过"，技能采信并记录元数据。
+- **决定初始诉讼策略。** 记录用户所述；不发明。
+- **签署委托代理合同。** 仅记录合同信息；实际签署由律所完成。

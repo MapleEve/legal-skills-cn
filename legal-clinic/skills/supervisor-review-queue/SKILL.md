@@ -1,108 +1,98 @@
 ---
-name: supervisor-review-queue
+name: 指导教师审查队列
 description: >
-  Professor's review queue — student output waits here for professor approval
-  before going to clients or courts. Only active if "formal review queue"
-  supervision style was chosen at setup; otherwise dormant. Use when the
-  professor wants to see what's waiting for review, approve, edit-then-approve,
-  or return an item.
-argument-hint: "[--approve ID | --return ID 'note' | --edit ID]"
+  法律援助诊所质量控制系统——学生拟定的文书和函件在此等待指导教师审查批准后方可对外发送。
+  审查决定：退回修改（附反馈意见）/修改后通过/直接通过。
+  重点关注：法律适用正确性、事实认定准确性、程序合规性、执业风险。
+  仅在诊所设置时选择了"正式审查队列"监督模式时激活；否则休眠。
+  当指导教师想查看等待审查的项目、批准、退回修改或编辑后批准时使用。
+argument-hint: "[--approve ID | --return ID '反馈意见' | --edit ID]"
 ---
 
-# /supervisor-review-queue
+# /指导教师审查队列
 
-1. Check `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style. If NOT "formal review queue": explain the clinic is set up for [flags/lighter-touch], no formal queue exists, and how to switch.
-2. Use the workflow below.
-3. Default: show what's waiting, by urgency, by student.
-4. Actions: approve / edit-then-approve / return with note. All logged.
+## 目的
+
+法律援助诊所的核心质量控制机制：学生起草法律工作成果，指导教师审查批准后方可
+对外使用或提交法院。《法律援助法》(2022)第27条要求法律援助人员提供符合标准的
+法律服务；《法律援助志愿者管理办法》第12条规定学生志愿者不得单独提供法律咨询外
+的法律服务，需在指导教师监督下开展工作。
+
+本技能管理等待指导教师审查的工作成果队列。这是中国法律援助诊所的审查流程，
+不同于美国法学院诊所的supervisor sign-off机制（后者受ABA学生执业规则约束）。
+
+## 审查在中国法律援助诊所中的特殊性
+
+指导教师具有双重身份——执业律师和高校教师。审查既是质量控制（作为律师），
+也是教学过程（作为教师）。因此审查反馈不仅指出问题，还需包含教学指导。
+
+审查对以下方面同等重要：
+- **法律适用正确性：** 法条引用是否正确、法律逻辑是否成立、是否遗漏关键法律依据
+- **事实认定准确性：** 事实陈述是否完整准确、证据是否支持主张、是否有悬而未决的事实问题
+- **程序合规性：** 是否在法定期限内、是否符合法院/仲裁委的程序要求、文书格式是否规范
+- **执业风险控制：** 是否存在利益冲突、是否可能损害当事人利益、是否有投诉或追责风险
+- **文书质量：** 语言是否规范、逻辑是否清晰、格式是否符合要求
+
+## 工作流
+
+1. **按标志路由：**
+   - 无标志 → 显示所有等待审查的项目列表
+   - `--approve ID` → 审查通过，批准对外使用/提交
+   - `--return ID '反馈意见'` → 退回修改，附具体反馈和指导意见
+   - `--edit ID` → 指导教师直接修改后批准（适用于小修小改）
+2. **审查队列优先级排序：** 最接近截止日期的项目排在最前。
+
+## 队列视图
 
 ```
-/legal-clinic:supervisor-review-queue
+| ID | 学生 | 案件编号 | 类型 | 提交日期 | 期限 | 状态 |
+|----|------|---------|------|---------|------|------|
+| 001 | 张同学 | 2026-001 | 民事起诉状 | 2026-05-14 | 3天后 | 等待中 |
+| 002 | 李同学 | 2026-003 | 当事人函件 | 2026-05-13 | 无 | 等待中 |
+| ... | ... | ... | ... | ... | ... | ... |
 ```
 
-```
-/legal-clinic:supervisor-review-queue --approve Q-003
-```
+按紧急程度排序：与即将到期期限相关的项目排在最前。
 
-```
-/legal-clinic:supervisor-review-queue --return Q-004 "Check the service requirement — local rules changed"
-```
+## 审查决策类型
 
----
+### 退回修改
+学生需要根据反馈意见进行实质性修改后重新提交审查。
+- 明确指出的问题和需要修改的内容
+- 修改建议和参考（如引用正确法条、调整诉讼请求表述）
+- 教学指导（为什么这样改、背后的法理依据）
 
-# Supervisor Review Queue (Optional)
+### 修改后通过
+指导教师做小幅修改后批准通过。适用于格式调整、文字润色等非实质性问题。
 
-## Purpose
+### 直接通过
+工作成果质量合格，批准使用或提交法院/仲裁委。
+通过标签：`[指导教师审查通过 — YYYY-MM-DD — [指导教师姓名]]`
 
-Some clinics want a formal gate: student drafts, professor reviews, output releases. Others find that too prescriptive — they supervise through case rounds and one-on-ones, not through a queue.
+## 审查关注重点
 
-**This skill is only active if `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → Supervision style is "formal review queue."** Otherwise it's dormant — the cold-start interview asks the professor which model they want, and this is one of three options.
+针对不同类型的文书，指导教师重点关注：
 
-Whether to use a formal review workflow is genuinely an open question for clinic adoption. It depends on student experience level, caseload, and how the professor already runs supervision. The professor decides at setup and can change it later.
+| 文书类型 | 重点审查内容 |
+|---------|------------|
+| 起诉状 | 被告主体是否适格、诉讼请求是否具体明确可执行、管辖法院是否正确、是否有遗漏请求 |
+| 答辩状 | 是否逐项回应起诉状主张、事实反驳是否有理有据、是否提出反诉（如适用） |
+| 上诉状 | 是否在法定期限内、是否有合法上诉理由、原判是否存在可推翻的法定事由 |
+| 当事人函件 | 语言是否通俗易懂、信息是否准确、是否包含不应向当事人透露的内部分析 |
+| 案件分析备忘录 | 法条引用是否正确、逻辑链条是否完整、结论是否有依据 |
 
-## Load context
+## 关于执业风险的红线提示
 
-`~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → supervision style. If NOT "formal review queue": respond with "The clinic is set up for [flags/lighter-touch] supervision — there's no formal queue. [Professor] reviews through [the clinic's existing structure]. To switch to a formal queue, edit CLAUDE.md → Supervision style."
+以下情形在审查中应特别注意，发现后立即标记并上报：
+- 诉讼时效是否即将届满或已届满
+- 利益冲突——同一案件代理双方当事人或与对方当事人存在利害关系
+- 当事人期望值管理——学生是否给予了不合理的承诺
+- 证据不足仍然主张——可能导致败诉和当事人权益受损
+- 超出法援受案范围——诊所是否有权承办该案件
 
-If formal queue IS enabled → read flag triggers and proceed.
+## 本技能不做的事
 
-## The queue
-
-Lives at `references/review-queue.yaml`. Each entry:
-
-```yaml
-- id: Q-001
-  type: "draft"  # intake | draft | memo | status | client-letter
-  client: "[name or ID]"
-  student: "[name]"
-  submitted: [timestamp]
-  flags:
-    - rule: "Court filing"
-      detail: "Eviction answer — always queued"
-  content_path: "[path to the document]"
-  status: "pending"  # pending | approved | edited-approved | returned
-```
-
-## Modes
-
-### What's waiting
-
-```markdown
-## Review Queue — [date]
-
-**Pending:** [N] | **Oldest:** [N] hours
-
-### 🔴 Deadline-sensitive
-| ID | Type | Client | Student | Why flagged | Waiting |
-|---|---|---|---|---|---|
-
-### Standard
-[same table]
-
-### By student
-[Breakdown — spot patterns: who's queueing a lot, who might need a check-in]
-```
-
-### Review an item
-
-Show full content + why it was flagged + student notes.
-
-### Approve / edit-then-approve / return
-
-- **Approve:** Status → approved, student notified, logged.
-- **Edit then approve:** Professor edits inline, approved version is the edited one, original preserved in log so student sees the diff (teaching moment).
-- **Return:** With a note. Student revises and resubmits.
-
-## Logging
-
-Every action logged. Approval logs are clinic records — they document that a licensed attorney, solicitor, barrister, or other authorised legal professional in the clinic's jurisdiction reviewed student work before it went to a client or court. That matters for the clinic's own compliance and for student evaluation.
-
-## Teaching signal
-
-The queue is also data. Pattern in returns ("Student X keeps missing the service requirement") is a coaching conversation. Pattern in edits ("Everyone's demand letters are too long") is a `/ramp` update for next semester.
-
-## What this skill does NOT do
-
-- **Run unless the professor chose it.** It's one of three supervision models, not the only one.
-- **Auto-approve.** The professor approves.
-- **Replace the clinic's existing supervision structure.** It's a gate for work product, not a substitute for case rounds, one-on-ones, or watching students in action.
+- 不替代指导教师的专业判断——审查决定始终由指导教师做出
+- 不对法律内容做自动审查——仅管理审查流程和记录
+- 不在未配置正式审查队列的诊所中激活（如监督模式为"轻量模式"或"可配置标记"）
+- 不使用美国ABA或state bar的supervision标准

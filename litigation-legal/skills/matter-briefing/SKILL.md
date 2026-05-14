@@ -1,109 +1,146 @@
 ---
-name: matter-briefing
-description: Deep briefing on one matter — current posture, what's changed, next deadline, open questions, and a risk re-assessment check, ready before a GC update or outside counsel call. Use when the user says "brief me on [matter]", "where are we on [matter]", or needs a read on a specific matter.
-argument-hint: "[slug]"
+name: 案件简报
+description: 单一案件深度简报——当前态势、变化、下一期限、待解决问题及风险重新评估检查，在与合伙人/客户沟通或开庭准备前就绪。适用场景：用户说"汇报[案件]""案件[案件]进展"或需要单一案件的更新阅读。
+argument-hint: "[标识]"
 ---
 
-# /matter-briefing
+# /案件简报
 
-1. Load `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → risk calibration + relevant stakeholders.
-2. Follow the workflow and reference below.
-3. Read `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` + `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` + log row from `_log.yaml`.
-4. Produce briefing: current posture, what's changed since last update, next deadline, open questions, risk re-assessment check ("does the `risk:` field still reflect reality?").
-5. Flag staleness: if `last_updated` > 30 days, say so.
+1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准 + 相关利益方。
+2. 遵循以下工作流程和参考。
+3. 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` + `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` + `_log.yaml` 中的日志行。
+4. 产出简报：当前态势、自上次更新以来的变化、下一期限、待解决问题、风险重新评估检查（"`风险:` 字段是否仍反映现实？"）。
+5. 标注陈旧：若 `最近更新` > 30天，标明。
 
 ---
 
-# Matter Briefing
+# 案件简报
 
-## Purpose
+## 目的
 
-Give the counsel a clean read on one matter in the time it takes to walk to a conference room. Current posture, what's changed, what's next, what's worth reconsidering.
+在走向会议室或开庭前给律师一份单一案件的清晰阅读。中国诉讼庭审为"调查+辩论"一体模式——法官主导庭审节奏，律师需要快速把握争议焦点、证据情况和法律依据。简报不是代理词，是内部阅读工具。
 
-## Load context
+适用受众：合伙人/资深律师快速了解案件全貌、客户汇报、开庭前案件梳理、与对方法务/律师协商前的背景准备。
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` — structured row
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/matter.md` — narrative intake
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[slug]/history.md` — event log
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` — risk calibration (so "risk: high" means something specific, not generic)
+## 加载上下文
 
-**Conflicts gate — unbypassable.** Before briefing, check `_log.yaml` for the matter slug. If the matter is not in `_log.yaml`, refuse and route:
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 结构化行
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 叙述性立案信息
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 事件记录
+- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（使"风险：高"表示具体含义，非笼统）
 
-> "I don't see [matter slug] in the matter log. Run `/litigation-legal:matter-intake` first so the conflicts check runs and the matter workspace is set up. I won't build a briefing on a matter that hasn't been intaken — the conflicts check is the gate."
+**利益冲突检索关——不可跳过。** 简报前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-## Input
+> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:案件立案`，这样利益冲突检索就会运行，案件工作空间也能建立。我不会在未立案的案件上构建简报——利益冲突检索是入门关。"
 
-Slug (required). If ambiguous or missing, ask the user to pick from a list of active matters.
+## 输入
 
-## The briefing
+标识（必需）。如有歧义或缺失，请用户从活跃案件列表中挑选。
+
+## 简报格式
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-# [Matter Name] — Briefing as of [today]
+# [案件名称] —— 简报 截至[今日]
 
-**Status:** [status / stage]
-**Risk:** [rating] ([severity] × [likelihood])
-**Materiality:** [category]
-**Outside counsel:** [firm — lead]
-**Last updated:** [date] [flag ⚠️ STALE if >30d]
-**Conflicts:** [status — flag ⚠️ if `pending` or `not-run`]
+**状态：** [当前阶段]
+**风险：** [评级]（[严重性] × [可能性]）
+**重要性：** [类别]
+**承办律师：** [姓名/律所]
+**案号：** [法院案号，如有]
+**受理法院/仲裁机构：** [名称]
+**最近更新：** [日期] [若>30天标注 陈旧]
+**利益冲突：** [状态——若 `待定` 或 `未执行` 标注]
 
 ---
 
-## One-paragraph summary
+## 一段概述
 
-[Current posture. What are we doing and why. Name the pivot fact if one is captured.]
+[当前态势。案件在什么阶段——立案待审/举证中/庭前会议/开庭/等待判决/上诉/执行。己方在做什么以及为何。]
 
-## What's changed recently
+## 案件基本信息
 
-[Last 3-5 entries from history.md, most recent first. If history is thin, say so.]
+- **当事人：** 原告/申请人 & 被告/被申请人
+- **案由：** [如：买卖合同纠纷、劳动合同纠纷、侵权责任纠纷等]
+- **管辖依据：** [协议管辖/法定管辖]
+- **诉讼时效：** [是否在时效期内/是否有中断情形]
+- **起诉/立案日期：** [年-月-日]
+- **争议金额：** [标的额]
+- **财产保全：** [已申请/未申请/已裁定]
 
-## What's next
+## 争议焦点
 
-- **Immediate deadline:** [next_deadline + what it is]
-- **Upcoming milestones:** [anything dated in matter.md or recent history]
-- **Decisions pending:** [open questions flagged in matter.md]
+[本案核心争议——法律争议和事实争议分别列出]
 
-## Exposure
+## 近期变化
 
-[Range + any change since intake. If reserved, current reserve + whether recalibration is overdue.]
+[办案日志.md中最近3-5条记录，最新在先。若记录稀少，说明。]
 
-## Internal owners
+## 下一关键节点
 
-[Who's looped in; whether anyone should be looped in and isn't]
+- **即时期限：** [下一截止期限 + 内容]
+  - 举证期限截止日
+  - 答辩期截止日
+  - 庭前会议日期
+  - 开庭日期
+  - 上诉期截止日
+  - 判决/裁定送达日期
+  - 申请执行截止日
+- **待决事项：** [案件档案.md中标注的待解决问题]
 
-## Risk re-assessment check
+## 证据情况
 
-*A prompt, not an answer.*
+- **己方已提交证据：** [概要]
+- **对方已提交证据：** [概要]
+- **举证期限：** [法院指定的期限]
+- **是否还需补充证据：** [是/否 —— 什么]
 
-- Does `risk: [rating]` still feel right, or has the case moved?
-- Does `materiality: [category]` still match? (New facts might push toward reserve or disclosure.)
-- Any new stakeholder the matter needs (e.g., CISO becomes relevant after a discovery development)?
+## 风险敞口
 
-## Open questions
+[争议金额区间 + 自立案以来的任何变化。若已计提拨备，当前拨备 + 是否需重估。]
+[败诉风险：程序风险/实体风险分别说明]
+[执行风险：对方是否有财产可供执行]
 
-[From matter.md and anything unresolved in history]
+## 内部负责人
 
-## For the conversation
+[谁在循环中；是否有人应纳入但未纳入]
 
-[If user specified a purpose — "brief me before the call with outside counsel" — tailor the final section: questions to ask, decisions to get, updates to extract. If no purpose given, omit this section.]
+## 风险重新评估检查
+
+*提示，非答案。*
+
+- `风险: [评级]` 是否仍感觉正确，还是案件已有变化？
+- `重要性: [类别]` 是否仍匹配？
+- 案件是否需要新的利益相关方？
+- 结案预期是否有变化？
+
+## 待解决问题
+
+[来自案件档案.md和日志中任何未解决的事项]
+
+## 沟通要点
+
+[若用户指定了目的——"在开庭前汇报""与客户沟通前准备"——定制最后章节：需问的问题、需作出的决定、需获取的更新。若未指定目的，省略此章。]
 ```
 
-## Staleness
+## 陈旧
 
-If `last_updated > 30 days ago`: flag at the top AND suggest running `/litigation-legal:matter-update [slug]` after the meeting to capture whatever's discussed.
+若 `最近更新 > 30天前`：在顶部标注并建议会后运行 `/litigation-legal:案件更新 [标识]` 记录讨论内容。
 
-## Tone
+## 语气
 
-This is not marketing. Say what's known; flag what's not. If a matter has thin history and was just opened, the briefing is short — and that's correct. Don't pad.
+非宣传。陈述已知；标注未知。若案件日志薄且刚立案，简报简短——这本是正确的。不填充。
 
-## Close with the next-steps decision tree
+中国诉讼中，庭审笔录和法院调查范围不得超过当事人主张和证据——简报中对事实和法律的记录应准确，避免在后续代理中出现与简报记录矛盾的说法。
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+## 以下一步决策树结束
 
-## What this skill does not do
+以 CLAUDE.md `## 输出` 规定的下一步决策树结束。根据本技能刚产出的内容自定义选项——五个默认分支（起草X、升级、获取更多事实、观望等待、其他）是起点，非强制。决策树即输出；律师选择。
 
-- Predict outcomes. Risk rating is a captured judgment, not a forecast.
-- Recommend strategy. Surfaces questions; the counsel answers them.
-- Re-triage. If the user wants to re-triage, that's an `/matter-update` with field changes — this skill reads, doesn't write.
+## 本技能不做什么
+
+- 预测判决结果。风险评级是已记录的判断，非预测。
+- 建议策略。提出问题；律师回答。
+- 重新分诊。若用户欲重新分诊，通过 `/案件更新` 进行字段变更——本技能只读，不写。
+- 撰写代理词或起诉状。简报是内部阅读工具，非法院文书。

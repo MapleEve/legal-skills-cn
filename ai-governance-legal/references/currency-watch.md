@@ -1,38 +1,84 @@
-# AI Governance Currency Watch
+# 人工智能治理法规动态追踪
 
-**Last verified: 2026-05-10.**
+**最后核验日期：2026-05-14。**
 
-> **⚠️ Staleness check.** If the last-verified date above is more than 90 days old, treat this file as stale and verify each entry before relying on it. A stale watch list is worse than no watch list — it looks current while being wrong. When a skill reads this file, check the last-verified date first. If stale, say: "The currency watch was last verified [date] — [N] months ago. I'm using it as a checklist of areas to search, not as a source of current status." When you update any entry, also update the last-verified date at the top.
+> **失效检查。** 如果上方最后核验日期已超过90天，将此文件视为过时，并逐条核验后再使用。过时的追踪列表比没有追踪列表更糟——它看起来最新的同时却是错误的。当技能读取此文件时，先检查最后核验日期。如果已过时，告知："法规追踪最后核验日期为[日期]——距今[N]个月。我将以此为线索清单进行检索，而非作为现状的依据。"当你更新任何条目时，同步更新顶部的最后核验日期。
 
-AI law moves faster than model training data. Before relying on an effective date, threshold, or obligation, verify it against a current source. These are the areas most likely to have moved:
+中国人工智能法律法规变化速度快于模型训练数据。在依据生效日期、门槛条件或合规义务做判断之前，请核对最新来源。以下是变化可能性最高的领域：
 
-## US state AI laws (enacted, effective dates shifting)
+## 核心法规（中国）
 
-| State | Law | Status as of May 2026 | Verify |
+| 法规 | 发布机构 | 状态（截至2026年5月） | 核验来源 |
 |---|---|---|---|
-| Colorado | SB 24-205 (Colorado AI Act) | Effective date postponed to **June 30, 2026** (SB 25B-004). Pending ADMT Framework rewrite would push to Jan 2027. | [Colorado AG](https://coag.gov) |
-| Texas | TRAIGA | **In force Jan 1, 2026.** Texas AG exclusive enforcement, $10K–$200K/violation, 60-day cure. | [Texas AG](https://www.texasattorneygeneral.gov) |
-| Nebraska | LB 525 (Conversational AI Safety Act) | Signed April 14, 2026. Disclosure to minors + chatbot-is-not-human disclosure. | NE Legislature |
-| Maine | LD 2082 | Signed April 13, 2026. Prohibits AI-delivered therapy without licensed professional. | ME Legislature |
-| Tennessee | SB 837 | "Person" in TN Code does not include AI. | TN Legislature |
-| NYC | Local Law 144 | In force. Annual bias audit for AEDT in hiring/promotion. | NYC DCWP |
-| Illinois | AIPA (820 ILCS 42) | Video interview consent — in force since 2020. | IL General Assembly |
-| Illinois | HB 3773 (Human Rights Act AI amendment) | In force Jan 1, 2026. Employers may not use AI to discriminate in hiring, promotion, discipline, discharge. Notice required. Distinct from AIPA. | IL Dept of Human Rights |
+| 《生成式人工智能服务管理暂行办法》 | 网信办等七部门 | **2023年8月15日起施行。** 对向境内公众提供生成式AI服务进行规制。需安全评估+算法备案。 | [网信办](https://www.cac.gov.cn) |
+| 《互联网信息服务深度合成管理规定》 | 网信办等三部门 | **2023年1月10日起施行。** 深度合成服务需标注+备案。 | [网信办](https://www.cac.gov.cn) |
+| 《互联网信息服务算法推荐管理规定》 | 网信办等四部门 | **2022年3月1日起施行。** 算法推荐服务需备案+定期审核。 | [网信办](https://www.cac.gov.cn) |
+| 《科技伦理审查办法（试行）》 | 科技部等十部门 | **2023年12月1日起施行。** 涉及AI等科技活动的单位须设立科技伦理（审查）委员会。 | [科技部](https://www.most.gov.cn) |
+| TC260-003《生成式人工智能服务安全基本要求》 | 全国信息安全标准化技术委员会 | 生成式AI服务安全评估的技术标准。大模型上线前须对照此标准完成安全评估。 | [TC260](https://www.tc260.org.cn) |
+| 《网络安全标准实践指南——生成式人工智能服务内容标识方法》 | 全国信息安全标准化技术委员会 | 生成式AI内容标识的具体技术要求。 | [TC260](https://www.tc260.org.cn) |
+| 《人工智能法（草案）》 | 国务院 | **立法进程中。** 2024年列入国务院年度立法工作计划。学者建议稿已公开。关注正式草案公布。 | [中国人大网](https://www.npc.gov.cn) |
 
-## EU AI Act implementation
+## 监管机构
 
-- **Digital Omnibus (provisional agreement May 7, 2026):** national sandbox deadline → Aug 2, 2027; transparency grace period shortened to 3 months (new deadline Dec 2, 2026); new prohibition on AI-generated NCII/CSAM. The May 7 provisional agreement settled the high-risk deferrals; final text pending Council/Parliament formal adoption. `[verify adoption status]`
-- **Implementing acts:** check EUR-Lex for the latest Commission implementing regulations on conformity assessment, standards, and the AI Office.
-- **National transposition:** Germany, France, Netherlands, Ireland most active. Check national DPA sites.
+| 机构 | 职责范围 |
+|---|---|
+| **国家互联网信息办公室（网信办）** | 生成式AI服务管理、算法备案、深度合成监管、内容安全。算法备案系统由网信办运营。 |
+| **工业和信息化部（工信部）** | AI产业政策、大模型标准制定、电信领域AI应用监管。 |
+| **科学技术部（科技部）** | 科技伦理审查制度、AI科研项目管理。 |
+| **公安部** | AI安全保卫、个人信息保护执法中的AI相关案件。 |
+| **国家市场监督管理总局** | AI产品或服务在市场流通中的质量与广告监管。 |
 
-## Federal (US)
+## 重点追踪领域
 
-- EEOC AI guidance (2023) still in effect. Watch for a notice-and-comment rule.
-- FTC §5 theory expanding: *FTC v. Humor Rainbow/OkCupid* (March 2026) — undisclosed training-data sharing as a §5 violation.
-- Executive orders change with administrations. Verify current policy.
+### 算法备案
+- 网信办算法备案系统（https://beian.cac.gov.cn）持续运行。
+- 生成式AI服务上线前须完成算法备案（生成合成类算法）。
+- 备案信息（算法名称、基本原理、运行机制、应用场景等）需公开披露摘要。
+- 关注：各地网信办备案审核口径是否有调整。
 
-## How to use this file
+### 生成式AI安全评估
+- 大模型/生成式AI产品上线前须对照TC260-003完成安全评估。
+- 评估维度：语料安全、模型安全、安全措施、服务透明度等。
+- 关注：TC260-003是否有修订版发布。
 
-When a skill cites an effective date, threshold, or obligation in this space, it should note: "AI law is moving fast — this date/rule may have changed since my training. Verify at [source]. See `references/currency-watch.md` for the live list."
+### 深度合成标注
+- 《深度合成管理规定》要求深度合成服务提供者对生成内容进行标识。
+- 标识方式：显式标识+隐式标识（元数据/数字水印）。
+- 关注：标识技术标准的更新。
 
-**This file goes stale.** It was current as of May 2026. Update it when you notice a date it lists has passed or a rule it lists has changed. A stale watch list is worse than no watch list.
+### 科技伦理审查
+- 《科技伦理审查办法（试行）》要求单位设立科技伦理（审查）委员会。
+- 涉及AI研发活动的单位需建立伦理审查制度。
+- 关注：各地方科技伦理审查实施细则的出台。
+
+### 内容安全
+- 生成式AI服务须建立内容审核机制，防止生成违法和不良信息。
+- 训练数据不得包含违法和不良信息。
+- 关注：网信办对AI生成内容的执法案例和指导口径。
+
+### 数据合规
+- 生成式AI训练数据涉及个人信息的，须遵守《个人信息保护法》。
+- 使用爬取数据训练的，须注意《数据安全法》和《网络安全法》的数据处理规定。
+- 关注：数据跨境传输涉及AI训练场景的监管动态。
+
+## 行业领域AI规定
+
+| 领域 | 特殊要求 | 监管机构 |
+|---|---|---|
+| 金融 | 金融AI应用须符合人民银行和金融监管总局相关规定 | 中国人民银行、金融监管总局 |
+| 医疗 | AI医疗器械须取得医疗器械注册证（三类）；AI辅助诊断须遵守卫生健康委规定 | 国家药监局、卫生健康委 |
+| 教育 | AI教育产品须遵守《未成年人保护法》第75条网络保护规定 | 教育部、网信办 |
+| 自动驾驶 | 须遵守《智能网联汽车道路测试与示范应用管理规范》 | 工信部、公安部、交通运输部 |
+
+## 需要关注的趋势
+
+- **《人工智能法》立法进程：** 关注国务院年度立法工作计划中是否列入，以及草案何时公开征求意见。
+- **执法动态：** 网信办对生成式AI服务的执法案例（约谈、下架、罚款等），是判断实际监管口径的关键。
+- **地方立法：** 上海、深圳、北京等地可能有先行先试的地方性AI法规或政策。
+- **标准制定：** TC260及信标委在大模型、AI安全领域的标准立项和发布。
+
+## 如何使用此文件
+
+当技能引用本领域的生效日期、门槛条件或合规义务时，应注明："中国AI法规变化快速——此日期/规则可能在模型训练后已发生变化。请在[来源]处核验。参见 `references/currency-watch.md` 获取最新追踪列表。"
+
+**此文件会过时。** 它于2026年5月为最新状态。当你发现其中列出的日期已过时或规则已更改时，请更新它。过时的追踪列表比没有追踪列表更糟。

@@ -1,39 +1,99 @@
 ---
-name: review-proposals
+name: 审查手册更新提案审批
 description: >
-  Review and approve (or reject) pending playbook update proposals from the
-  playbook-monitor agent and apply approved changes to the practice profile. Use
-  when the playbook-monitor agent has surfaced proposals, when the user says
-  "review playbook proposals", "what playbook updates are pending", or wants to
-  step through deviation-driven playbook changes.
-argument-hint: "[no arguments needed — works from the pending proposals file]"
+  审查并批准（或驳回）审查手册监控代理提出的待审批审查手册更新提案，
+  将批准的变更应用到业务实践档案中。当审查手册监控代理提出提案时，
+  或用户说"审查手册更新提案"、"有哪些待审批的审查手册变更"、
+  想逐项处理偏离驱动的审查手册变更时使用。
+argument-hint: "[无需参数——从待审批提案文件读取]"
 ---
 
-# /review-proposals
+# /审查手册更新提案审批
 
-Steps through pending playbook update proposals from the monitor agent and applies approved changes to `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`.
+逐项处理监控代理提出的待审批审查手册更新提案，将批准的变更应用到业务实践档案。
 
-## Instructions
+## 操作流程
 
-1. **Load the playbook-monitor agent** and run Step 5 (review and approval flow).
+1. **加载审查手册监控代理**并执行审查与审批流程。
 
-2. **If no proposals file exists** or it is empty: respond *"No pending proposals. Playbook is up to date."* Do not proceed further.
+2. **若提案文件不存在**或为空：回复"*无待审批提案。审查手册已是最新。*"不再继续。
 
-3. **Present proposals one at a time.** For each, show the full proposal block and offer four options: Accept, Reject, Edit, Defer.
+3. **逐项呈现代替提案。** 对每项提案，显示完整提案块并提供四个选项：接受、驳回、编辑、推迟。
 
-4. **For Accept or Edit:** show the exact diff to `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` before writing. Only apply after the attorney explicitly confirms.
+4. **对于接受或编辑：** 在写入前展示对业务实践档案的精确差异。仅在律师明确确认后才应用。
 
-5. **For Reject or Defer:** log the decision. Do not modify `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`.
+5. **对于驳回或推迟：** 记录决策。不修改业务实践档案。
 
-6. **After all proposals are resolved:** show a summary of what changed, then archive the proposals file.
+6. **全部提案处理完毕后：** 展示变更摘要，归档提案文件。
 
-## Examples
-
-```
-/commercial-legal:review-proposals
-```
+## 示例
 
 ```
-/commercial-legal:review-proposals
-(runs automatically after playbook-monitor notifies you)
+/commercial-legal:审查手册更新提案审批
 ```
+
+```
+/commercial-legal:审查手册更新提案审批
+（审查手册监控代理通知您后自动运行）
+```
+
+---
+
+## 功能目的
+
+审查手册不是一成不变的——法律法规修订、司法解释更新、业务实践演变，都要求审查手册保持同步。本技能参考中国律师事务所《法律业务操作指引》的维护更新机制，定期审查合同审查手册，识别与法律变化或业务实践不符之处，起草更新提案，走内部审批流程后发布新版。
+
+## 工作流
+
+### 提案来源
+
+提案由审查手册监控代理自动生成。监控代理持续对比审查手册中的立场与实际已签署协议的条款，当出现以下情况时生成提案：
+- 同一偏离在连续审查中反复出现（如连续接受超出审查手册上限的责任限制）
+- 新法规生效导致审查手册中某条款立场需要调整（如《民法典》合同编新司法解释）
+- 业务实践发生实质性变化（如进入新行业、新交易模式）
+
+### 提案结构
+
+每项提案包含：
+- **触发条款：** 审查手册中涉及的章节和立场
+- **现状：** 审查手册当前规定的内容
+- **偏离模式：** 实际业务中出现的偏离及频率
+- **建议变更：** 建议的新立场和理由
+- **影响范围：** 变更对后续审查、谈判策略的影响
+
+### 审批决策
+
+对每项提案，提供四个选项：
+- **接受：** 将提案写入审查手册，更新对应章节
+- **驳回：** 保留现状，记录驳回理由
+- **编辑：** 修改提案内容后再应用
+- **推迟：** 暂不处理，保留提案以待后续讨论
+
+### 应用变更
+
+对于接受或编辑的提案：
+1. 展示对业务实践档案的精确差异（diff 格式）
+2. 说明下游影响（审查技能、升级审批、谈判指引等）
+3. 律师确认后写入
+4. 在变更日志中记录
+
+### 归档
+
+全部提案处理完毕后：
+- 已处理提案移至归档
+- 生成当次审批摘要（批准N项、驳回N项、推迟N项）
+- 更新审查手册版本号和修订日期
+
+## 护栏规则
+
+- 每次只展示一项提案，逐项处理
+- 写入前必须展示精确差异
+- 写入前必须获得律师明确确认
+- 不自动批准任何提案
+- 归档不可删除——保留完整审批记录
+
+## 本技能不做什么
+
+- 不主动起草提案——那是审查手册监控代理的工作
+- 不修改业务实践档案中与提案无关的章节
+- 不替代律师对审查手册立场做出判断

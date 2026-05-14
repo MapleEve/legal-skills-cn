@@ -1,253 +1,171 @@
 ---
-name: ai-inventory
+name: AI系统清单
 description: >
-  EU AI Act per-system inventory — track each AI system's role (provider,
-  deployer, importer, distributor, authorized representative, product
-  manufacturer) and risk tier (prohibited, high-risk, limited, minimal,
-  GPAI, GPAI+systemic). Role and tier are assessed per system, not per
-  company. Use when the user says "ai inventory", "add an ai system",
-  "what systems do we have", "classify this ai system", "eu ai act
-  register", or "ai system registry".
+  企业AI系统登记册——按系统跟踪AI清单，逐系统标注（用途/数据/算法/
+  安全评估/备案状态/科技伦理审查），按《生成式AI服务管理暂行办法》分类角色
+  （服务提供者/服务使用者等）和风险等级（禁止/高风险/有限风险/最低风险）。
+  角色和等级按系统评估，而非按公司评估。当用户说"AI清单"、
+  "添加AI系统"、"我们有哪些系统"、"分类这个AI系统"、
+  "AI系统注册"或"AI系统登记"时使用。
 argument-hint: "[list | add | edit <id> | classify <id> | show <id>]"
 ---
 
-# /ai-inventory
+# /AI系统清单
 
-## When this runs
+## 触发场景
 
-The user wants to manage their AI system inventory under the EU AI Act. The
-core idea the skill exists to enforce: **role and tier are per-system, not
-per-company.** A single organization can be a *provider* of System A, a
-*deployer* of System B, and an *importer* of System C. Each combination
-triggers a different set of obligations under the AI Act. The inventory
-exists so those assessments are tracked where you can find them — the
-obligations themselves are derived in conversation, not from a table.
+用户想管理其AI系统清单。本技能存在的核心理念是：**角色和等级是按系统划分的，而非按公司。**
+一个组织可以是系统A的服务提供者、系统B的服务使用者、系统C的进口商。
+每种组合触发不同的义务集合。清单的存在是为了跟踪这些评估。
 
-## What to do
+基于中国现行AI治理法律框架：
+- 《生成式人工智能服务管理暂行办法》
+- 《互联网信息服务深度合成管理规定》
+- 《互联网信息服务算法推荐管理规定》
+- TC260-003等信安标委标准
 
-1. **Read the config.** Read
-   `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`.
-   If it doesn't exist or still has `[PLACEHOLDER]` markers, direct the user
-   to `/ai-governance-legal:cold-start-interview` first.
+## 执行步骤
 
-2. **Read the inventory.** Inventory lives at
-   `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/ai-systems.yaml`.
-   If it doesn't exist, create it with an empty `systems:` list when the
-   first `add` runs.
+1. **读取配置。** 读取实践配置。如不存在或仍有 `[PLACEHOLDER]` 标注，引导用户先运行 `/ai-governance-legal:cold-start-interview`。
 
-3. **Dispatch on the argument:**
+2. **读取清单。** 清单位于实践配置目录下的 `ai-systems.yaml`。如不存在，在第一次 `add` 运行时创建空的 `systems:` 列表。
 
-   - No argument, or `list` → show the inventory table (see **List** below).
-   - `add` → run the **Add** flow.
-   - `edit <id>` → show the current record, ask what to change, update one
-     field, confirm, write.
-   - `classify <id>` → run the **Classification walk-through** on an
-     existing record, updating role, tier, role_basis, and tier_basis.
-   - `show <id>` → show the full record.
+3. **按参数分派：**
+   - 无参数或 `list` → 显示清单表格。
+   - `add` → 运行**添加**流程。
+   - `edit <id>` → 显示当前记录，询问修改内容，逐项更新，确认，写入。
+   - `classify <id>` → 对已有记录运行**分类导览**，更新角色、等级、角色依据和等级依据。
+   - `show <id>` → 显示完整记录。
 
-4. **On list, offer the dashboard:**
-   "Want the full dashboard? Filter by status / tier / EU nexus / owner.
-   Say the word."
+4. **列表视图渲染为紧凑表格。**
 
-5. **Close every action with a hook into the lawyer's work.**
-   After any write, say:
-   > Recorded. When you're ready to walk through obligations for this
-   > system, just ask — I'll do it in-conversation and flag where the AI
-   > Act article mapping needs your verification. I don't derive
-   > obligations from a table because the mapping is complex and changing.
+5. **每次操作后提供后续方向。**
 
-## List format
+## 列表格式
 
-Render as a compact table:
-
-| ID | Name | Owner | Status | EU nexus | Role | Tier | Next review |
+| ID | 名称 | 负责人 | 状态 | 中国境内适用性 | 角色 | 等级 | 下次审查 |
 |----|------|-------|--------|----------|------|------|-------------|
-| sys-001 | Resume screening | HR / Jamie | in_production | yes | deployer | high_risk | 2026-08-01 |
-| sys-002 | Email drafting assistant | IT / Priya | in_production | no | deployer | limited | 2026-12-01 |
 
-Under the table, show counts by tier and a line: "N systems flagged for
-review within 30 days."
+表格下方显示按等级的数量统计和"N个系统标注为30天内需审查"。
 
-## Add flow (interview)
+## 添加流程（访谈式）
 
-Ask, one field at a time (or accept a paste). The required fields are
-`name`, `owner`, `description`, `status`, `eu_nexus`. The rest can be
-deferred — say so explicitly: "you can come back to classification with
-`/ai-governance-legal:ai-inventory classify <id>`."
+逐一询问（或接受粘贴）。必填字段：`name`、`owner`、`description`、`status`、`cn_nexus`。其余可延后。
 
-1. **Name.** Short label for the system.
-2. **Owner.** Person or team accountable for it day-to-day.
-3. **Description.** One or two sentences. What does it do, and against
-   what data?
-4. **Status.** `planned | in_development | in_production | deprecated`.
-5. **EU nexus.** Is the system deployed in the EU/EEA, offered to users in
-   the EU/EEA, or used to produce outputs that affect people in the
-   EU/EEA? If any of these are true, EU AI Act analysis applies.
-6. **Proceed to classification?** Offer to run the walk-through now, or
-   skip and come back later.
+1. **名称。** 系统简称。
+2. **负责人。** 日常负责的个人或团队。
+3. **描述。** 一到两句话。做什么，针对什么数据？
+4. **状态。** `planned | in_development | in_production | deprecated`
+5. **中国境内适用性。** 系统是否部署在中国境内/面向中国境内用户/产生输出影响中国境内人员？这决定是否触发《生成式AI服务管理暂行办法》等中国法规。
+6. **是否继续分类？** 提供立即导览或稍后回来。
 
-Assign an ID: `sys-NNN` where NNN is the next integer in the file.
+分配ID：`sys-NNN`，NNN为文件中下一个整数。
 
-## Classification walk-through
+## 分类导览
 
-The walk-through produces `role`, `role_basis`, `tier`, `tier_basis`. Both
-bases are tagged `[verify against current AI Act text]` — not because the
-skill is hedging, but because the article mapping is complex and the AI
-Act is still phasing in. The lawyer owns verification.
+导览产出 `role`、`role_basis`、`tier`、`tier_basis`。各项依据标注 `[需对照现行法规核实]`。
 
-### Step 1: Role
+### 第一步：角色
 
-> **Who does what to this system?**
+> **谁对这个系统做什么？**
 
-Options, with the distinguishing test:
+选项及区分标准：
 
-- **Provider** — you develop it (or have it developed) and place it on the
-  EU market or put it into service under your own name or trademark.
-- **Deployer** — you use it under your own authority, not for personal
-  non-professional use. (Most common inside companies.)
-- **Importer** — you bring an AI system into the EU from a provider
-  established outside the EU.
-- **Distributor** — you make an AI system available on the EU market
-  without being the provider or importer.
-- **Authorized representative** — you act on behalf of a non-EU provider
-  and are established in the EU.
-- **Product manufacturer** — you put a general-purpose AI system (or
-  another AI system) into a product under your own name/trademark. Treated
-  as provider for the product.
+- **服务提供者** — 您开发（或委托开发）并以自己的名称或商标向中国境内公众提供生成式AI服务。适用《生成式AI服务管理暂行办法》。
+- **服务使用者** — 您在自己的授权下使用，非个人非职业用途。（公司内部最常见。）
+- **深度合成服务提供者/使用者** — 如涉及深度合成内容，按《深度合成管理规定》区分。
+- **算法推荐服务提供者** — 如涉及算法推荐，按《算法推荐管理规定》区分。
+- **进口商** — 从境外将AI系统引入中国境内市场。
+- **分销商** — 在中国境内市场上提供AI系统，但非服务提供者或进口商。
+- **授权代表** — 代表境外服务提供者行事并在中国境内设立。
+- **产品制造商** — 将AI系统放入自己名称/商标的产品中。就该产品而言视为服务提供者。
 
-**Dual-role flag.** If the user substantially modifies a vendor system
-(fine-tunes on their own data, changes the intended purpose, rebrands),
-they may become a **provider** of the modified system even if they started
-as a deployer. Call this out when they describe any modification beyond
-configuration. `[verify against current AI Act text — Article 25, provider
-obligations and substantial modification]`
+**双重角色标注。** 如用户实质性修改供应商系统（用自己的数据微调、改变预期用途、重新品牌化），他们可能成为修改后系统的服务提供者，即使最初是服务使用者。
 
-Write the role. Write `role_basis` in one sentence.
+### 第二步：等级
 
-### Step 2: Tier
+> **系统做什么，用例是否落入受监管类别？**
 
-> **What does the system do, and does the use case fall into a regulated
-> category?**
+按顺序检查：
 
-Check in order:
+**A. 禁止性行为规定。** `[需对照现行法规核实]`
 
-**A. Article 5 prohibited practices.** `[verify against current AI Act
-text — Article 5]`
+概述：利用潜意识或欺骗性技术实质扭曲行为；利用弱势群体；社会评分导致不利待遇；公共场所实时远程生物识别；推断敏感特征的生物特征分类；工作场所或教育中的情绪识别；从互联网或监控摄像头抓取面部图像数据库；仅基于性格特征的预测性执法。
 
-Summaries, not definitive text:
-- Subliminal or deceptive techniques materially distorting behavior
-- Exploiting vulnerabilities (age, disability, socio-economic status) to
-  materially distort behavior
-- Social scoring by public authorities leading to detrimental treatment
-- Real-time remote biometric ID in publicly accessible spaces for law
-  enforcement (narrow exceptions)
-- Biometric categorization inferring race, political opinions, union
-  membership, religious or philosophical beliefs, sex life, or sexual
-  orientation
-- Emotion recognition in the workplace or education (medical and safety
-  exceptions)
-- Facial image database scraping from the internet or CCTV
-- Predictive policing based solely on personality traits
+如果匹配 → 等级为 `prohibited`。标注为停止使用并路由到治理团队的禁止行为工作流。
 
-If matched → tier is `prohibited`. Flag the use case as stop and route to
-the governance team's prohibited-practice workflow.
+**B. 高风险（安全评估门槛）领域。** `[需对照现行法规核实]`
 
-**B. Annex III high-risk areas.** `[verify against current AI Act text —
-Annex III]`
+概述：生物特征识别与分类；关键基础设施；教育与职业培训；就业与劳动者管理；基本私人和公共服务；执法；移民与边境管控；司法与民主进程。
 
-Summaries:
-1. Biometric identification and categorization
-2. Critical infrastructure (digital infrastructure, road traffic, supply of
-   water / gas / heating / electricity)
-3. Education and vocational training (access, evaluation, proctoring,
-   monitoring prohibited behavior)
-4. Employment, worker management, self-employment access — recruitment,
-   selection, promotion, termination, task allocation, monitoring, performance
-5. Essential private and public services (public benefits, credit scoring
-   for individuals, risk assessment and pricing for life/health insurance,
-   emergency dispatch)
-6. Law enforcement (risk assessment, polygraphs, deepfake detection,
-   reliability of evidence, profiling)
-7. Migration, asylum, border control (risk assessment, travel document
-   verification, examination of applications)
-8. Administration of justice and democratic processes (research and
-   interpretation, influencing elections)
+如果匹配 → 等级为 `high_risk`。注明相关领域和子节。标注是否触发算法备案义务或安全评估义务。
 
-If matched → tier is `high_risk`. Note the Annex III area and subsection.
+**C. 生成式AI服务。** `[需对照现行法规核实]`
 
-**C. GPAI.** `[verify against current AI Act text — Article 51 and
-surrounding]`
+如提供生成式AI服务，按《生成式AI服务管理暂行办法》要求：安全评估、算法备案、内容标识、用户实名、投诉举报机制等。
 
-- **GPAI:** model trained on broad data at scale, designed for generality,
-  capable of competently performing a wide range of distinct tasks.
-- **GPAI + systemic risk:** cumulative compute > 10^25 FLOPs, or designated
-  by the Commission.
+**D. 有限风险。** 与自然人交互的聊天机器人、深度伪造、情绪识别和生物特征分类系统——透明度义务适用。
 
-**D. Limited risk.** Chatbots interacting with natural persons, deepfakes,
-emotion recognition and biometric categorization systems outside Article 5
-scope — transparency obligations apply.
+**E. 最低风险。** 其余一切。
 
-**E. Minimal risk.** Everything else.
+### 第三步：科技伦理审查
 
-Write the tier. Write `tier_basis` in one sentence, citing the article or
-Annex entry that matched, tagged `[verify against current AI Act text]`.
+按《科技伦理审查办法（试行）》要求，涉及人工智能的科技活动需进行伦理审查。检查系统是否触发伦理审查义务——如涉及人类受试者、可能影响人类尊严或权利等。
 
-### Step 3: Recommendations
+### 第四步：建议
 
-Offer three next steps:
-1. "Want me to walk through obligations for this system? I'll do it in
-   conversation — I don't derive them from a table."
-2. "Want to run `/ai-governance-legal:aia-generation` to produce a full
-   impact assessment?"
-3. "Want to set a next review date? I'll add it to the inventory."
+提供后续步骤：
+1. "要我帮您梳理此系统的合规义务吗？"
+2. "需要运行影响评估吗？"
+3. "需要检查是否需要算法备案吗？"
+4. "要设置下次审查日期吗？"
 
-## Record format
+## 记录格式
 
 ```yaml
 systems:
   - id: sys-001
-    name: "Resume screening tool"
-    owner: "HR / Jamie"
-    description: "Filters inbound CVs against job criteria"
-    status: in_production          # planned | in_development | in_production | deprecated
-    eu_nexus: true                 # deployed, offered, or affects people in the EU/EEA
-    role: deployer                 # provider | deployer | importer | distributor | authorized_rep | product_manufacturer
-    role_basis: "We license from VendorX and deploy internally [verify against current AI Act text]"
-    tier: high_risk                # prohibited | high_risk | limited | minimal | gpai | gpai_systemic
-    tier_basis: "Annex III(4)(a) — employment, recruitment selection [verify against current AI Act text]"
+    name: "简历筛选工具"
+    owner: "HR / 张三"
+    description: "根据职位标准筛选简历"
+    status: in_production
+    cn_nexus: true
+    role: deployer
+    role_basis: "我们从供应商X授权并内部部署 [需对照现行法规核实]"
+    tier: high_risk
+    tier_basis: "就业、招聘筛选 — 涉及劳动者管理 [需对照现行法规核实]"
+    algorithm_filing_required: false
+    algorithm_filing_status: "不适用"
+    ethics_review_required: false
+    ethics_review_status: "不适用"
     obligations_assessed: false
-    obligations_note: "To assess: as deployer of a high-risk system — human oversight, input data quality, monitoring, record-keeping, informing workers, FRIA if public body/service — see Article 26 [verify against current AI Act text]"
+    obligations_note: "待评估：作为高风险系统的服务使用者 — 人工监督、输入数据质量、监控、记录保存、告知劳动者 [需对照现行法规核实]"
     next_review: "2026-08-01"
-    review_trigger: "on substantial modification or annually"
-    created: "2026-05-11"
-    updated: "2026-05-11"
+    review_trigger: "重大修改时或年度审查"
+    created: "2026-05-14"
+    updated: "2026-05-14"
 ```
 
-## Why this skill does NOT auto-derive obligations
+## 为什么本技能不自动推导义务
 
-The inventory stores role, tier, and the basis for each. It does NOT
-contain a hardcoded role × tier → obligations table.
+清单存储角色、等级及其依据。当用户问"我对系统X有什么义务？"时，技能在**对话中**进行分析，标注 `[需核实]`，需要时路由做正式影响评估。
 
-When the user asks "what are my obligations for System X?", the skill
-does the analysis **in conversation**, tagged `[verify]`, and routes to
-`/ai-governance-legal:aia-generation` for the formal impact assessment
-if needed.
+这是刻意的：
+- 法规条文映射复杂且中国AI法规仍在逐步落地。
+- 在合规义务上自信但错误的结果会进入董事会备忘。
+- 清单是法务的登记册。法务主导义务分析。
 
-This is deliberate:
-- Article mapping is complex and the AI Act is phasing in through 2027.
-- Confident-and-wrong on a compliance obligation ends up in a board memo.
-- The inventory is a registry for the lawyer. The lawyer owns the
-  obligation analysis.
+## 护栏规则
 
-## Guardrails
+- **绝不静默分类。** 分类导览必须可见。
+- **`[需核实]` 标签保留。** 它们不是模糊其词——它们是关键所在。
+- **标注实质性修改。** 每当系统被修改超出配置范围时，提醒用户重新分类。
+- **不要从表格声明义务。** 如需，在对话中分析并路由到影响评估。
 
-- **Never classify silently.** The classification walk-through must be
-  visible; do not auto-classify from a system description.
-- **`[verify]` tags stay.** They are not hedging — they are the point.
-  Do not strip them in outputs.
-- **Flag substantial modification.** Whenever a system is modified beyond
-  configuration, prompt the user to re-run `/ai-inventory classify` —
-  modification can change role.
-- **Don't declare obligations from a table.** If asked, do the analysis
-  in conversation and route to `/aia-generation` for anything that needs
-  a formal record.
+## 定期更新
+
+清单应定期审查更新：
+- 新系统上线时添加
+- 系统实质性修改时重新分类
+- 至少年度全面审查
+- 新法规生效时检查现有分类是否需要调整

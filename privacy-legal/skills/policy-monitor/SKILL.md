@@ -1,358 +1,316 @@
 ---
-name: policy-monitor
+name: 隐私政策监控
 description: >
-  Keep the privacy policy current with practice. Two modes: weekly sweep of saved
-  PIAs, DPA reviews, and triage results to find policy drift; or direct query for
-  a proposed new practice. Use when the user asks "does our policy cover this",
-  "we want to start doing X — does the policy need updating", "run the policy
-  monitor", "policy sweep", or wants to find where the privacy policy no longer
-  matches what the team actually does.
-argument-hint: "[describe a proposed new practice — or omit / use --sweep for crawl mode]"
+  保持隐私政策/个人信息处理规则与处理实践同步。两种模式：每周扫描已保存的个人信息保护影响评估(PIPIA)、
+  委托处理协议审查和分诊结果以发现政策偏离；或针对拟议新处理活动进行直接查询。
+  适用场景：用户问"我们的政策覆盖这个吗"、"我们要开始做X——政策需要更新吗"、
+  "运行政策监控"、"政策扫描"，或需找出隐私政策/个人信息处理规则与实际操作不符之处。
+argument-hint: "[描述拟议的新处理活动——或省略/使用 --sweep 进入扫描模式]"
 ---
 
-# /policy-monitor
+# /隐私政策监控
 
-**Sweep mode** (no argument or `--sweep`):
-1. Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → outputs folder path, policy document, last sweep date.
-2. Run the workflow below. Scan outputs folder for files since last sweep.
-3. For each output: extract approved practices → diff against current policy commitments.
-4. Classify gaps: REQUIRED (policy misrepresents current practice) vs ADVISABLE (policy silent).
-5. For each gap: quote current policy, describe gap, draft suggested language.
-6. Update Last policy sweep date in `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`.
+**扫描模式**（无参数或 `--sweep`）：
+1. 读取 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → 输出文件夹路径、政策文件、上次扫描日期。
+2. 按以下工作流执行。扫描输出文件夹中上次扫描后产生的文件。
+3. 对每个输出：提取已批准的处理实践 → 与当前隐私政策/个人信息处理规则承诺对比。
+4. 差距分类：必须更新（政策与实际处理实践不符）vs 建议更新（政策空白但不矛盾）。
+5. 对每个差距：引用当前政策表述、描述差距、起草建议措辞。
+6. 更新 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` 中的上次政策扫描日期。
 
-**Direct query mode** (with description argument):
-1. Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → current policy commitments + actual policy document.
-2. Parse proposed practice. Diff against policy: data categories, purposes, third parties, retention, user rights, disclosure.
-3. Output: covered / missing / conflicting + suggested language for each gap + timing recommendation.
+**直接查询模式**（带描述参数）：
+1. 读取 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → 当前政策承诺 + 实际政策文件。
+2. 解析拟议实践。与政策对比：数据类别、处理目的、第三方/受托处理者、保留期限、个人信息主体权利、对外披露。
+3. 输出：已涵盖 / 缺失 / 冲突 + 每个差距的建议措辞 + 时限建议。
 
-**Schedule:** Set up a recurring reminder in your own scheduler (calendar, task manager, or CI) to run `/privacy-legal:policy-monitor` weekly. Scheduled execution requires a scheduled-tasks integration, which is not bundled with this plugin.
+**定时计划：** 在您自己的调度器（日历、任务管理器或CI）中设置每周运行 `/privacy-legal:隐私政策监控` 的定期提醒。定时执行需要定时任务集成，不在本插件内捆绑提供。
 
 ```
-/privacy-legal:policy-monitor
-/privacy-legal:policy-monitor "We want to start using behavioral data to personalize onboarding emails"
+/privacy-legal:隐私政策监控
+/privacy-legal:隐私政策监控 "我们想开始使用行为数据来个性化引导邮件"
 ```
 
 ---
 
-# Privacy Policy Monitor
+# 隐私政策监控
 
-## Purpose
+## 事项上下文
 
-Privacy policies drift from practice in one direction: practice moves forward,
-policy stays behind. A PIA approves a new data category. A DPA is signed with a
-subprocessor not listed anywhere. A triage result marks a new use case conditional
-with a disclosure requirement that the policy doesn't yet make. Months later,
-someone reads the policy and it doesn't reflect what actually happens.
-
-This skill catches the drift before it becomes a problem — either by crawling the
-outputs folder weekly, or by answering the direct question: "we're about to start
-doing X, what does that mean for the policy?"
-
-The output is always the same: here's the gap, here's the suggested language.
+**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `Enabled` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且无活跃事项，询问："这是哪个事项？运行 `/privacy-legal:事项工作区 switch <标识>` 或说 `执业级别`。"加载活跃事项的 `事项档案.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal/privacy-legal/事项/<事项标识>/`。除非 `跨事项上下文` 为 `on`，否则绝不读取其他事项的文件。
 
 ---
 
-## Load current state
+## 目的
 
-Read `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`:
-- `## Who we are` → `## Regulatory footprint` — the regimes in scope (GDPR, CCPA / CPRA / other state consumer privacy, GLBA, HIPAA, FERPA, COPPA, VPPA, CPNI, etc.)
-- `## Privacy policy commitments` — the commitments extracted from the published policy
-- `## Outputs` — outputs folder path, policy document location, last sweep date
+隐私政策/个人信息处理规则从实践中偏离的方向永远只有一个：实践往前走，政策留在后面。某份个人信息保护影响评估(PIPIA)批准了新的数据类别。与某受托处理者签署了委托处理协议，但该受托处理者未被列入任何名单。某分诊结果将一个新使用场景标记为附条件通过，要求一项政策尚未作出的披露承诺。数月后，有人看到政策时发现它并不反映实际发生的事。
 
-If `## Outputs` contains `[PLACEHOLDER]`:
-> "Outputs aren't configured yet. I can still run a direct-query check — describe
-> what you're planning to do and I'll diff it against your current policy. To enable
-> the crawl sweep, run `/privacy-legal:cold-start-interview` and provide the outputs
-> folder path."
+本技能在偏离演变成问题之前捕捉到它——通过每周爬取输出文件夹，或回答直接问题："我们即将开始做X，这对隐私政策/个人信息处理规则意味着什么？"
 
-Read the actual privacy policy document from the path in `## Outputs` → **Privacy
-policy document**. The commitments in the config CLAUDE.md are a summary; the actual document
-is authoritative for suggesting edits.
+输出始终相同：这里是差距，这里是建议措辞。
 
-### Privacy commitments live on multiple surfaces — sweep all of them
+---
 
-The website privacy policy is one surface. Modern privacy programs make binding commitments in at least four more places that regulators actively scrutinize for inconsistencies:
+## 加载当前状态
 
-1. **Cookie consent banners / CMPs.** The consent management platform promises specific cookie categories and purposes. If the privacy policy says "we use analytics cookies" and the CMP offers "strictly necessary only," there's a conflict. EU DPAs and the FTC have both enforced against CMP misconfigurations.
-2. **App store privacy labels.** Apple App Privacy (the "nutrition label") and Google Data Safety are self-declared and FTC-enforceable. A company that updates its privacy policy but doesn't update its App Store label has a material, regulator-visible inconsistency. Check: when was the label last updated? Does it match the current policy's data categories, purposes, and sharing?
-3. **In-product consent flows.** The actual screens where users make data-use choices (onboarding consents, settings toggles, "we've updated our policy" dialogs). The policy says what you do; the consent flow says what the user agreed to. They should match.
-4. **Sector-specific notices.** GLBA privacy notices, HIPAA NPPs, FERPA directory notices, COPPA direct notices. These have their own update obligations and their own consistency requirements with the general privacy policy. (Detail below under "Sectoral notices.")
+读取 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`：
+- `## 我们是谁` → `## 监管覆盖范围` —— 适用监管制度（《个人信息保护法》、《数据安全法》、《网络安全法》及相关配套规定）[通说]
+- `## 隐私政策/个人信息处理规则承诺` —— 从已发布政策中提取的承诺
+- `## 输出` —— 输出文件夹路径、政策文件位置、上次扫描日期
 
-**Add fields to the practice profile for each surface's location and last-updated date.** The sweep checks each against the current policy and flags divergence: "Privacy policy updated [date]. App Store label last updated [earlier date] — may not reflect the new data category. CMP last configured [date] — verify cookie purposes match the policy."
+如果 `## 输出` 包含 `[PLACEHOLDER]`：
+> "输出尚未配置。我仍可运行直接查询——描述您计划做的事情，我会将其与您当前的政策对比。要启用爬取扫描，请运行 `/privacy-legal:cold-start访谈` 并提供输出文件夹路径。"
 
-A company with a clean privacy policy and a stale App Store label is a company with an FTC complaint waiting to happen. Sweep the surfaces, not just the document.
+从 `## 输出` → **隐私政策/个人信息处理规则文件** 的路径读取实际的政策文件。配置 CLAUDE.md 中的承诺是摘要；实际文件是建议编辑的权威依据。
 
-### Sectoral notices are in scope for this sweep
+### 隐私承诺存在于多个界面上——扫描所有界面
 
-The website privacy policy is one notice. Federally-regulated practices require a separate, sector-specific notice that the website policy does not substitute for. If `## Regulatory footprint` includes any of the following, the sweep diffs practice against that notice in addition to the website policy — or flags its absence if no such notice has been configured:
+网站隐私政策/个人信息处理规则是一个界面。现代个人信息保护实践至少在另外四个监管机构会主动审查一致性的地方作出了有约束力的承诺：
 
-| Footprint entry | Sectoral notice to diff against | What to flag |
+1. **Cookie告知同意弹窗/CMP（告知同意管理平台）。** CMP承诺了具体的Cookie类别和处理目的。如果隐私政策/个人信息处理规则说"我们使用分析型Cookie"而CMP仅提供"严格必要"，则存在冲突。网信办对告知同意机制配置错误会进行执法。
+2. **应用商店隐私标签。** Apple App Privacy（"营养标签"）和Google Data Safety是自我声明且可被执法的。一个更新了隐私政策/个人信息处理规则但未更新其App Store标签的公司存在重大的、监管机构可见的不一致。检查：标签上次更新是什么时候？是否与当前政策的数据类别、处理目的和共享情况一致？
+3. **产品内告知同意流程。** 用户作出数据使用选择的实际页面（引导流程中的告知同意、设置开关、"我们更新了政策"弹窗）。政策说您做什么；告知同意流程说用户同意了什么。两者应一致。
+4. **行业特定告知。** 《个人信息保护法》要求的各类告知、《数据安全法》涉及的重要数据安全保护义务、行业监管规定要求的专门告知。这些有其自身的更新义务和与通用隐私政策/个人信息处理规则的一致性要求。（详见下文"行业告知"部分。）
+
+**为每个界面的位置和上次更新日期在实践档案中添加字段。** 扫描时逐一对照当前政策检查并标记偏离："隐私政策/个人信息处理规则更新于[日期]。App Store标签上次更新于[更早日期]——可能未反映新数据类别。CMP上次配置于[日期]——核实Cookie处理目的与政策一致。"
+
+一个隐私政策/个人信息处理规则干净但App Store标签陈旧的公司，就是一个等投诉的公司。扫描所有界面，不仅仅是文件本身。
+
+### 行业特定告知在本次扫描范围内
+
+网站隐私政策/个人信息处理规则是一种告知形式。行业监管要求可能需要单独的、网站政策不能替代的行业特定告知。如果 `## 监管覆盖范围` 包含以下任一项，扫描时将对照该告知（而不仅仅是网站政策）进行对比——或在未配置该告知时标记其缺失：
+
+| 覆盖范围条目 | 需对比的行业特定告知 | 应标记的内容 |
 |---|---|---|
-| **GLBA / Reg P** (financial institution handling NPI) | GLBA initial + annual privacy notice (12 C.F.R. Part 1016, or the functional regulator's equivalent) | Outputs implying new NPI categories, sharing with non-affiliated third parties, or changes to opt-out mechanics that the Reg P notice doesn't reflect. A DPA signed with an analytics vendor receiving NPI with no matching Reg P notice update is a gap. |
-| **HIPAA** (covered entity or BA) | Notice of Privacy Practices (45 C.F.R. § 164.520) | Outputs implying new uses or disclosures, new routine categories, or changes to patient-rights mechanics. A BAA signed with a new subcontractor flowing PHI with no matching NPP refresh is a gap. |
-| **FERPA** (school or school service provider) | Annual directory-information / rights notice (34 C.F.R. § 99.37) | Outputs implying new disclosure categories to service providers under the school-official exception, new directory-information elements, or changes that implicate parental-consent flow-through. |
-| **COPPA** (operator of service directed to children <13) | Direct notice to parents + online notice (16 C.F.R. § 312.4) | Outputs implying new data categories collected from children, new third-party disclosures, or changes to the verifiable-parental-consent mechanic. |
-| **VPPA / CPNI / DPPA / other sectoral** | The regime's specific notice or consent regime | Processing activities the regime restricts that aren't reflected in the configured notice. |
+| **《个人信息保护法》第28-32条** | 敏感个人信息告知同意文件 | 输出中暗示的新增敏感个人信息类别、对外提供安排或告知同意机制变更，而对应告知文件未反映 |
+| **《个人信息保护法》第38-40条** | 个人信息出境机制告知、安全评估/标准合同/认证文件 | 输出中暗示的新增个人信息出境行为、境外受托处理者、出境机制变更 |
+| **《数据安全法》重要数据制度** | 重要数据安全保护义务告知 | 输出中暗示的新增重要数据处理活动、对外提供 |
+| **行业监管制度** | 行业特定个人信息处理规则告知 | 处理活动受行业监管限制但在已配置告知中未反映 |
 
-**If no sectoral notice is configured for a regime in the footprint**, surface this as a standing gap on every sweep, not a one-time finding. The sweep output should include:
+**如果监管覆盖范围中的某制度未配置行业特定告知**，在每次扫描中将其作为持续性差距提出，而非一次性发现。扫描输出应包含：
 
-> **Sectoral notice coverage:**
-> - [regime]: [configured notice path + last updated, or "NOT CONFIGURED — flag each sweep until resolved"]
+> **行业告知覆盖情况：**
+> - [制度]：[已配置告知路径+上次更新日期，或"未配置——每次扫描均标记直至解决"]
 
-**If the sweep cannot locate the sectoral notice**, say so explicitly — do not silently default to diffing only against the website policy. A fintech DPO relying on a policy-monitor sweep that ignored GLBA would ship with an outdated regulator-facing notice and no warning. Surface the gap loudly.
+**如果扫描无法定位行业特定告知**，明确说明——不要静默地默认仅对照网站政策进行对比。依赖政策监控扫描却忽略了重要数据相关告知的合规负责人，会在监管检查时以过时的告知文件应对而毫无准备。大声指出差距。
 
-**Ask the user if the footprint is ambiguous.** If `## Regulatory footprint` says "GDPR / CCPA" but the outputs scan surfaces PHI, NPI, or student data categories, surface the footprint-vs-practice mismatch before proceeding: "Your footprint doesn't list [GLBA / HIPAA / FERPA / COPPA] but this sweep is looking at outputs that involve [category]. Should this regime be added to the footprint, and is there a sectoral notice to diff against?"
-
----
-
-## Mode detection
-
-**Sweep mode:** No argument, `--sweep`, or triggered by schedule.
-→ Scan the outputs folder. Diff all outputs since last sweep against current policy.
-
-**Direct query mode:** User provides a description of a proposed new practice.
-→ Diff that practice against current policy. Suggest updates.
+**如果监管覆盖范围存在歧义，询问用户。** 如果 `## 监管覆盖范围` 说"《个人信息保护法》"但输出扫描中出现了敏感个人信息或重要数据类别，在继续前指出覆盖范围与实践的不匹配："您的覆盖范围未列出[某行业/领域监管制度]，但本次扫描正在审查涉及[X类受监管数据]的输出。是否应将该制度加入覆盖范围，以及是否有行业特定告知需要对比？"
 
 ---
 
-## Mode 1: Sweep
+## 模式检测
 
-### Determine scope
+**扫描模式：** 无参数、`--sweep` 或由定时计划触发。
+→ 扫描输出文件夹。将上次扫描后的所有输出与当前政策对比。
 
-Read `## Outputs` → **Last policy sweep** date. Scan for output files in the
-outputs folder that are dated after that date. If no date is recorded, scan all
-files and note: "First sweep — scanning all outputs."
+**直接查询模式：** 用户提供拟议新处理实践描述。
+→ 将该实践与当前政策对比。建议更新。
 
-If the outputs folder is empty or has no new files since the last sweep:
-> "No new outputs since [last sweep date]. Policy appears current with recent
-> practice. Next scheduled sweep: [date]."
+---
 
-Update **Last policy sweep** in `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` to today's date after completing the sweep.
+## 模式一：扫描
 
-### What to read in each output type
+### 确定范围
 
-**PIAs (Privacy Impact Assessments):**
-- Extract: data categories processed, purposes, third parties / subprocessors involved,
-  retention periods, user rights implications, any conditions placed on the processing
-- Flag: anything in that list not present in the current privacy policy commitments
+读取 `## 输出` → **上次政策扫描** 日期。扫描输出文件夹中该日期之后产生的输出文件。如未记录日期，扫描所有文件并注明："首次扫描——扫描所有输出。"
 
-**DPA reviews (signed or approved):**
-- Extract: subprocessors added, data locations agreed to, processing purposes covered,
-  any obligations to data subjects created by the DPA terms
-- Flag: subprocessors not listed in the policy (if policy names them), new processing
-  categories, new data locations, obligations inconsistent with policy
+如果输出文件夹为空或自上次扫描以来无新文件：
+> "自[上次扫描日期]以来无新输出。政策似与近期实践保持一致。下次预定扫描：[日期]。"
 
-**Triage results (PIA REQUIRED / PROCEED outcomes):**
-- Extract: what was approved, any conditions imposed that imply a public commitment
-  (e.g., "disclosure to affected parties required before launch")
-- Flag: approved practices not covered by policy, conditions that require policy language
+扫描完成后，将 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` 中的 **上次政策扫描** 更新为当天日期。
 
-**DSAR responses:**
-- Extract: any new data categories surfaced that weren't in previous DSAR responses,
-  any systems added to the systems list
-- Flag: data categories collected but not stated in policy
+### 在每种输出类型中读取什么
 
-### Gap identification
+**个人信息保护影响评估(PIPIA)：**
+- 提取：处理的数据类别、处理目的、涉及的第三方/受托处理者、保留期限、个人信息主体权利影响、对处理活动附加的条件
+- 标记：上述列表中未出现在当前隐私政策/个人信息处理规则承诺中的任何内容
 
-For each flagged item, assess:
+**委托处理协议审查（已签署或已批准）：**
+- 提取：新增的受托处理者、约定的数据存储地域、涵盖的处理目的、协议条款产生的对个人信息主体的任何义务
+- 标记：政策中未列出的受托处理者（如政策列出名单）、新处理类别、新数据存储地域、与政策不一致的义务
 
-**REQUIRED update** — the policy makes a commitment that this output contradicts, or
-the processing is occurring and the policy has no coverage at all. Not updating creates
-a material misrepresentation.
+**分诊结果（需要做影响评估 / 可继续 结果）：**
+- 提取：批准了什么、任何暗示对外公开承诺的附加条件（例如"上线前须向受影响个人信息主体披露"）
+- 标记：政策未涵盖的已批准实践、需要政策语言配合的条件
 
-> Example: Policy says "we collect name, email, and payment information." A PIA
-> approved collection of location data. Policy says nothing about location. That's
-> a REQUIRED update — you're collecting data you haven't disclosed.
+**个人信息主体权利请求响应：**
+- 提取：先前权利请求响应中未出现过的新数据类别、系统清单中新增的系统
+- 标记：已收集但未在政策中声明的数据类别
 
-**ADVISABLE update** — the policy is silent but not in conflict. The processing is
-defensible without updating, but cleaner with it.
+### 差距识别
 
-> Example: Policy says "we may share data with service providers." A DPA was signed
-> with a new analytics vendor. Policy doesn't name the vendor but doesn't exclude
-> them either. Advisable to add to a named subprocessor list if one is maintained.
+对每个标记项进行评估：
 
-### Sweep output format
+**必须更新** —— 政策作出的承诺与此输出相矛盾，或处理活动正在进行而政策完全未覆盖。不更新将构成重大不实陈述。
+
+> 示例：政策说"我们收集姓名、邮箱和支付信息。"某个人信息保护影响评估批准了位置数据的收集。政策对位置数据只字未提。这是必须更新——您正在收集未向用户披露的数据。
+
+**建议更新** —— 政策空白但不冲突。该处理活动可在不更新的情况下自我辩护，但更新后更清晰。
+
+> 示例：政策说"我们可能向服务提供方提供数据。"与一家新的数据分析供应商签署了委托处理协议。政策未列出该供应商名称但也不排斥。建议将其加入受托处理者名单（如维护此类名单）。
+
+### 扫描输出格式
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-# Privacy Policy Monitor — Sweep Report
+# 隐私政策监控 —— 扫描报告
 
-**Date:** [date]
-**Outputs scanned:** [N files] | **New since last sweep:** [N files]
-**Gaps found:** [N] REQUIRED | [N] ADVISABLE
-
----
-
-## REQUIRED updates
-
-### [Gap 1 short name]
-
-**Source:** [filename / output type that triggered this]
-**What's happening:** [plain description of the new practice]
-**Current policy:** [quote the relevant section — or "No coverage"]
-**Gap:** [what's missing or inconsistent]
-
-**Suggested language:**
-> *Add to [section name]:*
-> "[Drafted policy text — specific, consistent with house style of the actual policy]"
+**日期：** [日期]
+**已扫描输出：** [N个文件] | **自上次扫描新增：** [N个文件]
+**发现差距：** [N] 必须更新 | [N] 建议更新
 
 ---
 
-[repeat for each REQUIRED gap]
+## 必须更新
+
+### [差距1 简短名称]
+
+**来源：** [触发此差距的文件名/输出类型]
+**实际情况：** [用通俗语言描述新实践]
+**当前政策：** [引用相关段落——或"未覆盖"]
+**差距：** [缺失什么或不一致在哪]
+
+**建议措辞：**
+> *添加到[段落名称]：*
+> "[起草的政策文本——具体，与现行政策的行文风格一致]"
 
 ---
 
-## ADVISABLE updates
-
-### [Gap name]
-
-**Source:** [filename]
-**What's happening:** [description]
-**Current policy:** [quote or "Silent"]
-**Suggested language:**
-> *Add to / update [section]:*
-> "[Drafted text]"
+[对每个必须更新项重复]
 
 ---
 
-## No action needed
+## 建议更新
 
-[List outputs scanned where no gaps were found — confirms they were reviewed]
+### [差距名称]
+
+**来源：** [文件名]
+**实际情况：** [描述]
+**当前政策：** [引用或"空白"]
+**建议措辞：**
+> *添加到/更新[段落]：*
+> "[起草的文本]"
 
 ---
 
-## Next steps
+## 无需行动
 
-- [ ] Review REQUIRED updates — each needs a decision before the associated
-  feature/processing goes live (or immediately if already live)
-- [ ] Review ADVISABLE updates — lower urgency but worth addressing at next
-  policy refresh
-- [ ] Next scheduled sweep: [date]
+[列出已扫描但未发现差距的输出——确认已审查]
+
+---
+
+## 后续步骤
+
+- [ ] 审查必须更新项——每个都需要在相关功能/处理活动上线前作出决定（如已上线则立即决定）
+- [ ] 审查建议更新项——紧迫度较低但值得在下次政策更新时处理
+- [ ] 下次预定扫描：[日期]
 ```
 
 ---
 
-## Mode 2: Direct query
+## 模式二：直接查询
 
-### Parse the proposed practice
+### 解析拟议实践
 
-Extract from the user's description:
-- What data is being collected or processed?
-- What's the purpose?
-- Who else is involved (vendors, partners, third parties)?
-- Who are the data subjects?
-- Is there any automated decision-making?
-- Any new disclosure to data subjects required?
+从用户描述中提取：
+- 正在收集或处理什么数据？
+- 处理目的是什么？
+- 还有谁参与（供应商、受托处理者、合作方、第三方）？
+- 个人信息主体是谁？
+- 是否涉及自动化决策？
+- 是否需要向个人信息主体作出新的披露？
 
-If the description is vague, ask one clarifying question before proceeding. Don't
-run a long intake — this mode should be fast.
+如果描述模糊，在继续前问一个澄清问题。不要做长信息采集——此模式应快速。
 
-### Policy diff
+### 政策对比
 
-Check the proposed practice against every relevant section of the current policy:
+对照当前政策每个相关段落检查拟议实践：
 
-| Check | Current policy says | Proposed practice | Verdict |
+| 检查项 | 当前政策说 | 拟议实践 | 判断 |
 |---|---|---|---|
-| Data categories | [what policy lists] | [new category if any] | 🟢 Covered / 🟡 Gap / 🔴 Conflict |
-| Purposes | [stated purposes] | [new purpose] | |
-| Third parties / subprocessors | [stated parties] | [new party if any] | |
-| Retention | [retention commitment] | [implied retention] | |
-| User rights | [rights offered] | [any new rights implications] | |
-| Disclosure / notice | [what policy says about telling users] | [what this practice requires] | |
+| 数据类别 | [政策列出的内容] | [新类别，如有] | 🟢 已涵盖 / 🟡 差距 / 🔴 冲突 |
+| 处理目的 | [声明的目的] | [新目的] | |
+| 第三方/受托处理者 | [声明的当事方] | [新当事方，如有] | |
+| 保留期限 | [保留承诺] | [隐含的保留期限] | |
+| 个人信息主体权利 | [提供的权利] | [任何新权利影响] | |
+| 披露/告知 | [政策关于告知个人信息主体的说法] | [此实践要求的告知] | |
 
-### Direct query output format
+### 直接查询输出格式
 
 ```markdown
-[WORK-PRODUCT HEADER — per plugin config ## Outputs — differs by role; see `## Who's using this`]
+[工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-# Privacy Policy Check: [Proposed practice in one line]
+# 隐私政策检查：[一行描述拟议实践]
 
-**Bottom line:** [POLICY UPDATE REQUIRED / ADVISABLE / NO UPDATE NEEDED]
-
----
-
-## What's covered
-
-[List aspects of the proposed practice already addressed by the current policy —
-brief, confirms they don't need to change]
-
-## What's missing
-
-### [Gap 1]
-
-**Current policy:** [quote or "Silent"]
-**What's needed:** [why this gap matters — legal, reputational, or consistency reason]
-
-**Suggested language:**
-> *Add to [section]:*
-> "[Drafted text]"
-
-### [Gap 2]
-[same format]
-
-## What conflicts
-
-### [Conflict 1 — if any]
-
-**Current policy says:** [quote]
-**Proposed practice does:** [what conflicts]
-**Resolution:** [which one needs to change and why — usually the practice adjusts
-to match the policy, or the policy gets updated to a defensible new position]
+**底线结论：** [需要更新政策 / 建议更新 / 无需更新]
 
 ---
 
-## Timing
+## 已涵盖内容
 
-[If any gap is REQUIRED: "Policy update should happen before this goes live."
-If ADVISABLE: "Can proceed; update at next policy refresh."]
+[列出拟议实践中已由当前政策涵盖的方面——简要，确认无需变更]
+
+## 缺失内容
+
+### [差距1]
+
+**当前政策：** [引用或"空白"]
+**为何需要补充：** [此差距为何重要——法律、声誉或一致性原因]
+
+**建议措辞：**
+> *添加到[段落]：*
+> "[起草的文本]"
+
+### [差距2]
+[相同格式]
+
+## 冲突内容
+
+### [冲突1 —— 如有]
+
+**当前政策说：** [引用]
+**拟议实践做：** [冲突在哪]
+**解决方案：** [需要改哪个以及原因——通常是处理实践调整以匹配政策，或政策更新为可辩护的新立场]
+
+---
+
+## 时限建议
+
+[如有任何必须更新项："政策更新应在该实践上线前完成。"
+如为建议更新："可继续推进，在下次政策更新时处理。"]
 ```
 
 ---
 
-## Suggested language quality standards
+## 建议措辞质量标准
 
-Policy language should:
-- Match the voice and style of the existing policy (read the actual document, not
-  just the config CLAUDE.md summary, before drafting)
-- Be specific enough to be meaningful but not so specific that routine changes
-  break it ("service providers who assist us in operating our business" ages better
-  than naming every vendor)
-- Not make commitments the team can't keep (e.g., don't draft "we will never share
-  location data" if the architecture has that data flowing to an analytics vendor)
-- Flag where a broader policy position change might be needed, not just a
-  sentence addition
+政策语言应：
+- 匹配现行政策的语气和风格（起草前阅读实际政策文件，而非仅依赖配置 CLAUDE.md 中的摘要）
+- 具体到有意义，但不过于具体以至于常规变动就使其失效（"协助我们运营业务的服务提供方"比逐一列出每个供应商更具生命力）
+- 不作团队无法遵守的承诺（例如，如果架构中数据已流向某数据分析供应商，不要起草"我们绝不对外提供位置数据"）
+- 标记可能需要更广泛政策立场变更的地方，而非仅仅添加一个句子
 
-When drafting, always say which section to add to. If the right section doesn't
-exist, say so and suggest creating it.
+起草时始终说明添加到哪个段落。如果正确的段落尚不存在，说明并建议创建。
 
 ---
 
-## Schedule integration
+## 定时计划集成
 
-Set up a recurring reminder in your own scheduler (calendar, task manager, or CI)
-to run `/privacy-legal:policy-monitor` weekly. Scheduled execution requires a
-scheduled-tasks integration, which is not bundled with this plugin.
+在您自己的调度器（日历、任务管理器或CI）中设置每周运行 `/privacy-legal:隐私政策监控` 的定期提醒。定时执行需要定时任务集成，不在本插件内捆绑提供。
 
-Whenever the sweep runs, it updates `## Outputs` → **Last policy sweep** in
-`~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`, so the next sweep only looks at new files.
+每次扫描运行时更新 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` 中 `## 输出` → **上次政策扫描**，使下一次扫描只查看新文件。
 
 ---
 
-## Close with the next-steps decision tree
+## 以下一步决策树收尾
 
-End with the next-steps decision tree per CLAUDE.md `## Outputs`. Customize the options to what this skill just produced — the five default branches (draft the X, escalate, get more facts, watch and wait, something else) are a starting point, not a lock-in. The tree is the output; the lawyer picks.
+以 CLAUDE.md `## 输出` 中的下一步决策树收尾。将选项定制为本技能刚产出的内容——五个默认分支（起草X、升级、获取更多事实、观察等待、其他）为起点，非锁定。决策树即输出；律师选择。
 
-If the sweep surfaced more than ~10 drift findings, or any time the user asks: offer the dashboard (see CLAUDE.md `## Outputs → Dashboard offer for data-heavy outputs`). Shape the offer for this output — counts by surface (policy clause / PIA / DPA / triage), counts by severity, and a sortable grid of findings with source artifact and recommended remediation.
+如果扫描发现超过约10个偏离发现，或用户随时要求：提供仪表盘（见 CLAUDE.md `## 输出 → 数据量大的输出提供仪表盘`）。为本输出定制仪表盘——按界面（政策条款/个人信息保护影响评估/委托处理协议/分诊）计数、按严重程度计数、含来源工件和建议整改方案的可排序发现网格。
 
-## What this skill does not do
+## 本技能不做什么
 
-- It doesn't update the policy itself — it drafts suggested language and flags
-  decisions, but a human reviews and approves every change.
-- It doesn't catch regulatory changes — that's `reg-gap-analysis`. This skill
-  monitors internal practice drift, not external legal changes.
-- It doesn't enforce that outputs are saved — if the team isn't saving PIAs to the
-  configured folder, the sweep won't find them. The direct-query mode works without
-  saved outputs.
-- It doesn't read email or Slack for informal decisions — only structured outputs
-  saved to the configured folder.
+- 不更新政策本身——起草建议措辞并标记决策，但由人工审查和批准每项变更。
+- 不捕捉法规变化——那是 `法规差距分析` 的工作。本技能监控内部实践偏离，而非外部法律变化。
+- 不强制要求保存输出——如果团队未将个人信息保护影响评估保存到配置文件夹，扫描将找不到它们。直接查询模式不需要已保存的输出。
+- 不读取邮件或即时通讯中的非正式决策——仅读取保存到配置文件夹的结构化输出。
