@@ -8,13 +8,14 @@
 # ──────────────────────────────────────────────────────────────────────────
 # 数据结构定义
 # ──────────────────────────────────────────────────────────────────────────
-# - id:                string — 简称，稳定唯一；对应 matters/[简称]/ 文件夹
+# - id:                string — 机器 slug，稳定唯一；对应 matters/[slug]/ 文件夹。
+#                      案件简称/代号可写入 name 或 matter.md，不作为路径占位。
 #   name:              string — 案件显示名称
 #   type:              合同纠纷 | 劳动争议 | 知识产权 | 行政监管 | 刑事调查 | 产品责任 | 其他
 #   role:              原告 | 被告 | 申请人 | 被申请人 | 被调查方
 #   counterparty:      string — 对方当事人
 #   jurisdiction:      string — 管辖法院或仲裁机构
-#   status:            潜在威胁 | 进行中 | 举证阶段 | 开庭审理 | 上诉 | 已结案
+#   status:            活跃 | 待跟进 | 暂停 | 结案 | 归档
 #                      （结案方式通过结案时的 `outcome` 字段单独记录；
 #                       /matter-close 对通过调解结案的写入 `outcome: 调解结案`）
 #   stage:             string — 自由文本子阶段（如 "立案审查"、"庭前会议"）
@@ -23,9 +24,9 @@
 #     firm:            string | null — 外聘律所
 #     lead:            string | null — 主办律师
 #     email:           string | null     # v2 新增 — 供 /oc-status 邮件生成使用
-#     engagement:      已签署 | 待签署 | 无
+#     status:          未委托 | 拟委托 | 已委托 | 已结束
 #   conflicts:
-#     status:          已审查无冲突 | 审查中 | 未审查 | 豁免
+#     status:          未检查 | 已通过 | 需复核 | 存在冲突
 #     method:          公司法务审查 | 外聘律师审查 | 系统检索 | 人工判断 | 其他
 #     cleared_by:      string | null — 审查人
 #     cleared_date:    YYYY-MM-DD | null — 审查日期
@@ -33,23 +34,23 @@
 #       by:              string | null        # 授权绕过审查的人
 #       date:            YYYY-MM-DD | null    # 授权日期
 #       rationale:       string | null        # 永久保留理由；不会自动过期
-#   risk:              红线 | 重大 | 一般 | 提示   （对应 CLAUDE.md 风险矩阵）
-#   materiality:       已计提准备金 | 已披露 | 持续监控 | 无需
+#   risk:              高 | 中 | 低
+#   materiality:       重大 | 一般 | 低
 #   exposure_range:    string — 标的金额区间，如 "200万–500万元" 或 "<50万元"
 #   internal_owners:
 #     business_lead:   string | null — 业务负责人
 #     hr_partner:      string | null — HR 对接人
 #     comms_contact:   string | null — 公关/媒体对接人
 #   property_preservation:                                            # 财产保全
-#     applied:          bool — 是否已申请
+#     status:           未申请 | 拟申请 | 已申请 | 已解除 | 不适用
 #     applied_date:     YYYY-MM-DD | null — 申请日期
 #     type:             string | null — 保全类型（诉前财产保全 / 诉中财产保全 / 证据保全 / 行为保全）
 #     target:           string | null — 保全标的
 #     amount:           string | null — 保全金额
 #     ruling_date:      YYYY-MM-DD | null — 法院裁定日期
 #     ruling_result:    string | null — 裁定结果
-#     legal_hold:
-#     issued:          bool — 是否已签发
+#   legal_hold:
+#     status:          未启动 | 已启动 | 已解除 | 不适用
 #     issued_date:     YYYY-MM-DD | null — 签发日期
 #     scope:           string | null — 范围
 #     custodians:      [string]            # v2 新增
@@ -60,7 +61,7 @@
 #   opened:            YYYY-MM-DD — 立案日期
 #   next_deadline:     YYYY-MM-DD | null — 下一个期限
 #   last_updated:      YYYY-MM-DD — 最后更新日期
-#   path:              string — "matters/[简称]/"
+#   path:              string — "matters/[slug]/"
 #
 # 已结案件额外字段：
 #   closed:            YYYY-MM-DD — 结案日期

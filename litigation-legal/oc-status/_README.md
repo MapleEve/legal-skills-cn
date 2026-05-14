@@ -14,7 +14,7 @@ oc-status/
     └── ...
 ```
 
-When the Gmail MCP is authenticated, Gmail drafts are also created in the user's inbox. The markdown files are the persistent record; Gmail drafts are the action layer.
+When an email connector or enterprise mailbox connector is configured, drafts may also be created in the user's mailbox. The markdown files are the persistent record; mailbox drafts are the action layer. Gmail can be configured as an optional connector, but it is not the default for this plugin.
 
 ## Cadence
 

@@ -301,13 +301,11 @@ argument-hint: "[可选 案件名称]"
   status: 活跃
   stage: 立案
   source: 已送达起诉状
-  counsel:
-    lead: "李律师"
-    assistant: "王律师"
+  outside_counsel:
     firm: "某律师事务所"
-  engagement:
-    status: 已签署
-    fee_type: 按标的额收费
+    lead: "李律师"
+    email: "li@example.com"
+    status: 已委托
   conflicts:
     status: 已通过
     method: 律所系统检索
@@ -320,13 +318,30 @@ argument-hint: "[可选 案件名称]"
   risk: 高
   materiality: 重大
   exposure_range: "200万-500万元"
+  internal_owners:
+    business_lead: "张经理"
+    hr_partner: null
+    comms_contact: null
   limitation:
     expiry: 2027-03-15
     interrupted: true
     interrupt_event: "2026-03-15发送律师函催告"
-  preservation:
-    evidence_preservation: false
-    property_preservation: false
+  property_preservation:
+    status: 未申请
+    applied_date: null
+    type: null
+    target: null
+    amount: null
+    ruling_date: null
+    ruling_result: null
+  legal_hold:
+    status: 未启动
+    issued_date: null
+    scope: null
+    custodians: []
+    last_refresh: null
+    next_refresh: null
+    released: null
   related_matters: []
   opened: 2026-04-20
   next_deadline: 2026-05-15
