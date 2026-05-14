@@ -28,9 +28,9 @@ tools:
   - { type: mcp_toolset, mcp_server_name: gdrive,  default_config: { enabled: true  } }
   - { type: mcp_toolset, mcp_server_name: imanage, default_config: { enabled: false } }
 mcp_servers:
-  - { type: url, name: box,     url: "${BOX_MCP_URL:-TBD-企业网盘}" }
-  - { type: url, name: gdrive,  url: "${GDRIVE_MCP_URL:-TBD-企业网盘}" }
-  - { type: url, name: imanage, url: "${IMANAGE_MCP_URL:-TBD-文档管理}" }
+  - { type: url, name: box,     url: "${BOX_MCP_URL}" }
+  - { type: url, name: gdrive,  url: "${GDRIVE_MCP_URL}" }
+  - { type: url, name: imanage, url: "${IMANAGE_MCP_URL}" }
 skills: []
 callable_agents: []
 output_schema:

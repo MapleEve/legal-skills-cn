@@ -27,7 +27,7 @@
 
 首次使用时，插件会进行约十分钟的对话式访谈，了解团队的运作方式。包括审查手册立场、升级规则，以及最让你头疼的事项。随后会请你提供 5-10 份近期已签署合同（越多越好，20 份可形成更清晰的模式），以便了解实际审查立场。
 
-学习结果写入 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`——一份关于团队实践的通俗英文文档，所有其他技能在执行前读取。你编辑的是文档，而非配置文件。
+学习结果写入 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`——一份关于团队实践的通俗英文文档，所有其他技能在执行前读取。你编辑的是文档，而非配置文件。
 
 ```
 /commercial-legal:cold-start-interview
@@ -40,10 +40,10 @@
 | 命令 | 功能 |
 |---|---|
 | `/commercial-legal:cold-start-interview` | 运行（或重新运行）冷启动访谈 |
-| `/commercial-legal:review [文件]` | 依据审查手册审查合同（买卖合同/服务合同/保密协议/框架协议） |
+| `/commercial-legal:review [file]` | 依据审查手册审查合同（买卖合同/服务合同/保密协议/框架协议） |
 | `/commercial-legal:renewal-tracker` | 未来 90 天内续约事项及解除期限预警 |
 | `/commercial-legal:escalation-flagger` | 将问题路由至适当审批人并起草请示 |
-| `/commercial-legal:amendment-history [文件]` | 追踪合同自基础协议起经各次补充协议的变化轨迹 |
+| `/commercial-legal:amendment-history [file]` | 追踪合同自基础协议起经各次补充协议的变化轨迹 |
 | `/commercial-legal:review-proposals` | 逐条审查监控代理提出的审查手册更新建议 |
 | `/commercial-legal:matter-workspace` | 管理事项工作区（仅多客户私人执业）——新建、列出、切换、关闭、无 |
 
@@ -51,7 +51,7 @@
 
 | 技能 | 用途 |
 |---|---|
-| **cold-start-interview** | 首次运行访谈，写入 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` |
+| **cold-start-interview** | 首次运行访谈，写入 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md` |
 | **vendor-agreement-review** | 完整的手册对照合同偏差分析，含修订建议 |
 | **nda-review** | 快速绿/黄/红分流，法务仅审阅需要关注的保密协议 |
 | **saas-msa-review** | SaaS 订阅专项审查：自动续约、价格调整、数据迁出、SLA |
@@ -96,7 +96,7 @@
 
 约十分钟。准备 5-10 份近期已签署合同供分享（越多越好，20 份可形成更清晰的模式）。
 
-配置文件存储在 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`，插件更新后仍然有效。
+配置文件存储在 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`，插件更新后仍然有效。
 
 ### 2. 审查合同
 
@@ -116,7 +116,7 @@
 
 ## 学习机制
 
-位于 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` 的团队实践画像并非一成不变——随着插件使用而持续完善。技能会在输出来源于应调整的默认值时提示。`playbook-monitor` 代理在实践偏离手册时提议更新。可重新运行设置、直接编辑文件，或告诉技能记录新的审查立场。
+位于 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md` 的团队实践画像并非一成不变——随着插件使用而持续完善。技能会在输出来源于应调整的默认值时提示。`playbook-monitor` 代理在实践偏离手册时提议更新。可重新运行设置、直接编辑文件，或告诉技能记录新的审查立场。
 
 ## 文件结构
 

@@ -17,7 +17,7 @@
 
 插件通过引导式访谈了解你的合规实践：你是个人信息处理者还是受托处理者，实际适用哪些法规，你在委托处理协议中的底线条款是什么。然后它读取三份种子文件——你的隐私政策、你的委托处理协议模板、一份你认可的 PIPIA 报告——学习你的真实立场和工作风格。
 
-你的合规配置存储在 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`，不受插件更新影响。
+你的合规配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md`，不受插件更新影响。
 
 ```
 /privacy-legal:cold-start-interview
@@ -28,11 +28,11 @@
 | 命令 | 功能 |
 |---|---|
 | `/privacy-legal:cold-start-interview` | 冷启动访谈 |
-| `/privacy-legal:use-case-triage [活动描述]` | 是否需 PIPIA？快速分类 + 条件判断 |
-| `/privacy-legal:dpa-review [文件]` | 按你的谈判手册审查委托处理协议（自动识别方向） |
+| `/privacy-legal:use-case-triage [activity-description]` | 是否需 PIPIA？快速分类 + 条件判断 |
+| `/privacy-legal:dpa-review [file]` | 按你的谈判手册审查委托处理协议（自动识别方向） |
 | `/privacy-legal:dsar-response` | 引导式个人信息主体权利请求处理并起草回复 |
-| `/privacy-legal:pia-generation [功能描述]` | 按你的工作风格生成 PIPIA |
-| `/privacy-legal:reg-gap-analysis [法规]` | 新法规 vs 当前政策/实践的差距分析 |
+| `/privacy-legal:pia-generation [feature-description]` | 按你的工作风格生成 PIPIA |
+| `/privacy-legal:reg-gap-analysis [regulation]` | 新法规 vs 当前政策/实践的差距分析 |
 | `/privacy-legal:policy-monitor` | 定期扫描政策与实际操作的偏差；或对特定新实践做即时查询 |
 | `/privacy-legal:matter-workspace` | 管理事项工作区（多客户律所场景）——新建、列出、切换、关闭、取消 |
 
@@ -93,7 +93,7 @@
 
 ## 插件如何学习
 
-你的合规实践配置 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` 是动态的——随着使用不断优化。各 skill 会告知你某次产出使用了默认配置、建议调整。`policy-monitor` 持续监测政策与实际执行的偏差并提出更新建议。你可以重新运行配置、直接编辑文件，或告知 skill 记录新的立场。
+你的合规实践配置 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` 是动态的——随着使用不断优化。各 skill 会告知你某次产出使用了默认配置、建议调整。`policy-monitor` 持续监测政策与实际执行的偏差并提出更新建议。你可以重新运行配置、直接编辑文件，或告知 skill 记录新的立场。
 
 ## 文件结构
 

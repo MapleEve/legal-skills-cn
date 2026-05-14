@@ -1,20 +1,20 @@
 ---
-name: 外聘律师跟进
+name: oc-status
 description: 为活跃案件组合中的合作律所/外聘律师生成案件进展查询草稿——每个案件生成查询函，当邮件MCP可用时同时创建邮件草稿。适用场景：用户要求跟进外聘律师案件进展、定期案件进度查询、或希望从案件日志中起草每个案件的状态查询函。
 argument-hint: "[--all | --slug=foo | --no-email]"
 ---
 
-# /外聘律师跟进
+# /oc-status
 
-如需定期运行，设置提醒调用 `/litigation-legal:外聘律师跟进`。建议按案件节奏设置（如每周/每两周），自动化排程需要定时任务集成，不随插件打包。
+如需定期运行，设置提醒调用 `/litigation-legal:oc-status`。建议按案件节奏设置（如每周/每两周），自动化排程需要定时任务集成，不随插件打包。
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`，按默认规则（或按标志）过滤。
-2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 外聘律师沟通风格、签署人默认值、费用管理姿态。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml`，按默认规则（或按标志）过滤。
+2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 外聘律师沟通风格、签署人默认值、费用管理姿态。
 3. 遵循以下工作流程和参考。
-4. 对范围内的每个案件：读取 `案件档案.md` + `办案日志.md`，起草案件进展查询函。
-5. 将markdown写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/外聘律师跟进/[YYYY-MM-DD]/[标识].md`。
+4. 对范围内的每个案件：读取 `matter.md` + `history.md`，起草案件进展查询函。
+5. 将markdown写入 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/oc-status/[YYYY-MM-DD]/[slug].md`。
 6. 如邮件MCP已认证：创建邮件草稿。否则：仅输出markdown，在汇总中注明。
-7. 写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/外聘律师跟进/[YYYY-MM-DD]/_汇总.md` —— 记录了哪些运行、哪些跳过及原因。
+7. 写入 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/oc-status/[YYYY-MM-DD]/_summary.md` —— 记录了哪些运行、哪些跳过及原因。
 
 ---
 
@@ -35,10 +35,10 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 过滤和字段来源
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 案件上下文（当前姿态、待解决问题）
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 近期事件，据以确定询问内容
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 外聘律师沟通风格、签署人姓名/邮箱、费用管理姿态
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 过滤和字段来源
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` —— 案件上下文（当前姿态、待解决问题）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` —— 近期事件，据以确定询问内容
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 外聘律师沟通风格、签署人姓名/邮箱、费用管理姿态
 
 ## 过滤——哪些案件？
 
@@ -52,14 +52,14 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 标志：
 - `--all` → 为每个活跃案件起草，不论最近是否更新
-- `--slug=[标识]` → 仅为一个案件起草（临时请求）
+- `--slug=[slug]` → 仅为一个案件起草（临时请求）
 - `--no-email` → 即使MCP可用也跳过邮件草稿创建
 
 ## 每个案件的查询函草稿
 
 每封查询函具有相同的骨架；内容因案而异。外聘律师通信涉及保密审查——所有草稿须经律师审查后方可发出，未经审查即发可能暴露委托人保密信息或诉讼策略。
 
-**主题：** 按律所惯例（来自 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 外聘律师沟通风格；兜底：`[案件：[案件名称]] —— 案件进展查询`）
+**主题：** 按律所惯例（来自 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 外聘律师沟通风格；兜底：`[案件：[案件名称]] —— 案件进展查询`）
 
 **正文骨架：**
 
@@ -78,7 +78,7 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 4. **费用情况** —— [按月/按阶段/按请求，依 CLAUDE.md 费用管理姿态]。目前费用相对[案件档案中的费用预算]处于什么位置？有无需要提前沟通的差异？
 
-[如有实质内容且相关：5. 具体要求 —— 例如，"请在[日期]前将代理词/答辩状最新草稿发给我审阅" —— 取自案件档案中的待解决问题。]
+[如有实质内容且相关：5. 具体要求 —— 例如，"请在[date]前将代理词/答辩状最新草稿发给我审阅" —— 取自案件档案中的待解决问题。]
 
 [落款——姓名、职务、联系方式。来自 CLAUDE.md 外聘律师沟通风格的签署人默认值。]
 ```
@@ -89,7 +89,7 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 ### Markdown草稿
 
-写入：`~/.claude/plugins/config/claude-for-legal/litigation-legal/外聘律师跟进/[YYYY-MM-DD]/[标识].md`
+写入：`~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/oc-status/[YYYY-MM-DD]/[slug].md`
 
 每文件为一封查询函，格式如下：
 
@@ -125,7 +125,7 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 ### 运行汇总
 
-处理完所有案件后，写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/外聘律师跟进/[YYYY-MM-DD]/_汇总.md`：
+处理完所有案件后，写入 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/oc-status/[YYYY-MM-DD]/_summary.md`：
 
 ```markdown
 # 外聘律师跟进运行 —— [YYYY-MM-DD]
@@ -138,14 +138,14 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 | 案件 | 外聘律师 | 律所 | 上次更新 | 列入原因 |
 |---|---|---|---|---|
-| [标识] | [律师] | [律所] | [日期] | [久未更新 / 临近截止 / --all / --slug] |
+| [slug] | [律师] | [律所] | [date] | [久未更新 / 临近截止 / --all / --slug] |
 
 ## 已跳过
 
 | 案件 | 原因 |
 |---|---|
-| [标识] | 最近更新（上次更新 [日期]） |
-| [标识] | 日志中无外聘律师邮箱 —— 用 `/案件更新 [标识]` 更新联系方式 |
+| [slug] | 最近更新（上次更新 [date]） |
+| [slug] | 日志中无外聘律师邮箱 —— 用 `/matter-update [slug]` 更新联系方式 |
 
 ## 异常
 
@@ -157,14 +157,14 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 ## 排程
 
-本技能设计为按案件节奏运行（通常每周或每两周）。自动化排程需要定时任务集成，不随插件打包。如需定期运行，设置提醒调用 `/litigation-legal:外聘律师跟进`。
+本技能设计为按案件节奏运行（通常每周或每两周）。自动化排程需要定时任务集成，不随插件打包。如需定期运行，设置提醒调用 `/litigation-legal:oc-status`。
 
-临时：随时 `/外聘律师跟进`。单个案件：`/外聘律师跟进 --slug=foo`。
+临时：随时 `/oc-status`。单个案件：`/oc-status --slug=foo`。
 
 ## 本技能不做什么
 
 - **发送邮件。** 仅起草。律师审查后发送。
-- **生成其不具备的内容。** 如果 `案件档案.md` 内容薄，查询函简短并询问宽泛的案件进展问题。技能不会凭空编造具体问题。
+- **生成其不具备的内容。** 如果 `matter.md` 内容薄，查询函简短并询问宽泛的案件进展问题。技能不会凭空编造具体问题。
 - **重试失败。** 如果邮件草稿创建中途失败，技能记录失败并继续产出markdown。用户可在修复认证后重试。
-- **重写办案日志。** 读取以获取上下文；不修改。（如外聘律师的回复揭示了新事件，用 `/案件更新 [标识]` 记录。）
+- **重写办案日志。** 读取以获取上下文；不修改。（如外聘律师的回复揭示了新事件，用 `/matter-update [slug]` 记录。）
 - **强制执行最低限度模板。** 如果律所沟通风格是"一行，名字，完毕"，草稿遵从并跳过要点结构。匹配 CLAUDE.md。

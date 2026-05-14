@@ -1,5 +1,5 @@
 ---
-name: 调查添加
+name: investigation-add
 description: >
   向开放调查添加数据——文件证据、访谈笔录或观察记录。按证据提取标准处理批次、
   揭示重要项目、记录所有已审查内容以便覆盖验证。当新证据、访谈笔录
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[案件名称或简码，然后粘贴或附上数据]"
 ---
 
-# /调查添加
+# /investigation-add
 
 向开放调查日志添加数据。使用证据提取标准处理文档批次、揭示重要项目、记录所有已审查内容以便覆盖验证。
 
@@ -21,7 +21,7 @@ argument-hint: "[案件名称或简码，然后粘贴或附上数据]"
 
 ## 指示
 
-1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。
+1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`。
 2. 加载`内部调查`参考技能并运行模式2（添加数据）。
 3. 处理后，显示揭示比例和已揭示项目列表。
 4. 如果数据覆盖了证据收集清单上的项目，提示更新清单状态。
@@ -59,12 +59,12 @@ argument-hint: "[案件名称或简码，然后粘贴或附上数据]"
 ## 示例
 
 ```
-/employment-legal:调查添加 [案件名称]
+/employment-legal:investigation-add [案件名称]
 [粘贴访谈笔录]
 ```
 
 ```
-/employment-legal:调查添加 [案件名称]
+/employment-legal:investigation-add [案件名称]
 [附上邮件导出文件]
 ```
 

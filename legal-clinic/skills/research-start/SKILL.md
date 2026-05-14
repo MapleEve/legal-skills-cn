@@ -1,5 +1,5 @@
 ---
-name: 法律检索起点
+name: research-start
 description: >
   为中国法律问题生成检索路线图——需查阅的法律法规、司法解释、指导性案例方向、
   搜索关键词。检索来源指引：国家法律法规数据库/北大法宝/中国裁判文书网/法信。
@@ -9,7 +9,7 @@ description: >
 argument-hint: "[法律问题]"
 ---
 
-# /法律检索起点
+# /research-start
 
 ## 目的
 

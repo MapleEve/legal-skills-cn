@@ -1,5 +1,5 @@
 ---
-name: 自定义配置
+name: customize
 description: >
   引导式自定义您的中国劳动法执业画像——更改一项而不重新运行整个冷启动访谈。
   调整管辖范围、风险立场、升级联系人、录用审查规则、劳动合同解除审查规则、
@@ -8,20 +8,20 @@ description: >
 argument-hint: "[部分名称，或描述您想更改的内容]"
 ---
 
-# /自定义配置
+# /customize
 
 ## 何时运行
 
-用户输入了`/employment-legal:自定义配置`。他们想更改执业画像中的某项内容——管辖、风险立场、升级联系人、规章制度立场——而不重新运行整个冷启动访谈，也不手动编辑YAML。
+用户输入了`/employment-legal:customize`。他们想更改执业画像中的某项内容——管辖、风险立场、升级联系人、规章制度立场——而不重新运行整个冷启动访谈，也不手动编辑YAML。
 
 ## 做什么
 
 1. **读取配置。**读取
-   `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`
-   （以及上一级`~/.claude/plugins/config/claude-for-legal/company-profile.md`）。
+   `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`
+   （以及上一级`~/.claude/plugins/config/claude-for-legal-cn/company-profile.md`）。
    如果插件配置不存在或仍包含`[PLACEHOLDER]`值，说：
 
-   > 您还没有运行过设置。先运行`/employment-legal:冷启动访谈`——自定义配置是用于调整已有的画像。
+   > 您还没有运行过设置。先运行`/employment-legal:cold-start-interview`——自定义配置是用于调整已有的画像。
 
 2. **展示可自定义的地图。**列出画像中的内容，分组，附上当前值的一句话摘要：
 
@@ -44,18 +44,18 @@ argument-hint: "[部分名称，或描述您想更改的内容]"
 4. **进行更改。**显示当前值，询问新值，解释下游的变化，确认，写入配置。
 
    示例：
-   - *将浙江省加入管辖范围：*"`/工资工时问答`和`/劳动合同解除审查`将开始应用浙江的规则。`/规章制度更新`将提示浙江补充。`/录用审查`现在将标记浙江的竞业限制企图。"
-   - *经济补偿金框架从N改为N+1：*"`/劳动合同解除审查`将在经济补偿金计算中使用新基线。"
+   - *将浙江省加入管辖范围：*"`/wage-hour-qa`和`/termination-review`将开始应用浙江的规则。`/handbook-updates`将提示浙江补充。`/hiring-review`现在将标记浙江的竞业限制企图。"
+   - *经济补偿金框架从N改为N+1：*"`/termination-review`将在经济补偿金计算中使用新基线。"
    - *风险立场从中间→保守：*"我将标记更多的解除以升级，建议更具保护性的解除协议语言，并在竞业限制上更加严格。对于2N（第87条违法解除）的预防将更为重视。"
 
 5. **对于共享画像的更改**（公司名称、行业、管辖、执业类型、阶段）：写入
-   `~/.claude/plugins/config/claude-for-legal/company-profile.md`并注明：
+   `~/.claude/plugins/config/claude-for-legal-cn/company-profile.md`并注明：
 
    > 此更改影响所有插件——任何读取您管辖范围的插件现在都看到[新值]。
 
 6. **关闭。**
 
-   > 完成。您的下一个输出将反映此更改。还有其他吗？您可以随时运行`/employment-legal:自定义配置`。
+   > 完成。您的下一个输出将反映此更改。还有其他吗？您可以随时运行`/employment-legal:customize`。
 
 ## 中国劳动法特定护栏
 

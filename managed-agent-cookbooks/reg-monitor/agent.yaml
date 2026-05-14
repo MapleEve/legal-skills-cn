@@ -26,7 +26,7 @@ tools:
       - { name: glob, enabled: true }
 
 mcp_servers:
-  - { type: url, name: gdrive, url: "${GDRIVE_MCP_URL:-TBD-企业网盘}" }
+  - { type: url, name: gdrive, url: "${GDRIVE_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../regulatory-legal }

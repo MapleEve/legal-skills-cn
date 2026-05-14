@@ -1,14 +1,14 @@
 ---
-name: 案件简报
-description: 单一案件深度简报——当前态势、变化、下一期限、待解决问题及风险重新评估检查，在与合伙人/客户沟通或开庭准备前就绪。适用场景：用户说"汇报[案件]""案件[案件]进展"或需要单一案件的更新阅读。
-argument-hint: "[标识]"
+name: matter-briefing
+description: 单一案件深度简报——当前态势、变化、下一期限、待解决问题及风险重新评估检查，在与合伙人/客户沟通或开庭准备前就绪。适用场景：用户说"汇报[case]""案件[case]进展"或需要单一案件的更新阅读。
+argument-hint: "[slug]"
 ---
 
-# /案件简报
+# /matter-briefing
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准 + 相关利益方。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准 + 相关利益方。
 2. 遵循以下工作流程和参考。
-3. 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` + `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` + `_log.yaml` 中的日志行。
+3. 读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` + `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` + `_log.yaml` 中的日志行。
 4. 产出简报：当前态势、自上次更新以来的变化、下一期限、待解决问题、风险重新评估检查（"`风险:` 字段是否仍反映现实？"）。
 5. 标注陈旧：若 `最近更新` > 30天，标明。
 
@@ -24,14 +24,14 @@ argument-hint: "[标识]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 结构化行
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 叙述性立案信息
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 事件记录
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（使"风险：高"表示具体含义，非笼统）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 结构化行
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` —— 叙述性立案信息
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` —— 事件记录
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` —— 风险校准（使"风险：高"表示具体含义，非笼统）
 
 **利益冲突检索关——不可跳过。** 简报前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:案件立案`，这样利益冲突检索就会运行，案件工作空间也能建立。我不会在未立案的案件上构建简报——利益冲突检索是入门关。"
+> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:matter-intake`，这样利益冲突检索就会运行，案件工作空间也能建立。我不会在未立案的案件上构建简报——利益冲突检索是入门关。"
 
 ## 输入
 
@@ -50,7 +50,7 @@ argument-hint: "[标识]"
 **承办律师：** [姓名/律所]
 **案号：** [法院案号，如有]
 **受理法院/仲裁机构：** [名称]
-**最近更新：** [日期] [若>30天标注 陈旧]
+**最近更新：** [date] [若>30天标注 陈旧]
 **利益冲突：** [状态——若 `待定` 或 `未执行` 标注]
 
 ---
@@ -75,7 +75,7 @@ argument-hint: "[标识]"
 
 ## 近期变化
 
-[办案日志.md中最近3-5条记录，最新在先。若记录稀少，说明。]
+[history.md中最近3-5条记录，最新在先。若记录稀少，说明。]
 
 ## 下一关键节点
 
@@ -87,7 +87,7 @@ argument-hint: "[标识]"
   - 上诉期截止日
   - 判决/裁定送达日期
   - 申请执行截止日
-- **待决事项：** [案件档案.md中标注的待解决问题]
+- **待决事项：** [matter.md中标注的待解决问题]
 
 ## 证据情况
 
@@ -117,7 +117,7 @@ argument-hint: "[标识]"
 
 ## 待解决问题
 
-[来自案件档案.md和日志中任何未解决的事项]
+[来自matter.md和日志中任何未解决的事项]
 
 ## 沟通要点
 
@@ -126,7 +126,7 @@ argument-hint: "[标识]"
 
 ## 陈旧
 
-若 `最近更新 > 30天前`：在顶部标注并建议会后运行 `/litigation-legal:案件更新 [标识]` 记录讨论内容。
+若 `最近更新 > 30天前`：在顶部标注并建议会后运行 `/litigation-legal:matter-update [slug]` 记录讨论内容。
 
 ## 语气
 
@@ -142,5 +142,5 @@ argument-hint: "[标识]"
 
 - 预测判决结果。风险评级是已记录的判断，非预测。
 - 建议策略。提出问题；律师回答。
-- 重新分诊。若用户欲重新分诊，通过 `/案件更新` 进行字段变更——本技能只读，不写。
+- 重新分诊。若用户欲重新分诊，通过 `/matter-update` 进行字段变更——本技能只读，不写。
 - 撰写代理词或起诉状。简报是内部阅读工具，非法院文书。

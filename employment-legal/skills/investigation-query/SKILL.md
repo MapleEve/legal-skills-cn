@@ -1,12 +1,12 @@
 ---
-name: 调查查询
+name: investigation-query
 description: >
   针对开放调查日志提问——证人说了什么、哪些陈述存在矛盾、有什么证据缺口、
   每个争议点上最强的证据是什么。当律师需要查询调查记录而不重读每个条目时使用。
-argument-hint: "[案件名称] [问题]"
+argument-hint: "[案件名称] [question]"
 ---
 
-# /调查查询
+# /investigation-query
 
 针对调查日志回答问题——证人说了什么、哪些陈述存在矛盾、有什么证据缺口、每个争议点上最强的证据是什么。
 
@@ -34,17 +34,17 @@ argument-hint: "[案件名称] [问题]"
 ## 示例
 
 ```
-/employment-legal:调查查询 [案件名称]
+/employment-legal:investigation-query [案件名称]
 被调查对象对12月团建晚宴的陈述是什么？
 ```
 
 ```
-/employment-legal:调查查询 [案件名称]
+/employment-legal:investigation-query [案件名称]
 投诉人和被投诉人的陈述在哪些关键事实上存在冲突？
 ```
 
 ```
-/employment-legal:调查查询 [案件名称]
+/employment-legal:investigation-query [案件名称]
 我们目前最缺乏哪方面的证据？
 ```
 

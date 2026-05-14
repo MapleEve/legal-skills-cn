@@ -1,5 +1,5 @@
 ---
-name: 扩张更新
+name: expansion-update
 description: >
   更新进行中的国内跨省/市扩张项目状态——重新计算现已解锁的事项、
   标记逾期事项、揭示下一个优先事项。当上次会话后有工作进展、
@@ -7,20 +7,20 @@ description: >
 argument-hint: "[省/市名称]"
 ---
 
-# /扩张更新
+# /expansion-update
 
 返回一个开放的扩张追踪器，基于上次会话后发生的情况更新事项状态。重新计算现已解锁的事项、标记逾期事项、揭示下一个优先事项。
 
 ## 指示
 
-1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。
+1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`。
 
-2. 识别追踪器文件：`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`。如果不存在，回应："未找到[省/市]的扩张追踪器。运行`/employment-legal:地域扩张启动 [省/市]`来开始一个。"
+2. 识别追踪器文件：`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/expansion-[slug].yaml`。如果不存在，回应："未找到[province-or-city]的扩张追踪器。运行`/employment-legal:expansion-kickoff [province-or-city]`来开始一个。"
 
 3. 读取追踪器。显示当前状态：
 
 ```
-[省/市]扩张——上次更新[日期]
+[province-or-city]扩张——上次更新[date]
 开放：[N] | 进行中：[N] | 已完成：[N] | 阻塞：[N]
 
 下一个优先事项（最早截止日或最高依赖的开放事项）：
@@ -38,7 +38,7 @@ argument-hint: "[省/市名称]"
 6. 如果任何事项的截止日已过且状态仍为`开放`或`进行中`，标记它：
 
 ```
-⚠️ 逾期：[事项]——原应到期[日期]，负责人：[owner]
+⚠️ 逾期：[事项]——原应到期[date]，负责人：[owner]
 ```
 
 7. 写入更新后的追踪器。确认：
@@ -64,11 +64,11 @@ argument-hint: "[省/市名称]"
 ## 示例
 
 ```
-/employment-legal:扩张更新 成都
+/employment-legal:expansion-update 成都
 ```
 
 ```
-/employment-legal:扩张更新
+/employment-legal:expansion-update
 （如果存在多个追踪器，将询问哪个省/市）
 ```
 

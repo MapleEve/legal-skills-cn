@@ -1,15 +1,15 @@
 ---
-name: 案件更新
+name: matter-update
 description: 追加带日期事件至案件办案日志并刷新日志行——记录新进展、状态变更、风险重新评估、期限变动和调解/和解权限变更。适用场景：用户欲记录案件更新、记录进展或对案件组合记录状态变更。
-argument-hint: "[标识] [简要事件描述]"
+argument-hint: "[slug] [简要事件描述]"
 ---
 
-# /案件更新
+# /matter-update
 
 1. 遵循以下工作流程和参考。
-2. 确认标识在 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/` 和 `_log.yaml` 中存在。
+2. 确认标识在 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/` 和 `_log.yaml` 中存在。
 3. 提示事件类型、日期（默认今日）、摘要及任何日志字段更新（风险变更、状态变更、下一期限变动、重要性重分类）。
-4. 追加带日期条目至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`。
+4. 追加带日期条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`。
 5. 更新 `_log.yaml` —— 将 `最近更新` 设为今日，应用任何字段更新。
 6. 确认。
 
@@ -23,14 +23,14 @@ argument-hint: "[标识] [简要事件描述]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 查找行
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 追加目标
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 参考（不重写）
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（如重新评估风险）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 查找行
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` —— 追加目标
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` —— 参考（不重写）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` —— 风险校准（如重新评估风险）
 
 **利益冲突检索关——不可跳过。** 记录更新前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:案件立案`，这样利益冲突检索就会运行，案件工作空间也会建立。我不会向未登记案件追加日志——利益冲突检索是入门关，且案件立案前不存在可供追加的 `办案日志.md`。"
+> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:matter-intake`，这样利益冲突检索就会运行，案件工作空间也会建立。我不会向未登记案件追加日志——利益冲突检索是入门关，且案件立案前不存在可供追加的 `history.md`。"
 
 ## 输入
 
@@ -90,11 +90,11 @@ argument-hint: "[标识] [简要事件描述]"
 
 ### 4前. 调解/和解关
 
-若策略更新为**接受调解/和解**（客户接受调解/和解要约、签署调解书/和解协议或授权原则接受——不仅是记录要约发出或收到）：读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。若角色为非律师：
+若策略更新为**接受调解/和解**（客户接受调解/和解要约、签署调解书/和解协议或授权原则接受——不仅是记录要约发出或收到）：读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。若角色为非律师：
 
 > 接受调解/和解具有法律后果——民事调解书具有强制执行效力，和解可能伴随诉请放弃声明，并可能影响保险、税务和相关事项。您是否已与律师审查？若是，继续。若否，以下是带给律师的简要说明：
 >
-> [生成1页摘要：案件、拟议调解/和解条款（金额、结构、放弃范围、保密、不贬损）、利害敞口、权限阶梯状态（见 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 调解/和解权限）、可能出错之处、接受前向律师询问的问题。]
+> [生成1页摘要：案件、拟议调解/和解条款（金额、结构、放弃范围、保密、不贬损）、利害敞口、权限阶梯状态（见 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 调解/和解权限）、可能出错之处、接受前向律师询问的问题。]
 >
 > 若您需要在贵管辖区寻找执业律师：中华全国律师协会或地方律师协会是最快的起点。
 
@@ -119,7 +119,7 @@ argument-hint: "[标识] [简要事件描述]"
 **理由：** [一句]
 ```
 
-若重要性变更为 `已计提` 或 `已披露`，且案件此前未计提拨备或披露，将事件标注为需按 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 重要性阈值通知财务/审计委员会。
+若重要性变更为 `已计提` 或 `已披露`，且案件此前未计提拨备或披露，将事件标注为需按 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 重要性阈值通知财务/审计委员会。
 
 ### 5. 种子文件提示（可选）
 
@@ -127,7 +127,7 @@ argument-hint: "[标识] [简要事件描述]"
 
 ## 写入
 
-### 追加至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`
+### 追加至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`
 
 最新在最前，紧接抬头下 `---` 后。
 
@@ -149,7 +149,7 @@ argument-hint: "[标识] [简要事件描述]"
 
 若无字段变更，省略"字段变更"块。
 
-### 更新 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 更新 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml`
 
 - 应用任何字段变更。
 - 设置 `最近更新: [今日]`（或事件日期若用户覆盖——日志追踪记录最后触及时间）。

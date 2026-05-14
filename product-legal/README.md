@@ -17,7 +17,7 @@
 
 连接你的项目管理工具（Jira/Linear/飞书多维表格），读取过往上线审查记录，学习你的实际风险判断标准——什么真正拦截、什么放行。生成一份风险校准表，后续所有功能均基于此表运行。
 
-你的配置存储在 `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md`，插件更新时配置不会丢失。
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/product-legal/CLAUDE.md`，插件更新时配置不会丢失。
 
 ```
 /product-legal:cold-start-interview
@@ -28,9 +28,9 @@
 | 命令 | 功能 |
 |---|---|
 | `/product-legal:cold-start-interview` | 冷启动访谈 |
-| `/product-legal:launch-review [PRD或需求单]` | 按审查框架进行完整上线审查 |
-| `/product-legal:marketing-claims-review [文案]` | 营销文案审查 |
-| `/product-legal:is-this-a-problem [问题]` | "这有没有问题？"快速分诊 |
+| `/product-legal:launch-review [prd-or-requirement]` | 按审查框架进行完整上线审查 |
+| `/product-legal:marketing-claims-review [copy]` | 营销文案审查 |
+| `/product-legal:is-this-a-problem [question]` | "这有没有问题？"快速分诊 |
 | `/product-legal:matter-workspace` | 管理项目工作区（仅限多客户律所场景） |
 
 ## 技能
@@ -74,7 +74,7 @@
 
 ## 如何学习
 
-你的实务配置 `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md` 不是静态的——它会随着你使用插件而改进。当某项输出使用了你应该调整的默认值时，技能会提示你。你可以重新运行设置、直接编辑文件，或告诉技能记录新的立场。
+你的实务配置 `~/.claude/plugins/config/claude-for-legal-cn/product-legal/CLAUDE.md` 不是静态的——它会随着你使用插件而改进。当某项输出使用了你应该调整的默认值时，技能会提示你。你可以重新运行设置、直接编辑文件，或告诉技能记录新的立场。
 
 ## 注意事项
 
@@ -84,4 +84,4 @@
 
 ## 配置
 
-你的配置存储在 `~/.claude/plugins/config/claude-for-legal/product-legal/CLAUDE.md`，插件更新时配置不会丢失——你只需运行一次设置。
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/product-legal/CLAUDE.md`，插件更新时配置不会丢失——你只需运行一次设置。

@@ -1,14 +1,14 @@
 ---
-name: 学期案件交接
+name: semester-handoff
 description: >
   学期末未结案件交接——与学生上岗培训相对。生成逐案交接备忘和整体汇总，
   使离任学生将未结案件干净完整地交接给下一学期的新学生。
   读取案件期限、当事人沟通记录和案件办理历史。
   当指导教师或离任学生需要学期末结项、建立交接备忘或离校学生案件交接时使用。
-argument-hint: "[--semester=YYYY-学期(默认：当前)] [--case=[案件编号](单个案件)]"
+argument-hint: "[--semester=YYYY-学期(默认：当前)] [--case=[case-id](单个案件)]"
 ---
 
-# /学期案件交接
+# /semester-handoff
 
 ## 目的
 
@@ -99,8 +99,8 @@ argument-hint: "[--semester=YYYY-学期(默认：当前)] [--case=[案件编号]
 
 ## 交接备忘录存储位置
 
-逐案备忘录存储于 `~/.claude/plugins/config/claude-for-legal/legal-clinic/matters/<案件编号>/handoff-memo.md`。
-学期汇总存储于 `~/.claude/plugins/config/claude-for-legal/legal-clinic/semester-handoff-<学期>.md`。
+逐案备忘录存储于 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/matters/<case-id>/handoff-memo.md`。
+学期汇总存储于 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/semester-handoff-<semester>.md`。
 
 ## 本技能不做的事
 

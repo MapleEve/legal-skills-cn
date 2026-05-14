@@ -1,24 +1,24 @@
 ---
-name: 地域扩张启动
+name: expansion-kickoff
 description: >
   为中国企业启动国内跨省/市扩张规划——调研目标地域劳动法规（最低工资、
   社保缴费基数/比例、产假天数、公积金缴存比例等）、做合规差距分析、
   起草跨部门待办事项、生成持续追踪器。
-  当有人说"我们要在[省/市]招人"、"扩张到[省/市]"、"在[省/市]首次招人"时使用。
+  当有人说"我们要在[province-or-city]招人"、"扩张到[province-or-city]"、"在[province-or-city]首次招人"时使用。
 argument-hint: "[省/市名称]"
 ---
 
-# /地域扩张启动
+# /expansion-kickoff
 
 为中国企业启动国内跨省/市扩张项目——调研目标地域劳动法规、做合规差距分析、起草跨部门待办事项、生成持续追踪器。
 
 ## 指示
 
-1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→现有管辖范围、升级表。
+1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→现有管辖范围、升级表。
 2. 加载`地域扩张`参考技能并运行完整工作流。
-3. 如果此省/市已存在追踪器文件（`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`），
-   标记："[省/市]的扩张追踪器已存在。使用`/employment-legal:扩张更新 [省/市]`来更新它，或确认您想重新开始。"
-4. 完成后创建`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[slug].yaml`。
+3. 如果此省/市已存在追踪器文件（`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/expansion-[slug].yaml`），
+   标记："[province-or-city]的扩张追踪器已存在。使用`/employment-legal:expansion-update [province-or-city]`来更新它，或确认您想重新开始。"
+4. 完成后创建`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/expansion-[slug].yaml`。
 
 ## 中国国内跨省/市扩张核心调研维度
 
@@ -51,11 +51,11 @@ argument-hint: "[省/市名称]"
 ## 示例
 
 ```
-/employment-legal:地域扩张启动 成都
+/employment-legal:expansion-kickoff 成都
 ```
 
 ```
-/employment-legal:地域扩张启动
+/employment-legal:expansion-kickoff
 （技能将询问哪个省/市）
 ```
 

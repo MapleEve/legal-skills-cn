@@ -18,7 +18,7 @@ tools: ["Read", "Write", "mcp__裁判文书网__*", "mcp__北大法宝__*", "mcp
 
 ## 巡检计划
 
-按 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 案件格局 → 常涉法院及 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` 中每个案件的巡检频率执行。
+按 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 案件格局 → 常涉法院及 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` 中每个案件的巡检频率执行。
 
 - **默认：** 每周对 `_log.yaml` 中所有 `status` 不为 `已结案` 的案件做一次全面扫描。
 - **每日：** 14 天内即将开庭的案件、处于 `审理` 或 `举证` 末期阶段的案件，或任何标记为 `风险: 红线` 的案件。
@@ -27,31 +27,31 @@ tools: ["Read", "Write", "mcp__裁判文书网__*", "mcp__北大法宝__*", "mcp
 
 ## 具体流程
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 获取律所风格、上报规则和常涉法院列表。读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` 获取活跃案件组——每个案件的 `id`、`管辖法院`、案号、上次检查时间和待办交付物。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 获取律所风格、上报规则和常涉法院列表。读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` 获取活跃案件组——每个案件的 `id`、`管辖法院`、案号、上次检查时间和待办交付物。
 2. 对每个有案号的活跃案件，通过裁判文书网或北大法宝拉取自上次检查以来的新增条目。捕获日期、文书类型、标题、提交方、条目编号和文书链接。
 3. 将文书类型映射为候选期限规则。民事诉讼法及其司法解释的期限规定相对明确，但具体法院的实践存在差异，审判长可能通过个案审理指令调整所有时间安排。每个自动推算的期限均应标注为待人工校验的线索。
 4. 与每个案件的 `history.md` 和待办交付物交叉比对。标记状态变化（裁定作出、庭前会议安排、举证期限届满、开庭日期变更）和已超出内部截止日期的交付物。
-5. 写入 `./out/案件流程报告-<日期>.md`，按案件分节呈现，并写入机器可读的 `./out/期限表.yaml` 供案件管理系统导入。在每个案件的 `history.md` 中添加一条注明拉取内容的日记条目。向 Slack 发送摘要，频道见 CLAUDE.md 中的上报规则。
+5. 写入 `./out/docket-report-<date>.md`，按案件分节呈现，并写入机器可读的 `./out/deadlines.yaml` 供案件管理系统导入。在每个案件的 `history.md` 中添加一条注明拉取内容的日记条目。向 Slack 发送摘要，频道见 CLAUDE.md 中的上报规则。
 
 ## 输出格式
 
 ```
-📅 **案件流程报告 —— [日期]**
+📅 **Docket Report —— [date]**
 
 **已扫描：** [N] 个案件 · **新增进展：** [N] 项 · **已标注期限：** [N] 个 · **已逾期：** [N] 个
 
 🔴 **紧急（7天内）**
-• [案件编号] —— [法院/案号] —— [文书类型/事件] —— 期限 [日期] —— [规则依据]
+• [case-id] —— [法院/案号] —— [文书类型/事件] —— 期限 [date] —— [规则依据]
   ⚠️ 务必依据受诉法院的地区规定和审理指令核实后，方可录入日历。
 
 🟡 **临近（8–30天）**
-• [案件编号] —— [法院/案号] —— [文书类型] —— 期限 [日期]
+• [case-id] —— [法院/案号] —— [文书类型] —— 期限 [date]
 
 🔵 **状态变化**
-• [案件编号] —— [变化内容] —— [文书链接]
+• [case-id] —— [变化内容] —— [文书链接]
 
 ⏰ **逾期待办事项**
-• [案件编号] —— [待办事项] —— 原定截止 [日期] —— [已逾期天数]
+• [case-id] —— [待办事项] —— 原定截止 [date] —— [已逾期天数]
 
 📎 **流程无变化：** [N] 个案件
 ```

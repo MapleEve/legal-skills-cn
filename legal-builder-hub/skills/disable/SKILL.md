@@ -1,13 +1,13 @@
 ---
-name: 禁用技能
+name: disable
 description: >
   禁用已安装的技能而不卸载——保留配置和数据但使其不活跃。
   与卸载不同（卸载删除数据），禁用保留一切以便随时重新启用。
-  当用户说"禁用[技能]"、"暂时关闭[技能]"、"暂停[技能]"时使用。
-argument-hint: "<技能名称>"
+  当用户说"禁用[skill]"、"暂时关闭[skill]"、"暂停[skill]"时使用。
+argument-hint: "<skill-name>"
 ---
 
-# /禁用技能
+# /disable
 
 ## 功能目的
 
@@ -19,7 +19,7 @@ argument-hint: "<技能名称>"
 2. **询问禁用原因。** 可选——记录原因便于后续回顾。
 3. **检查依赖。** 是否有其他已安装技能依赖此技能？如有则警告。
 4. **执行禁用。** 将技能标注为"已禁用"——技能文件保留但不再被调用。
-5. **确认。** 说明如何重新启用："随时运行 `/legal-builder-hub:skill-manager --list` 查看已禁用技能，运行 `/legal-builder-hub:disable <技能名称>` 再次切换可重新启用。"
+5. **确认。** 说明如何重新启用："随时运行 `/legal-builder-hub:skill-manager --list` 查看已禁用技能，运行 `/legal-builder-hub:disable <skill-name>` 再次切换可重新启用。"
 
 ## 禁用的影响
 

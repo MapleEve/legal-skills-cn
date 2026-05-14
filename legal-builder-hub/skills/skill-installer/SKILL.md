@@ -1,13 +1,13 @@
 ---
-name: 技能安装器
+name: skill-installer
 description: >
   从中国法律技能社区安装技能——安全审查、检查许可清单、获取技能文件、
-  安装到正确的插件位置、运行冷启动（如需要）。当用户说"安装[技能]"、
-  "添加[技能]"、"获取[技能]"时使用。
-argument-hint: "<技能名称>"
+  安装到正确的插件位置、运行冷启动（如需要）。当用户说"安装[skill]"、
+  "添加[skill]"、"获取[skill]"时使用。
+argument-hint: "<skill-name>"
 ---
 
-# /技能安装器
+# /skill-installer
 
 ## 功能目的
 

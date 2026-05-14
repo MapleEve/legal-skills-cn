@@ -1,12 +1,12 @@
 ---
-name: 技能管理
+name: skill-manager
 description: >
   管理已安装的法律技能——查看状态、配置、更新、许可清单设置。
   当用户说"管理我的技能"、"查看已安装"、"技能清单"、"许可清单"时使用。
-argument-hint: "[--list | --config <技能> | --allowlist | --status]"
+argument-hint: "[--list | --config <skill> | --allowlist | --status]"
 ---
 
-# /技能管理
+# /skill-manager
 
 ## 功能目的
 
@@ -22,7 +22,7 @@ argument-hint: "[--list | --config <技能> | --allowlist | --status]"
 - 所属插件/类别
 - 一句话功能描述
 
-### `--config <技能名称>`
+### `--config <skill-name>`
 查看和编辑技能配置：
 - 显示当前配置概要
 - 提供编辑选项

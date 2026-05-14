@@ -1,5 +1,5 @@
 ---
-name: 当事人函件
+name: client-letter
 description: >
   生成法律援助诊所常用当事人函件——法律咨询答复函、案件进展告知函、
   风险提示函。通俗语言、必备要素清晰、行动项明确。非实质性法律建议，
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[咨询答复 | 进展告知 | 风险提示 | 文件请求]"
 ---
 
-# /当事人函件
+# /client-letter
 
 ## 目的
 

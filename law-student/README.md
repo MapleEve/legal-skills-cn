@@ -18,22 +18,22 @@
 
 ## 技能
 
-每个技能以 `/law-student:<技能名>` 调用。
+每个技能以对应的法学生插件命令调用，例如 `/law-student:cold-start-interview` 或 `/law-student:socratic-drill`。
 
 | 技能 | 功能 |
 |---|---|
 | `/law-student:cold-start-interview` | 关于你的访谈 + 材料导入——课程、法考、学习风格、已有材料 |
-| `/law-student:socratic-drill [科目]` | 问答式研习——它提问，你回答，它追问。不直接给答案。 |
-| `/law-student:case-brief [案例]` | 按你偏好的格式生成案例摘要 |
-| `/law-student:outline-builder [科目]` | 从课堂材料按你的格式构建或扩展知识体系大纲 |
-| `/law-student:bar-prep-questions [科目]` | 法考训练题——客观题（单选/多选/不定项）或主观题（论述+案例分析+法律文书），按报考地适配 |
-| `/law-student:flashcards [科目]` | 生成或演练记忆卡；艾宾浩斯记忆法（Leitner盒）；按科目Markdown；`--session <n>` 模式 |
+| `/law-student:socratic-drill [subject]` | 问答式研习——它提问，你回答，它追问。不直接给答案。 |
+| `/law-student:case-brief [case]` | 按你偏好的格式生成案例摘要 |
+| `/law-student:outline-builder [subject]` | 从课堂材料按你的格式构建或扩展知识体系大纲 |
+| `/law-student:bar-prep-questions [subject]` | 法考训练题——客观题（单选/多选/不定项）或主观题（论述+案例分析+法律文书），按报考地适配 |
+| `/law-student:flashcards [subject]` | 生成或演练记忆卡；艾宾浩斯记忆法（Leitner盒）；按科目Markdown；`--session <n>` 模式 |
 | `/law-student:study-plan` | 制定或更新长期学习计划——分阶段、按薄弱科目、根据练习历史自适应每日安排 |
-| `/law-student:session <科目> <n>` | 针对某一科目的 n 题集中训练；用结果更新学习计划 |
+| `/law-student:session <subject> <n>` | 针对某一科目的 n 题集中训练；用结果更新学习计划 |
 | `/law-student:irac-practice` | 批改你的IRAC案例分析（中国适配：案情摘要-法律适用-争议焦点-结论）——结构、争点、规则、分析。跨练习追踪模式。绝不代写。 |
-| `/law-student:cold-call-prep [案例]` | 课堂提问准备——预测老师可能问的问题并演练 |
-| `/law-student:legal-writing [路径或粘贴]` | 对任何文稿的结构性反馈——绝不代写，永远不 |
-| `/law-student:exam-forecast [课程]` | 分析同一位老师的历年试卷；预测即将到来的考试 |
+| `/law-student:cold-call-prep [case]` | 课堂提问准备——预测老师可能问的问题并演练 |
+| `/law-student:legal-writing [path-or-paste]` | 对任何文稿的结构性反馈——绝不代写，永远不 |
+| `/law-student:exam-forecast [course]` | 分析同一位老师的历年试卷；预测即将到来的考试 |
 
 ## "学习模式"意味着什么
 
@@ -71,32 +71,32 @@
 
 ## 存储
 
-你的学习档案存储在 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`，插件更新不会覆盖。其余文件在你的工作目录：
+你的学习档案存储在 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md`，插件更新不会覆盖。其余文件在你的工作目录：
 
 ```
 law-student/
 ├── flashcards/
-│   └── [科目]/cards.md             # 按科目的记忆卡组
+│   └── [subject]/cards.md             # 按科目的记忆卡组
 ├── irac-sessions/
 │   └── [学生]/
-│       ├── [日期]-[主题].md          # 单次练习反馈
+│       ├── [date]-[主题].md          # 单次练习反馈
 │       └── tracker.md                 # 跨练习模式追踪
 ├── writing-feedback/
 │   └── [学生]/
-│       ├── [日期]-[作业].md          # 单次写作反馈
+│       ├── [date]-[作业].md          # 单次写作反馈
 │       └── tracker.md                 # 跨练习模式追踪
 └── exam-forecasts/
-    └── [课程]/
+    └── [course]/
         └── forecast-[YYYY-MM-DD].md   # 版本化预测
 ```
 
 ## 如何学习进化
 
-你在 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` 的学习档案不是静态的——它会随着你使用插件而不断优化。技能会告诉你某次输出使用了应调整的默认设置。你可以重新运行设置、直接编辑文件，或告诉某个技能记录新的偏好。
+你在 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` 的学习档案不是静态的——它会随着你使用插件而不断优化。技能会告诉你某次输出使用了应调整的默认设置。你可以重新运行设置、直接编辑文件，或告诉某个技能记录新的偏好。
 
 ## 注意事项
 
 - 追问式 vs 讲解式在冷启动时设置；每次练习可切换。
 - 案例摘要和大纲使用**你的**格式。如果你已有大纲，冷启动时指向它们。
-- 法考训练针对你在 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` 中的薄弱科目。它会不断回到这些薄弱点。
+- 法考训练针对你在 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` 中的薄弱科目。它会不断回到这些薄弱点。
 - 每个内容生产技能在不确定时都会标记。信任标记胜过信任无标记——无标记的规则是我有把握的；考试前仍需核实教材来源。

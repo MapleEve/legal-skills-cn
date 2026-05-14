@@ -1,11 +1,11 @@
 ---
-name: 内部调查
+name: internal-investigation
 description: >
   律所受托员工违规内部调查——从接受委托到出具调查报告的完整流程。
   涵盖：调查范围确定、证据收集（访谈记录/书面材料/电子数据）、
-  事实发现、法律分析、结论建议。调查报告为律师工作成果，
-  保密且不受理任何个人信息主体权利请求。
-  由/调查开启、/调查添加、/调查查询、/调查备忘录和/调查摘要加载；
+  事实发现、法律分析、结论建议。调查报告为律师受托形成的保密法律服务文件；
+  个人信息主体权利请求由个人信息处理者依法受理。
+  由 /investigation-open、/investigation-add、/investigation-query、/investigation-memo 和 /investigation-summary 加载；
   不直接调用。
 user-invocable: false
 ---
@@ -20,14 +20,14 @@ user-invocable: false
 
 ### 律所受托模式
 - 调查由律师事务所接受用人单位委托开展
-- 调查报告为律师工作成果，受律师-委托人保密特权保护
-- 报告仅向委托人（用人单位）提供，不向第三方披露
+- 调查报告为律师受托形成的保密法律服务文件；律师和律所负有《律师法》第38条及委托合同约定的保密义务
+- 报告仅向委托人（用人单位）提供，不向第三方披露；是否可被法院、仲裁机构、监管机关或刑事机关调取，应按程序法、证据规则和具体调取文书判断
 
 ### 个人信息保护合规（《个人信息保护法》）
 - 调查过程中收集的员工个人信息受《个保法》约束
 - 依据《个保法》第13条第2项（为订立/履行合同所必需）或第7项（法律规定的其他情形）处理
 - 如需向第三方提供调查结果，需满足第23条告知+单独同意要求
-- 调查报告应注明："本报告为律师工作成果，仅供委托人内部使用。依据《个人信息保护法》第24条，本报告不受理任何个人信息主体权利请求。"
+- 调查报告应注明："本报告为律师受托形成的保密法律服务文件，仅供委托人内部使用。个人信息主体权利请求由个人信息处理者依法受理；涉及他人权益、商业秘密、调查保密、正在进行法律程序等情形的，可依法限制披露、提供摘要或说明。"
 
 ### 证据规则
 - 访谈记录：需被访谈人签字确认
@@ -37,13 +37,13 @@ user-invocable: false
 
 ## 加载上下文
 
-读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中的升级表、任何注明的调查协议及用户角色配置。
+读取 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md` 中的升级表、任何注明的调查协议及用户角色配置。
 
 ---
 
 ## 模式1：开启新案件
 
-由 `/employment-legal:调查开启` 或"开启调查"或"启动对……的调查"触发。
+由 `/employment-legal:investigation-open` 或"开启调查"或"启动对……的调查"触发。
 
 ### 步骤1——收集信息
 
@@ -76,11 +76,11 @@ user-invocable: false
 
 创建以下文件：
 
-`investigation-[案件简码]/log.yaml`:
+`investigation-[case-slug]/log.yaml`:
 
 ```yaml
-# 律师工作成果——保密——仅供委托人内部使用
-# 依据《个人信息保护法》第24条，本文件不受理任何个人信息主体权利请求
+# 律师受托形成的保密法律服务文件——仅供委托人内部使用
+# 个人信息主体权利请求由个人信息处理者依法受理；必要时依法限制披露、提供摘要或说明
 案件: "[案件名称]"
 案件简码: "[slug]"
 委托日期: "[ISO date]"
@@ -102,14 +102,14 @@ user-invocable: false
 证据缺口: []
 ```
 
-`investigation-[案件简码]/sources-checklist.yaml`:
+`investigation-[case-slug]/sources-checklist.yaml`:
 
 根据调查类型生成来源检查清单（见下方模板）。
 
-`investigation-[案件简码]/documents-reviewed.yaml`:
+`investigation-[case-slug]/documents-reviewed.yaml`:
 
 ```yaml
-# 律师工作成果——保密——仅供委托人内部使用
+# 律师受托形成的保密法律服务文件——仅供委托人内部使用
 案件: "[案件名称]"
 已审查文件总数: 0
 已揭示文件数: 0
@@ -264,7 +264,7 @@ user-invocable: false
 
 ## 模式2：添加数据
 
-由 `/employment-legal:调查添加` 或"添加到[案件]调查"触发。
+由 `/employment-legal:investigation-add` 或"添加到[case]调查"触发。
 
 ### 步骤1——识别案件
 如果存在多个调查文件夹，询问此数据属于哪个案件。
@@ -328,7 +328,7 @@ user-invocable: false
 
 ## 模式3：查询日志
 
-由 `/employment-legal:调查查询` 或任何针对调查的提问触发。
+由 `/employment-legal:investigation-query` 或任何针对调查的提问触发。
 
 **事实查询**（"X对Y说了什么"）：
 从日志条目回答，引用条目ID。如果日志不包含该主题信息："在此调查日志中（[N]条条目已审查）我未见任何关于[主题]的信息。可能值得标记为一个缺口。"
@@ -346,7 +346,7 @@ user-invocable: false
 
 ## 模式4：起草调查报告
 
-由 `/employment-legal:调查备忘录` 或"起草调查报告"触发。
+由 `/employment-legal:investigation-memo` 或"起草调查报告"触发。
 
 ### 首次起草
 
@@ -358,8 +358,8 @@ user-invocable: false
 按以下结构起草调查报告：
 
 ```markdown
-律师工作成果——保密——仅供委托人内部使用
-依据《个人信息保护法》第24条，本报告不受理任何个人信息主体权利请求
+律师受托形成的保密法律服务文件——仅供委托人内部使用
+个人信息主体权利请求由个人信息处理者依法受理；涉及他人权益、商业秘密、调查保密、正在进行法律程序等情形的，可依法限制披露、提供摘要或说明
 
 ---
 
@@ -367,7 +367,7 @@ user-invocable: false
 
 致：[委托人全称]
 自：[律师事务所名称/律师姓名]
-日期：[日期]
+日期：[date]
 事由：内部调查——[案件名称]
 
 ---
@@ -458,7 +458,7 @@ user-invocable: false
 
 ## 模式5：起草受众摘要
 
-由 `/employment-legal:调查摘要` 或"为[受众]起草摘要"触发。
+由 `/employment-legal:investigation-summary` 或"为[audience]起草摘要"触发。
 
 **HR摘要**（用于用人单位纪律处分决策）：
 - 事实摘要（无法律分析）

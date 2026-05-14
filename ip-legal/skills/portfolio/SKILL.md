@@ -1,5 +1,5 @@
 ---
-name: 知识产权组合管理
+name: portfolio
 description: >
   追踪知识产权组合——注册、续展、维持费和商标使用声明。
   当检查哪些资产即将到期、添加或更新资产、记录维持申报或
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[--report [--days N] | --add | --update | --audit]"
 ---
 
-# /知识产权组合管理
+# /portfolio
 
 揭示哪些资产即将到期、添加资产、记录申报、审计登记册。
 
@@ -80,7 +80,7 @@ argument-hint: "[--report [--days N] | --add | --update | --audit]"
 
 ## 登记册
 
-位于`~/.claude/plugins/config/claude-for-legal/ip-legal/portfolio.yaml`。
+位于`~/.claude/plugins/config/claude-for-legal-cn/ip-legal/portfolio.yaml`。
 
 ## 模式
 
@@ -91,12 +91,12 @@ argument-hint: "[--report [--days N] | --add | --update | --audit]"
 揭示到期和即将到期的截止日期。默认视窗90天，`--days N`可自定义。
 
 ```markdown
-# 知识产权组合报告：[日期]
+# 知识产权组合报告：[date]
 
 ## 紧急（30天内到期）
 | 资产 | 类型 | 截止日期 | 事项 | 状态 |
 |---|---|---|---|---|
-| [名称/注册号] | [商标/发明/实用新型/外观设计] | [日期] | [续展/年费/使用声明] | ⚠️ |
+| [名称/注册号] | [商标/发明/实用新型/外观设计] | [date] | [续展/年费/使用声明] | ⚠️ |
 
 ## 近期注意（30-90天）
 [同上格式]

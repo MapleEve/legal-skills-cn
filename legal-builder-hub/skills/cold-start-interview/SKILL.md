@@ -1,12 +1,12 @@
 ---
-name: 冷启动访谈
+name: cold-start-interview
 description: >
   中国法律技能社区设置——学习用户的执业领域、管辖区域和工作角色，
   推荐匹配的中国法律技能。在首次安装时、配置有占位符时、或用--redo重做时使用。
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /冷启动访谈
+# /cold-start-interview
 
 ## 功能目的
 

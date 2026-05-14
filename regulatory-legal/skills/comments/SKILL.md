@@ -1,5 +1,5 @@
 ---
-name: 征求意见
+name: comments
 description: 关注行政法规/部门规章/规范性文件征求意见稿 → 分析对企业影响 → 起草反馈意见 → 提交 → 跟踪最终版本。依据《行政法规制定程序条例》《规章制定程序条例》，公开征求意见期限一般不少于30日。当征求意见稿的征求意见窗口开放、需提示截止日期、决定是否提交反馈意见或记录决策时使用（--decide CMT-ID）。
 argument-hint: "[可选: --decide CMT-ID]"
 ---
@@ -26,19 +26,19 @@ argument-hint: "[可选: --decide CMT-ID]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/regulatory-legal/comment-tracker.yaml` → 所有跟踪的征求意见稿及其状态
-- `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → 默认征求意见决策负责人
+- `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/comment-tracker.yaml` → 所有跟踪的征求意见稿及其状态
+- `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` → 默认征求意见决策负责人
 
 ## 默认视图 — 公开征求意见期
 
 ```markdown
-## 征求意见期跟踪 — [日期]
+## 征求意见期跟踪 — [date]
 
 ### ⏰ 截止日期 <14天
 
 | ID | 法规名称 | 征求意见机关 | 截止日期 | 剩余天数 | 决策 | 负责人 |
 |---|---|---|---|---|---|---|
-| CMT-001 | [名称（征求意见稿）] | [机关] | [日期] | [N] | 未决定 | [负责人] |
+| CMT-001 | [名称（征求意见稿）] | [机关] | [date] | [N] | 未决定 | [负责人] |
 
 ### 🟡 开放中 (>14天)
 
@@ -48,13 +48,13 @@ argument-hint: "[可选: --decide CMT-ID]"
 
 | ID | 法规名称 | 决策 | 理由 | 决策人/日期 |
 |---|---|---|---|---|
-| CMT-002 | [名称] | 不提交 | [与企业业务模式不相关] | [姓名]/[日期] |
+| CMT-002 | [名称] | 不提交 | [与企业业务模式不相关] | [姓名]/[date] |
 ```
 
 ## 记录决策
 
 ```
-/征求意见 --decide CMT-001
+/comments --decide CMT-001
 决策：[提交反馈意见 / 不提交 / 通过行业协会提交 / 联合其他企业提交]
 理由："[简述]"
 ```

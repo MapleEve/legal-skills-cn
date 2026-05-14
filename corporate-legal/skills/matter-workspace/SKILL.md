@@ -1,5 +1,5 @@
 ---
-name: 案件工作空间
+name: matter-workspace
 description: 管理案件工作空间 — 创建、列表、切换、关闭或脱离活跃案件。使多客户执业者将一个客户的上下文与其他客户保持分离。由任何需要知道它在哪个案件中工作的实质性技能读取。当用户说"新建案件"、"切换案件"、"列出案件"、"关闭案件"时使用。
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
@@ -22,7 +22,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 存储布局
 
-所有案件数据位于 `~/.claude/plugins/config/claude-for-legal/corporate-legal/matters/` 下：
+所有案件数据位于 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/matters/` 下：
 
 ```
 matters/
@@ -76,7 +76,7 @@ Slug 使用小写连字符。示例：`alibaba-acquisition-2026`、`tencent-jv-s
 ## 中国执业特别注意
 
 - 利益冲突检查是本技能不覆盖的领域 — 需由执业的律师/律所人工完成
-- 案件文件中的法律分析和建议需考虑律师-客户特权保护
+- 案件文件中的法律分析和建议需考虑律师保密义务、委托合同保密、商业秘密/个人信息保护，以及法院、仲裁、监管或刑事调取风险
 - 对方当事人的保密信息（如尽调中获取的资料）需在案件关闭时按保密协议处理
 
 ## 此技能不做什么

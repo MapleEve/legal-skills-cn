@@ -1,13 +1,13 @@
 ---
-name: 起草律师函
+name: demand-draft
 description: 按中国律师函规范格式起草——从案件信息和委托人指示出发，构建完整的律师函（律所抬头→案号→委托声明→事实陈述→法律分析→律师意见→要求/警告→期限→后果告知→律师署名+律所盖章+日期）。适用场景：用户说"起草律师函""写律师函""帮我写一封催款函/律师函"或已有完整的事实调查准备发函。
 argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 ---
 
-# /起草律师函
+# /demand-draft
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 律师函惯例、律所风格。
-2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[标识]/立案信息.md`（如存在）。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 律师函惯例、律所风格。
+2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/demand-letters/[slug]/intake.md`（如存在）。
 3. 遵循以下工作流程和参考。
 4. 运行起草前关：委托人授权确认、事实核实、法律依据检索、保密审查、语气选择。
 5. 起草律师函供审查。迭代至用户批准。
@@ -54,7 +54,7 @@ argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 
 当法律或事实对某点不利时，不要包装成稳固论点。标注：
 
-> "此[主张]薄弱，因[法律根据/事实]。选项：(a)坚持并以`[替代框架]`表述，(b)放弃并依赖[更强主张]，(c)保留作为谈判筹码但软化学眼。`[请审核——策略性判断]`。"
+> "此[主张]薄弱，因[法律根据/事实]。选项：(a)坚持并以`[替代框架]`表述，(b)放弃并依赖[更强主张]，(c)保留作为谈判筹码但软化措辞。`[请审核——策略性判断]`。"
 
 ## 呼应而非重复
 
@@ -74,7 +74,7 @@ argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 
 ## 加载上下文
 
-- 案件档案.md（如有立案记录）→ 案件事实、对方信息
+- matter.md（如有立案记录）→ 案件事实、对方信息
 - CLAUDE.md → 律所律师函样式、引用惯例
 - `_log.yaml` → 检查已有相关案件
 
@@ -134,9 +134,9 @@ argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 
 [以时间顺序陈述与争议相关的事实，每项事实附证据引用]
 
-    1. [日期]，双方签订《[合同名称]》（编号：__），约定[核心条款内容]。[参见证据一：《合同》]
-    2. [日期]，委托人按合同约定[履行行为]。[参见证据二：__]
-    3. [日期]，贵方[违约/侵权等行为]。[参见证据三：__]
+    1. [date]，双方签订《[合同名称]》（编号：__），约定[核心条款内容]。[参见证据一：《合同》]
+    2. [date]，委托人按合同约定[履行行为]。[参见证据二：__]
+    3. [date]，贵方[违约/侵权等行为]。[参见证据三：__]
 
 二、法律分析
 
@@ -232,7 +232,7 @@ argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 
 ### 主要输出：律师函 `.docx` 文件
 
-存放路径：`~/.claude/plugins/config/claude-for-legal/litigation-legal/demand-letters/[标识]/律师函-v[N].docx`
+存放路径：`~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/demand-letters/[slug]/draft-v[N].docx`
 
 ### 对话中审查
 
@@ -267,7 +267,7 @@ argument-hint: "[案件标识] [--skip-gate] [--version=N]"
 
 ## 版本控制
 
-永不得覆盖已发送的律师函。如发送后修改，生成 `律师函-v2.docx`。已发送版本历史即为律师函工作记录。
+永不得覆盖已发送的律师函。如发送后修改，生成 `draft-v2.docx`。已发送版本历史即为律师函工作记录。
 
 ## 本技能不做什么
 

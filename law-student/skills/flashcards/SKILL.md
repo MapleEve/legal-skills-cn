@@ -1,18 +1,18 @@
 ---
-name: 闪卡
+name: flashcards
 description: >
   生成或练习闪卡以记忆法条和法学概念——艾宾浩斯记忆法分桶管理、
   按科目Markdown存储、带自我评估的练习模式。
   当用户说"练习闪卡"、"从笔记生成闪卡"、"考我卡片"或想系统记忆法条时使用。
-argument-hint: "[科目] [--generate | --drill | --review | --stats | --session <n>]"
+argument-hint: "[subject] [--generate | --drill | --review | --stats | --session <n>]"
 ---
 
-# /闪卡
+# /flashcards
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 当前课程、薄弱科目、知识体系位置。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 当前课程、薄弱科目、知识体系位置。
 2. 使用以下框架。
 3. 按标志路由：
-   - `--generate`：从素材（知识体系路径、课堂笔记、教材/法条）构建卡片。写入 `flashcards/[科目]/cards.md`。
+   - `--generate`：从素材（知识体系路径、课堂笔记、教材/法条）构建卡片。写入 `flashcards/[subject]/cards.md`。
    - `--drill`（默认）：优先到期的卡片+新卡片；展示问题→等待回答→展示答案→自我评估→更新分桶+下次复习时间。
    - `--review`：按桶浏览牌组，展示各桶分布。
    - `--stats`：进度快照；标记卡住的卡片供口头研习。
@@ -130,7 +130,7 @@ argument-hint: "[科目] [--generate | --drill | --review | --stats | --session 
 ## 集成
 
 - 配合知识体系使用（从知识体系提取关键法条/概念生成卡片）
-- 配合学习训练使用（`/session --闪卡` 模式）
+- 配合学习训练使用（`/session --flashcards` 模式）
 - 配合问答式研习使用（卡住的卡片改为对话式深究）
 
 ## 本技能不做的事

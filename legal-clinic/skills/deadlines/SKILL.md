@@ -1,5 +1,5 @@
 ---
-name: 案件期限管理
+name: deadlines
 description: >
   追踪中国法律援助案件的关键期限——诉讼时效（3年/《民法典》第188条）、
   上诉期（判决15天/裁定10天）、举证期限、申请执行期限（2年）、
@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--add | --report(默认) | --update [ID] | --complete [ID] | --close [ID] | --horizon=N]"
 ---
 
-# /案件期限管理
+# /deadlines
 
 ## 目的
 
@@ -84,7 +84,7 @@ argument-hint: "[--add | --report(默认) | --update [ID] | --complete [ID] | --
 
 ## 存储格式
 
-期限数据存储于 `~/.claude/plugins/config/claude-for-legal/legal-clinic/deadlines.yaml`。
+期限数据存储于 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/deadlines.yaml`。
 
 ## 本技能不做的事
 

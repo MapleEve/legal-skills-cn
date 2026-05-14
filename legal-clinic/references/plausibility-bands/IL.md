@@ -1,44 +1,36 @@
-# Plausibility bands — Illinois (placeholder structure)
+# Plausibility bands — 中国大陆常见民商事期限（IL 文件名保留）
 
-**This file is a starting structure. Supervisor: fill in the typical ranges and citations before relying on `/legal-clinic:deadlines` plausibility checks for IL matters.** Until filled in, every entry the skill accepts carries `warnings: no-plausibility-band` and the check is effectively off.
-
-Every citation here is `[model knowledge — verify]` unless replaced with a connector-retrieved or supervisor-provided source.
+这些是粗略合理性范围，不是期限计算。学生录入的期限如果明显超出下表范围，`/legal-clinic:deadlines --add` 流程应提示复核。技能**不**替学生计算期限，只捕捉学生自行计算中可能出现的明显错误。除非指导教师已用一手来源替换，本文件中的法条依据均为 `[model knowledge — verify]`。
 
 ## How to use
 
-- One row per deadline type the clinic sees regularly.
-- Typical range is a plausibility window, not a holding.
-- Cite the governing rule in the Notes column so the student has somewhere to recompute against.
-- Computation-of-time rules (735 ILCS 5/1-109 in Illinois; FRCP 6 federal) apply to every entry.
+- 每行对应法律援助诊所常见的一类期限。
+- Typical range 是合理性窗口，不是裁判规则。
+- Notes 列写明应复核的法律依据、起算点和例外，便于学生回到一手来源重新计算。
+- 法院、仲裁委、行政机关或法律援助机构在个案中指定的期限，优先以文书、当地规则和最新法律为准。
 
-## Illinois
-
-| Deadline type | Typical range from triggering event | Notes |
-|---|---|---|
-| IL answer to complaint | `[FILL IN — typically ~30 days after service]` | 735 ILCS 5/2-602; confirm and cite |
-| IL forcible entry & detainer (eviction) response | `[FILL IN — short, often days not weeks]` | 735 ILCS 5/9-106.1 and local rule; confirm |
-| IL 735 ILCS 5/9-209 notice (nonpayment of rent) | `[FILL IN — 5-day notice]` | Cure period, confirm against statute |
-| IL 735 ILCS 5/9-210 notice (breach of lease) | `[FILL IN — 10-day notice]` | Confirm |
-| IL RLTO (Chicago) — security-deposit return | `[FILL IN — 45 days after termination]` | Chicago RLTO § 5-12-080; city-specific |
-| IL small claims answer | `[FILL IN]` | Confirm per Illinois Supreme Court Rules |
-| IL notice of appeal (civil) | `[FILL IN — typically ~30 days after final judgment]` | IL Sup. Ct. R. 303(a); confirm |
-| IL statute of limitations — personal injury | `[FILL IN — typically ~2 years]` | 735 ILCS 5/13-202; confirm |
-| IL statute of limitations — written contract | `[FILL IN — typically ~10 years]` | 735 ILCS 5/13-206; confirm |
-| IL statute of limitations — oral contract | `[FILL IN — typically ~5 years]` | 735 ILCS 5/13-205; confirm |
-| IL Human Rights Act lawsuit after IDHR right-to-sue | `[FILL IN — short]` | 775 ILCS 5/7A-102(C-1)(2); confirm |
-
-## Federal (always loaded alongside any state)
+## 中国大陆常见民商事期限
 
 | Deadline type | Typical range from triggering event | Notes |
 |---|---|---|
-| Federal civil answer (Rule 12(a)) | ~21 days after service (60 / 90 if waived) | FRCP 12(a); confirm by service method |
-| Federal MTD / Rule 12 motion | Same as answer window | Filed in lieu of answer; FRCP 12(b) |
-| Notice of appeal (federal civil) | ~30 days after judgment entry | FRAP 4(a)(1)(A); 60 days if US is a party |
-| Rule 4 service of process | 90 days after complaint filed | FRCP 4(m); court may extend |
-| Asylum one-year filing rule | ~1 year from most recent entry | 8 USC § 1158(a)(2)(B); exceptions exist |
+| 民事诉讼时效 | 通常为知道或应当知道权利受损及义务人之日起 3 年 | 《民法典》第188条；存在中止、中断、特殊诉讼时效等例外，个案复核 |
+| 最长权利保护期间 | 自权利受到损害之日起 20 年 | 《民法典》第188条；特殊情况可依法申请延长，不能替代普通诉讼时效判断 |
+| 民事判决上诉 | 判决书送达之日起 15 日 | 《民事诉讼法》上诉期限；涉外、公告送达、电子送达等需复核文书 |
+| 民事裁定上诉 | 裁定书送达之日起 10 日 | 《民事诉讼法》上诉期限；只对可上诉裁定适用 |
+| 申请强制执行 | 通常为 2 年 | 从法律文书规定履行期间最后一日起算；分期履行、未规定履行期间等需复核 |
+| 劳动争议仲裁 | 知道或应当知道权利被侵害之日起 1 年 | 《劳动争议调解仲裁法》；劳动关系存续期间拖欠劳动报酬有特殊规则 |
+| 法律援助申请审查 | 收到法律援助申请之日起 7 日内 | 《法律援助法》第43条及相关实施办法；材料补正、先行援助、地方快速审批机制需复核 |
+| 法律援助人员指派 | 作出给予援助决定之日起 3 日内 | 《法律援助法》第43条；通知辩护、通知代理等案件另看机关通知和程序规定 |
+| 财产保全/执行冻结银行存款及其他资金 | 通常不超过 1 年，续冻应在届满前申请 | 适用查封、扣押、冻结财产期限规则；每次续行不得超过相同上限，实际看保全文书和协助执行通知 |
+| 财产保全/执行查封、扣押动产 | 通常不超过 2 年，续封应在届满前申请 | 同上；车辆等登记动产还需复核登记机关协助执行规则 |
+| 财产保全/执行查封不动产、冻结其他财产权 | 通常不超过 3 年，续封/续冻应在届满前申请 | 同上；股权、证券、知识产权等财产权看具体协助执行规则 |
+| 行政复议申请 | 通常为知道行政行为之日起 60 日 | 《行政复议法》及单行法可能有不同期限；法援诊所应按最新法条复核 |
+| 行政诉讼起诉 | 通常为知道或应当知道行政行为之日起 6 个月 | 《行政诉讼法》；先复议、未告知诉权、持续不履责等情形需复核 |
+| 交通事故认定复核 | 收到道路交通事故认定书之日起 3 日内 | 公安交管程序规则；文书会列明期限，按文书优先 |
 
 ## Computation-of-time reminder
 
-- **Illinois courts:** 735 ILCS 5/1-109 (computation of time), Sup. Ct. R. 12 (service-method extensions), local rules for the circuit court handling the matter.
-- **Federal courts:** FRCP 6(a), FRCP 6(d).
-- **Local rules:** Always confirm. Circuit court of Cook County has its own General Orders and local rules separate from the statewide Supreme Court Rules.
+- **文书优先：** 法院、仲裁委、行政机关、法律援助机构已经在文书中指定期限的，先按文书和送达记录复核。
+- **当地规则：** 诉讼服务、网上立案、电子送达、保全续封、执行协助等可能有地方操作规则或系统截止时间。
+- **最新法律：** 法律、司法解释、部门规章、地方规范和办案系统规则可能更新；依赖前对照一手来源。
+- **本文件定位：** 只用于 `/legal-clinic:deadlines` 的明显错误检查，不替代学生计算、指导教师审查或律师判断。

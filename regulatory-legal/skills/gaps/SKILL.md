@@ -1,5 +1,5 @@
 ---
-name: 合规差距
+name: gaps
 description: 合规差距追踪调度器 — 查看已标记且未关闭的合规差距。当用户询问"哪些合规差距还在"、"合规差距追踪器"、"整改状态"，或想关闭（--close GAP-ID）或接受风险（--accept GAP-ID）时使用。
 argument-hint: "[可选: --close GAP-ID | --accept GAP-ID]"
 ---
@@ -20,7 +20,7 @@ argument-hint: "[可选: --close GAP-ID | --accept GAP-ID]"
 
 ---
 
-1. 读取合规差距追踪器 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/gap-tracker.yaml`。
+1. 读取合规差距追踪器 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/gap-tracker.yaml`。
 2. 如果 `--close`：标记合规差距已关闭，附整改方案说明。
 3. 如果 `--accept`：记录接受风险的理由和接受人，状态 → 已接受风险。
 4. 否则：按存在天数和风险等级报告合规差距。

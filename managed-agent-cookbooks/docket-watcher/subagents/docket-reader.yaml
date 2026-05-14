@@ -26,11 +26,11 @@ tools:
     configs:
       - { name: read, enabled: true }
       - { name: grep, enabled: true }
-  - { type: mcp_toolset, mcp_server_name: 中国审判流程信息公开网, default_config: { enabled: true } }
-  - { type: mcp_toolset, mcp_server_name: 中国裁判文书网,   default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: trellis,       default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: courtlistener, default_config: { enabled: true } }
 mcp_servers:
-  - { type: url, name: 中国审判流程信息公开网, url: "${SPLCGK_MCP_URL:-TBD-待定中文数据源}" }
-  - { type: url, name: 中国裁判文书网, url: "${WENSHU_MCP_URL:-TBD-待定中文数据源}" }
+  - { type: url, name: trellis,       url: "${TRELLIS_MCP_URL}" }
+  - { type: url, name: courtlistener, url: "${COURTLISTENER_MCP_URL}" }
 skills: []
 callable_agents: []
 output_schema:

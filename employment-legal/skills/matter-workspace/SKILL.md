@@ -1,5 +1,5 @@
 ---
-name: 案件工作空间
+name: matter-workspace
 description: >
   管理案件工作空间——新建、列表、切换、关闭或脱离（执业级别）。
   创建、列出、切换、关闭和脱离活跃案件，使一个客户或委托的上下文
@@ -8,7 +8,7 @@ description: >
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
-# /案件工作空间
+# /matter-workspace
 
 执业者在多个客户和案件中工作。案件工作空间使一个客户或委托的上下文与每个其他上下文保持分离。此技能管理这些工作空间。
 
@@ -21,21 +21,21 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 子命令
 
-- `/employment-legal:案件工作空间 new <slug>`——创建新的案件工作空间，运行简短信息收集，写入`案件.md`
-- `/employment-legal:案件工作空间 list`——列出案件及其状态和活跃标记
-- `/employment-legal:案件工作空间 switch <slug>`——设置活跃案件
-- `/employment-legal:案件工作空间 close <slug>`——归档案件（移至`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/_archived/`，永不删除）
-- `/employment-legal:案件工作空间 none`——脱离任何活跃案件，仅在执业级别工作
+- `/employment-legal:matter-workspace new <slug>`——创建新的案件工作空间，运行简短信息收集，写入`matter.md`
+- `/employment-legal:matter-workspace list`——列出案件及其状态和活跃标记
+- `/employment-legal:matter-workspace switch <slug>`——设置活跃案件
+- `/employment-legal:matter-workspace close <slug>`——归档案件（移至`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/_archived/`，永不删除）
+- `/employment-legal:matter-workspace none`——脱离任何活跃案件，仅在执业级别工作
 
 ## 指示
 
-1. 读取`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`——确认`## 案件工作空间`部分已填充。如果`已启用`是`✗`，告诉用户："案件工作空间是关闭的——您被配置为只有一个客户的内部法务执业，所以插件自动从执业级别上下文工作。如果您实际上跨多个客户工作，重新运行`/employment-legal:冷启动访谈 --redo`并选择私人执业设置。否则，您根本不需要`/案件工作空间`。"不要报错——禁用状态是内部法务用户的预期状态。
+1. 读取`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`——确认`## 案件工作空间`部分已填充。如果`已启用`是`✗`，告诉用户："案件工作空间是关闭的——您被配置为只有一个客户的内部法务执业，所以插件自动从执业级别上下文工作。如果您实际上跨多个客户工作，重新运行`/employment-legal:cold-start-interview --redo`并选择私人执业设置。否则，您根本不需要`/matter-workspace`。"不要报错——禁用状态是内部法务用户的预期状态。
 2. 使用以下子命令逻辑。
 3. 根据`$ARGUMENTS`的第一个令牌调度：
-   - `new`→运行信息收集访谈，写入`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<slug>/案件.md`，初始化`历史.md`和`笔记.md`。
-   - `list`→枚举`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/*/案件.md`，打印表格，标记活跃案件。
+   - `new`→运行信息收集访谈，写入`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/<slug>/matter.md`，初始化`history.md`和`notes.md`。
+   - `list`→枚举`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/*/matter.md`，打印表格，标记活跃案件。
    - `switch`→更新执业级别CLAUDE.md中的`活跃案件:`行。
-   - `close`→移动`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<slug>/`至`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/_archived/<slug>/`，在`历史.md`中记录关闭日期。
+   - `close`→移动`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/<slug>/`至`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/_archived/<slug>/`，在`history.md`中记录关闭日期。
    - `none`→将`活跃案件:`设置为`无——仅执业级别上下文`。
 4. 在写入前向用户显示变化并确认。
 
@@ -50,13 +50,13 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 所有案件数据位于：
 
 ```
-~/.claude/plugins/config/claude-for-legal/employment-legal/
+~/.claude/plugins/config/claude-for-legal-cn/employment-legal/
 ├── CLAUDE.md                       # 执业级别执业画像
 └── matters/
     ├── <slug>/
-    │   ├── 案件.md                  # 客户、对方、案件类型、关键事实、例外设置
-    │   ├── 历史.md                  # 带日期的事件、决定、草案、审查日志
-    │   ├── 笔记.md                  # 自由形式的工作笔记
+    │   ├── matter.md                  # 客户、对方、案件类型、关键事实、例外设置
+    │   ├── history.md                  # 带日期的事件、决定、草案、审查日志
+    │   ├── notes.md                  # 自由形式的工作笔记
     │   └── outputs/                # 此案件的技能输出（可选子文件夹）
     └── _archived/
         └── <slug>/                 # 关闭的案件——可读但非活跃
@@ -74,14 +74,14 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 1. 确认简码在`matters/<slug>/`或`matters/_archived/<slug>/`中不存在。如果重复使用，要求用户选择不同的简码。
 2. 运行信息收集访谈。
-3. 使用以下模板写入`matters/<slug>/案件.md`。
-4. 用单个"已开启"条目初始化`matters/<slug>/历史.md`。
-5. 创建空白的`matters/<slug>/笔记.md`。
-6. 不要自动切换到新案件。询问："要现在切换到`<slug>`吗？（`/employment-legal:案件工作空间 switch <slug>`）"
+3. 使用以下模板写入`matters/<slug>/matter.md`。
+4. 用单个"已开启"条目初始化`matters/<slug>/history.md`。
+5. 创建空白的`matters/<slug>/notes.md`。
+6. 不要自动切换到新案件。询问："要现在切换到`<slug>`吗？（`/employment-legal:matter-workspace switch <slug>`）"
 
 ### `list`
 
-枚举`matters/*/案件.md`。读取每个文件提取状态。打印表格：
+枚举`matters/*/matter.md`。读取每个文件提取状态。打印表格：
 
 | 简码 | 客户 | 案件类型 | 状态 | 开启 | 活跃 |
 |---|---|---|---|---|---|
@@ -90,14 +90,14 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ### `switch <slug>`
 
-1. 确认`matters/<slug>/案件.md`存在。如果不存在，提供`/employment-legal:案件工作空间 new <slug>`。
+1. 确认`matters/<slug>/matter.md`存在。如果不存在，提供`/employment-legal:matter-workspace new <slug>`。
 2. 编辑执业级别CLAUDE.md中的`活跃案件:`行为`活跃案件: <slug>`。
-3. 向用户显示案件.md摘要以便他们确认在正确的案件上。
+3. 向用户显示matter.md摘要以便他们确认在正确的案件上。
 
 ### `close <slug>`
 
 1. 确认`matters/<slug>/`存在。
-2. 在`matters/<slug>/历史.md`中以今天的日期追加"已关闭"条目。
+2. 在`matters/<slug>/history.md`中以今天的日期追加"已关闭"条目。
 3. 移动`matters/<slug>/`→`matters/_archived/<slug>/`。
 4. 如果关闭的案件是活跃案件，将`活跃案件:`设置为`无——仅执业级别上下文`。
 
@@ -105,7 +105,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 将执业级别CLAUDE.md中的`活跃案件:`设置为`无——仅执业级别上下文`。与用户确认。
 
-## `案件.md`模板
+## `matter.md`模板
 
 ```markdown
 [工作成果标题——根据插件配置## 输出——因角色不同；参见执业级别CLAUDE.md中的## 谁在使用]
@@ -145,7 +145,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 [如果是加强或清洁团队，描述原因。谁可以查看案件文件。]
 ```
 
-## `历史.md`初始化
+## `history.md`初始化
 
 ```markdown
 # 历史：[Client] — [简短描述]

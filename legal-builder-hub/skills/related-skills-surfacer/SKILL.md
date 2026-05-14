@@ -1,5 +1,5 @@
 ---
-name: 关联技能推荐
+name: related-skills-surfacer
 description: >
   根据用户当前活动推荐中国法律技能社区中的关联技能。
   当用户做某件事而另一个技能可能更好用时，主动提示。
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[当前活动或领域描述]"
 ---
 
-# /关联技能推荐
+# /related-skills-surfacer
 
 ## 功能目的
 

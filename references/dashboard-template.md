@@ -18,7 +18,7 @@
 ## 按平台渲染
 
 - **Cowork / Claude Desktop：** HTML artifact。自包含，单文件，内联 CSS。无外部依赖，无 CDN，无 npm。表格：HTML `<table>` 带 `data-sort` 属性和少量内联 JS 排序器。图表：内联 SVG 或用 Unicode 块字符画柱状图。保持 JS 最少——排序和过滤，仅此而已。
-- **Claude Code：** 将同一 HTML 文件写入插件输出目录 `~/.claude/plugins/config/claude-for-legal-cn/<插件名>/outputs/dashboard-<主题>-<日期>.html`，告诉用户用浏览器打开。同时生成 Markdown 版本（含 Unicode 块图），让用户不离开终端也能看到数据轮廓。
+- **Claude Code：** 将同一 HTML 文件写入插件输出目录 `~/.claude/plugins/config/claude-for-legal-cn/<plugin-name>/outputs/dashboard-<topic>-<date>.html`，告诉用户用浏览器打开。同时生成 Markdown 版本（含 Unicode 块图），让用户不离开终端也能看到数据轮廓。
 - **Excel（适用场景）：** 用于用户将带入会议或分享给非技术利益相关者的场景。沿用现有 Excel 输出规范。应用公式注入防御。
 - **不可信输入转义（每个仪表板每次均适用）。** 所有来自当前会话外部的值——OSS 包/许可证字段、相对方合同文本、尽调发现、供应商名称、案件描述、任何由用户或数据室提供的字符串——必须在写入文档前进行 HTML 转义。将 `&` `<` `>` `"` `'` 转义为实体。内联 JS 排序/过滤中，通过 `textContent` 设置单元格文本，禁止通过 `innerHTML`。不可信 URL 写入 `href`/`src` 前需检查协议（仅允许 `http:` / `https:` / `mailto:`）。这是 Excel 公式注入防御在 HTML 表面的对等安全措施——相同的威胁（攻击者控制的单元格内容），不同的执行平台。
 

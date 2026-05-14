@@ -1,20 +1,20 @@
 ---
-name: 定制配置
+name: customize
 description: 引导式定制中国民事诉讼执业画像——无需重新运行完整冷启动面谈即可更改一项设置。调整执业角色、立场（原告/被告/混合）、风险校准、场景、律所风格、升级联系人、严重性词汇或案件工作空间路径。适用场景：用户说"改我的[某设置]""更新我的画像""编辑我的配置"或"定制"。
 argument-hint: "[章节名称，或描述您想更改的内容]"
 ---
 
-# /定制配置
+# /customize
 
 ## 何时运行
 
-用户输入了 `/litigation-legal:定制配置`。他们想更改执业画像中的某项——风险校准、律所风格规则、升级联系人、场景说明、收费结构、管辖法院列表——无需重新运行完整冷启动面谈，也无需手动编辑文件。
+用户输入了 `/litigation-legal:customize`。他们想更改执业画像中的某项——风险校准、律所风格规则、升级联系人、场景说明、收费结构、管辖法院列表——无需重新运行完整冷启动面谈，也无需手动编辑文件。
 
 ## 操作流程
 
-1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md`（以及上一层的 `company-profile.md`）。如插件配置不存在或仍含 `[待补]` 值，说：
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md`（以及上一层的 `company-profile.md`）。如插件配置不存在或仍含 `[待补]` 值，说：
 
-   > 您尚未运行设置。请先运行 `/litigation-legal:冷启动面谈`——定制适用于调整已有画像。
+   > 您尚未运行设置。请先运行 `/litigation-legal:cold-start-interview`——定制适用于调整已有画像。
 
 2. **展示可定制项。** 按组列出画像中的内容，附当前值的一行摘要：
 

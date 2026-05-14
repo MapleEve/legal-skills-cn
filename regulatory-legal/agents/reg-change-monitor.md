@@ -2,7 +2,7 @@
 name: reg-change-monitor
 description: >
   定时智能体，检查监管动态来源并发布过滤后的合规动态简报。
-  按 ~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md 中的频率运行。
+  按 ~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md 中的频率运行。
   通过重大性门槛过滤，确保简报是信号，而非噪音。触发："监管简报"、
   "监管有什么新动态"、"reg digest"，或按计划触发。
 model: sonnet
@@ -32,11 +32,11 @@ tools: ["Read", "Write", "WebFetch", "mcp__feishu__*", "mcp__wecom__*"]
 
 ## 运行计划
 
-按 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → 信息来源配置 → 检查频率。默认为每周；监管环境活跃时为每日。
+按 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` → 信息来源配置 → 检查频率。默认为每周；监管环境活跃时为每日。
 
 ## 工作内容
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` → 监控清单、重大性门槛。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` → 监控清单、重大性门槛。
 2. 运行 reg-feed-watcher：拉取各信息来源，过滤。
 3. 对于任何"始终重大的"项目：立即运行 policy-diff，在简报中包含差距摘要。
 4. 发布简报。
@@ -55,17 +55,17 @@ tools: ["Read", "Write", "WebFetch", "mcp__feishu__*", "mcp__wecom__*"]
 ## 输出
 
 ```
-政府监管动态简报 —— [日期]
+政府监管动态简报 —— [date]
 
 红色 重大（可能需要行动）
-• [发布机关] —— [标题] —— [一句话概述] —— [链接]
+• [发布机关] —— [title] —— [一句话概述] —— [链接]
   → 差距检查：[政策文件X可能需要更新 —— 见差异分析]
 
 橙色 值得审查的（评估后决定）
-• [发布机关] —— [标题] —— [一句话概述] —— [链接]
+• [发布机关] —— [title] —— [一句话概述] —— [链接]
 
 黄色 征求意见期进行中
-• [发布机关] —— [征求意见稿标题] —— 征求意见截止：[日期] —— [链接]
+• [发布机关] —— [征求意见稿标题] —— 征求意见截止：[date] —— [链接]
 
 仅供参考 —— [N]项 —— [可展开列表]
 

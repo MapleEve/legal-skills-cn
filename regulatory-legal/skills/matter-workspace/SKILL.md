@@ -1,5 +1,5 @@
 ---
-name: 事项工作区
+name: matter-workspace
 description: 管理事项工作区 — 创建、列表、切换、关闭或分离活跃事项（执业级）。当跨多个客户或事项工作时，需将一个委托的上下文与另一个分开。子命令：new | list | switch | close | none。
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
@@ -12,16 +12,16 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 子命令
 
-- `/事项工作区 new <slug>` — 创建新事项工作区，运行信息采集，写入 `matter.md`
-- `/事项工作区 list` — 列出现有事项，含状态和活跃标记
-- `/事项工作区 switch <slug>` — 设置活跃事项
-- `/事项工作区 close <slug>` — 归档事项（移至 `_archived/`，绝不删除）
-- `/事项工作区 none` — 脱离任何活跃事项，仅在执业级工作
+- `/matter-workspace new <slug>` — 创建新事项工作区，运行信息采集，写入 `matter.md`
+- `/matter-workspace list` — 列出现有事项，含状态和活跃标记
+- `/matter-workspace switch <slug>` — 设置活跃事项
+- `/matter-workspace close <slug>` — 归档事项（移至 `_archived/`，绝不删除）
+- `/matter-workspace none` — 脱离任何活跃事项，仅在执业级工作
 
 ## 存储布局
 
 ```
-~/.claude/plugins/config/claude-for-legal/regulatory-legal/
+~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/
 ├── CLAUDE.md                       # 执业级执业档案
 └── matters/
     ├── <slug>/
@@ -67,7 +67,7 @@ Slug 使用小写连字符。示例：`alibaba-datacompliance-2026`、`baidu-mer
 
 - 中国律所和企业的保密义务依据《律师法》和《民法典》合同编 — 事项隔离是合规要求
 - 利益冲突检查是本技能不覆盖的领域，需人工判断
-- 律师工作成果保护 — 事项文件中的分析和建议需考虑是否受律师-客户特权保护
+- 律师工作成果保护 — 事项文件中的分析和建议需考虑律师保密义务、委托合同保密、商业秘密与个人信息保护要求，以及证据或监管调取风险
 
 ## 本技能不做的事
 

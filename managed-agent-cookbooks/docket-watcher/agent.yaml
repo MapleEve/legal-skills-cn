@@ -33,9 +33,9 @@ tools:
       - { name: glob, enabled: true }
 
 mcp_servers:
-  - { type: url, name: 中国审判流程信息公开网, url: "${TRELLIS_MCP_URL:-TBD-中国审判流程信息公开网}" }
-  - { type: url, name: 中国裁判文书网,   url: "${COURTLISTENER_MCP_URL:-TBD-中国裁判文书网}" }
-  - { type: url, name: gdrive,        url: "${GDRIVE_MCP_URL:-TBD-企业网盘}" }
+  - { type: url, name: trellis,       url: "${TRELLIS_MCP_URL}" }
+  - { type: url, name: courtlistener, url: "${COURTLISTENER_MCP_URL}" }
+  - { type: url, name: gdrive,        url: "${GDRIVE_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../litigation-legal }

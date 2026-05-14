@@ -26,10 +26,10 @@
 | 命令 | 功能 |
 |---|---|
 | `/ai-governance-legal:cold-start-interview` | 冷启动访谈——写入你的实务配置 |
-| `/ai-governance-legal:use-case-triage [用例]` | 对照用例登记表对新用例进行分类（批准/有条件/禁止） |
-| `/ai-governance-legal:aia-generation [用例]` | 按你的文书格式进行人工智能安全评估 |
-| `/ai-governance-legal:vendor-ai-review [供应商/文件]` | 对照你的立场审查供应商AI协议 |
-| `/ai-governance-legal:reg-gap-analysis [法规]` | 将新法规或指导文件与当前政策/实践做差异分析 |
+| `/ai-governance-legal:use-case-triage [use-case]` | 对照用例登记表对新用例进行分类（批准/有条件/禁止） |
+| `/ai-governance-legal:aia-generation [use-case]` | 按你的文书格式进行人工智能安全评估 |
+| `/ai-governance-legal:vendor-ai-review [vendor-or-file]` | 对照你的立场审查供应商AI协议 |
+| `/ai-governance-legal:reg-gap-analysis [regulation]` | 将新法规或指导文件与当前政策/实践做差异分析 |
 | `/ai-governance-legal:policy-monitor` | 每周巡检AI政策与实际操作的偏离，或直接查询提议的新做法 |
 | `/ai-governance-legal:policy-starter` | 参考已发布的标准政策起草AI使用政策初稿 |
 | `/ai-governance-legal:matter-workspace` | 管理项目工作区（仅限多客户律所场景） |
@@ -57,7 +57,7 @@
 
 请准备好（如有）：AI或可接受使用政策、先前的安全评估报告、关键供应商AI协议、模型清单或已批准工具列表。
 
-你的配置存储在 `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`，插件更新时配置不会丢失。
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md`，插件更新时配置不会丢失。
 
 ### 2. 对新用例进行分诊
 
@@ -95,7 +95,7 @@
 
 ## 如何学习
 
-你的实务配置 `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` 不是静态的——它会随着你使用插件而改进。当某项输出使用了你应该调整的默认值时，技能会提示你。`policy-monitor` 代理监控AI治理政策与实际操作之间的偏离并提出更新建议。你可以重新运行设置、直接编辑文件，或告诉技能记录新的立场。
+你的实务配置 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md` 不是静态的——它会随着你使用插件而改进。当某项输出使用了你应该调整的默认值时，技能会提示你。`policy-monitor` 代理监控AI治理政策与实际操作之间的偏离并提出更新建议。你可以重新运行设置、直接编辑文件，或告诉技能记录新的立场。
 
 ## 注意事项
 

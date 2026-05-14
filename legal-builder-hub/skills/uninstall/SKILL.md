@@ -1,13 +1,13 @@
 ---
-name: 卸载技能
+name: uninstall
 description: >
   从系统中完全卸载技能——删除技能文件、配置和数据。
   需要明确确认且不可撤销。与禁用不同（禁用保留数据）。
-  当用户说"卸载[技能]"、"删除[技能]"、"移除[技能]"时使用。
-argument-hint: "<技能名称>"
+  当用户说"卸载[skill]"、"删除[skill]"、"移除[skill]"时使用。
+argument-hint: "<skill-name>"
 ---
 
-# /卸载技能
+# /uninstall
 
 ## 功能目的
 
@@ -18,7 +18,7 @@ argument-hint: "<技能名称>"
 1. **确认技能已安装。** 列出技能详情：名称、版本、安装日期、最后使用日期。
 2. **检查依赖。** 是否有其他已安装技能依赖此技能？如有则警告并说明影响。
 3. **数据备份提示。** 如技能有数据或输出文件（如审查记录、影响评估、配置），询问是否保留备份。
-   - 默认备份位置：`~/.claude/plugins/config/claude-for-legal/_uninstalled_backups/<技能名称>/`
+   - 默认备份位置：`~/.claude/plugins/config/claude-for-legal-cn/_uninstalled_backups/<skill-name>/`
 4. **要求明确确认。**
    > "您确定要卸载[技能名称]吗？这将删除以下内容：
    > - 技能文件和命令

@@ -1,17 +1,17 @@
 ---
-name: 收到律师函分诊
+name: demand-received
 description: 分诊收到的律师函——提取要素、交叉检索案件组合、评估实体、给出附建议的回应方案，必要时移交案件立案或律师函立案。适用场景：用户说"收到律师函""分诊律师函"或提供收到的律师函要求评估。
 argument-hint: "[接收文件路径] [--slug=自定义标识]"
 ---
 
-# /收到律师函
+# /demand-received
 
 1. 从指定路径读取接收文件。
-2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` 进行案件组合交叉检索。
-3. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准、执业场景、律师函惯例。
+2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` 进行案件组合交叉检索。
+3. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准、执业场景、律师函惯例。
 4. 遵循以下工作流程和参考。
 5. 提取要素；交叉检索案件组合；评估实体；给出附建议的回应方案。
-6. 写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[标识]/分诊.md`。将接收文件复制或链接至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[标识]/接收.[扩展名]`。
+6. 写入 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/[slug]/triage.md`。将接收文件复制或链接至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/[slug]/incoming.[ext]`。
 7. 按用户选择移交：
    - 创建案件 → 预填的 `案件立案`
    - 发送复函 → 预填的 `律师函立案`
@@ -31,8 +31,8 @@ argument-hint: "[接收文件路径] [--slug=自定义标识]"
 ## 加载上下文
 
 - 接收文件（用户提供路径或会话中直接提交）
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 扫描关联案件（相同对方当事人、通过实体关系交叉的对方当事人、或相同案件类型+近期日期）
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准（用于实体评估）、执业场景（发送方是否为常见对手？）、律师函惯例（律所语气和回复默认值）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 扫描关联案件（相同对方当事人、通过实体关系交叉的对方当事人、或相同案件类型+近期日期）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准（用于实体评估）、执业场景（发送方是否为常见对手？）、律师函惯例（律所语气和回复默认值）
 
 ## 工作流程
 
@@ -88,7 +88,7 @@ argument-hint: "[接收文件路径] [--slug=自定义标识]"
 **方案A —— 实质回应**
 - 适用：对方律师函有实体依据或至少可争议；有理有据的回复保护案卷记录
 - 利弊：以书面形式锁定己方立场；为后续可能的诉讼固定答辩思路
-- 下一步：`/律师函立案` 附预填字段用于复函
+- 下一步：`/demand-intake` 附预填字段用于复函
 
 **方案B —— 暂复函（确认收悉）**
 - 适用：需要时间调查事实、收集证据；不想承认任何事项或触发对方进一步动作
@@ -121,30 +121,30 @@ argument-hint: "[接收文件路径] [--slug=自定义标识]"
 
 ### 第6步：写入分诊
 
-输出：`~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/[标识]/分诊.md`。
+输出：`~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/[slug]/triage.md`。
 
 ```markdown
 [工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-> **保密继承。** 本分诊源自接收律师函和案件组合登记簿，并记录了己方初审实体判断和回应姿态。这些内部分析属于律师-客户保密和/或工作成果材料。将本分诊分发至保密圈外——包括未标注即转发业务负责人、与对方当事人共享、或未经脱敏即附于保险理赔通知——可能放弃对本文件和其中推理内容的保护。与保密案件材料一同存储，按律所保密惯例一致标注，并审慎做出分发决定。
+> **保密继承。** 本分诊源自接收律师函和案件组合登记簿，并记录了己方初审实体判断和回应姿态。这些内部分析可能受律师保密义务、委托合同保密约定、商业秘密与个人信息保护要求约束。将本分诊分发至保密范围外——包括未标注即转发业务负责人、与对方当事人共享、或未经脱敏即附于保险理赔通知——可能产生证据披露、监管调取或保密违约风险。与保密案件材料一同存储，按律所保密惯例一致标注，并审慎做出分发决定。
 
 # 收到律师函 —— 分诊
 
 > **供分诊阅读，非法律意见。** 本文件是接案扫描和方案分析——非法律实体意见。下列`分诊评级`是结构化审查，以支持律师决定如何路由律师函。它不构成实体建议，不可替代个案法律分析。每条引用的法条、规则或案例均标注供专家核实；所有实体判断属于律师，非本技能。
 
-**标识：** [标识]
+**标识：** [slug]
 **收到日期：** [年-月-日]
 **收到人：** [实体/个人]
-**接收文件：** [路径]
+**接收文件：** [path]
 
 ---
 
 ## 律师函
 
 **发送方：** [实体、签署人、代理律师/律所]
-**律师函类型：** [类型]
+**律师函类型：** [type]
 **具体请求：** [列表]
-**对方声明期限：** [日期]
+**对方声明期限：** [date]
 **送达方式：** [方式]
 
 ## 所主张事实
@@ -205,8 +205,8 @@ argument-hint: "[接收文件路径] [--slug=自定义标识]"
 
 ## 期限
 
-- **对方声明期限：** [日期]
-- **己方内部决策截止日：** [日期]
+- **对方声明期限：** [date]
+- **己方内部决策截止日：** [date]
 - **诉讼时效审查：** [时效截止日、中断/中止情形]
 - **潜在起诉时间预估：** [如对方起诉，立案+送达时间预估]
 
@@ -226,10 +226,10 @@ argument-hint: "[接收文件路径] [--slug=自定义标识]"
 
 根据建议和用户确认：
 
-- 创建案件 → 移交至 `/案件立案` 附：对方当事人、类型、`来源: 律师函`（接收）、初始案件策略以防守框架构建、预填。
-- 复函作为外发律师函 → 移交至 `/律师函立案` 附：对方当事人、分诊提供的背景、期望结果为复函。
-- 关联至已有案件 → 在 `_log.yaml` 中更新该案件的 `关联案件`；追加事件至其 `办案日志.md`。
-- 独立处理 → 保留在 `~/.claude/plugins/config/claude-for-legal/litigation-legal/inbound/` 中；案件组合不变。
+- 创建案件 → 移交至 `/matter-intake` 附：对方当事人、类型、`来源: 律师函`（接收）、初始案件策略以防守框架构建、预填。
+- 复函作为外发律师函 → 移交至 `/demand-intake` 附：对方当事人、分诊提供的背景、期望结果为复函。
+- 关联至已有案件 → 在 `_log.yaml` 中更新该案件的 `关联案件`；追加事件至其 `history.md`。
+- 独立处理 → 保留在 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/` 中；案件组合不变。
 
 ## 以下一步决策树结束
 

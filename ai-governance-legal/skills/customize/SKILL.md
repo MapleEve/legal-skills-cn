@@ -1,5 +1,5 @@
 ---
-name: 定制配置
+name: customize
 description: >
   向导式定制您的AI治理实践配置——无需重新运行完整的冷启动访谈即可修改单项内容。
   可调整风险偏好、升级联系人、用例注册表条目、AI供应商立场、
@@ -9,7 +9,7 @@ description: >
 argument-hint: "[章节名称，或描述您要修改的内容]"
 ---
 
-# /定制配置
+# /customize
 
 ## 触发场景
 

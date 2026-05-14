@@ -1,5 +1,5 @@
 ---
-name: 尽调问题提取
+name: diligence-issue-extraction
 description: >
   读取数据室文档，按中国尽调类别（主体资格/重大合同/知识产权/劳动人事/
   税务/诉讼仲裁等）和交易实质性阈值提取问题，按四级风险等级

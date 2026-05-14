@@ -1,12 +1,12 @@
 ---
-name: 案件工作空间
+name: matter-workspace
 description: >
   管理知识产权案件工作空间——创建、列表、切换、关闭或脱离活跃案件。
   在多客户执业中使用以将一个客户或委托的上下文与另一个客户保持分离。
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
-# /案件工作空间
+# /matter-workspace
 
 执业者在多个客户和案件中工作。案件工作空间使一个客户或委托的上下文与每个其他上下文保持分离。此技能管理这些工作空间。
 
@@ -26,24 +26,24 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 子命令
 
-- `/ip-legal:案件工作空间 new <slug>`——创建新案件工作空间
-- `/ip-legal:案件工作空间 list`——列出案件及状态
-- `/ip-legal:案件工作空间 switch <slug>`——设置活跃案件
-- `/ip-legal:案件工作空间 close <slug>`——归档案件（永不删除）
-- `/ip-legal:案件工作空间 none`——脱离任何活跃案件
+- `/ip-legal:matter-workspace new <slug>`——创建新案件工作空间
+- `/ip-legal:matter-workspace list`——列出案件及状态
+- `/ip-legal:matter-workspace switch <slug>`——设置活跃案件
+- `/ip-legal:matter-workspace close <slug>`——归档案件（永不删除）
+- `/ip-legal:matter-workspace none`——脱离任何活跃案件
 
 ## 存储布局
 
-所有案件数据位于`~/.claude/plugins/config/claude-for-legal/ip-legal/matters/`下。
+所有案件数据位于`~/.claude/plugins/config/claude-for-legal-cn/ip-legal/matters/`下。
 
 ```
-~/.claude/plugins/config/claude-for-legal/ip-legal/
+~/.claude/plugins/config/claude-for-legal-cn/ip-legal/
 ├── CLAUDE.md                       # 执业级别执业画像
 └── matters/
     ├── <slug>/
-    │   ├── 案件.md                  # 客户、案件类型、关键事实、例外设置
-    │   ├── 历史.md                  # 带日期的事件、决定、草案、审查日志
-    │   ├── 笔记.md                  # 自由形式的工作笔记
+    │   ├── matter.md                  # 客户、案件类型、关键事实、例外设置
+    │   ├── history.md                  # 带日期的事件、决定、草案、审查日志
+    │   ├── notes.md                  # 自由形式的工作笔记
     │   └── outputs/                # 此案件的技能输出
     └── _archived/
         └── <slug>/                 # 关闭的案件
@@ -56,7 +56,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 ## 子命令逻辑
 
 ### `new <slug>`
-运行信息收集访谈，创建案件文件（案件.md、历史.md、笔记.md）。
+运行信息收集访谈，创建案件文件（matter.md、history.md、notes.md）。
 
 ### `list`
 枚举所有案件并打印表格，标记活跃案件。已归档案件单独列出。

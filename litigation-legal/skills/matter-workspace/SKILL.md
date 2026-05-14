@@ -1,32 +1,32 @@
 ---
-name: 案件工作区
+name: matter-workspace
 description: 管理多委托人执业场景下的案件工作空间——创建、列表、切换、关闭或解除活跃案件。适用场景：用户欲创建新案件工作空间、切换活跃案件、列出案件、归档案件或仅以执业层面工作（无活跃案件）。
-argument-hint: "<new | list | switch | close | none> [标识]"
+argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
-# /案件工作区
+# /matter-workspace
 
 律师跨多个委托人和案件工作。案件工作空间将一个委托人或委托事项的上下文与其他分隔开来——同一律所不同案件不得交叉读取。本命令管理这些工作空间。
 
 ## 子命令
 
-- `/litigation-legal:案件工作区 new <标识>` —— 创建新案件工作空间，运行简短立案，写入 `案件档案.md`
-- `/litigation-legal:案件工作区 list` —— 列出案件附状态和活跃标注
-- `/litigation-legal:案件工作区 switch <标识>` —— 设置活跃案件
-- `/litigation-legal:案件工作区 close <标识>` —— 归档案件（移至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_归档/`，永不得删除）
-- `/litigation-legal:案件工作区 none` —— 解除任何活跃案件，仅以执业层面工作
+- `/litigation-legal:matter-workspace new <slug>` —— 创建新案件工作空间，运行简短立案，写入 `matter.md`
+- `/litigation-legal:matter-workspace list` —— 列出案件附状态和活跃标注
+- `/litigation-legal:matter-workspace switch <slug>` —— 设置活跃案件
+- `/litigation-legal:matter-workspace close <slug>` —— 归档案件（移至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_archived/`，永不得删除）
+- `/litigation-legal:matter-workspace none` —— 解除任何活跃案件，仅以执业层面工作
 
-注：`/litigation-legal:案件简报 [标识]`（无子命令）是产出特定案件简报的单独命令——用于案件组合审查。案件工作空间管理在此。
+注：`/litigation-legal:matter-briefing [slug]`（无子命令）是产出特定案件简报的单独命令——用于案件组合审查。案件工作空间管理在此。
 
 ## 指示
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 确认 `## 案件工作空间` 节已填充。若 `启用` 为 `✗`，告诉用户："案件工作空间已关闭——您配置为企业法务执业只有一个委托人，插件自动从执业层面上下文工作。若您实际跨多个委托人工作，重新运行 `/litigation-legal:冷启动面谈 --redo` 并选择律所执业设置。否则，您完全不需要 `/案件工作区`。"不报错——对企业法务用户而言，禁用状态是预期状态。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` —— 确认 `## 案件工作空间` 节已填充。若 `启用` 为 `✗`，告诉用户："案件工作空间已关闭——您配置为企业法务执业只有一个委托人，插件自动从执业层面上下文工作。若您实际跨多个委托人工作，重新运行 `/litigation-legal:cold-start-interview --redo` 并选择律所执业设置。否则，您完全不需要 `/matter-workspace`。"不报错——对企业法务用户而言，禁用状态是预期状态。
 2. 遵循以下工作流程和参考。
 3. 以 `$ARGUMENTS` 的第一个标记分发：
-   - `new` → 运行立案面谈，写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<标识>/案件档案.md`，种子 `办案日志.md` 和 `笔记.md`。
-   - `list` → 枚举 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/*/案件档案.md`，打印表格，标注活跃案件。
+   - `new` → 运行立案面谈，写入 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/<slug>/matter.md`，种子 `history.md` 和 `notes.md`。
+   - `list` → 枚举 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/*/matter.md`，打印表格，标注活跃案件。
    - `switch` → 更新执业层面 CLAUDE.md 中的 `活跃案件:` 行。
-   - `close` → 将 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<标识>/` 移至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_归档/<标识>/`，在 `办案日志.md` 中记录结案日期。
+   - `close` → 将 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/<slug>/` 移至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_archived/<slug>/`，在 `history.md` 中记录结案日期。
    - `none` → 设置 `活跃案件:` 为 `none —— 仅执业层面上下文`。
 4. 向用户展示变更并在写入前确认。
 
@@ -34,7 +34,7 @@ argument-hint: "<new | list | switch | close | none> [标识]"
 
 - 技能永不得跨案件读取，除非执业层面 CLAUDE.md 中的 `跨案件上下文` 为 `开启`。
 - 归档非删除——已结案件保留可读性以供留存/利益冲突目的（《律师业务档案管理办法》要求至少保存10年）。
-- 标识为小写加连字符。若标识在归档和活跃中重复使用，归档者在 `_归档/<标识>/` 下保留。
+- 标识为小写加连字符。若标识在归档和活跃中重复使用，归档者在 `_archived/<slug>/` 下保留。
 
 ---
 
@@ -42,28 +42,28 @@ argument-hint: "<new | list | switch | close | none> [标识]"
 
 律所律师（独立执业、小型、中型、大型律所）跨多个委托人案件工作。中国律所实务中，同一律所可能同时代理多个不同委托人——律师职业道德要求严格隔离：一个案件的上下文不得泄露至另一个。利益冲突检索是每个新案件的前置条件。《律师法》和《律师执业管理办法》要求律所建立利益冲突审查制度。
 
-**默认状态为关闭。** 企业法务用户永不会看到此功能——他们仅以执业层面运行。案件工作空间在冷启动时为律所执业用户开启，或通过在执业层面 CLAUDE.md 中编辑 `## 案件工作空间`。若 `启用` 为 `✗`，本技能不运行；`/案件工作区` 技能解释禁用状态并建议对实际需要案件隔离的用户运行 `/冷启动面谈 --redo`。
+**默认状态为关闭。** 企业法务用户永不会看到此功能——他们仅以执业层面运行。案件工作空间在冷启动时为律所执业用户开启，或通过在执业层面 CLAUDE.md 中编辑 `## 案件工作空间`。若 `启用` 为 `✗`，本技能不运行；`/matter-workspace` 技能解释禁用状态并建议对实际需要案件隔离的用户运行 `/cold-start-interview --redo`。
 
 ## 存储布局
 
 所有案件数据存放于：
 
 ```
-~/.claude/plugins/config/claude-for-legal/litigation-legal/
+~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/
 ├── CLAUDE.md                       # 执业层面执业画像
 └── matters/
-    ├── <标识>/
-    │   ├── 案件档案.md               # 委托人、对方当事人、案由、受理法院、关键事实
-    │   ├── 办案日志.md              # 带日期的事件、决定、程序进展
-    │   ├── 笔记.md                # 自由形式工作笔记
+    ├── <slug>/
+    │   ├── matter.md               # 委托人、对方当事人、案由、受理法院、关键事实
+    │   ├── history.md              # 带日期的事件、决定、程序进展
+    │   ├── notes.md                # 自由形式工作笔记
     │   └── outputs/                # 本案件技能输出（可选子文件夹）
     │       ├── 起诉状/
     │       ├── 答辩状/
     │       ├── 代理词/
     │       ├── 证据/
     │       └── 裁判文书/
-    └── _归档/
-        └── <标识>/                 # 已结案件——可读但不活跃
+    └── _archived/
+        └── <slug>/                 # 已结案件——可读但不活跃
 ```
 
 标识为小写加连字符。示例：`shenzhen-tech-ht-2026`、`zhang-ldht-2026`、`li-mmf-2025`。
@@ -90,10 +90,10 @@ argument-hint: "<new | list | switch | close | none> [标识]"
 ### 案件文件夹内容参考
 
 ```
-matters/<标识>/
-├── 案件档案.md              # 案件基本信息
-├── 办案日志.md              # 程序进展记录
-├── 笔记.md                  # 律师工作笔记
+matters/<slug>/
+├── matter.md              # 案件基本信息
+├── history.md              # 程序进展记录
+├── notes.md                  # 律师工作笔记
 ├── outputs/
 │   ├── 委托代理合同/
 │   ├── 授权委托书/
@@ -112,9 +112,9 @@ matters/<标识>/
 
 ## 子命令逻辑
 
-### `new <标识>`
+### `new <slug>`
 
-1. 确认标识在 `matters/<标识>/` 或 `matters/_归档/<标识>/` 中不存在。若重复，请用户选择不同标识。
+1. 确认标识在 `matters/<slug>/` 或 `matters/_archived/<slug>/` 中不存在。若重复，请用户选择不同标识。
 2. **提出利益冲突检索：**
 
    > 立案前，请确认已完成利益冲突检索——在律所管理系统中检索对方当事人是否与本所现有/过往委托人存在利益冲突。
@@ -135,45 +135,45 @@ matters/<标识>/
    - **委托代理范围**（一般代理/特别授权/全权代理——注意区别）
    - **收费方式**（固定收费/小时计费/风险代理/混合——注意风险代理不得适用于部分案件类型）
    - **关联案件**（任何关联案件的标识）
-4. 使用以下模板写入 `matters/<标识>/案件档案.md`。
-5. 以单独"立案"条目种子 `matters/<标识>/办案日志.md`。
-6. 创建空的 `matters/<标识>/笔记.md`。
-7. **不**自动切换至新案件。询问："现在切换到 `<标识>`？（`/litigation-legal:案件工作区 switch <标识>`）"
+4. 使用以下模板写入 `matters/<slug>/matter.md`。
+5. 以单独"立案"条目种子 `matters/<slug>/history.md`。
+6. 创建空的 `matters/<slug>/notes.md`。
+7. **不**自动切换至新案件。询问："现在切换到 `<slug>`？（`/litigation-legal:matter-workspace switch <slug>`）"
 
 ### `list`
 
-枚举 `matters/*/案件档案.md`。读取各文件的前置元数据或前几行提取状态。打印表格：
+枚举 `matters/*/matter.md`。读取各文件的前置元数据或前几行提取状态。打印表格：
 
 | 标识 | 委托人 | 案由 | 立场 | 受理法院 | 状态 | 立案日期 | 活跃 |
 |---|---|---|---|---|---|---|---|
 
-以 `*` 标注当前活跃案件。如有归档案件，在单独"已归档"标题下列出 `_归档/*`。
+以 `*` 标注当前活跃案件。如有归档案件，在单独"已归档"标题下列出 `_archived/*`。
 
-### `switch <标识>`
+### `switch <slug>`
 
-1. 确认 `matters/<标识>/案件档案.md` 存在。若不存在，提议 `/litigation-legal:案件工作区 new <标识>`。
-2. 在执业层面 CLAUDE.md 中将 `活跃案件:` 行编辑为 `活跃案件: <标识>`。
-3. 向用户展示案件档案.md摘要，以确认在正确案件上。
+1. 确认 `matters/<slug>/matter.md` 存在。若不存在，提议 `/litigation-legal:matter-workspace new <slug>`。
+2. 在执业层面 CLAUDE.md 中将 `活跃案件:` 行编辑为 `活跃案件: <slug>`。
+3. 向用户展示matter.md摘要，以确认在正确案件上。
 
-### `close <标识>`
+### `close <slug>`
 
-1. 确认 `matters/<标识>/` 存在。
-2. 追加"已结案"条目至 `matters/<标识>/办案日志.md` 附今日日期。
-3. 移动 `matters/<标识>/` → `matters/_归档/<标识>/`。
+1. 确认 `matters/<slug>/` 存在。
+2. 追加"已结案"条目至 `matters/<slug>/history.md` 附今日日期。
+3. 移动 `matters/<slug>/` → `matters/_archived/<slug>/`。
 4. 若结案案件为活跃案件，设置 `活跃案件:` 为 `none —— 仅执业层面上下文`。
 
 ### `none`
 
 在执业层面 CLAUDE.md 中设置 `活跃案件:` 为 `none —— 仅执业层面上下文`。与用户确认。
 
-## `案件档案.md` 模板
+## `matter.md` 模板
 
 ```markdown
 [工作成果抬头——根据插件配置 ## 输出——因角色不同；见执业层面 CLAUDE.md 中 `## 使用人身份`]
 
 # 案件：[委托人] —— [简短描述]
 
-**标识：** [标识]
+**标识：** [slug]
 **立案日期：** [年-月-日]
 **状态：** 活跃
 **保密级别：** [标准 / 升级 / 洁净团队]
@@ -226,7 +226,7 @@ matters/<标识>/
 [若为升级或洁净团队，描述原因。谁可查看案件文件。即使全局开启，跨案件上下文是否可允许。]
 ```
 
-## `办案日志.md` 种子
+## `history.md` 种子
 
 ```markdown
 # 办案日志：[委托人] —— [简短描述]
@@ -237,9 +237,9 @@ matters/<标识>/
 
 ## [年-月-日] —— 案件立案
 
-立案完成。标识：`[标识]`。状态：活跃。
+立案完成。标识：`[slug]`。状态：活跃。
 委托代理合同：[已签署/待签署]。利益冲突检索：[已完成/无冲突]。
-[任何超越案件档案.md值得保留的初始背景——如"收到委托人咨询后立案。对方当事人尚未起诉但已发律师函。"。]
+[任何超越matter.md值得保留的初始背景——如"收到委托人咨询后立案。对方当事人尚未起诉但已发律师函。"。]
 ```
 
 ## 跨案件上下文
@@ -254,4 +254,4 @@ matters/<标识>/
 - **执行留存政策。** 结案归档案件；不删除。留存政策（至少10年 per《律师业务档案管理办法》）由律所管理——本技能确保文件结构支持归档。
 - **自动路由输出。** 实体技能决定写入何处；本技能告诉它*哪个文件夹*活跃，而非放入什么。
 - **决定跨案件是否适当。** 读取标志并遵守。
-- **签署委托代理合同或授权委托书。** 这些是律师-客户关系的正式文件，由律师亲自处理。
+- **签署委托代理合同或授权委托书。** 这些是确立委托关系、保密义务和授权范围的正式文件，由律师亲自处理。

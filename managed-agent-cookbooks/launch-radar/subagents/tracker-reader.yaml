@@ -26,9 +26,9 @@ tools:
   - { type: mcp_toolset, mcp_server_name: atlassian, default_config: { enabled: true } }
   - { type: mcp_toolset, mcp_server_name: asana,     default_config: { enabled: true } }
 mcp_servers:
-  - { type: url, name: linear,    url: "${LINEAR_MCP_URL:-TBD-待定中文数据源}" }
-  - { type: url, name: atlassian, url: "${ATLASSIAN_MCP_URL:-TBD-待定中文数据源}" }
-  - { type: url, name: asana,     url: "${ASANA_MCP_URL:-TBD-待定中文数据源}" }
+  - { type: url, name: linear,    url: "${LINEAR_MCP_URL}" }
+  - { type: url, name: atlassian, url: "${ATLASSIAN_MCP_URL}" }
+  - { type: url, name: asana,     url: "${ASANA_MCP_URL}" }
 skills: []
 callable_agents: []
 output_schema:

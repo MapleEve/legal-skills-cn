@@ -16,38 +16,38 @@
 /legal-builder-hub:cold-start-interview
 ```
 
-你的配置存放在 `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md`，不受插件升级影响。
+你的配置存放在 `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/CLAUDE.md`，不受插件升级影响。
 
 ## 安全姿态
 
 已安装的社区技能在你的环境中运行，可以访问你的客户数据、案件文件和团队操作手册。本 hub 将每一次安装和每一次更新都视为一次信任决策。四层防御，每一层单独都不足够：
 
-- **白名单（管理员控制）：** `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/allowlist.yaml` 声明了社区技能可以使用哪些注册库、发布者和 MCP 连接器。`restrictive`（严格）模式（推荐用于律所/企业部署）拒绝白名单之外的任何来源；`permissive`（宽松）模式对未列出的来源发出警告。白名单在安装器读取任何第三方内容之前先被检查。模式说明详见 `skills/skill-installer/references/allowlist.md`。
+- **白名单（管理员控制）：** `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/allowlist.yaml` 声明了社区技能可以使用哪些注册库、发布者和 MCP 连接器。`restrictive`（严格）模式（推荐用于律所/企业部署）拒绝白名单之外的任何来源；`permissive`（宽松）模式对未列出的来源发出警告。白名单在安装器读取任何第三方内容之前先被检查。模式说明详见 `skills/skill-installer/references/allowlist.md`。
 - **原始源码，而非摘要：** 安装器向你展示完整的原始 `SKILL.md` —— 不是 AI 摘要 —— 然后才写入任何文件。摘要是便利；想做坏事的技能必须在原始文本中做，而原始文本展示会让它暴露。
 - **启发式扫描：** 安装器和 `skills-qa` 都会扫描技能中的提示注入模式（覆盖/权威声明、越权读写、外部 URL、隐藏 Unicode、Shell 执行、凭证请求）。这些是 AI 启发式扫描，明确标注为此类 —— 一次干净的扫描不是安全审计，而是提示你亲自阅读文本。
 - **每次都需要人工批准：** 没有用户新输入的 `yes`，任何文件都不会被写入磁盘。批准不从之前的消息中推断。作为纵深防御，安装器建议在读-only 子智能体中运行获取/分析阶段，这样 Write 能力仅在批准后才可用。
 
 更新采用相同的安全姿态：自动更新器锁定到 commit SHA（而非可变标签），显示完整差异（包括 hooks 和 MCP 变更），并每次更新都需要明确的批准。不存在自动应用模式。
 
-如果已安装技能出现问题：`/legal-builder-hub:disable [技能名]` 使其静默而不删除文件；`/legal-builder-hub:uninstall [技能名]` 将其完全删除。两者都仅限于通过本 hub 安装的社区技能 —— 它们拒绝触碰第一方插件技能。
+如果已安装技能出现问题：`/legal-builder-hub:disable [skill-name]` 使其静默而不删除文件；`/legal-builder-hub:uninstall [skill-name]` 将其完全删除。两者都仅限于通过本 hub 安装的社区技能 —— 它们拒绝触碰第一方插件技能。
 
 ## 前置条件
 
 - 来自 registry-sync 智能体的 Slack 通知需要你的环境中配置了 Slack MCP 服务器。没有的话，智能体将摘要写入文件。
-- `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` 中的默认注册库列表初始为社区推荐项。通过 `/legal-builder-hub:registry-browser` 添加你信任的注册库，或直接编辑配置文件。
+- `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/CLAUDE.md` 中的默认注册库列表初始为社区推荐项。通过 `/legal-builder-hub:registry-browser` 添加你信任的注册库，或直接编辑配置文件。
 
 ## 命令
 
 | 命令 | 功能 |
 |---|---|
 | `/legal-builder-hub:cold-start-interview` | 业务档案 + 入门技能包推荐 |
-| `/legal-builder-hub:registry-browser [查询]` | 在已关注的注册库中搜索技能 |
-| `/legal-builder-hub:skill-installer [技能]` | 安装社区技能 |
+| `/legal-builder-hub:registry-browser [query]` | 在已关注的注册库中搜索技能 |
+| `/legal-builder-hub:skill-installer [skill]` | 安装社区技能 |
 | `/legal-builder-hub:auto-updater` | 检查已安装技能的更新 |
 | `/legal-builder-hub:related-skills-surfacer` | 根据你近期的操作推荐相关技能 |
-| `/legal-builder-hub:skills-qa [技能]` | 在安装前对照法律技能设计框架评估一项技能 |
-| `/legal-builder-hub:disable [技能]` | 禁用已安装的社区技能但不删除文件 |
-| `/legal-builder-hub:uninstall [技能]` | 卸载通过本 hub 安装的社区技能 |
+| `/legal-builder-hub:skills-qa [skill]` | 在安装前对照法律技能设计框架评估一项技能 |
+| `/legal-builder-hub:disable [skill]` | 禁用已安装的社区技能但不删除文件 |
+| `/legal-builder-hub:uninstall [skill]` | 卸载通过本 hub 安装的社区技能 |
 
 ## 技能
 
@@ -73,14 +73,14 @@
 
 ## 已关注注册库（默认）
 
-默认白名单预配置了社区注册库。编辑仓库中的 `references/allowlist-default.yaml`，或编辑你的个人配置文件 `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/allowlist.yaml`，来添加、删除或在严格/宽松模式之间切换。
+默认白名单预配置了社区注册库。编辑仓库中的 `references/allowlist-default.yaml`，或编辑你的个人配置文件 `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/allowlist.yaml`，来添加、删除或在严格/宽松模式之间切换。
 
 - **TBD** —— 待定中文法律技能社区 —— URL 待定
 - 通过 `/legal-builder-hub:registry-browser` 添加你自己的注册库
 
 ## 它如何学习
 
-你在 `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` 中的业务档案不是静态的 —— 它随着你使用插件而改进。本 hub 在每次 `/legal-builder-hub:registry-browser` 和 `/legal-builder-hub:related-skills-surfacer` 时重新读取它，因此调整你的业务类型、行业或已关注注册库会使未来的推荐更精准。直接编辑文件，或在工作变化时重新运行 `/legal-builder-hub:cold-start-interview --redo`。
+你在 `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/CLAUDE.md` 中的业务档案不是静态的 —— 它随着你使用插件而改进。本 hub 在每次 `/legal-builder-hub:registry-browser` 和 `/legal-builder-hub:related-skills-surfacer` 时重新读取它，因此调整你的业务类型、行业或已关注注册库会使未来的推荐更精准。直接编辑文件，或在工作变化时重新运行 `/legal-builder-hub:cold-start-interview --redo`。
 
 ## 注意事项
 

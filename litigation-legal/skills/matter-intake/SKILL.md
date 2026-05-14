@@ -1,18 +1,18 @@
 ---
-name: 案件立案
-description: 新案件收案立案——统一完成收案审批、利益冲突检索、风险分诊、重要性评估、委托代理合同、授权委托书、收费协议；写入案件档案.md和办案日志.md，追加结构化行至_log.yaml。适用场景：用户说"新案件""立案""收案"或欲将新案件纳入案件管理。
+name: matter-intake
+description: 新案件收案立案——统一完成收案审批、利益冲突检索、风险分诊、重要性评估、委托代理合同、授权委托书、收费协议；写入matter.md和history.md，追加结构化行至_log.yaml。适用场景：用户说"新案件""立案""收案"或欲将新案件纳入案件管理。
 argument-hint: "[可选 案件名称]"
 ---
 
-# /案件立案
+# /matter-intake
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 风险校准（用于分诊）、执业场景（利益冲突方法）、利益相关方。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准（用于分诊）、执业场景（利益冲突方法）、利益相关方。
 2. 遵循以下工作流程和参考。
 3. 运行统一收案程序：识别、利益冲突检索、来源、风险评估、重要性、委托代理、收费方案、关键日期、初始诉讼策略。
 4. 从案件名称生成标识（小写、连字符、年份）。
-5. 创建 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 完整叙述性立案档案。
-6. 创建 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 以收案为第一条记录种子。
-7. 追加结构化行至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`。
+5. 创建 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` —— 完整叙述性立案档案。
+6. 创建 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` —— 以收案为第一条记录种子。
+7. 追加结构化行至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml`。
 8. 与用户确认："这是我即将写入的内容——有需要修改的吗？"
 
 ---
@@ -38,8 +38,8 @@ argument-hint: "[可选 案件名称]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 风险校准（分诊阈值、重要性）、执业场景（利益相关方）。
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 确认标识唯一性。
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` —— 风险校准（分诊阈值、重要性）、执业场景（利益相关方）。
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 确认标识唯一性。
 
 ## 收案程序
 
@@ -187,14 +187,14 @@ argument-hint: "[可选 案件名称]"
 
 写入前确认标识在 `_log.yaml` 中唯一。
 
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md`
+### `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md`
 
 ```markdown
 [工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
 # [案件名称]
 
-**标识：** [标识]
+**标识：** [slug]
 **收案日期：** [年-月-日]
 **己方角色：** [原告/被告等]
 **状态：** [状态]
@@ -271,7 +271,7 @@ argument-hint: "[可选 案件名称]"
 | 授权委托书 | [路径或"待取得"] |
 ```
 
-### `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`
+### `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`
 
 以收案为第一条记录种子：
 
@@ -287,7 +287,7 @@ argument-hint: "[可选 案件名称]"
 [来源、委托人、初步评估摘要、承办律师指派、收费安排]
 ```
 
-### 追加至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 追加至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml`
 
 按模式添加行。示例：
 

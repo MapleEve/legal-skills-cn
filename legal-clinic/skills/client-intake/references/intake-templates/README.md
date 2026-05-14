@@ -1,14 +1,15 @@
 # Practice-Area Intake Templates
 
-Populated at cold-start from the professor's intake form(s). If none provided,
-`/client-intake` uses the default question sets in `client-intake/SKILL.md` Step 2.
+由指导教师在冷启动时提供或确认接待表。若未提供，`/client-intake` 使用 `client-intake/SKILL.md` Step 2 中的默认问题集，并在输出中标记需要指导教师复核。
 
-One file per practice area the clinic handles:
+每个业务领域一个文件：
 
-- `immigration.md` — status, entry, prior applications, country conditions, family, criminal history, timeline
-- `housing.md` — housing type, what happened, lease/payment, habitability, timeline
-- `family.md` — relationship, children, safety, existing orders, timeline
-- `consumer.md` — debt type, who's contacting, documentation, filed against, timeline
+- `labor-dispute.md` — 劳动关系、岗位工资、入离职时间、欠薪/加班/工伤/解除、仲裁时效、证据材料
+- `marriage-family.md` — 婚姻关系、子女抚养、财产债务、人身安全、既有文书、调解或诉讼进展
+- `consumer-rights.md` — 商品/服务、付款记录、合同或订单、质量问题、商家沟通、平台投诉、损失证据
+- `housing-lease-property.md` — 租赁/物业关系、合同、押金/租金/物业费、房屋状态、维修通知、腾退或催缴进展
+- `traffic-accident.md` — 事故经过、责任认定、伤情和医疗、保险、车辆损失、调解/诉讼状态
+- `administrative-review-litigation.md` — 行政行为、文书送达、复议/诉讼期限、申请人资格、证据和救济请求
+- `legal-aid-application.md` — 申请人身份、经济困难材料、案件类型、紧急期限、授权委托、法律援助审批和指派状态
 
-Each template: the questions to ask, in the order to ask them, with notes on
-sensitive handling (e.g., criminal history in immigration — explain why asking).
+每个模板应包含：接待问题、提问顺序、必要证据清单、期限复核点、隐私保护提示、是否需要指导教师立即介入，以及结案归档时应保留的材料。

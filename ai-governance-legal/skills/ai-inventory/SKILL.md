@@ -1,5 +1,5 @@
 ---
-name: AI系统清单
+name: ai-inventory
 description: >
   企业AI系统登记册——按系统跟踪AI清单，逐系统标注（用途/数据/算法/
   安全评估/备案状态/科技伦理审查），按《生成式AI服务管理暂行办法》分类角色
@@ -10,7 +10,7 @@ description: >
 argument-hint: "[list | add | edit <id> | classify <id> | show <id>]"
 ---
 
-# /AI系统清单
+# /ai-inventory
 
 ## 触发场景
 

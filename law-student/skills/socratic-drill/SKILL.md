@@ -1,5 +1,5 @@
 ---
-name: 问答式案例研习
+name: socratic-drill
 description: >
   问答式案例研习——以真实或模拟案例为基础，不断追问法律要件、证据分析、法律适用，
   训练法律思维。不给答案，推动学生自己推理出来。
@@ -11,7 +11,7 @@ argument-hint: "[科目或主题]"
 
 ## 程序步骤
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 学习风格、课程、薄弱领域。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 学习风格、课程、薄弱领域。
 2. 就主题提问。等待回答。
 3. 追问。提出后续问题。不给答案。
 4. 只在学生推理出来（或真正卡住）后才确认或纠正。

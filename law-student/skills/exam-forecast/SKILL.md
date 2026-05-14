@@ -1,5 +1,5 @@
 ---
-name: 考试预测
+name: exam-forecast
 description: >
   分析同一老师的历年试卷以发现出题模式——科目权重、重复出现的考点陷阱、
   偏好的案例分析类型、论述题vs.选择题配比——预测即将到来的考试的重点。
@@ -8,9 +8,9 @@ description: >
 argument-hint: "[课程名称，附带历年试卷或试卷路径]"
 ---
 
-# /考试预测
+# /exam-forecast
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 课程、老师、考试格式、教学大纲。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程、老师、考试格式、教学大纲。
 2. 使用以下工作流。
 3. 读取历年试卷（至少2-3份）。按考试类型和科目特征编码每个题目。
 4. 分析模式：知识点分布、题型偏好、案例分析风格、法条vs.理论配比。

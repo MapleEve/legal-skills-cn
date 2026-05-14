@@ -1,12 +1,12 @@
 ---
-name: 保密审查清单
+name: privilege-log-review
 description: 首轮证据保密审查——识别含保密信息的证据，区分律师工作成果与商业秘密，标记保密等级，制作保密证据清单，标注疑难项供律师审阅。适用场景：用户说"审核保密审查清单""保密证据整理""证据保密审查""检查这些文件的保密性"，或在证据交换前需对拟提交证据做保密筛选。
 argument-hint: "[证据文件路径或文件集合]"
 ---
 
-# /保密审查清单
+# /privilege-log-review
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 审查规程、保密清单格式。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 审查规程、保密清单格式。
 2. 遵循以下工作流程和参考。
 3. 逐份审查：明显保密 / 明显不保密 / 需律师审阅。标注原因和保密等级。
 4. 输出：已审核保密证据清单。律师在提交法院或证据交换前审阅全部标注。
@@ -36,7 +36,7 @@ argument-hint: "[证据文件路径或文件集合]"
 
 ## 案件上下文
 
-**案件上下文。** 检查执业级别 CLAUDE.md 中的 `## 案件工作空间`。对于 litigation-legal，默认是 `Enabled: ✓`——每个案件有独立工作空间。如 `Enabled` 为 `✗`（你因每次只做一个案件而关闭），跳过本段其余内容，使用执业级别上下文。如已启用且无活跃案件，询问："这是哪个案件？运行 `/litigation-legal:案件工作空间 switch <标识>` 或说 `执业级别`。"加载活跃案件的 `案件档案.md` 获取案件特定上下文和替代规则。将输出写入案件文件夹 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/<案件标识>/`。除非 `跨案件上下文` 为 `on`，否则绝不读取其他案件的文件。
+**案件上下文。** 检查执业级别 CLAUDE.md 中的 `## 案件工作空间`。对于 litigation-legal，默认是 `Enabled: ✓`——每个案件有独立工作空间。如 `Enabled` 为 `✗`（你因每次只做一个案件而关闭），跳过本段其余内容，使用执业级别上下文。如已启用且无活跃案件，询问："这是哪个案件？运行 `/litigation-legal:matter-workspace switch <slug>` 或说 `执业级别`。"加载活跃案件的 `matter.md` 获取案件特定上下文和替代规则。将输出写入案件文件夹 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/<matter-slug>/`。除非 `跨案件上下文` 为 `on`，否则绝不读取其他案件的文件。
 
 ---
 
@@ -165,7 +165,7 @@ argument-hint: "[证据文件路径或文件集合]"
 
 ## 输出
 
-**在保密证据清单提交法院之前（这是产生法律后果的行为——包括向法院申请不公开质证、在证据交换中标记保密证据、向对方当事人披露或拒绝披露）：** 阅读 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。如果角色是非律师：
+**在保密证据清单提交法院之前（这是产生法律后果的行为——包括向法院申请不公开质证、在证据交换中标记保密证据、向对方当事人披露或拒绝披露）：** 阅读 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。如果角色是非律师：
 
 > 向法院提交保密证据清单和申请不公开质证具有法律后果——过度主张商业秘密可能导致法院不予支持并影响公信力；错误低估存在商业秘密泄露风险；不当披露可能无法撤回。您是否已与律师审查过？如果已审查，继续。如果未审查，以下是一份带去给律师的简要说明：
 >
@@ -178,7 +178,7 @@ argument-hint: "[证据文件路径或文件集合]"
 ```markdown
 [工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
 
-## 证据保密审查清单：[案件] —— [日期]
+## 证据保密审查清单：[case] —— [date]
 
 **适用规则：** [《民事诉讼法》第68条 / 《民事诉讼证据规定》第47条 / 地方规则 / 审判长令 —— 精确定位引文] `[待定——请核实时效性]`
 **已审查证据：** [N]

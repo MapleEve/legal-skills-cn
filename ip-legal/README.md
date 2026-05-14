@@ -21,7 +21,7 @@
 
 首次使用时，插件会进行访谈 —— 10至15分钟，对话式 —— 了解你执业实践的实际运作方式。会询问你从事的知识产权领域分布、管辖覆盖范围、维权姿态、审批矩阵和升级触发条件。然后询问你的资产清单、品牌指引（如有）、律师函模板（如有）、维权操作手册（如有）和开源合规政策（如有）—— 有何资料均可提供 —— 以便从中提取而非让你重新敲入。
 
-学到的内容写入 `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md` —— 一份关于你执业实践的简明文档，每个技能在运行前都会读取。你编辑这份文档，而非配置文件。
+学到的内容写入 `~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md` —— 一份关于你执业实践的简明文档，每个技能在运行前都会读取。你编辑这份文档，而非配置文件。
 
 ```
 /ip-legal:cold-start-interview
@@ -36,14 +36,14 @@
 | 命令 | 功能 |
 |---|---|
 | `/ip-legal:cold-start-interview` | 运行（或重新运行）首次访谈 |
-| `/ip-legal:cease-desist [背景]` | 律师函/侵权警告函 —— 发送或分流收到的来函，按 CLAUDE.md 配置的审批流程处理 |
-| `/ip-legal:takedown [背景]` | 通知-删除/反通知 —— 发送平台侵权通知、回应收到的侵权投诉、或起草反通知（依据《信息网络传播权保护条例》及《电子商务法》第42-43条） |
-| `/ip-legal:clearance [标识]` | 商标初步检索 —— 相同/近似检索 + 混淆可能性分析，律师仍需最终确认 |
-| `/ip-legal:fto-triage [产品 / 权利要求范围]` | 专利预警分析/自由实施分析初筛 —— 呈现可能构成阻碍的专利文献供律师审查 |
-| `/ip-legal:invention-intake [发明披露]` | 发明披露可专利性初评 —— 新颖性、创造性、实用性、宽限期、可检测性、战略价值 |
-| `/ip-legal:infringement-triage [背景]` | 侵权分流 —— 是否值得追究，及如何追究 |
-| `/ip-legal:ip-clause-review [文件]` | 审查协议中知识产权条款 —— 权利归属、许可授权、知识产权赔偿、开源声明保证 |
-| `/ip-legal:oss-review [代码库 / 文件列表]` | 开源许可证合规审查 —— copyleft义务、署名要求、许可证兼容性 |
+| `/ip-legal:cease-desist [background]` | 律师函/侵权警告函 —— 发送或分流收到的来函，按 CLAUDE.md 配置的审批流程处理 |
+| `/ip-legal:takedown [background]` | 通知-删除/反通知 —— 发送平台侵权通知、回应收到的侵权投诉、或起草反通知（依据《信息网络传播权保护条例》及《电子商务法》第42-43条） |
+| `/ip-legal:clearance [slug]` | 商标初步检索 —— 相同/近似检索 + 混淆可能性分析，律师仍需最终确认 |
+| `/ip-legal:fto-triage [product-or-claim-scope]` | 专利预警分析/自由实施分析初筛 —— 呈现可能构成阻碍的专利文献供律师审查 |
+| `/ip-legal:invention-intake [invention-disclosure]` | 发明披露可专利性初评 —— 新颖性、创造性、实用性、宽限期、可检测性、战略价值 |
+| `/ip-legal:infringement-triage [background]` | 侵权分流 —— 是否值得追究，及如何追究 |
+| `/ip-legal:ip-clause-review [file]` | 审查协议中知识产权条款 —— 权利归属、许可授权、知识产权赔偿、开源声明保证 |
+| `/ip-legal:oss-review [repo-or-file-list]` | 开源许可证合规审查 —— copyleft义务、署名要求、许可证兼容性 |
 | `/ip-legal:portfolio` | 注册与续展/年费追踪 —— 哪些已到期、已提交、需处理 |
 | `/ip-legal:matter-workspace` | 管理事项工作区（仅限多客户私人执业场景）—— 新建、列表、切换、关闭、取消 |
 
@@ -51,7 +51,7 @@
 
 | 技能 | 用途 |
 |---|---|
-| **cold-start-interview** | 首次访谈，写入 `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md` |
+| **cold-start-interview** | 首次访谈，写入 `~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md` |
 | **cease-desist** | 起草或分流律师函/侵权警告函；发送前经审批矩阵流转 |
 | **takedown** | 知识产权平台投诉通知（含《信息网络传播权保护条例》通知-删除、《电子商务法》第42-43条程序）、接收侵权投诉的响应或反通知 |
 | **clearance** | 对拟用标识的相同/近似检索 + 混淆可能性首轮分析 |
@@ -102,7 +102,7 @@
 
 10至15分钟。准备好资产清单、品牌指引（如有）、律师函模板（如有）和开源合规政策（如有）以供分享。
 
-配置存储在 `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`，不受插件更新影响。
+配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md`，不受插件更新影响。
 
 ### 2. 检索一个标识
 
@@ -150,14 +150,14 @@ ip-legal/
 插件从以下路径读取用户特定配置：
 
 ```
-~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md
+~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md
 ```
 
 此路径不受插件更新影响。插件附带的 `CLAUDE.md` 是模板 —— 每次升级均被替换。首次访谈将你的已填充版本写入上述配置路径；此后，当情况变化时直接编辑该文件。
 
 ## 插件如何持续学习
 
-`~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md` 中的执业画像并非一成不变 —— 随着你使用插件而不断完善。当技能输出使用了应调整的默认值时，技能会告知你。`ip-renewal-watcher` 智能体按你的频率追踪知识产权资产台账并提示即将到来的期限。你可以重新运行配置、直接编辑文件，或告知某技能记录新的立场。
+`~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md` 中的执业画像并非一成不变 —— 随着你使用插件而不断完善。当技能输出使用了应调整的默认值时，技能会告知你。`ip-renewal-watcher` 智能体按你的频率追踪知识产权资产台账并提示即将到来的期限。你可以重新运行配置、直接编辑文件，或告知某技能记录新的立场。
 
 ## 关键提示
 

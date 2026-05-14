@@ -20,11 +20,11 @@
 /employment-legal:cold-start-interview
 ```
 
-配置存储在 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`，插件升级后配置不丢失。
+配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`，插件升级后配置不丢失。
 
 ## 前置条件
 
-- **持久化数据路径。** 假期登记册、内部调查日志、合规跟踪器等数据写入 `~/.claude/plugins/config/claude-for-legal/employment-legal/` 目录（版本无关路径，插件升级后保留）。该目录包含涉密个人信息，请确保备份并做好访问控制。
+- **持久化数据路径。** 假期登记册、内部调查日志、合规跟踪器等数据写入 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/` 目录（版本无关路径，插件升级后保留）。该目录包含涉密个人信息，请确保备份并做好访问控制。
 - **法律检索工具。** 插件不内置实体法律规则（社保基数、最低工资标准、竞业限制补偿比例、各地工伤待遇标准等），所有地域性规则均在审查时实时检索并引注。请确保会话环境可访问法律数据库（如北大法宝、威科先行、中国裁判文书网等）或内部法务知识库。
 - **外部律师协作。** 重大疑难案件或新进入的省份/行业领域，建议引入当地外部律师复核。
 
@@ -35,11 +35,11 @@
 | `/employment-legal:cold-start-interview` | 冷启动访谈——了解用工地域分布和风险升级规则 |
 | `/employment-legal:hiring-review` | 录用通知书审查、竞业限制与保密协议审查、地域合规检查 |
 | `/employment-legal:termination-review` | 离职解雇审查（含过失性/无过失性/经济性裁员三类），高风险标记自动升级 |
-| `/employment-legal:policy-drafting [话题]` | 起草规章制度/员工手册，标注需地方性补充的条款 |
-| `/employment-legal:wage-hour-qa [问题]` | 工时工资合规问答（含996审查），按地域差异化回答 |
+| `/employment-legal:policy-drafting [topic]` | 起草规章制度/员工手册，标注需地方性补充的条款 |
+| `/employment-legal:wage-hour-qa [question]` | 工时工资合规问答（含996审查），按地域差异化回答 |
 | `/employment-legal:worker-classification` | 劳动关系vs劳务关系认定（依据劳社部发〔2005〕12号） |
-| `/employment-legal:expansion-kickoff [城市]` | 新城市/省份用工扩展规划启动 |
-| `/employment-legal:expansion-update [城市]` | 更新进行中的扩展合规跟踪 |
+| `/employment-legal:expansion-kickoff [city]` | 新城市/省份用工扩展规划启动 |
+| `/employment-legal:expansion-update [city]` | 更新进行中的扩展合规跟踪 |
 | `/employment-legal:investigation-open` | 启动内部调查事项 |
 | `/employment-legal:investigation-add` | 向进行中的调查添加文件、访谈记录或观察 |
 | `/employment-legal:investigation-query` | 针对进行中的调查日志提问 |
@@ -60,11 +60,11 @@
 
 ## 插件如何持续优化
 
-您的实践画像存储在 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`，随着使用不断优化。技能会告知您何时某个输出使用了应调整的默认值。您可以重新运行设置、直接编辑该文件，或告诉技能记录新的立场。
+您的实践画像存储在 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`，随着使用不断优化。技能会告知您何时某个输出使用了应调整的默认值。您可以重新运行设置、直接编辑该文件，或告诉技能记录新的立场。
 
 ## 说明
 
 - 地域差异化是本插件的核心价值。插件知道北京、上海、深圳等地的社保基数上下限、最低工资标准、劳动争议裁判倾向各有不同。
 - 离职审查不是替代与HR和业务负责人的沟通，而是一份检查清单，帮助发现每个人都可能遗漏的风险点。
 - 工时工资问答引用法规原文，但标记灰色地带供人工复核。用工分类决策后果严重，不可仅凭自动化判断。
-- 中国法律体系下的"律师-当事人保密特权"依据《律师法》第38条及《刑事诉讼法》相关规定，与美国"attorney work product"原则不同。内部法务文件在法律程序中并非当然受保护——请谨慎标记，并就敏感文件的外部律师协作策略咨询执业律师。
+- 中国法律体系下，应以律师保密义务、委托合同保密、商业秘密和个人信息保护、以及具体证据或监管调取规则判断披露风险。内部法务文件在法律程序中并非当然免于披露或调取——请谨慎标记，并就敏感文件的外部律师协作策略咨询执业律师。

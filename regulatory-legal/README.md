@@ -26,7 +26,7 @@
 |---|---|
 | `/regulatory-legal:cold-start-interview` | 首次访谈：监控清单 + 政策文件索引 + 重大性门槛设置 |
 | `/regulatory-legal:reg-feed-watcher` | 立即检查监管动态，报告最新变化 |
-| `/regulatory-legal:policy-diff [监管变化]` | 将特定监管变化与政策文件库逐一对比 |
+| `/regulatory-legal:policy-diff [regulatory-change]` | 将特定监管变化与政策文件库逐一对比 |
 | `/regulatory-legal:gaps` | 合规差距追踪 —— 已标注但尚未消除的项目 |
 | `/regulatory-legal:comments` | 审查公开征求意见中的法规/规章征求意见稿，记录决策，追踪意见提交期限 |
 | `/regulatory-legal:policy-redraft` | 消除某项合规差距的修改建议稿 —— 供内部审查的初稿，非对原始文档的直接编辑 |
@@ -67,7 +67,7 @@
 
 ## 插件如何持续学习
 
-`~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` 中的执业画像并非一成不变 —— 随着你使用插件而不断完善。当技能输出使用了应调整的默认值时，技能会告知你。`reg-change-monitor` 智能体监控监管动态来源并对照政策文件库标注变化。你可以重新运行配置、直接编辑文件，或告知某技能记录新的立场。
+`~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` 中的执业画像并非一成不变 —— 随着你使用插件而不断完善。当技能输出使用了应调整的默认值时，技能会告知你。`reg-change-monitor` 智能体监控监管动态来源并对照政策文件库标注变化。你可以重新运行配置、直接编辑文件，或告知某技能记录新的立场。
 
 ## 关键提示
 
@@ -85,4 +85,4 @@
 
 ## 配置
 
-你的配置存储在 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` 且不受插件更新影响 —— 配置只需运行一次。
+你的配置存储在 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` 且不受插件更新影响 —— 配置只需运行一次。

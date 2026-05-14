@@ -1,14 +1,14 @@
 ---
-name: 当事人沟通记录
+name: client-comms-log
 description: >
   记录法律援助当事人沟通——面谈、电话、短信、微信、邮件、信件。
   每案仅追加的记录日志，含带日期的条目、沟通方向、媒介、摘要、待办事项。
-  配合 `/当事人函件` 和 `/案件状态报告` 使用。
+  配合 `/client-letter` 和 `/status` 使用。
   当记录与当事人的沟通、查阅沟通日志或问"上次告诉当事人什么"时使用。
-argument-hint: "[案件编号] [--add(默认) | --read | --summary | --patterns]"
+argument-hint: "[case-id] [--add(默认) | --read | --summary | --patterns]"
 ---
 
-# /当事人沟通记录
+# /client-comms-log
 
 ## 目的
 
@@ -50,7 +50,7 @@ argument-hint: "[案件编号] [--add(默认) | --read | --summary | --patterns]
 - **日期时间：** 沟通发生的具体时间
 - **联系人：** 当事人的姓名（及与当事人关系，如是家属代为沟通）
 - **沟通摘要：** 讨论了什么、当事人反馈了什么、双方达成了什么共识
-- **行动事项/待办：** 需要做什么、谁负责、何时完成
+- **行动matters/待办：** 需要做什么、谁负责、何时完成
 - **后续跟进期限：** 如适用（如"已告知当事人3日内补充工资单"）
 
 ## 存储格式
@@ -65,7 +65,7 @@ argument-hint: "[案件编号] [--add(默认) | --read | --summary | --patterns]
 **跟进：** [是否需要后续跟进、何时]
 ```
 
-追加到 `~/.claude/plugins/config/claude-for-legal/legal-clinic/matters/<案件编号>/comms-log.md`。
+追加到 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/matters/<case-id>/comms-log.md`。
 
 ## 沟通记录规范
 

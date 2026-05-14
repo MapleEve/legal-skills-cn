@@ -1,5 +1,5 @@
 ---
-name: 案例分析写作训练
+name: irac-practice
 description: >
   对中国法案例分析框架写的主观题答案进行评分——评估结构、问题识别、
   法条准确性、分析深度和组织逻辑。不重写文章或展示标准答案；
@@ -8,9 +8,9 @@ description: >
 argument-hint: "[粘贴文章 或 草稿路径 或 --generate-hypo]"
 ---
 
-# /案例分析写作训练
+# /irac-practice
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 课程、考试格式、知识体系位置、学习风格。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程、考试格式、知识体系位置、学习风格。
 2. 使用以下框架。
 3. 确定模式：学生提供案例问题+答案，或技能生成案例问题、学生作答。
 4. 仔细阅读答案。对照中国法案例分析框架各组成部分进行映射。

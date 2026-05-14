@@ -1,5 +1,5 @@
 ---
-name: 主体合规
+name: entity-compliance
 description: 企业主体合规管理 — 工商年报、信息变更登记、备案、注销。监管机构：市场监督管理局+税务局+外汇管理局+商务部（外资企业适用）。当用户说"主体合规"、"工商年报"、"变更登记"、"备案到期"、"主体追踪器"、"哪些申报到期"时使用。
 argument-hint: "[--init | --report [--days N] | --update | --sweep | --audit | --export [--format csv|table]]"
 ---
@@ -35,7 +35,7 @@ argument-hint: "[--init | --report [--days N] | --update | --sweep | --audit | -
 
 ## 追踪器文件
 
-位于 `~/.claude/plugins/config/claude-for-legal/corporate-legal/entities/compliance-tracker.yaml`。
+位于 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/entities/compliance-tracker.yaml`。
 
 ## 核心合规事项
 

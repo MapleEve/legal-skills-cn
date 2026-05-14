@@ -1,32 +1,32 @@
 ---
-name: 学习训练
+name: session
 description: >
   在某个法学科目上运行N道题的集中学习训练——客观题（选择题）、
   主观题（案例分析/论述题）或闪卡。追踪表现并更新学习计划。
-  当用户说"给我出10道[科目]的题"、"做个[科目]的训练"、
-  "来5张[科目]的闪卡"或想训练固定数量的题目时使用。
-argument-hint: "<科目> <题数> [--客观题 | --主观题 | --闪卡]"
+  当用户说"给我出10道[subject]的题"、"做个[subject]的训练"、
+  "来5张[subject]的闪卡"或想训练固定数量的题目时使用。
+argument-hint: "<subject> <n> [--mbe | --essay | --flashcards]"
 ---
 
-# /学习训练
+# /session
 
 1. 解析 `$ARGUMENTS` — 科目和题数。如缺失，询问：
-   > 什么科目，多少道题？（例：`民法 10` 或 `刑法 5 --主观题`。）
+   > 什么科目，多少道题？（例：`民法 10` 或 `刑法 5 --essay`。）
 
-2. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 考试类型、薄弱科目、学习风格。
+2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 考试类型、薄弱科目、学习风格。
 
 3. 如存在则加载学习计划。读取该科目的训练历史以加权薄弱子知识点。
 
 4. 按方法标志路由：
-   - `--客观题`（法考备考默认）：运行N道选择题（含单选/多选/不定项）。
-   - `--主观题`：运行N道案例分析/论述题。按主观题评分标准评估。
-   - `--闪卡`：加载闪卡技能，以刷题模式运行N张卡片。
+   - `--mbe`（法考备考默认）：运行N道选择题（含单选/多选/不定项）。
+   - `--essay`：运行N道案例分析/论述题。按主观题评分标准评估。
+   - `--flashcards`：加载闪卡技能，以刷题模式运行N张卡片。
 
 5. 逐题运行。每题后解释对/错，标注法条依据或知识点漏洞。
 
 6. 训练结束写入结果：
    - 如学习计划存在：追加到训练历史。
-   - 如不存在：写入 `~/.claude/plugins/config/claude-for-legal/law-student/session-history.yaml`。
+   - 如不存在：写入 `~/.claude/plugins/config/claude-for-legal-cn/law-student/session-history.yaml`。
 
 7. 报告完整结果。
 
@@ -54,7 +54,7 @@ argument-hint: "<科目> <题数> [--客观题 | --主观题 | --闪卡]"
 每道题逐题处理，训练结束后总结：
 
 ```markdown
-# 学习训练报告 — [科目] — [日期]
+# 学习训练报告 — [subject] — [date]
 
 **训练类型：** [客观题/主观题/闪卡]
 **训练题数：** [N]

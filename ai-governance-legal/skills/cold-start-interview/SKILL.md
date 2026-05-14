@@ -1,5 +1,5 @@
 ---
-name: 冷启动访谈
+name: cold-start-interview
 description: >
   运行冷启动访谈——学习您的AI治理实践并写入配置文件。从您的AI政策、
   参考影响评估和关键供应商AI协议中提取信息。当实践配置缺失或包含
@@ -8,7 +8,7 @@ description: >
 argument-hint: "[--redo | --check-integrations]"
 ---
 
-# /冷启动访谈
+# /cold-start-interview
 
 ## 操作流程
 
@@ -38,7 +38,7 @@ AI治理态势差异巨大。本访谈在做任何其他事之前先搞清楚是
 
 ## 检查共享公司配置
 
-查找 `~/.claude/plugins/config/claude-for-legal/company-profile.md`：存在则读取并确认，跳过公司问题；不存在则第一个设置，询问公司问题并写入共享配置。
+查找 `~/.claude/plugins/config/claude-for-legal-cn/company-profile.md`：存在则读取并确认，跳过公司问题；不存在则第一个设置，询问公司问题并写入共享配置。
 
 ## 安装范围检查
 

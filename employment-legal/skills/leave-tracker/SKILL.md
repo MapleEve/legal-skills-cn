@@ -1,5 +1,5 @@
 ---
-name: 假期追踪
+name: leave-tracker
 description: >
   检查具有法定截止日期的员工假期，仅揭示需要决定或行动的事项。
   适用于企业法务/HR的管理场景——每周使用，或当律师需要知道哪些员工
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 ---
 
-# /假期追踪
+# /leave-tracker
 
 检查所有具有硬性法定截止日期的开放假期，仅揭示需要决定或行动的事项。不是状态看板——告诉您需要做什么以及为什么。
 
@@ -15,7 +15,7 @@ argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 
 1. 加载`假期追踪`代理并运行完整工作流。
 
-2. 如果没有HR系统连接且不存在`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`，提示律师上传假期表格或使用`/employment-legal:记录假期`添加条目。
+2. 如果没有HR系统连接且不存在`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/leave-register.yaml`，提示律师上传假期表格或使用`/employment-legal:log-leave`添加条目。
 
 3. 仅针对需要行动的假期发出提醒。正常进行中的假期每行一句话概括。
 
@@ -24,10 +24,10 @@ argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 ## 示例
 
 ```
-/employment-legal:假期追踪
+/employment-legal:leave-tracker
 ```
 
-每周运行一次——设置周一早上提醒来调用`/employment-legal:假期追踪`。
+每周运行一次——设置周一早上提醒来调用`/employment-legal:leave-tracker`。
 
 ---
 
@@ -158,7 +158,7 @@ argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 
 ### 步骤1：加载假期登记册
 
-从`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`（或HR系统接口）加载当前所有活跃假期。
+从`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/leave-register.yaml`（或HR系统接口）加载当前所有活跃假期。
 
 ### 步骤2：按假期类型分类
 
@@ -180,9 +180,9 @@ argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 仅列出需要行动的条目。格式：
 
 ```
-⚠️ [员工姓名] - [假期类型] - 截止日[日期] - 行动：[具体事项]
+⚠️ [员工姓名] - [假期类型] - 截止日[date] - 行动：[具体事项]
 🔴 [员工姓名] - [假期类型] - 问题描述 - 行动：[紧急处理事项]
-📋 [员工姓名] - [假期类型] - 截止日[日期] - 提示：[关注事项]
+📋 [员工姓名] - [假期类型] - 截止日[date] - 提示：[关注事项]
 ```
 
 ### 步骤5：汇总输出
@@ -203,13 +203,13 @@ argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 
 | 员工 | 假期类型 | 问题 | 截止日 | 行动建议 |
 |---|---|---|---|---|
-| [姓名] | [类型] | [描述] | [日期] | [行动] |
+| [姓名] | [type] | [描述] | [date] | [行动] |
 
 ### ⚠️ 14天内到期
 
 | 员工 | 假期类型 | 截止日 | 事项 | 行动建议 |
 |---|---|---|---|---|
-| [姓名] | [类型] | [日期] | [返岗/结算/评估] | [行动] |
+| [姓名] | [type] | [date] | [返岗/结算/评估] | [行动] |
 
 ### 📋 15-30天需关注
 

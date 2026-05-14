@@ -1,6 +1,6 @@
 {
-  "name": "法学生",
-  "version": "1.0.2",
+  "name": "law-student",
+  "version": "1.0.3",
   "description": "问答式案例研习、案例摘要、知识体系构建、法考训练（按报考地适配）、IRAC案例分析评分、学习计划制定——只引导思考，不替你写答案。",
   "author": {
     "name": "MapleEve"

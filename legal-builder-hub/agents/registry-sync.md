@@ -19,7 +19,7 @@ tools: ["Read", "Write", "WebFetch", "mcp__*__slack_send_message"]
 
 ## 做什么
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal/legal-builder-hub/CLAUDE.md` → 已关注注册库、已安装技能、更新偏好。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/CLAUDE.md` → 已关注注册库、已安装技能、更新偏好。
 2. 对每个注册库：获取索引，与上次同步记录比较。
 3. 新技能：按业务档案匹配度筛选，记录。
 4. 已更新技能：对照已安装列表检查，显示差异。
@@ -28,13 +28,13 @@ tools: ["Read", "Write", "WebFetch", "mcp__*__slack_send_message"]
 ## 输出
 
 ```
-🧰 **注册库同步 —— [日期]**
+🧰 **注册库同步 —— [date]**
 
 **已安装技能有可用更新：**
-• [技能名] —— [版本] → [版本] —— [一行更新说明]
+• [skill-name] —— [版本] → [版本] —— [一行更新说明]
 
 **匹配你业务档案的新技能：**
-• [技能名] 来自 [注册库] —— [描述]
+• [skill-name] 来自 [注册库] —— [描述]
 
 [如果自动更新已开启："已应用 N 项更新。"]
 ```

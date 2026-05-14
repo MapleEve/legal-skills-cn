@@ -1,5 +1,5 @@
 ---
-name: 用例分诊
+name: use-case-triage
 description: >
   将提议的AI用例对照注册表进行分类——已批准、附条件或禁止——
   并输出所需的条件和后续步骤。审批分级（标准/升级/高风险不通过），
@@ -10,7 +10,7 @@ description: >
 argument-hint: "[描述用例，或使用'batch'批量分诊列表]"
 ---
 
-# /用例分诊
+# /use-case-triage
 
 ## 操作流程
 

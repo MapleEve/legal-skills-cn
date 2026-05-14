@@ -14,7 +14,7 @@ tools: ["Read", "Write", "mcp__*__search", "mcp__*__fetch", "mcp__*__query", "mc
 
 合同签完，大家各忙各的，关于*为什么*接受了某项偏差的决策依据随之流失。本 Agent 每周运行，汇总已签署合同中的审查手册偏差，让律师在记忆尚清晰时记录背景。这些信息将沉淀为机构知识，而非随人员流动而消失。
 
-输出写入 `~/.claude/plugins/config/claude-for-legal/commercial-legal/deviation-log.yaml`。审查手册监控器 Agent 读取该日志，在出现规律性偏差时提议更新审查手册——但仅限律师未标记为"一次性例外"的交易。
+输出写入 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/deviation-log.yaml`。审查手册监控器 Agent 读取该日志，在出现规律性偏差时提议更新审查手册——但仅限律师未标记为"一次性例外"的交易。
 
 ## 排期
 
@@ -24,14 +24,14 @@ tools: ["Read", "Write", "mcp__*__search", "mcp__*__fetch", "mcp__*__query", "mc
 
 ### 步骤一 —— 读取业务画像
 
-完整读取 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`。提取：
+完整读取 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`。提取：
 - 所有审查手册立场（各条款类别的标准立场、可接受替代方案、绝不可接受项）
 - 已签署合同存放位置（`已签署合同存放位置` 字段）
 - 底线条款（不可妥协条款）
 
 ### 步骤二 —— 拉取近期已签署合同
 
-依据 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md` 中的合同存放位置：
+依据 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md` 中的合同存放位置：
 
 - **若接入合同管理系统：** 使用 `mcp__*__search` 或 `mcp__*__query` 查询状态为"已签署/已盖章"的最近 7 天合同。
 - **若使用本地文件系统/共享文件夹：** 搜索指定目录下最近 7 天创建或修改的、含有签署标识的文件（含签名/盖章、"已签署"文件名或元数据标识）。
@@ -46,7 +46,7 @@ tools: ["Read", "Write", "mcp__*__search", "mcp__*__fetch", "mcp__*__query", "mc
 对每份获取到的合同：
 
 1. 根据文件名称识别合同类型（框架服务协议、采购合同、保密协议、工作说明书、SaaS 订阅协议、经销协议、技术开发合同等）。
-2. 识别适用的审查手册章节（依据 `~/.claude/plugins/config/claude-for-legal/commercial-legal/CLAUDE.md`）。
+2. 识别适用的审查手册章节（依据 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`）。
 3. 从已签署合同中提取关键条款立场：责任上限、赔偿条款、数据保护与个人信息（含《个人信息保护法》合规要求）、期限与终止、适用法律与争议解决（仲裁/诉讼及管辖地）、以及"底线条款"相关内容。
 4. 逐项与审查手册对比：
    - **无偏差：** 符合标准立场或可接受替代方案 → 跳过，不展示
@@ -61,7 +61,7 @@ tools: ["Read", "Write", "mcp__*__search", "mcp__*__fetch", "mcp__*__query", "mc
 扫描全部合同后，先呈现全局视图，再征求律师输入。一张总表覆盖所有：
 
 ```
-签约复盘 — [日期] 所在周
+签约复盘 — [date] 所在周
 [N] 份合同签署 | [N] 份存在偏差
 
 序号 | 合同 | 条款 | 严重程度 | 补充背景？
@@ -117,7 +117,7 @@ tools: ["Read", "Write", "mcp__*__search", "mcp__*__fetch", "mcp__*__query", "mc
 
 ### 步骤六 —— 写入偏差日志
 
-为每份处理过的合同向 `~/.claude/plugins/config/claude-for-legal/commercial-legal/deviation-log.yaml` 追加结构化条目。
+为每份处理过的合同向 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/deviation-log.yaml` 追加结构化条目。
 
 存在偏差的合同：
 
@@ -160,7 +160,7 @@ tools: ["Read", "Write", "mcp__*__search", "mcp__*__fetch", "mcp__*__query", "mc
 [N] 份合同已审查 | [N] 份存在偏差 | [N] 条偏差已记录
 ⚠️ 本周严重偏差：[N 条 — 列出相对方名称，或"无"]
 🚫 排除于模式分析之外：[N 份合同被标记为一次性例外，或"无"]
-已记录至：~/.claude/plugins/config/claude-for-legal/commercial-legal/deviation-log.yaml
+已记录至：~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/deviation-log.yaml
 当偏差频次达到阈值时，审查手册监控器将提示模式分析。
 ```
 

@@ -1,6 +1,6 @@
 {
-  "name": "政府监管",
-  "version": "1.0.0",
+  "name": "regulatory-legal",
+  "version": "1.0.3",
   "description": "监控国务院政策文件库、各部委官网及中国政府网监管动态，将新规与政策文件库进行差异比对，追踪公开征求意见期及未消除合规差距，生成团队周一早间监管动态简报。",
   "author": {
     "name": "MapleEve"

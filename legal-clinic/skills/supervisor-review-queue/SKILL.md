@@ -1,5 +1,5 @@
 ---
-name: 指导教师审查队列
+name: supervisor-review-queue
 description: >
   法律援助诊所质量控制系统——学生拟定的文书和函件在此等待指导教师审查批准后方可对外发送。
   审查决定：退回修改（附反馈意见）/修改后通过/直接通过。
@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--approve ID | --return ID '反馈意见' | --edit ID]"
 ---
 
-# /指导教师审查队列
+# /supervisor-review-queue
 
 ## 目的
 

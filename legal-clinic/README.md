@@ -29,13 +29,13 @@
 | `/build-guide` | **指导教师。** 编写按业务领域的指引：接待问题、教学模式（辅助/引导/教学）、审查门槛、跨插件检查 | 不替代 `/cold-start-interview`——这是为某个业务领域调优技能 |
 | `/ramp` | **学生。** 学期入训：诊所流程、工具导览、模拟练习 | 不替代指导教师的入训指导 |
 | `/client-intake` | 结构化接待：业务领域模板、跨领域问题识别、冲突标记、分流 | 不决定是否受理案件 |
-| `/draft [文书]` | 初稿起草：劳动仲裁申请、答辩状、人身保护令申请、律师函——管辖地适配 | 不产出最终成果 |
+| `/draft [document]` | 初稿起草：劳动仲裁申请、答辩状、人身保护令申请、律师函——管辖地适配 | 不产出最终成果 |
 | `/memo` | IRAC框架的案件分析，检索空白已标记 | 不写分析——搭建分析框架 |
-| `/research-start [问题]` | 检索路线图：法条、案例领域、检索关键词 | **线索而非权威引注**——学生须核实一切 |
-| `/status [受众]` | 案件进展摘要：面向当事人、内部或法院 | 不做任何提交 |
-| `/client-letter [类型]` | 日常函件：预约确认、材料索取、简要更新 | 不做实质性建议——那是 `/status client` 或当面沟通的事 |
+| `/research-start [question]` | 检索路线图：法条、案例领域、检索关键词 | **线索而非权威引注**——学生须核实一切 |
+| `/status [audience]` | 案件进展摘要：面向当事人、内部或法院 | 不做任何提交 |
+| `/client-letter [type]` | 日常函件：预约确认、材料索取、简要更新 | 不做实质性建议——那是 `/status client` 或当面沟通的事 |
 | `/deadlines` | 案件期限追踪——添加、跨案件汇总、14/7/3/1天预警、逾期标记 | 不从触发事件自动推算期限；学生根据中国法院规则自行计算 |
-| `/client-comms-log [案件]` | 按案件的追加式沟通记录——电话、邮件、函件、面谈 | 不存储实质性法律分析；仅沟通记录 |
+| `/client-comms-log [case]` | 按案件的追加式沟通记录——电话、邮件、函件、面谈 | 不存储实质性法律分析；仅沟通记录 |
 | `/semester-handoff` | 学期末移交——为下届学生准备按案件的移交备忘录 | 不结案；学期末结案的案件生成最终 `/status internal` 备忘录并标记为已结案 |
 | `/supervisor-review-queue` | **指导教师，如启用正式审查。** 待审队列，批准/编辑/退回 | 可选——三种监督模式之一 |
 
@@ -88,7 +88,7 @@
 2. **可配置标记，非正式审查** — 特定触发条件给输出标注"请与指导教师确认"，无队列机制
 3. **轻量模式** — 所有内容均有标准保障标签，指导教师通过现有诊所结构（案件讨论会、一对一辅导）进行监督
 
-可通过编辑 `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` 后续更改。你的配置存储在该版本无关路径，插件更新不会覆盖。
+可通过编辑 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/CLAUDE.md` 后续更改。你的配置存储在该版本无关路径，插件更新不会覆盖。
 
 ## 学期轮换：`/ramp` 方案
 
@@ -141,7 +141,7 @@
 
 ## 如何学习进化
 
-你在 `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` 的执业档案不是静态的——它会随着你使用插件而不断优化。技能会告诉你某次输出使用了应调整的默认设置。你可以重新运行设置、直接编辑文件，或告诉某个技能记录新的偏好。
+你在 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/CLAUDE.md` 的执业档案不是静态的——它会随着你使用插件而不断优化。技能会告诉你某次输出使用了应调整的默认设置。你可以重新运行设置、直接编辑文件，或告诉某个技能记录新的偏好。
 
 ## 文件结构
 
@@ -152,7 +152,7 @@ legal-clinic/
 ├── CLAUDE.md                          # 指导教师诊所配置——冷启动写入
 ├── README.md
 ├── deadlines.yaml                     # 运营期限台账
-├── skills/                            # 每个技能同时是斜杠命令 /legal-clinic:<技能>
+├── skills/                            # 每个技能同时有对应斜杠命令，例如 /legal-clinic:cold-start-interview
 │   ├── cold-start-interview/          # 指导教师——一次性设置
 │   ├── build-guide/                   # 指导教师——按业务领域指引
 │   ├── ramp/                          # 学生——学期入训
@@ -168,7 +168,7 @@ legal-clinic/
 │   ├── deadlines/
 │   ├── client-comms-log/
 │   ├── semester-handoff/
-│   ├── form-generation/               # 已弃用 → /draft（仅保留参考）
+│   ├── form-generation/               # 已弃用 → /draft （仅保留参考）
 │   └── plain-language-letters/        # 已弃用 → /client-letter, /status client（仅保留参考）
 ├── handoffs/                          # NEW — 按学期移交备忘录
 │   └── [YYYY-term]/

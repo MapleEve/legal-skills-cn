@@ -1,5 +1,5 @@
 ---
-name: AI尽调工具交接
+name: ai-tool-handoff
 description: AI识别出的问题→人工复核→确认/修正→纳入尽调报告。检测到幂律智能、华宇元典或类似批量审查工具在使用中，将大批量条款提取交接给它，并根据信任级别质检其输出。当用户说"发送到AI审查"、"批量审查"、"AI提取"或当尽调遇到大批量类别时使用。
 ---
 
@@ -28,7 +28,7 @@ AI审查工具擅长一件事：读取500份合同并找到每条控制权变更
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md` → AI辅助审查部分
+- `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/CLAUDE.md` → AI辅助审查部分
 - 工具清单、信任级别、抽查比例
 
 如配置显示无AI工具：此技能为无操作。所有内容直接通过尽调问题提取。

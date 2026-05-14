@@ -1,5 +1,5 @@
 ---
-name: 供应商AI条款审查
+name: vendor-ai-review
 description: >
   对照中国AI治理法规审查供应商AI条款——协议、补充协议或服务条款中的AI条款；
   检查训练数据合规、模型变更通知、算法透明度、内容安全、算法备案、
@@ -13,7 +13,7 @@ argument-hint: "[供应商名称，或附上合同]"
 
 ## 程序步骤
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md`。确认供应商治理立场已填充——如果没有，停止并引导到设置。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md`。确认供应商治理立场已填充——如果没有，停止并引导到设置。
 2. 确认文件类型（AI补充协议/主协议AI条款/服务条款）。如果只提供了可接受使用政策，要求提供完整条款。
 3. 按以下审查清单逐条审查。
 4. 如存在数据处理协议但无AI补充协议，进行AI补充协议缺口检查。
@@ -49,7 +49,7 @@ argument-hint: "[供应商名称，或附上合同]"
 
 ## 加载手册
 
-读取 `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md` → `## 供应商AI治理`。同时读取 `## AI政策承诺`——如果公司已同意的内容与供应商条款不一致，供应商条款无法符合公司自身政策施加的使用限制。
+读取 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md` → `## 供应商AI治理`。同时读取 `## AI政策承诺`——如果公司已同意的内容与供应商条款不一致，供应商条款无法符合公司自身政策施加的使用限制。
 
 如果配置中包含 `[PLACEHOLDER]`，显示弹窗提供"临时模式"选项。
 
@@ -194,7 +194,7 @@ argument-hint: "[供应商名称，或附上合同]"
 # 供应商AI条款审查：[供应商名称]
 
 **审查文件：** [AI补充协议 / 主协议AI条款 / 服务条款]
-**审查日期：** [日期]
+**审查日期：** [date]
 **审查人：** [姓名]
 **用例：** [公司部署此供应商AI的具体用途]
 **风险等级：** [标准 / 升级 / 高风险]

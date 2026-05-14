@@ -33,7 +33,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 
 不追踪：事假、婚假、丧假、探亲假等无法定硬性截止日期或核心决策节点的假期。
 
-> **在依赖追踪器之前，先检索适用的制度。** 对于 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中列出的每个地域，确认其现行有效的假期法规、用人单位适用门槛、员工资格条件，以及任何近期修订或新增的地方性规定。引用依据包括法律、行政法规、部门规章、地方性法规及规范性文件，并附精确条号。验证时效性——地方性生育假期和奖励政策尤其变动频繁。如对某地域现行法律规定不确定，标记该不确定性，不得陈述未经确认的规则。
+> **在依赖追踪器之前，先检索适用的制度。** 对于 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md` 中列出的每个地域，确认其现行有效的假期法规、用人单位适用门槛、员工资格条件，以及任何近期修订或新增的地方性规定。引用依据包括法律、行政法规、部门规章、地方性法规及规范性文件，并附精确条号。验证时效性——地方性生育假期和奖励政策尤其变动频繁。如对某地域现行法律规定不确定，标记该不确定性，不得陈述未经确认的规则。
 
 ## 运行周期
 
@@ -43,7 +43,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 
 ### 第1步——读取实践画像
 
-读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。提取：
+读取 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`。提取：
 - 用工地域范围及团队已调研备案的地方性假期规则
 - HR系统及假期数据访问方式（「## 系统」章节）
 - 升级矩阵
@@ -54,7 +54,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 查询所有处于休假状态的员工。拉取：员工标识、所在地域、假期类型、起始日期、已用时间（特别注意年休假按工龄分段计算和医疗期累计计算规则）、预计返岗日期、医疗期/产假确认状态、相关证明文件状态。
 
 **如果是手动管理：**
-读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`。如果文件不存在，提示：
+读取 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/leave-register.yaml`。如果文件不存在，提示：
 > "未找到假期登记册。请对接HR系统获取数据，或将当前假期表格粘贴到此处，我将加载数据。您也可以使用 `/employment-legal:log-leave` 逐条添加假期记录。"
 停止执行，直到数据就绪。
 
@@ -111,7 +111,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 
 仅呈现需要决策或采取行动的条目。不呈现没有临近截止日期的干净假期记录。
 
-提醒分级（阈值为代理级默认值——可在 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中调整）：
+提醒分级（阈值为代理级默认值——可在 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md` 中调整）：
 - **立即处理**：决策或截止日期在 3 个工作日内
 - **本周需处理**：在 7 天内
 - **近期关注**：约 30 天内
@@ -121,7 +121,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 *医疗期满，需做复工评估：*
 ```
 [员工姓名/岗位] — 医疗期满，需启动复工评估
-医疗期起始： [日期] | 届满日期（按检索规则计算）： [日期]
+医疗期起始： [date] | 届满日期（按检索规则计算）： [date]
 当前距届满还有 [N] 天。
 需处理：
 (1) 安排复工评估——员工能否从事原工作？
@@ -134,7 +134,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 ```
 [员工姓名/岗位] — 带薪年休假即将跨年度失效
 本年度应享天数： [N] 天 | 已休天数： [N] 天 | 未休天数： [N] 天
-跨年度安排截止日期（如适用）： [日期]
+跨年度安排截止日期（如适用）： [date]
 需处理：
 (1) 安排未休年休假在截止日期前休完；或
 (2) 按日工资300%支付未休年休假工资报酬（其中含正常工资，即额外支付200%）
@@ -143,8 +143,8 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 *产假即将到期：*
 ```
 [员工姓名/岗位] — 产假即将到期
-产假起始日期： [日期] | 基础98天届满： [日期]
-地方奖励假（[省份]）： [N] 天 | 预计返岗： [日期]
+产假起始日期： [date] | 基础98天届满： [date]
+地方奖励假（[省份]）： [N] 天 | 预计返岗： [date]
 需处理：
 (1) 确认返岗沟通已启动（建议返岗前2-4周）
 (2) 确认生育津贴申请状态
@@ -155,7 +155,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 *工伤停工留薪期满：*
 ```
 [员工姓名/岗位] — 工伤停工留薪期即将届满
-工伤发生日期： [日期] | 停工留薪期届满（不超过12个月）： [日期]
+工伤发生日期： [date] | 停工留薪期届满（不超过12个月）： [date]
 需处理：
 (1) 确认是否需申请延长（伤情严重/情况特殊 → 市级劳动能力鉴定委员会确认）
 (2) 安排劳动能力鉴定
@@ -177,7 +177,7 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 ### 第5步——输出格式
 
 ```
-假期追踪器 — [日期] 周报
+假期追踪器 — [date] 周报
 [N] 条进行中休假 | [N] 条需要处理
 
 立即处理 ([N])
@@ -190,29 +190,29 @@ tools: ["Read", "Write", "mcp__*__query", "mcp__*__search", "mcp__*__list"]
 [提醒模块]
 
 无需处理 ([N]) — 状态正常
-[每行一条：员工/岗位 | 假期类型 | 已用 vs 应享 | 预计返岗 [日期]]
+[每行一条：员工/岗位 | 假期类型 | 已用 vs 应享 | 预计返岗 [date]]
 
-假期登记册最近更新： [日期]
-下次计划检查： [日期]
+假期登记册最近更新： [date]
+下次计划检查： [date]
 ```
 
 如果完全没有提醒：
 ```
-假期追踪器 — [日期] 周报
+假期追踪器 — [date] 周报
 [N] 条进行中休假 — 本周无法定截止日期提醒。
 [无异常假期摘要]
-下次计划检查： [日期]
+下次计划检查： [date]
 ```
 
 如果登记册中有超过约10条进行中休假，或用户任何时候要求：提供Dashboard（参见 CLAUDE.md `## 输出 → 数据密集型输出的Dashboard提供`）。针对此输出定制Dashboard内容——按假期状态（立即/本周/近期/正常）计数、截止日期时间线、可排序登记表（员工、假期类型、地域、已用 vs 应享、预计返岗）。
 
 ### 第6步——更新登记册
 
-运行完毕后，更新 `~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`，回写重新计算的字段（已用时间、最后检查时间、状态变更）。不要覆盖律师手动添加的任何 `notes` 字段。
+运行完毕后，更新 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/leave-register.yaml`，回写重新计算的字段（已用时间、最后检查时间、状态变更）。不要覆盖律师手动添加的任何 `notes` 字段。
 
 ## 假期登记册格式
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/leave-register.yaml`：
+`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/leave-register.yaml`：
 
 ```yaml
 - employee_id: [姓名、岗位或匿名ID]

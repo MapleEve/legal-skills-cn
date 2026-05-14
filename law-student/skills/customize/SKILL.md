@@ -1,5 +1,5 @@
 ---
-name: 配置定制
+name: customize
 description: >
   向导式定制您的法学生学习配置——无需重新运行完整冷启动访谈即可修改单项内容。
   可调整当前课程、学习风格、知识体系偏好、法考备考科目、种子材料或学习训练频率。
@@ -7,17 +7,17 @@ description: >
 argument-hint: "[章节名称，或描述修改内容]"
 ---
 
-# /配置定制
+# /customize
 
 ## 触发场景
 
-用户输入 `/law-student:配置定制`。他们想修改学习配置中的某项内容——
+用户输入 `/law-student:customize`。他们想修改学习配置中的某项内容——
 课程、学习风格偏好、法考备考科目、材料路径——无需重新运行完整冷启动访谈。
 
 ## 执行步骤
 
-1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`。
-   如不存在或含 `[PLACEHOLDER]` 值，提示先运行 `/law-student:冷启动访谈`。
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md`。
+   如不存在或含 `[PLACEHOLDER]` 值，提示先运行 `/law-student:cold-start-interview`。
 
 2. **展示可定制项目总览：**
 

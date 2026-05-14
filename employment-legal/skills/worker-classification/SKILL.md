@@ -1,5 +1,5 @@
 ---
-name: 劳动关系认定
+name: worker-classification
 description: >
   对拟议的用工安排进行分类——劳动关系、非全日制用工、劳务派遣还是劳务外包——
   通过运行劳社部发[2005]12号三要素标准，并标记拟议安排与事实实际支持之间的错判缺口。
@@ -8,26 +8,26 @@ description: >
 argument-hint: "[描述拟议安排，或直接开始我会询问]"
 ---
 
-# /劳动关系认定
+# /worker-classification
 
 对拟议安排运行适用的分类标准，并标记拟议安排与您试图采用的结构不匹配的地方。仅预期性——对已有关系，咨询律师。
 
 ## 指示
 
-1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围、升级表。
+1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围、升级表。
 2. 运行以下完整工作流。
 3. 如果律师提前提供了细节，提取可用的内容并仅询问缺口。不要重新询问已提供的信息。
 
 ## 示例
 
 ```
-/employment-legal:劳动关系认定
+/employment-legal:worker-classification
 我们想请一位算法工程师做6个月，在我们的北京办公室工作，使用我们的工具和设备，
 嵌入我们的数据团队，按项目成果付费。
 ```
 
 ```
-/employment-legal:劳动关系认定
+/employment-legal:worker-classification
 (skill 会按步骤询问详细信息)
 ```
 
@@ -122,11 +122,11 @@ argument-hint: "[描述拟议安排，或直接开始我会询问]"
 
 ## 加载上下文
 
-读取`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围、任何分类历史或先前和解记录、升级表。
+读取`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围、任何分类历史或先前和解记录、升级表。
 
 ## 输出标题
 
-从`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→`## 输出`预置工作成果标题。
+从`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→`## 输出`预置工作成果标题。
 
 ## 工作流
 

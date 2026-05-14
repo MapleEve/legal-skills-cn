@@ -1,5 +1,5 @@
 ---
-name: 自定义配置
+name: customize
 description: 对公司法律执业画像进行引导式自定义 — 更改一项而不重新运行整个冷启动访谈。调整风险立场、升级联系人、活跃模块（投资并购/董事会/上市公司/主体管理）、实质性阈值、信息披露日程格式、决议惯例或案件工作空间路径。当用户说"更改我的[某物]"、"更新我的画像"、"编辑我的配置"或"自定义"时使用。
 argument-hint: "[部分名称，或描述你想更改的内容]"
 ---
@@ -12,7 +12,7 @@ argument-hint: "[部分名称，或描述你想更改的内容]"
 
 ## 做什么
 
-1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/corporate-legal/CLAUDE.md` 及共享公司档案。如不存在或包含 `[PLACEHOLDER]`，提示先运行冷启动访谈。
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/CLAUDE.md` 及共享公司档案。如不存在或包含 `[PLACEHOLDER]`，提示先运行冷启动访谈。
 
 2. **展示可自定义的地图。** 按组列出画像内容：
 

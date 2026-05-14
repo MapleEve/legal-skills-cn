@@ -1,5 +1,5 @@
 ---
-name: 冷启动访谈
+name: cold-start-interview
 description: >
   指导教师的一次性法律援助诊所设置——实践领域、管辖区域、指导风格
   （正式审查队列/可配置标记/轻触式），以及手册/规则上传。
@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /冷启动访谈
+# /cold-start-interview
 
 ## 目的
 

@@ -1,5 +1,5 @@
 ---
-name: 快速判断
+name: is-this-a-problem
 description: >
   针对产品/运营快速提问的"这有问题吗？"快速回答——根据您的校准表进行模式匹配。
   当用户说"这有问题吗"、"快速问题"、"我们能做X吗"、
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[问题内容]"
 ---
 
-# /快速判断
+# /is-this-a-problem
 
 ## 操作流程
 

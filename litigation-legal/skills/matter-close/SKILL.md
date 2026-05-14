@@ -1,17 +1,17 @@
 ---
-name: 案件结案
-description: 结案——记录结果、最终敞口和经验教训，然后归档移出活跃案件组合，不删除记录。适用场景：用户欲结案、说"[案件]结束了"或需记录判决/调解/撤诉/驳回/和解/移送等结果。
-argument-hint: "[标识]"
+name: matter-close
+description: 结案——记录结果、最终敞口和经验教训，然后归档移出活跃案件组合，不删除记录。适用场景：用户欲结案、说"[case]结束了"或需记录判决/调解/撤诉/驳回/和解/移送等结果。
+argument-hint: "[slug]"
 ---
 
-# /案件结案
+# /matter-close
 
 1. 遵循以下工作流程和参考。
 2. 确认标识和当前状态。
 3. 记录结果：结案类型、日期、最终敞口/费用、经验教训。
 4. 更新 `_log.yaml`：`状态: 已结案`，添加 `结案日期: 年-月-日` 和 `结果:` 字段。
-5. 追加最终条目至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`。
-6. 案件保留在 `_log.yaml` 和 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/` 中——不删除。`/案件组合概况` 将其过滤出活跃汇总。
+5. 追加最终条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`。
+6. 案件保留在 `_log.yaml` 和 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/` 中——不删除。`/portfolio-status` 将其过滤出活跃汇总。
 
 ---
 
@@ -25,13 +25,13 @@ argument-hint: "[标识]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 查找行
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 参考（立案背景）
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md` —— 追加目标
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 查找行
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` —— 参考（立案背景）
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` —— 追加目标
 
 **利益冲突检索关——不可跳过。** 结案前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-> "我在案件登记簿中未找到[案件标识]。无可结案——要么标识错误，要么案件从未通过 `/litigation-legal:案件立案` 立案。先检查标识；若确实从未立案，则无行可更新、无文件结构可结案。"
+> "我在案件登记簿中未找到[案件标识]。无可结案——要么标识错误，要么案件从未通过 `/litigation-legal:matter-intake` 立案。先检查标识；若确实从未立案，则无行可更新、无文件结构可结案。"
 
 ## 输入
 
@@ -88,7 +88,7 @@ argument-hint: "[标识]"
 
 ## 写入
 
-**结案前（结果性行为——案件归档，活跃追踪终止）：** 读取 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。若角色为非律师：
+**结案前（结果性行为——案件归档，活跃追踪终止）：** 读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。若角色为非律师：
 
 > 结案具有法律后果——它终止活跃追踪、触发归档义务（《律师业务档案管理办法》要求至少保存10年），并建立律所/公司依赖的最终记录。您是否已与律师审查？若是，继续。若否，以下是带给律师的简要说明：
 >
@@ -98,7 +98,7 @@ argument-hint: "[标识]"
 
 未经明确同意，不得写入结案字段或追加结案条目。
 
-### 更新 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml`
+### 更新 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml`
 
 ```yaml
 状态: 已结案
@@ -110,7 +110,7 @@ argument-hint: "[标识]"
 
 保留所有既有字段。不删除行。
 
-### 追加最终条目至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/办案日志.md`
+### 追加最终条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`
 
 ```markdown
 ## [年-月-日] —— 案件结案：[结案类型]
@@ -118,7 +118,7 @@ argument-hint: "[标识]"
 **结果：** [叙述——法院/仲裁庭裁决内容、调解/和解内容]
 **案号：** [法院案号，如有]
 **最终费用：** [金额明细 —— 判决/调解金额 + 律师费 + 诉讼/仲裁费 + 保全费]
-**对比初始敞口：** [对比案件档案.md立案区间]
+**对比初始敞口：** [对比matter.md立案区间]
 **拨备准确性：** [如适用]
 
 **经验教训：**
@@ -134,7 +134,7 @@ argument-hint: "[标识]"
 **关联文件：** [判决书/调解书/和解协议等，如有]
 ```
 
-### 触及 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md`
+### 触及 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md`
 
 在末尾添加结案块（不修改前文各节——它们是历史立案信息）：
 
@@ -164,6 +164,6 @@ argument-hint: "[标识]"
 ## 本技能不做什么
 
 - 删除案件。已结案件保留在 `_log.yaml` 和磁盘中——它们是案件组合判断的训练集。
-- 重新开启。若已结案件回归（上诉、再审、关联诉讼），另立新案并在 `案件档案.md` 中引用已结案件。
+- 重新开启。若已结案件回归（上诉、再审、关联诉讼），另立新案并在 `matter.md` 中引用已结案件。
 - 概括用户未说的经验教训。若用户跳过经验教训部分，留空而非发明。
 - 决定是否上诉/再审。这些由律师在内部讨论中决策；本技能记录最终结果而非启动新程序。

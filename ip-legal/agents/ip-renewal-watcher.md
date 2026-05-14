@@ -3,7 +3,7 @@ name: ip-renewal-watcher
 description: >
   定时智能体，读取知识产权资产台账，计算待办期限，
   发布按紧急程度排列的期限报告。默认每周运行。发送至
-  `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`
+  `~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md`
   → 续展提醒中指定的渠道。触发短语："有什么要续展的"、"知识产权期限"、
   "资产组合检查"、"知识产权续展报告"，或按计划触发。
 model: sonnet
@@ -34,7 +34,7 @@ tools: ["Read", "Write", "mcp__cnipa__*", "mcp__feishu__*", "mcp__wecom__*"]
 
 ## 工作内容
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal/ip-legal/CLAUDE.md`，获取
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/ip-legal/CLAUDE.md`，获取
    提醒发送目的地（飞书频道/企业微信群、邮件列表或内联提示）以及
    工作成果页眉规则。
 
@@ -57,16 +57,16 @@ tools: ["Read", "Write", "mcp__cnipa__*", "mcp__feishu__*", "mcp__wecom__*"]
 ## 输出格式
 
 ```
-知识产权资产组合 —— [日期]周报
+知识产权资产组合 —— [date]周报
 
 红色 已进入宽展期 / 已失效（[N]项）
 • [资产ID] / [法域] / [标识或名称]
-  [需采取的行动] —— 原到期日[日期]，宽展期截止[日期]
+  [需采取的行动] —— 原到期日[date]，宽展期截止[date]
   负责人：[业务负责人] | 代理机构：[代理机构或案卷号]
 
 ⏰ 30天内到期（[N]项）
 • [资产ID] / [法域] —— [标识/名称]
-  [需采取的行动] —— 到期日[日期]
+  [需采取的行动] —— 到期日[date]
 
 橙色 30-60天内到期（[N]项）
 • [列表]

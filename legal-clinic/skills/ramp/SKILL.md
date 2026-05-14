@@ -1,5 +1,5 @@
 ---
-name: 学生上岗培训
+name: ramp
 description: >
   法律援助诊所学生学期上岗培训——中国法律援助制度概述、诊所规章制度、
   办案流程、文书规范、职业道德（保密义务/利益冲突/禁止私下收费）、
@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--card 获取一页参考卡]"
 ---
 
-# /学生上岗培训
+# /ramp
 
 ## 目的
 
@@ -31,7 +31,7 @@ argument-hint: "[--card 获取一页参考卡]"
 
 ## 工作流
 
-1. **读取诊所配置。** 加载 `~/.claude/plugins/config/claude-for-legal/legal-clinic/CLAUDE.md` → 诊所类型、业务领域、指导教师信息、学期安排。
+1. **读取诊所配置。** 加载 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/CLAUDE.md` → 诊所类型、业务领域、指导教师信息、学期安排。
 2. **读取诊所手册。** 如指导教师已上传至种子文件。
 3. **按培训模块交互式引导。** 每个模块包含知识讲解+理解确认提问。
 

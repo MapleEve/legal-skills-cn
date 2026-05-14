@@ -2,45 +2,45 @@
   "mcpServers": {
     "Slack": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://mcp.slack.com/mcp",
       "title": "Slack",
-      "description": "搜索消息、读取频道、查找工作区中的讨论内容。"
+      "description": "Search messages, read channels, find discussions across your workspace."
     },
     "Google Drive": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://drivemcp.googleapis.com/mcp/v1",
       "title": "Google Drive",
-      "description": "搜索、读取和获取 Google Drive 中的文件。"
+      "description": "Search, read, and fetch documents from Google Drive."
     },
     "Box": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://mcp.box.com/mcp",
       "title": "Box",
-      "description": "数据室和文件管理。"
+      "description": "Data room and document management."
     },
     "iManage": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://cloudimanage.com/mcp/work",
       "title": "iManage",
-      "description": "连接到 Claude 的受管控 iManage 内容 —— 文件留在 iManage 中，访问受权限约束且可审计。"
+      "description": "Governed iManage content connected to Claude — documents stay in iManage, access is permission-bound and auditable."
     },
     "TopCounsel": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://api.techgc.co/api/mcp/topcounsel",
       "title": "TopCounsel",
-      "description": "外部律师推荐 —— 来自 5,000+ 名内部法务的社区评价、排名和专业能力证明。"
+      "description": "Outside counsel recommendations from The L Suite — 5,000+ in-house counsel community sentiment, rankings, and expertise evidence."
     },
     "Definely": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://mcp.uk.definely.com/api/proxy/core-mcp",
       "title": "Definely",
-      "description": "实时、确定性访问合同结构 —— 解析定义、验证交叉引用、映射依赖关系、运行结构差异对比。"
+      "description": "Live, deterministic access to contract structure — resolve definitions, validate cross-references, map dependencies, run structural diffs."
     },
     "Solve Intelligence": {
       "type": "http",
-      "url": "TBD",
+      "url": "https://api.solveintelligence.com/mcp/",
       "title": "Solve Intelligence",
-      "description": "专利工作流 —— 检索专利和非专利文献、法律文本、SEP 技术标准、现有技术、权利要求分析。"
+      "description": "Patent workflows — search patent and non-patent literature, legal texts, SEP technical standards, prior art, claim analysis."
     }
   },
   "recommendedCategories": [

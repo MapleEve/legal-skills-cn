@@ -1,5 +1,5 @@
 ---
-name: 法学写作
+name: legal-writing
 description: >
   对法学写作草稿（法律备忘、代理词/答辩状思路、学术论文、法考主观题答案、
   知识体系笔记）提供结构反馈——组织、分析深度、法条引用准确性、
@@ -8,9 +8,9 @@ description: >
 argument-hint: "[粘贴草稿 或 文件路径]"
 ---
 
-# /法学写作
+# /legal-writing
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md` → 课程、写作格式偏好、学习风格。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程、写作格式偏好、学习风格。
 2. 使用以下框架。
 3. 建立模式：草稿类型（法律备忘/代理词思路/学术论文/法考主观题答案/知识体系笔记/其他）。
 4. 阅读草稿。对照法学写作质量标准进行评估。

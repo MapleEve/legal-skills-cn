@@ -1,5 +1,5 @@
 ---
-name: 录用审查
+name: hiring-review
 description: >
   录用通知书及劳动合同审查——包含录用通知书要约风险（offer letter可构成要约）、
   劳动合同条款合规检查、试用期约定（《劳动合同法》第19条分档）、
@@ -18,7 +18,7 @@ argument-hint: "[录用通知书文件，或描述录用情况]"
 
 ## 加载上下文
 
-读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中的管辖范围、录用审查触发条件、竞业限制/保密协议政策及录用通知书模板位置。
+读取 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md` 中的管辖范围、录用审查触发条件、竞业限制/保密协议政策及录用通知书模板位置。
 
 ---
 
@@ -134,7 +134,7 @@ argument-hint: "[录用通知书文件，或描述录用情况]"
 
 ---
 
-### 一、管辖：[省/市]
+### 一、管辖：[province-or-city]
 [管辖表条目。任何触发的升级触发条件。如有新管辖——标注需要研究的具体问题。]
 
 ---

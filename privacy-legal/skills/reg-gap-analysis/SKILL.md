@@ -1,5 +1,5 @@
 ---
-name: 法规差距分析
+name: reg-gap-analysis
 description: >
   将新颁布或修订的法规与现行隐私政策/个人信息处理规则及实践进行差异比对——
   输出差距清单和附有责任人与时限的整改计划。适用场景：新法规出台、
@@ -8,9 +8,9 @@ description: >
 argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 ---
 
-# /法规差距分析
+# /reg-gap-analysis
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
 2. 按以下工作流执行。
 3. 范围确认：该法规是否适用？（管辖范围、适用门槛、行业排除）
 4. 提取实质性要求 → 与当前状态对比 → 差距清单。
@@ -18,11 +18,11 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 6. 保存为带日期的文件。即使"无差距"也需要存档。
 
 ```
-/privacy-legal:法规差距分析 "《网络数据安全管理条例》"
+/privacy-legal:reg-gap-analysis "《网络数据安全管理条例》"
 ```
 
 ```
-/privacy-legal:法规差距分析
+/privacy-legal:reg-gap-analysis
 [粘贴指引/法规文本]
 ```
 
@@ -32,7 +32,7 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 
 ## 事项上下文
 
-**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `Enabled` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且无活跃事项，询问："这是哪个事项？运行 `/privacy-legal:事项工作区 switch <标识>` 或说 `执业级别`。"加载活跃事项的 `事项档案.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal/privacy-legal/事项/<事项标识>/`。除非 `跨事项上下文` 为 `on`，否则绝不读取其他事项的文件。
+**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `Enabled` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且无活跃事项，询问："这是哪个事项？运行 `/privacy-legal:matter-workspace switch <slug>` 或说 `执业级别`。"加载活跃事项的 `matter.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<matter-slug>/`。除非 `跨事项上下文` 为 `on`，否则绝不读取其他事项的文件。
 
 ---
 
@@ -40,11 +40,11 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 
 网信办发布新的指南。某地方人大通过新的数据条例。工信部发布新的行业管理规定。有新变化——现在需要知道要改什么（如果有的话）。
 
-本技能将新要求与您当前的状态（根据 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺 + 个人信息保护影响评估中记录的实践）进行对比，生成附带整改计划的差距清单。
+本技能将新要求与您当前的状态（根据 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺 + 个人信息保护影响评估中记录的实践）进行对比，生成附带整改计划的差距清单。
 
 ## 加载当前状态
 
-读取 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md`：
+读取 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md`：
 - `## 隐私政策/个人信息处理规则承诺` —— 您公开承诺了什么
 - `## 监管覆盖范围` —— 已适用哪些制度
 - `## 权利请求处理流程` → 系统清单 —— 您实际操作上做了什么
@@ -107,7 +107,7 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 
 ### 第5步：整改计划
 
-在输出前添加来自 `~/.claude/plugins/config/claude-for-legal/privacy-legal/CLAUDE.md` `## 输出` 的工作成果抬头（因用户角色不同——见 `## 使用人身份`）。
+在输出前添加来自 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` `## 输出` 的工作成果抬头（因用户角色不同——见 `## 使用人身份`）。
 
 > **法律检索连接器飞行前检查。** 在发出整改计划前，检查本会话是否可到达法律检索连接器——北大法宝、网信办官方网站连接器或律所配置的任何法律检索MCP工具。在审查人说明中按 CLAUDE.md `## 输出` 收集此信息：如果第2步或常见法规类别研究步骤中没有连接器返回结果（或运行时未配置），在审查人说明的 **来源:** 行中记录——例如：`未连接法律检索工具——引用来自模型知识；个人信息保护法规差距分析中虚构风险最高的项目是新法规生效日期、执法起始日期和条款款项精确定位——优先抽查这些。`每条引用的 `[模型知识——核实]` 标签保留在行内。不要在输出上方添加独立的提示横幅。
 
@@ -116,14 +116,14 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 
 ## 整改计划：[法规名称]
 
-**生效日期：** [日期]
-**执法起始：** [日期]
+**生效日期：** [date]
+**执法起始：** [date]
 
 ### 执法前必须完成
 
 | 差距 | 整改措施 | 责任人 | 截止日期 | 状态 |
 |---|---|---|---|---|
-| [差距] | [具体措施] | [姓名] | [日期] | [ ] |
+| [差距] | [具体措施] | [姓名] | [date] | [ ] |
 
 ### 应该做（风险较低，不阻断）
 

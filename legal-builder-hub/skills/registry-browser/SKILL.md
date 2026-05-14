@@ -1,13 +1,13 @@
 ---
-name: 社区浏览
+name: registry-browser
 description: >
   浏览中国法律技能社区注册表——搜索、筛选、查看技能详情。
   发现适合您执业领域的新技能。当用户说"浏览技能"、"有什么可用的"、
   "搜索技能"、"探索社区"或想发现新技能时使用。
-argument-hint: "[搜索词 或 --list-all 或 --category <类别>]"
+argument-hint: "[搜索词 或 --list-all 或 --category <category>]"
 ---
 
-# /社区浏览
+# /registry-browser
 
 ## 功能目的
 

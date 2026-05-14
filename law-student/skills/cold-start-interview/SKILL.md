@@ -1,5 +1,5 @@
 ---
-name: 冷启动访谈
+name: cold-start-interview
 description: >
   关于中国法学生的访谈和材料采集——就读院校、年级、当前课程、
   法考备考计划、学习风格（研习型vs讲解型）、已有知识体系、
@@ -9,9 +9,9 @@ description: >
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /冷启动访谈
+# /cold-start-interview
 
-1. 检查 `~/.claude/plugins/config/claude-for-legal/law-student/CLAUDE.md`。如已填充且无 `--redo`，覆盖前确认。如有缓存配置则迁移。
+1. 检查 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md`。如已填充且无 `--redo`，覆盖前确认。如有缓存配置则迁移。
 2. 使用以下访谈工作流。
 3. 遍历：第0部分（使用者身份/已连接内容——学生vs毕业生vs其他；文档存储可用性）、第1部分（现在在哪——大一至研三、法学院、当前课程）、第2部分（学习方式——研习型vs讲解型、视觉/听觉/阅读/动手）、第3部分（强项/薄弱/回避的科目——8大法考科目+法学院核心课程）、第4部分（材料采集——目标至少10项：教学大纲、课堂笔记、知识体系、案例摘要、闪卡、历年试卷、评分文章、法考练习题集、教材）。
 4. 重读捕获的答案。捕捉矛盾、偏差、值得命名的缺口。

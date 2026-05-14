@@ -1,5 +1,5 @@
 ---
-name: 自定义配置
+name: customize
 description: 对监管执业档案进行引导式自定义 — 更改一项而不重新运行整个冷启动访谈。调整关注的监管机构、政策库索引、重大性标准、合规差距响应流程、动态源配置或事项工作区路径。当用户说"更改我的[某配置]"、"添加监管机构"、"更新关注清单"、"编辑阈值"或"自定义"时使用。
 argument-hint: "[章节名称，或描述你想更改的内容]"
 ---
@@ -12,7 +12,7 @@ argument-hint: "[章节名称，或描述你想更改的内容]"
 
 ## 做什么
 
-1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` 及共享公司档案。如插件配置不存在或包含 `[PLACEHOLDER]` 值，提示先运行冷启动访谈。
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` 及共享公司档案。如插件配置不存在或包含 `[PLACEHOLDER]` 值，提示先运行冷启动访谈。
 
 2. **展示可自定义的地图。** 按组列出档案中内容，附当前值的一行摘要：
 

@@ -19,7 +19,7 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
    /plugin marketplace add https://github.com/MapleEve/legal-skills-cn
    ```
 
-   如果你已经把仓库 clone 到本机，也可以使用本地路径：`/plugin marketplace add /Users/你/Desktop/claude-for-legal-cn`
+   如果你已经把仓库 clone 到本机，也可以使用本地路径：`/plugin marketplace add /Users/your-name/Desktop/claude-for-legal-cn`
 
 3. **安装你的插件。** 从下方表格中选择与你工作领域匹配的插件，然后执行：
    ```
@@ -41,7 +41,7 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 
 这有点反直觉：项目级看起来更安全。但项目级会阻止插件读取项目文件夹之外的文件——你放在"下载"里的提纲、"文档"里的合同、"云盘"里的客户资料。大多数技能需要读取你的文件。用户级并不会给插件额外的文件访问权限——插件只能读取你明确指定的文件或当前目录下的文件。它只是让插件在任何文件夹下都能工作，而不是仅限于某一个文件夹。
 
-如果你已经安装为项目级，想切换：先 `/plugin uninstall <插件名>`，然后在你的用户主目录下执行 `/plugin install <插件名>@claude-for-legal-cn`。
+如果你已经安装为项目级，想切换：先 `/plugin uninstall <plugin-name>`，然后在你的用户主目录下执行 `/plugin install <plugin-name>@claude-for-legal-cn`。
 
 ## 哪个插件适合我？
 
@@ -62,7 +62,7 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 
 ## 你正在安装的是什么
 
-每个插件通过初始化访谈了解你的工作流程，将其写入业务档案文件（`~/.claude/plugins/config/claude-for-legal-cn/<插件名>/CLAUDE.md`），此后每个技能都从中读取。这份档案属于你——你可以编辑它、重新运行初始化、或者口头指示某个技能更新它。
+每个插件通过初始化访谈了解你的工作流程，将其写入业务档案文件（`~/.claude/plugins/config/claude-for-legal-cn/<plugin-name>/CLAUDE.md`），此后每个技能都从中读取。这份档案属于你——你可以编辑它、重新运行初始化、或者口头指示某个技能更新它。
 
 **所有输出均为律师审阅前草稿。** 插件会标记不确定之处、按数据来源标注引文、对不可逆操作设置门槛。律师负责审阅、核实并承担责任。插件让审阅更快；它不替代审阅。
 
@@ -73,7 +73,7 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 ## 遇到问题？
 
 - **安装后提示"命令未找到"** → 你漏了第 4 步。重启 Claude Code。
-- **提示"请先运行初始化"** → 在执行任何其他命令之前，先运行 `/<插件名>:cold-start-interview`。
+- **提示"请先运行初始化"** → 在执行任何其他命令之前，先运行 `/commercial-legal:cold-start-interview`。
 - **引文标记为 `[需核实]`** → 接入检索工具（第 6 步）。没有检索工具时，所有引文来自训练数据而非当前数据库。
-- **"无法读取 [文件]"** → 通常是插件安装为项目级，而文件在项目文件夹之外。见上方"安装为用户级"——重装为用户级或把文件移到项目文件夹内。
+- **"无法读取 [file]"** → 通常是插件安装为项目级，而文件在项目文件夹之外。见上方"安装为用户级"——重装为用户级或把文件移到项目文件夹内。
 - **插件不包含 X 功能** → 运行 `/legal-builder-hub:related-skills-surfacer` 寻找更匹配的技能，或查看该插件的 README 中"本插件不做什么"一节。

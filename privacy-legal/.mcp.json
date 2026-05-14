@@ -1,9 +1,22 @@
 {
-  "mcpServers": {},
+  "mcpServers": {
+    "Slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "title": "Slack",
+      "description": "Search messages, read channels, find discussions across your workspace."
+    },
+    "Google Drive": {
+      "type": "http",
+      "url": "https://drivemcp.googleapis.com/mcp/v1",
+      "title": "Google Drive",
+      "description": "Search, read, and fetch documents from Google Drive."
+    }
+  },
   "recommendedCategories": [
     "documents",
-    "legal-document-management",
-    "regulatory-tracking"
-  ],
-  "notes": "中国数据合规工作流暂不依赖外部 MCP 服务。如需接入企业微信通知、飞书文档或内部法规库，请在此配置对应的 MCP Server。推荐接入：北大法宝、中国裁判文书网、网信办法规库。"
+    "chat",
+    "email",
+    "legal-document-management"
+  ]
 }

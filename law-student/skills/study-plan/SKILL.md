@@ -1,5 +1,5 @@
 ---
-name: 学习计划
+name: study-plan
 description: >
   建立或更新中国法考试长期备考学习计划——法考（主客观一体）/法学院期末考试。
   分阶段、按掌握程度加权科目、每日训练安排、根据训练历史自适应调整。
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[--build | --update | --status | --cram]"
 ---
 
-# /学习计划
+# /study-plan
 
 1. 加载配置文件和学习计划文件（如存在）。
 2. 按标志路由：
@@ -96,7 +96,7 @@ argument-hint: "[--build | --update | --status | --cram]"
 
 ### 第4步：写入计划
 
-写入 `~/.claude/plugins/config/claude-for-legal/law-student/study-plan.yaml`。每次训练后自动更新训练历史。
+写入 `~/.claude/plugins/config/claude-for-legal-cn/law-student/study-plan.yaml`。每次训练后自动更新训练历史。
 
 ## 更新模式
 
@@ -128,7 +128,7 @@ argument-hint: "[--build | --update | --status | --cram]"
 
 ## 与学习训练的集成
 
-每次运行 `/law-student:学习训练` 后自动更新训练历史。学习计划下次运行时读取新数据。
+每次运行 `/law-student:session` 后自动更新训练历史。学习计划下次运行时读取新数据。
 
 ## 本技能不做的事
 

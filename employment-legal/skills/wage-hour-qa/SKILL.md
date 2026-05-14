@@ -1,5 +1,5 @@
 ---
-name: 工资工时问答
+name: wage-hour-qa
 description: >
   管辖感知的工资/工时和劳动法问答——加班费计算、最低工资、年假折算、病假工资、
   经济补偿金/赔偿金、社保公积金、高温津贴、停工停产工资——针对特定省市回答，
@@ -9,9 +9,9 @@ description: >
 argument-hint: "[问题描述]"
 ---
 
-# /工资工时问答
+# /wage-hour-qa
 
-1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围。
+1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围。
 2. 使用以下工作流。
 3. 识别问题所涉及的管辖。如果未指定，询问。
 4. 按该管辖的规则回答。引用。标记是否为接近判断或法律在变化。
@@ -51,7 +51,7 @@ argument-hint: "[问题描述]"
 
 ## 加载上下文
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围。如果问题未指定管辖，询问——或按员工最多的省市回答并注明。
+`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围。如果问题未指定管辖，询问——或按员工最多的省市回答并注明。
 
 ## 答案
 
@@ -98,7 +98,7 @@ argument-hint: "[问题描述]"
 - "最低工资包含社保和公积金吗？"——研究各省市最低工资口径（均为税前，但各地对是否含社保个人缴纳部分规定不同）
 - "病假工资怎么发？"——研究医疗期和病假工资的地方规定
 - "停工停产了工资怎么发？"——研究各地生活费标准
-- "可以将此人员分类为劳务关系吗？"——路由到`/employment-legal:劳动关系认定`
+- "可以将此人员分类为劳务关系吗？"——路由到`/employment-legal:worker-classification`
 
 ### 步骤2a：加班费和经济补偿金计算
 
@@ -160,7 +160,7 @@ argument-hint: "[问题描述]"
 - 如果按研究规则答案明确：这样说。
 - 如果接近（如计算基数有争议、工时制度认定有争议）：这样说。"建议按更保守的分类以避免风险，或获取正式法律意见。"
 - 如果法律在变化：这样说。"此规则近期修订——当前版本生效日期为[date]。在依赖此答案前确认生效日期。"
-- 如果各地裁审口径不同：这样说。"关于[问题]，[A地]和[B地]的裁判口径不同。在[A地]的通常裁判观点是[X]；在[B地]是[Y]。"
+- 如果各地裁审口径不同：这样说。"关于[question]，[A地]和[B地]的裁判口径不同。在[A地]的通常裁判观点是[X]；在[B地]是[Y]。"
 - 如果无法验证时效性：这样说。不要猜测。
 
 ## 输出格式

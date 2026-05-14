@@ -1,5 +1,5 @@
 ---
-name: 冷启动访谈
+name: cold-start-interview
 description: >
   冷启动访谈——连接至您的产品上线跟踪器（飞书多维表格/TAPD/禅道），读取过往审查记录，
   学习您的风险校准。在新安装时、新加入产品法务时、
@@ -8,7 +8,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations 仅重新检测集成]"
 ---
 
-# /冷启动访谈
+# /cold-start-interview
 
 ## 操作流程
 
@@ -35,7 +35,7 @@ argument-hint: "[--redo] [--check-integrations 仅重新检测集成]"
 
 ## 检查共享公司配置
 
-查找 `~/.claude/plugins/config/claude-for-legal/company-profile.md`：如存在则读取并确认，跳过公司问题。如不存在则第一个设置，询问公司问题并写入共享配置。
+查找 `~/.claude/plugins/config/claude-for-legal-cn/company-profile.md`：如存在则读取并确认，跳过公司问题。如不存在则第一个设置，询问公司问题并写入共享配置。
 
 ## 安装范围检查
 

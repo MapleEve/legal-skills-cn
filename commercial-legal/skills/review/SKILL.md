@@ -1,5 +1,5 @@
 ---
-name: 审查
+name: review
 description: >
   依《民法典》有名合同分类对入站合同进行审查。从合同标题及核心内容识别合同类型，
   路由至对应审查技能（买卖合同审查、服务合同审查、技术合同审查、保密协议审查、
@@ -9,7 +9,7 @@ description: >
 argument-hint: '[文件路径 | 云盘链接 | 粘贴文本]'
 ---
 
-# /审查
+# /review
 
 依《民法典》合同编对入站合同进行分类审查。从标题及核心条款识别合同类型，路由至对应技能，整合输出标准格式的合同审查意见书。
 
@@ -214,15 +214,15 @@ argument-hint: '[文件路径 | 云盘链接 | 粘贴文本]'
 ## 操作示例
 
 ```
-/commercial-legal:审查 买卖合同-设备采购.pdf
+/commercial-legal:review 买卖合同-设备采购.pdf
 ```
 
 ```
-/commercial-legal:审查 https://pan.baidu.com/s/ABC123
+/commercial-legal:review https://pan.baidu.com/s/ABC123
 ```
 
 ```
-/commercial-legal:审查
+/commercial-legal:review
 [粘贴合同文本]
 ```
 

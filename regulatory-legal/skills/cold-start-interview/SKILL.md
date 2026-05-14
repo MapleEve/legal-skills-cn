@@ -1,5 +1,5 @@
 ---
-name: 冷启动访谈
+name: cold-start-interview
 description: 初始设置访谈 — 确定企业的监管关注清单、索引政策库、设定重大性标准，使监控系统输出有价值信号而非噪音。适用于首次安装、重新配置（--redo）或检查集成状态（--check-integrations）。仅覆盖中国监管机构。
 argument-hint: "[--redo | --check-integrations]"
 ---
@@ -31,7 +31,7 @@ argument-hint: "[--redo | --check-integrations]"
 
 ## 冷启动检查
 
-读取 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md`：
+读取 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md`：
 - **不存在** → 开始访谈。
 - **包含 `<!-- 设置暂停于： -->`** → 从暂停处继续。
 - **包含 `[PLACEHOLDER]` 但无暂停注释** → 提供重新开始或从占位符处继续。
@@ -39,7 +39,7 @@ argument-hint: "[--redo | --check-integrations]"
 
 ## 检查共享公司档案
 
-查找 `~/.claude/plugins/config/claude-for-legal/company-profile.md`。
+查找 `~/.claude/plugins/config/claude-for-legal-cn/company-profile.md`。
 
 - **如存在：** 读取并确认。
 - **如不存在：** 询问公司信息并写入共享档案。
@@ -114,12 +114,12 @@ argument-hint: "[--redo | --check-integrations]"
 展示插件能做什么的定制列表：
 
 > **以下是我在监管合规业务中擅长的：**
-> - 检查监管动态源 — `/监管动态源监控器`
-> - 对比一项监管变化与企业政策库差异 — `/政策差异对比`
-> - 打开合规差距追踪器 — `/合规差距`
-> - 跟踪征求意见稿的公开征求意见期 — `/征求意见`
+> - 检查监管动态源 — `/reg-feed-watcher`
+> - 对比一项监管变化与企业政策库差异 — `/policy-diff`
+> - 打开合规差距追踪器 — `/gaps`
+> - 跟踪征求意见稿的公开征求意见期 — `/comments`
 
-> 完成。你的配置位于 `~/.claude/plugins/config/claude-for-legal/regulatory-legal/CLAUDE.md` — 一个纯文本文件，可直接阅读和编辑。
+> 完成。你的配置位于 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` — 一个纯文本文件，可直接阅读和编辑。
 > - 直接编辑文件做快速更改
 > - 运行 `--redo` 做完整重新访谈
 > - 运行 `--check-integrations` 重新检查连接状态

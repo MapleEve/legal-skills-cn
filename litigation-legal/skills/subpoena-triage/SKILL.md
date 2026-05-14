@@ -1,19 +1,19 @@
 ---
-name: 法院传票分诊
+name: subpoena-triage
 description: 对公司收到的法院传票、调查令或协助执行通知书进行分类——归类、分析范围/负担/保密审查、交叉核对案件组合，并产出应对策略、合规计划及截止日期日历。适用场景：用户说"收到法院传票""被送达了""法院来人送材料"，或分享一份法院传票、调查令、协助执行通知书或行政机关调查要求进行评估。
 argument-hint: "[法院文件路径] [--slug=自定义标识]"
 ---
 
-# /法院传票分诊
+# /subpoena-triage
 
 1. 从提供路径读取法院文件。
 2. 分类（法院传票/举证通知书 / 调查令 / 协助执行通知书 / 行政调查要求 / 刑事）。
-3. 如刑事 → 停止，按 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 升级。否则继续。
-4. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` 用于交叉核对。加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 案件格局、保密惯例、升级规范。
+3. 如刑事 → 停止，按 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 升级。否则继续。
+4. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` 用于交叉核对。加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 案件格局、保密惯例、升级规范。
 5. 遵循以下工作流程和参考。
 6. 提取关键字段，分析范围/负担/保密审查，产出应对策略 + 合规计划 + 截止日期日历。
-7. 写入 `~/.claude/plugins/config/claude-for-legal/litigation-legal/收件/[标识]/分诊.md`。复制或链接原文至 `~/.claude/plugins/config/claude-for-legal/litigation-legal/收件/[标识]/原件.[ext]`。
-8. 交接：如证据保全未到位，则 `/证据保全 --发出`；如重大程度需要，则 `/案件立案`；如已有案件中的当事人文件，则 `/案件简报 [标识]`。
+7. 写入 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/[slug]/triage.md`。复制或链接原文至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/[slug]/incoming.[ext]`。
+8. 交接：如证据保全未到位，则 `/legal-hold --issue`；如重大程度需要，则 `/matter-intake`；如已有案件中的当事人文件，则 `/matter-briefing [slug]`。
 
 ---
 
@@ -62,8 +62,8 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 ## 加载上下文
 
 - 法院/机关文件（用户提供路径或放入会话中）
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 用于查找相关案件和证据保全状态
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 案件格局、律所保密惯例、升级规范
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 用于查找相关案件和证据保全状态
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 案件格局、律所保密惯例、升级规范
 
 ---
 
@@ -179,7 +179,7 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 
 ### 第八步：撰写分诊报告
 
-输出：`~/.claude/plugins/config/claude-for-legal/litigation-legal/收件/[标识]/分诊.md`。
+输出：`~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/inbound/[slug]/triage.md`。
 
 ```markdown
 [工作成果抬头——根据插件配置 ## 输出——因角色不同；见 `## 使用人身份`]
@@ -188,11 +188,11 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 
 > **不替代外聘律师。** 本文件为结构化分类和范围读取，以支持对截止日期、保全措施和委托介入的快速决策。每条规则引用为起点启发式；管辖特定分析、异议最终确定、动议实务和保密审查的实体判断，需要熟悉受案法院的执业律师。对超出常规范围的任何文书，应委托外聘律师。
 
-**标识：** [标识]
+**标识：** [slug]
 **收到日期：** [YYYY-MM-DD]
 **文书类型：** [应诉通知书/传票/举证通知书/调查令/协助执行通知书/行政调查/刑事]
 **送达对象：** [实体/注册地址]
-**收件文件：** [路径]
+**收件文件：** [path]
 
 ---
 
@@ -201,10 +201,10 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 - **发出机关：** [法院/行政机关]
 - **案号/案由：** [案号，案由]
 - **原告/申请人：** [名称]
-- **答辩期截止：** [日期]（收到后15天）`[须核实送达日期]`
-- **举证期限截止：** [日期]
-- **开庭日期：** [日期]
-- **管辖权异议截止：** [日期]
+- **答辩期截止：** [date]（收到后15天）`[须核实送达日期]`
+- **举证期限截止：** [date]
+- **开庭日期：** [date]
+- **管辖权异议截止：** [date]
 
 ## 核心内容摘要
 
@@ -263,17 +263,17 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 
 *所有截止日期来自第零步规则研究。`[须专家核实]` 确认本受案法院和本文书类型的规则和变体。*
 
-- **答辩期截止：** [日期] —— 依据：《民事诉讼法》第128条 `[须核实送达日期]`
-- **管辖权异议截止：** [日期] —— 依据：《民事诉讼法》第130条
-- **举证期限截止：** [日期] —— 依据：举证通知书
-- **开庭日期：** [日期] —— 依据：传票
-- **调查令配合期限：** [日期] `[须核实当地高院规定]`
+- **答辩期截止：** [date] —— 依据：《民事诉讼法》第128条 `[须核实送达日期]`
+- **管辖权异议截止：** [date] —— 依据：《民事诉讼法》第130条
+- **举证期限截止：** [date] —— 依据：举证通知书
+- **开庭日期：** [date] —— 依据：传票
+- **调查令配合期限：** [date] `[须核实当地高院规定]`
 
 ---
 
 ## 立即行动
 
-- [ ] 证据保全已发出 —— [是/否] —— 如否，运行 `/证据保全 [标识] --issue`
+- [ ] 证据保全已发出 —— [是/否] —— 如否，运行 `/legal-hold [slug] --issue`
 - [ ] 外聘律师已委托 —— [是/谁/待定]
 - [ ] 答辩状起草 —— [负责人，截止日期]
 - [ ] 举证准备 —— [负责人，截止日期]
@@ -295,7 +295,7 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 
 ### 第九步：交接
 
-**在回应法院文书之前（提交答辩状、管辖权异议、向法院出示材料、配合调查令——任何向法院或机关的实质性回应）：** 阅读 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。如果角色是非律师：
+**在回应法院文书之前（提交答辩状、管辖权异议、向法院出示材料、配合调查令——任何向法院或机关的实质性回应）：** 阅读 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 中的 `## 使用人身份`。如果角色是非律师：
 
 > 回应法院文书具有法律后果——错过答辩期可能直接败诉（缺席判决），错过管辖权异议期则丧失异议权利，保密信息披露可能无法撤回。您是否已与律师审查过？如果已审查，继续。如果未审查，以下是一份带去给律师的简要说明：
 >
@@ -305,10 +305,10 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 
 不得在未获得明确同意的情况下越过此关。分诊、范围确定和内部日程安排不需要把关——向法院/机关的回应需要。
 
-- 如分类为**刑事文书** → 停止，按 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` 标注升级，不得继续标准分诊。
+- 如分类为**刑事文书** → 停止，按 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 标注升级，不得继续标准分诊。
 - 如分类为**行政调查**：标注适用监管特定规范；建议委托外部监管律师。
 - 否则：提议创建案件（通常——诉讼文书几乎总是足够重大需要跟踪）。
-- 如按文书范围未发出证据保全，立即交接给 `/证据保全 --issue`。
+- 如按文书范围未发出证据保全，立即交接给 `/legal-hold --issue`。
 
 ## 以下一步决策树收尾
 

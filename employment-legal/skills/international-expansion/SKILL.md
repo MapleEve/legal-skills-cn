@@ -1,9 +1,9 @@
 ---
-name: 境外扩张
+name: international-expansion
 description: >
   参考：中国企业出海境外招聘的实施规划框架——雇佣模式选择（EOR/PEO/自建实体）、
   税务/财务/HR的跨职能触发条件、结构化的境外律师简报请求、
-  以及持久缺口追踪器。由/地域扩张启动和/扩张更新加载；不直接调用。
+  以及持久缺口追踪器。由/expansion-kickoff和/expansion-update加载；不直接调用。
 user-invocable: false
 ---
 
@@ -11,7 +11,7 @@ user-invocable: false
 
 ## 案件上下文
 
-**案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务的默认设置），跳过本段——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问："这是哪个案件的？运行`/employment-legal:案件工作空间 切换 <slug>`或者说`执业级别`。"加载活跃案件的`案件.md`获取案件特定的上下文和例外设置。将输出写入案件文件夹`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。
+**案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务的默认设置），跳过本段——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问："这是哪个案件的？运行`/employment-legal:matter-workspace switch <slug>`或者说`执业级别`。"加载活跃案件的`matter.md`获取案件特定的上下文和例外设置。将输出写入案件文件夹`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/<matter-slug>/`。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。
 
 ---
 
@@ -27,11 +27,11 @@ user-invocable: false
 
 ## 加载上下文
 
-读取`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→管辖范围、升级表、任何现有的扩张笔记。
+读取`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围、升级表、任何现有的扩张笔记。
 
 ## 输出标题
 
-从`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→`## 输出`预置工作成果标题（根据`## 谁在使用`中的用户角色不同）。
+从`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→`## 输出`预置工作成果标题（根据`## 谁在使用`中的用户角色不同）。
 
 ## 工作流
 
@@ -136,7 +136,7 @@ user-invocable: false
 
 ### 步骤5——创建扩张追踪器
 
-将新文件写入`~/.claude/plugins/config/claude-for-legal/employment-legal/expansion-[country-slug].yaml`，包含步骤2-4中识别的所有开放事项。此文件跨会话持续存在。
+将新文件写入`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/expansion-[country-slug].yaml`，包含步骤2-4中识别的所有开放事项。此文件跨会话持续存在。
 
 ### 步骤6——输出
 

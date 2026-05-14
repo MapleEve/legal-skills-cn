@@ -1,6 +1,6 @@
-# matters/ — portfolio data
+# matters/ — 中国争议解决案件台账
 
-This folder holds the portfolio. Two layers:
+This folder holds the dispute-resolution portfolio: 民事诉讼、商事仲裁、劳动仲裁、知识产权争议、商业秘密争议、公司纠纷、执行案件、证据保全、行政调查 and material pre-litigation correspondence. Two layers:
 
 - **`_log.yaml`** — the ledger. One row per matter. Parseable by skills. Source of truth for rollups.
 - **`[slug]/`** — per-matter detail. Narrative and history. Where humans read and edit.
@@ -20,8 +20,10 @@ matters/
 
 Lowercase, hyphens, year at the end. Examples:
 - `acme-v-us-2026`
-- `ftc-inquiry-2026`
-- `employment-smith-2026`
+- `admin-investigation-agency-2026`
+- `labor-zhang-2026`
+- `ip-infringement-competitor-2026`
+- `assist-enforcement-court-2026`
 
 Year makes the slug stable even if a similar matter arises later. The folder name matches the slug exactly.
 
@@ -36,6 +38,10 @@ Year makes the slug stable even if a similar matter arises later. The folder nam
 ## Closed matters
 
 Stay here. Don't delete. `/portfolio-status` filters them from active rollups by default; `/portfolio-status --all` includes them. Closed matters are the training set for portfolio judgment.
+
+## China dispute-resolution document types
+
+Common matter-triggering documents include 律师函、催告函、解除通知、侵权警告函、证据保全申请、应诉通知书、传票、举证通知书、调查令、协助执行通知书、行政调查通知或监管问询。 Intake should record deadlines, responding authority, evidence preservation duties, confidentiality limits, commercial secret review, personal information review, and whether settlement or mediation communications may have restricted evidentiary use.
 
 ## Corrections
 

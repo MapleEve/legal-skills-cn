@@ -3,18 +3,18 @@
 
 本插件的用户配置存储在不受插件更新影响的版本独立路径下：
 
-  ~/.claude/plugins/config/claude-for-legal/ai-governance-legal/CLAUDE.md
+  ~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md
 
 本插件中每个技能、命令和代理的规则：
 1. 从上述路径读取配置。不从此文件读取。
 2. 如果该文件不存在或仍包含 [待填写] 占位符，在开始实质性工作之前停止。告知："本插件需要设置后才能提供有价值的输出。请运行 /ai-governance-legal:cold-start-interview —— 大约需要10-15分钟，本插件的每个命令都依赖于它。没有它，输出将是通用的，可能与你实际的工作方式不匹配。"请勿使用占位符或默认配置继续进行。唯一无需设置即可运行的技能是 /ai-governance-legal:cold-start-interview 本身及任何 --check-integrations 标记。
 3. 设置和冷启动访谈写入该路径，必要时创建父目录。
 4. 插件更新后首次运行时，如果旧缓存路径下存在已填充的 CLAUDE.md
-   (~/.claude/plugins/cache/claude-for-legal/ai-governance-legal/<version>/CLAUDE.md)
+   (~/.claude/plugins/cache/claude-for-legal-cn/ai-governance-legal/<version>/CLAUDE.md)
    但配置路径下不存在，则在继续前将其复制到配置路径。
 5. 此文件（你正在阅读的文件）是模板。它随插件一起发布，展示配置应具有的结构。每次插件更新时它都会被替换。切勿在此处写入用户数据。
 
-**共享公司资料。** 公司级信息（你是谁、做什么、运营地点、风险姿态、关键人员）存放在 `~/.claude/plugins/config/claude-for-legal/company-profile.md` —— 比此文件高一层级，由所有12个插件共享。在读取本插件的实务配置之前先读取它。如果它不存在，本插件的设置将创建它。
+**共享公司资料。** 公司级信息（你是谁、做什么、运营地点、风险姿态、关键人员）存放在 `~/.claude/plugins/config/claude-for-legal-cn/company-profile.md` —— 比此文件高一层级，由所有12个插件共享。在读取本插件的实务配置之前先读取它。如果它不存在，本插件的设置将创建它。
 -->
 
 # 人工智能治理实务配置
@@ -87,7 +87,7 @@
 
 ## AI系统清单
 
-**清单文件：** `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/ai-systems.yaml`
+**清单文件：** `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/ai-systems.yaml`
 
 在中国法框架下，**角色和风险层级应当按AI系统逐一评估，而非按公司整体。** 同一组织可能是系统A的生成式AI服务提供者、系统B的深度合成服务使用者、系统C的算法推荐服务提供者——每种组合触发不同的合规义务。此清单按系统存储记录。
 
@@ -168,7 +168,7 @@
 
 ## AI政策承诺
 
-*从 [政策名称/URL] 于 [日期] 提取。*
+*从 [政策名称/URL] 于 [date] 提取。*
 
 **声明的禁止用途：** [待填写]
 **声明的必要保障措施：** [待填写]
@@ -237,7 +237,7 @@
 > - **来源：** [引用来源确认 | 未连接——引用为模型训练知识，使用前请核验]
 > - **已读：** [200页中的第1-50页 | 全部3份文件 | 登记表中N项 | 不适用]
 > - **需你判断的标记项：** [N处 `[需审阅]` 内联标记 | 无]
-> - **时效性：** [已检索自[日期]以来的动态——未发现更新 | 发现N项更新，内联标注 | 无法检索，请核验[具体规则]]
+> - **时效性：** [已检索自[date]以来的动态——未发现更新 | 发现N项更新，内联标注 | 无法检索，请核验[具体规则]]
 > - **使用前请注意：** [审阅人实际应做的1-2件事 —— 或"可直接查阅"如一切就绪]
 
 如果一切就绪，缩为一行：`审阅人提示：引用已确认 · 完整阅读 · 无标记 · 可直接查阅`。
@@ -292,7 +292,7 @@
 
 **文件访问失败。** 不要悄无声息地失败。
 
-**核验日志。** 写入 `~/.claude/plugins/config/claude-for-legal/ai-governance-legal/verification-log.md`。
+**核验日志。** 写入 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/verification-log.md`。
 
 ---
 

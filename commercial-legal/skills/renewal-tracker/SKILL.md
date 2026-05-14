@@ -1,15 +1,15 @@
 ---
-name: 合同台账与续约追踪
+name: renewal-tracker
 description: >
   中国合同全生命周期管理——签约→履行→到期/续约/终止→归档。
   合同到期预警、续约/终止通知窗口提醒、自动续约条款审查、合同台账维护。
   参考《民法典》第558条后合同义务。适用场景：用户说"有什么合同快到期了"、
   "续约跟踪"、"合同台账"、"把这个加入合同台账"、"哪些合同错过了解除窗口"、
   或审查完成后自动交接。
-argument-hint: "[--days N 调整预警窗口 | --missed 查看已错过窗口 | --台账 查看完整台账]"
+argument-hint: "[--days N 调整预警窗口 | --missed 查看已错过窗口 | --register 查看完整台账]"
 ---
 
-# /合同台账
+# /renewal-tracker
 
 维护合同台账，追踪合同全生命周期，在关键节点（提前N天发出续约/终止通知）发出预警。
 
@@ -115,10 +115,10 @@ contracts:
 ```
 合同[合同相对方]——[合同类型]已加入合同台账。
 合同编号：[自动生成或手动分配]
-当前到期日：[日期]
+当前到期日：[date]
 续约机制：[自动续约/协商续约/到期终止]
-通知期限：[N]天 → 最早发出通知日：[日期]
-下次预警：[日期]（到期前[通知期限+缓冲]天）
+通知期限：[N]天 → 最早发出通知日：[date]
+下次预警：[date]（到期前[通知期限+缓冲]天）
 ```
 
 若合同相对方已有记录，询问：是替换（已续约/新签）还是新增独立合同。
@@ -165,14 +165,14 @@ contracts:
 - 近期关注（45-89天）：[N]份
 ```
 
-**`--days N`：** 调整预警窗口，如 `/合同台账 --days 180` 查看未来180天。
+**`--days N`：** 调整预警窗口，如 `/renewal-tracker --days 180` 查看未来180天。
 
 ### 模式3：续约触发处理
 
 当解除窗口已过且未发出不续约通知（即自动续约已生效）：
 
 ```
-本合同已于[日期]自动续约。更新台账：
+本合同已于[date]自动续约。更新台账：
 - 新的 current_term_end：[日期+续约期限]
 - 新的 cancel_by_effective：[重新计算]
 - 新的 send_by_effective：[重新计算]
@@ -196,7 +196,7 @@ contracts:
 4. **重大违约解除**：若对方有违约行为，可行使法定解除权（《民法典》第563条）
 ```
 
-### 模式5：合同台账总览（`--台账` 参数）
+### 模式5：合同台账总览（`--register` 参数）
 
 ```markdown
 ## 合同台账总览
@@ -288,17 +288,17 @@ contracts:
 ## 操作示例
 
 ```
-/commercial-legal:合同台账
+/commercial-legal:renewal-tracker
 ```
 
 ```
-/commercial-legal:合同台账 --days 180
+/commercial-legal:renewal-tracker --days 180
 ```
 
 ```
-/commercial-legal:合同台账 --missed
+/commercial-legal:renewal-tracker --missed
 ```
 
 ```
-/commercial-legal:合同台账 --台账
+/commercial-legal:renewal-tracker --register
 ```

@@ -1,12 +1,12 @@
 ---
-name: 自动更新
+name: auto-updater
 description: >
   检查已安装社区技能是否有更新。显示差异并要求明确批准后才应用。
   当用户说"检查更新"、"更新我的技能"、"已安装技能有什么新内容"时使用。
 argument-hint: "[--check(默认) | --apply-all]"
 ---
 
-# /自动更新
+# /auto-updater
 
 ## 功能目的
 

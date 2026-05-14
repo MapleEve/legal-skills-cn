@@ -1,5 +1,5 @@
 ---
-name: 劳动合同解除审查
+name: termination-review
 description: >
   劳动合同解除审查——按《劳动合同法》第36/39/40/41条分类审查解除类型、
   扫描高风险标记（工伤/三期女职工/医疗期/职业病/临近退休）、
@@ -17,7 +17,7 @@ argument-hint: "[描述解除情景，或附加文件]"
 
 ## 加载上下文
 
-读取 `~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md` 中的管辖范围、升级表及用户角色配置。
+读取 `~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md` 中的管辖范围、升级表及用户角色配置。
 
 ---
 
@@ -120,12 +120,12 @@ argument-hint: "[描述解除情景，或附加文件]"
 ## 输出
 
 ```markdown
-## 劳动合同解除审查：[员工姓名/角色] — [日期]
+## 劳动合同解除审查：[员工姓名/角色] — [date]
 
-**管辖：** [省/市]
+**管辖：** [province-or-city]
 **解除类型：** [第36条协商/第39条过失/第40条无过失/第41条裁员]
-**入职日期：** [日期]
-**计划解除日期：** [日期]
+**入职日期：** [date]
+**计划解除日期：** [date]
 **工龄：** [年/月]
 
 ---

@@ -1,13 +1,13 @@
 ---
-name: 证据保全
+name: legal-hold
 description: 帮助律师申请诉前/诉中证据保全或财产保全——撰写保全申请书，整理担保材料，追踪保全裁定及执行。基于《民事诉讼法》第84条（证据保全）和第103-104条（财产保全）。适用场景：用户说"申请证据保全""申请财产保全""诉前保全""写保全申请书"或"这个案子需要保全"。
-argument-hint: "[案件标识] [--证据 | --财产] [--诉前 | --诉中]"
+argument-hint: "[案件标识] [--evidence | --property] [--pre-suit | --in-suit]"
 ---
 
-# /证据保全
+# /legal-hold
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` → 律所保全实务惯例。
-2. 加载 `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` → 案件类型、管辖法院、标的、对方当事人信息。
+1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 律所保全实务惯例。
+2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` → 案件类型、管辖法院、标的、对方当事人信息。
 3. 遵循以下工作流程和参考。
 4. 识别保全过程：申请→担保→法院裁定→执行。
 5. 起草保全申请书（含被保全财产/证据信息、保全范围、担保方案）。
@@ -56,13 +56,13 @@ argument-hint: "[案件标识] [--证据 | --财产] [--诉前 | --诉中]"
 
 ## 加载上下文
 
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/[标识]/案件档案.md` —— 案件类型、标的额、管辖法院、对方当事人信息
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/CLAUDE.md` —— 律所保全实务惯例、常用担保方式
-- `~/.claude/plugins/config/claude-for-legal/litigation-legal/matters/_log.yaml` —— 案件状态和已有保全记录
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` —— 案件类型、标的额、管辖法院、对方当事人信息
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` —— 律所保全实务惯例、常用担保方式
+- `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` —— 案件状态和已有保全记录
 
 **利益冲突审查关——不可跳过。** 在起草保全申请前，检查 `_log.yaml` 中的案件标识。若案件不在 `_log.yaml` 中，拒绝并路由：
 
-> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:案件立案`，这样利益冲突审查就会运行，案件工作空间也能建立。我不会在未立案的案件上起草保全申请——利益冲突审查是入门关。"
+> "我在案件登记簿中未找到[案件标识]。请先运行 `/litigation-legal:matter-intake`，这样利益冲突审查就会运行，案件工作空间也能建立。我不会在未立案的案件上起草保全申请——利益冲突审查是入门关。"
 
 不得在未立案案件上继续。立案运行冲突审查并写入本技能所读取的 `_log.yaml` 行。
 

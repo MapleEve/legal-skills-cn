@@ -77,10 +77,10 @@ tools:
       - { name: glob, enabled: true }
 
 mcp_servers:
-  - { type: url, name: 企业网盘,     url: "${BOX_MCP_URL:-TBD-企业网盘}" }
-  - { type: url, name: gdrive,   url: "${GDRIVE_MCP_URL:-TBD-企业网盘}" }
-  - { type: url, name: imanage,  url: "${IMANAGE_MCP_URL:-TBD-文档管理}" }
-  - { type: url, name: 合同结构分析, url: "${DEFINELY_MCP_URL:-TBD-合同结构分析}" }
+  - { type: url, name: box,      url: "${BOX_MCP_URL}" }
+  - { type: url, name: gdrive,   url: "${GDRIVE_MCP_URL}" }
+  - { type: url, name: imanage,  url: "${IMANAGE_MCP_URL}" }
+  - { type: url, name: definely, url: "${DEFINELY_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../corporate-legal }

@@ -31,10 +31,10 @@ tools:
       - { name: glob, enabled: true }
 
 mcp_servers:
-  - { type: url, name: 合同管理系统, url: "${IRONCLAD_MCP_URL:-TBD-合同管理系统}" }
-  - { type: url, name: gdrive,   url: "${GDRIVE_MCP_URL:-TBD-企业网盘}" }
-  - { type: url, name: 文档管理系统, url: "${IMANAGE_MCP_URL:-TBD-文档管理系统}" }
-  - { type: url, name: 电子签章系统, url: "${DOCUSIGN_MCP_URL:-TBD-电子签章系统}" }
+  - { type: url, name: ironclad, url: "${IRONCLAD_MCP_URL}" }
+  - { type: url, name: gdrive,   url: "${GDRIVE_MCP_URL}" }
+  - { type: url, name: imanage,  url: "${IMANAGE_MCP_URL}" }
+  - { type: url, name: docusign, url: "${DOCUSIGN_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../commercial-legal }

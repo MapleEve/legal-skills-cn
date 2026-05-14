@@ -1,5 +1,5 @@
 ---
-name: 规章制度更新
+name: handbook-updates
 description: >
   按《劳动合同法》第4条民主程序对劳动规章制度进行增量更新。
   将提议的规章制度变更与现行版本做diff，标记连锁影响和省/市补充需求。
@@ -10,7 +10,7 @@ description: >
 
 ## 案件上下文
 
-**案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务的默认设置），跳过本段——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问："这是哪个案件的？运行`/employment-legal:案件工作空间 切换 <slug>`或者说`执业级别`。"加载活跃案件的`案件.md`获取案件特定的上下文和例外设置。将输出写入案件文件夹`~/.claude/plugins/config/claude-for-legal/employment-legal/matters/<matter-slug>/`。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。
+**案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务的默认设置），跳过本段——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问："这是哪个案件的？运行`/employment-legal:matter-workspace switch <slug>`或者说`执业级别`。"加载活跃案件的`matter.md`获取案件特定的上下文和例外设置。将输出写入案件文件夹`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/<matter-slug>/`。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。
 
 ---
 
@@ -22,7 +22,7 @@ description: >
 
 ## 加载上下文
 
-`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`→规章制度文件位置、跨省/市补充列表、更新频率、民主程序记录。
+`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→规章制度文件位置、跨省/市补充列表、更新频率、民主程序记录。
 
 ## 工作流
 
@@ -53,7 +53,7 @@ description: >
 
 ### 步骤4：跨省/市补充影响分析
 
-对于`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`中员工所在的每个省/市：
+对于`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`中员工所在的每个省/市：
 
 - 该省/市是否有针对被修改章节的补充规定？
 - 变更是否使补充规定过时、错误或不完整？
@@ -128,7 +128,7 @@ description: >
 
 | 省/市 | 现有补充 | 变更后 | 需要行动 |
 |---|---|---|---|
-| [省/市] | [内容摘要] | [仍有效/过时/需更新] | [无需/更新补充/新增补充] |
+| [province-or-city] | [内容摘要] | [仍有效/过时/需更新] | [无需/更新补充/新增补充] |
 
 ### 权利减损检查
 

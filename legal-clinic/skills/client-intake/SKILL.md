@@ -1,5 +1,5 @@
 ---
-name: 来访接案
+name: client-intake
 description: >
   按中国法律援助诊所流程进行结构化接案——来访登记、法律援助条件审查
   （经济困难标准+案件类型）、利益冲突检查、授权委托书签署、案件受理、指派承办人员。
@@ -8,7 +8,7 @@ description: >
 argument-hint: "[可选：业务领域提示]"
 ---
 
-# /来访接案
+# /client-intake
 
 ## 目的
 
@@ -56,7 +56,7 @@ argument-hint: "[可选：业务领域提示]"
    - 紧急程度：紧急（涉及人身安全/时效即将届满）/ 常规 / 可等待
    - 案件复杂度：简单 / 中等 / 复杂（需评估诊所是否有能力承办）
    - 是否需要转介（超出诊所能力范围的案件，建议向当地法律援助中心或合作律所转介）
-8. **生成接案笔录。** 写入 `~/.claude/plugins/config/claude-for-legal/legal-clinic/matters/<案件ID>/intake-record.md`。
+8. **生成接案笔录。** 写入 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/matters/<case-id>/intake-record.md`。
 
 ## 接案笔录内容结构
 

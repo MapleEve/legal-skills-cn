@@ -1,5 +1,5 @@
 ---
-name: 投后整合管理
+name: integration-management
 description: 投后整合管理追踪器 — 工商变更→人员整合→业务整合→系统整合→合规过渡。分阶段工作计划（D1/D30/D90/D180）、同意追踪、大规模合同转让、每周状态报告。当用户说"投后整合"、"交割后"、"未完成同意"、"合同转让"、"整合状态"或"交易还有什么遗留"时使用。
 argument-hint: "[--init | --contracts | --report | --update | --export [--format csv|table]] [--deal [code]]"
 ---
@@ -94,10 +94,10 @@ argument-hint: "[--init | --contracts | --report | --update | --export [--format
 
 ### 模式3：状态报告
 ```markdown
-## 投后整合状态报告 — [日期]
+## 投后整合状态报告 — [date]
 
 **交易：** [交易名称/代码]
-**交割日期：** [日期]
+**交割日期：** [date]
 **交割后天数：** [D+N]
 
 ### 执行摘要

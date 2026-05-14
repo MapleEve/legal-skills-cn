@@ -1,5 +1,5 @@
 ---
-name: 审查手册更新提案审批
+name: review-proposals
 description: >
   审查并批准（或驳回）审查手册监控代理提出的待审批审查手册更新提案，
   将批准的变更应用到业务实践档案中。当审查手册监控代理提出提案时，
@@ -8,7 +8,7 @@ description: >
 argument-hint: "[无需参数——从待审批提案文件读取]"
 ---
 
-# /审查手册更新提案审批
+# /review-proposals
 
 逐项处理监控代理提出的待审批审查手册更新提案，将批准的变更应用到业务实践档案。
 
@@ -29,11 +29,11 @@ argument-hint: "[无需参数——从待审批提案文件读取]"
 ## 示例
 
 ```
-/commercial-legal:审查手册更新提案审批
+/commercial-legal:review-proposals
 ```
 
 ```
-/commercial-legal:审查手册更新提案审批
+/commercial-legal:review-proposals
 （审查手册监控代理通知您后自动运行）
 ```
 

@@ -1,5 +1,5 @@
 ---
-name: 调查开启
+name: investigation-open
 description: >
   以律所受托模式开启新的内部调查案件——确定委托关系、明确调查范围、
   组成调查组、向被调查对象发出调查通知、创建调查工作日志。
@@ -7,7 +7,7 @@ description: >
 argument-hint: "[调查事项的简要描述]"
 ---
 
-# /调查开启
+# /investigation-open
 
 以律所受托模式开启新的内部调查案件——确定委托关系、明确调查范围、组成调查组、发出调查通知、创建调查工作日志。
 
@@ -17,7 +17,7 @@ argument-hint: "[调查事项的简要描述]"
 
 ## 指示
 
-1. 加载`~/.claude/plugins/config/claude-for-legal/employment-legal/CLAUDE.md`。
+1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`。
 2. 加载`内部调查`参考技能并运行模式1（开启）。
 3. 如果相同简码的案件已存在，覆盖前发出警告。
 4. 按中国调查实践逐步开展：委托确认→调查范围→调查组组成→调查通知→证据收集准备。
@@ -74,7 +74,7 @@ argument-hint: "[调查事项的简要描述]"
 ## 输出
 
 ```
-调查已开启：[案件简码]
+调查已开启：[case-slug]
 
 委托方：[名称]
 调查范围：[事项摘要]
@@ -86,12 +86,12 @@ argument-hint: "[调查事项的简要描述]"
 ## 示例
 
 ```
-/employment-legal:调查开启
+/employment-legal:investigation-open
 关于杭州办公室一名管理人员被投诉性骚扰的调查。
 ```
 
 ```
-/employment-legal:调查开启
+/employment-legal:investigation-open
 （技能将询问详情）
 ```
 
