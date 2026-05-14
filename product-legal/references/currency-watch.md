@@ -1,4 +1,4 @@
-# Product Legal Currency Watch
+# 产品合规法规动态关注清单
 
 **Last verified: 2026-05-10.**
 
@@ -25,8 +25,8 @@
 - **US:** COPPA、FTC Act Section 5、州隐私法、州 AI disclosure law、Section 230、negative option/click-to-cancel、endorsement/fake review 规则。
 - **Cross-border operations:** DPA、SCC、SOC 2、跨境数据传输机制、境外云/AI 供应商条款、当地儿童保护、内容治理和消费者保护规则。
 
-## How to use this file
+## 使用方式
 
-When a launch review cites a rule, effective date, enforcement posture, or pending amendment, it should note: "This area moves — verify at the primary regulator or source. See `references/currency-watch.md`."
+当上线审查引用具体规则、生效日期、监管态度或待生效修订时，应明确提示："本领域变化较快，请到一手监管机关或官方来源核验；参见 `references/currency-watch.md`。"
 
-**This file goes stale.** Current as of May 2026. Update when you notice drift.
+**本文件会过期。** 当前口径截至 2026 年 5 月。发现变化时应同步更新。

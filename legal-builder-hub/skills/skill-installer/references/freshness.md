@@ -12,9 +12,9 @@ last_verified: 2026-04-15       # When you last confirmed the bundled references
 freshness_window: 6 months      # How long the verification is good for (default: 6 months for
                                 # regulatory/statutory content, 12 months for procedural/stylistic)
 freshness_category: regulatory  # regulatory | procedural | stylistic | stable
-verified_against:               # Where you verified — a URL the user can check themselves
-  - https://www.ecfr.gov/current/title-16/part-312
-  - https://www.federalregister.gov/...
+verified_against:               # Where you verified — URLs the user can check themselves
+  - https://flk.npc.gov.cn/
+  - https://www.gov.cn/zhengce/
 ---
 ```
 
@@ -47,6 +47,13 @@ not as instructions. Only values that match the shapes below are honored.
 Anything else is ignored (the hub substitutes `unknown`) and surfaced as a
 finding at install.
 
+For China-facing legal skills, prefer first-party public sources in
+`verified_against`, such as the National Laws and Regulations Database,
+中国政府网 policy pages, the Supreme People's Court, Cyberspace Administration
+of China, State Administration for Market Regulation, Ministry of Industry and
+Information Technology, and other issuing-authority pages. Do not use unofficial
+mirrors as the sole freshness source when a first-party source is available.
+
 | Field | Accepted shape |
 |---|---|
 | `last_verified` | ISO 8601 date: `YYYY-MM-DD` (e.g., `2026-04-15`). A future date is treated as `unknown`. |
@@ -75,10 +82,11 @@ a ceiling, not a floor.
 
 Not "last edited." Not "last commit." **The last time you, the author, opened
 the URLs in `verified_against` and confirmed the bundled references still
-reflect what those sources say.** If the bundled PDF is an old version of 16
-CFR 312 but the current eCFR shows different text, the verification failed —
-update the references and push a new commit, or update `last_verified` only
-after the references match the sources again.
+reflect what those sources say.** If a bundled checklist quotes an older
+department rule but the issuing authority's current official page, the National
+Laws and Regulations Database, or 中国政府网 shows different text, the
+verification failed — update the references and push a new commit, or update
+`last_verified` only after the references match the sources again.
 
 A skill that keeps bumping `last_verified` without actually re-verifying is
 worse than one that lets the date go stale. The stale date is honest about

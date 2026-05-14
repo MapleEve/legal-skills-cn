@@ -23,7 +23,7 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 
 3. **安装你的插件。** 从下方表格中选择与你工作领域匹配的插件，然后执行：
    ```
-   /plugin install 数据合规@claude-for-legal-cn
+   /plugin install privacy-legal@claude-for-legal-cn
    ```
 
 4. **重启 Claude Code。** 关闭后重新打开。此步骤不可跳过——插件在重启之前不会生效。
@@ -45,20 +45,20 @@ https://github.com/user-attachments/assets/51394f0a-5277-4fe2-b81c-5c5e9ac876b5
 
 ## 哪个插件适合我？
 
-| 你的角色 | 安装… | 第一条命令 |
-|---|---|---|
-| 数据合规律师 / 数据保护官 | `数据合规` | `/privacy-legal:use-case-triage` |
-| 商业合同律师 / 法务 | `商业合同` | `/commercial-legal:review` |
-| 公司证券律师 / 投融资法务 | `公司证券` | `/corporate-legal:diligence-issue-extraction` |
-| 劳动用工律师 / 人事法务 | `劳动用工` | `/employment-legal:wage-hour-qa` |
-| 产品合规法务 | `产品合规` | `/product-legal:is-this-a-problem` |
-| 知识产权律师 / 专利代理人 | `知识产权` | `/ip-legal:clearance` |
-| 争议解决律师（企业法务/律所/个人执业） | `争议解决` | `/litigation-legal:matter-intake` |
-| 政府监管 / 合规法务 | `政府监管` | `/regulatory-legal:reg-feed-watcher` |
-| 人工智能治理负责人 | `人工智能治理` | `/ai-governance-legal:use-case-triage` |
-| 法律援助诊所指导教师（法学院） | `法律援助工作站` | `/legal-clinic:cold-start-interview` |
-| 法学生 | `法学生` | `/law-student:cold-start-interview` |
-| 法律运营 / 寻找更多技能 | `法律技能管理` | `/legal-builder-hub:registry-browser` |
+| 你的角色 | 展示名 | 安装 slug | 第一条命令 |
+|---|---|---|---|
+| 数据合规律师 / 数据保护官 | 数据合规 | `privacy-legal` | `/privacy-legal:use-case-triage` |
+| 商业合同律师 / 法务 | 商业合同 | `commercial-legal` | `/commercial-legal:review` |
+| 公司证券律师 / 投融资法务 | 公司证券 | `corporate-legal` | `/corporate-legal:diligence-issue-extraction` |
+| 劳动用工律师 / 人事法务 | 劳动用工 | `employment-legal` | `/employment-legal:wage-hour-qa` |
+| 产品合规法务 | 产品合规 | `product-legal` | `/product-legal:is-this-a-problem` |
+| 知识产权律师 / 专利代理人 | 知识产权 | `ip-legal` | `/ip-legal:clearance` |
+| 争议解决律师（企业法务/律所/个人执业） | 争议解决 | `litigation-legal` | `/litigation-legal:matter-intake` |
+| 政府监管 / 合规法务 | 政府监管 | `regulatory-legal` | `/regulatory-legal:reg-feed-watcher` |
+| 人工智能治理负责人 | 人工智能治理 | `ai-governance-legal` | `/ai-governance-legal:use-case-triage` |
+| 法律援助诊所指导教师（法学院） | 法律援助工作站 | `legal-clinic` | `/legal-clinic:cold-start-interview` |
+| 法学生 | 法学生 | `law-student` | `/law-student:cold-start-interview` |
+| 法律运营 / 寻找更多技能 | 法律技能管理 | `legal-builder-hub` | `/legal-builder-hub:registry-browser` |
 
 ## 你正在安装的是什么
 
