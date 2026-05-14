@@ -2,7 +2,7 @@
 
 ## 概述
 
-按计划扫描产品团队的上线跟踪系统——飞书多维表格、TAPD 或禅道——查找未来数周可能需要法律审查的上线项目。将每个上线项目对照产品法务顾问的风险校准标准进行分类，并产出每周雷达备忘录：即将到来的项目、需要法律关注的项目、触发标记的项目。与 [`launch-watcher`](../../product-legal/agents/launch-watcher.md) Claude Code 插件代理同一来源——本目录为 `POST /v1/agents` 的托管代理模板。
+按计划扫描产品团队的上线跟踪系统——飞书多维表格、TAPD 或禅道——查找未来数周可能需要法律审查的上线项目。将每个上线项目对照产品法务顾问的风险校准标准进行分类，并产出每周雷达备忘录：即将到来的项目、需要法律关注的项目、触发标记的项目。本目录为 `POST /v1/agents` 的托管代理模板，技能仍来自 product-legal 插件；托管版 system text 在本目录内维护，以保持中国本地跟踪系统默认项。
 
 本模板为**模板而非成品**。它无法开箱即用。你需要将 MCP 连接器指向你的跟踪系统，加载风险校准标准，设定运行周期，并配置备忘录投递目标。适配说明见下文。
 
@@ -17,7 +17,7 @@
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export LINEAR_MCP_URL=... ATLASSIAN_MCP_URL=... ASANA_MCP_URL=... GDRIVE_MCP_URL=...
+export FEISHU_BITABLE_MCP_URL=... TAPD_MCP_URL=... ZENTAO_MCP_URL=... SELF_HOSTED_TRACKER_MCP_URL=...
 ../../scripts/deploy-managed-agent.sh launch-radar
 ```
 
@@ -33,8 +33,8 @@ export LINEAR_MCP_URL=... ATLASSIAN_MCP_URL=... ASANA_MCP_URL=... GDRIVE_MCP_URL
 
 | 层级 | 是否接触不可信跟踪系统内容？ | 工具 | 连接器 |
 |---|---|---|---|
-| **`tracker-reader`** | **是** | 仅 `Read`、`Grep` | Jira、Jira (atlassian)、Asana（只读） |
-| `risk-classifier` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`WebFetch`、`Agent` | 仅编排器：Jira / Jira / Asana / Drive（只读） |
+| **`tracker-reader`** | **是** | 仅 `Read`、`Grep` | 飞书多维表格、TAPD、禅道、自部署事项系统（只读） |
+| `risk-classifier` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`WebFetch`、`Agent` | 仅编排器：企业跟踪系统与配置库（只读） |
 | **`memo-writer`**（Write 持有者） | 否 | `Read`、`Write`、`Edit` | 无 |
 
 `tracker-reader` 返回长度受限、符合 Schema 验证的 JSON 上线列表。`risk-classifier` 无 MCP 和网络；它使用已验证列表加用户校准文件工作。`memo-writer` 是唯一持有 Write 权限的工作节点，产出 `./out/launch-radar-<date>.md`。编排器不持有 Write 权限，也绝不自行解析原始工单正文。
@@ -45,11 +45,11 @@ export LINEAR_MCP_URL=... ATLASSIAN_MCP_URL=... ASANA_MCP_URL=... GDRIVE_MCP_URL
 
 在以下事项完成前本模板无法发挥作用：
 
-- **跟踪系统指向。** 在 [`agent.yaml`](./agent.yaml) 和 [`subagents/tracker-reader.yaml`](./subagents/tracker-reader.yaml) 中编辑 `mcp_servers`，指向跟踪系统的 MCP URL。如果仅使用 Jira/Jira/Asana 之一，删除其他两个。如果跟踪系统不在列表中，替换为你使用的 MCP 并相应更新 `tracker-reader` 系统提示词。
+- **跟踪系统指向。** 在 [`agent.yaml`](./agent.yaml) 和 [`subagents/tracker-reader.yaml`](./subagents/tracker-reader.yaml) 中编辑 `mcp_servers`，指向跟踪系统的 MCP URL。如果仅使用飞书多维表格、TAPD、禅道或自部署事项系统之一，删除其他未用连接器。如果跟踪系统不在列表中，替换为你使用的 MCP 并相应更新 `tracker-reader` 系统提示词。
 - **风险校准。** `risk-classifier` 从 `../../product-legal/CLAUDE.md`（由 `/product-legal:cold-start-interview` 填充）读取用户校准标准。如果尚未运行冷启动访谈，要么先操作，要么在首次扫描前手写一份 CLAUDE.md，包含"通常阻止 / 通常需要处理 / 通常仅供参考"表格。无校准标准时，分类器仅退回关键词触发，噪音很大。
 - **扫描周期和前瞻窗口。** 默认每周 / 6 周。你的上线节奏可能需要每日或双周；较短的交付时间需要更长的前瞻窗口。在调度器（cron、任务调度系统(TBD)）中配置周期，而非代理内部。前瞻窗口通过引导事件传入。
-- **投递通道。** 备忘录默认写入 `./out/`。要改为或同时发布到 Slack，要么 (a) 向模板添加 Slack MCP 并更新 `memo-writer` 在写入后发布，要么 (b) 让编排层提取 `./out/launch-radar-<date>.md` 并转发。此模式将投递与代理分离以便测试；根据运维需求选择。
-- **触发关键词。** `launch-watcher` 系统提示词中的关键词列表为主观判断（未成年人个人信息保护、健康数据、人工智能治理等）。删除不适用你产品的类别，添加领域特定术语（网络安全等级保护、个人信息保护法、生物识别信息、数据跨境传输等），并根据校准表重新调整严重程度阈值。修改后重新部署。
+- **投递通道。** 备忘录默认写入 `./out/`。要改为或同时发布到企业协作平台，让编排层提取 `./out/launch-radar-<date>.md` 并转发。此模式将投递与代理分离以便测试；根据运维需求选择。
+- **触发关键词。** 托管版 system text 中的关键词列表为主观判断（未成年人个人信息保护、健康数据、人工智能治理等）。删除不适用你产品的类别，添加领域特定术语（网络安全等级保护、个人信息保护法、生物识别信息、数据跨境传输等），并根据校准表重新调整严重程度阈值。修改后重新部署。
 - **保密标头。** `memo-writer` 从插件配置添加工作产出标头。在部署前与法务总监确认确切标记——不同司法管辖区的变体适用不同的标头。
 - **数据合规关键词。** 中国法律环境下的关键触发词应包括：个人信息、敏感个人信息、数据出境、网络安全等级保护、关键信息基础设施、算法推荐、深度合成、生成式人工智能、未成年人保护等。
 

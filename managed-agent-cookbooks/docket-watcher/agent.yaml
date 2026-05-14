@@ -1,18 +1,26 @@
 # 案件流程巡检（Docket Watcher）—— 托管代理模板
 #
-# 与 litigation-legal Claude Code 插件中的 `docket-watcher` 代理使用同一来源。
-# 本清单将规范系统提示词和技能解析到磁盘上的插件，确保单一事实来源。
+# 托管代理版使用本地化 system text，技能仍解析到 litigation-legal 插件。
+# 避免托管默认配置继承境外连接器或投递工具。
 
 name: docket-watcher
 model: claude-opus-4-7
 
 system:
-  file: ../../litigation-legal/agents/docket-watcher.md
-  append: |
+  text: |
+    你是案件流程巡检（Docket Watcher）托管代理，面向中国法院流程和在办案件组合运行。
     你在平台团队的工作流引擎背后以无人工界面模式运行。
     将文件产出到 ./out/；不要假设存在交互式会话。
     在输出文件前添加部署团队 litigation-legal CLAUDE.md 中的工作产出标头。
 
+    读取部署团队 litigation-legal 配置中的案件格局、常涉法院列表、
+    matters/_log.yaml、每个案件的案号、管辖法院、上次检查时间和待办交付物。
+    对每个有案号的活跃案件，委托 docket-reader 从中国审判流程信息公开网、
+    中国裁判文书网或部署团队配置的中文法院流程数据源拉取自上次检查以来的新增条目。
+    将文书类型映射为候选期限规则，并与案件 history.md 和待办交付物交叉比对。
+    委托 tracker-writer 写入 ./out/docket-report-<date>.md 和 ./out/deadlines.yaml。
+
+    你不录入日历、不决定诉讼策略、不把流程无变化视为案件无风险。
     你的输出为线索而非法律结论。计算出的期限为线索，而非日历日程。
     法院期限规则因管辖法院、审级、法官及地方性规定而异，
     并可能被法院内部规定或个案审理期限调整。
@@ -33,9 +41,9 @@ tools:
       - { name: glob, enabled: true }
 
 mcp_servers:
-  - { type: url, name: trellis,       url: "${TRELLIS_MCP_URL}" }
-  - { type: url, name: courtlistener, url: "${COURTLISTENER_MCP_URL}" }
-  - { type: url, name: gdrive,        url: "${GDRIVE_MCP_URL}" }
+  - { type: url, name: cn_court_process, url: "${CN_COURT_PROCESS_MCP_URL}" }
+  - { type: url, name: cn_judgment_docs, url: "${CN_JUDGMENT_DOCS_MCP_URL}" }
+  - { type: url, name: cn_policy_library, url: "${CN_POLICY_LIBRARY_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../litigation-legal }

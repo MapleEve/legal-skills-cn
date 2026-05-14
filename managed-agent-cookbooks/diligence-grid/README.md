@@ -20,10 +20,10 @@
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export BOX_MCP_URL=...
-export GDRIVE_MCP_URL=...
-export IMANAGE_MCP_URL=...          # 可选；如使用，将工具集默认设为 enabled
-export DEFINELY_MCP_URL=...         # 可选；用于 normalizer 步骤的条款结构质检
+export CN_VDR_MCP_URL=...
+export ENTERPRISE_DRIVE_MCP_URL=...
+export LEGAL_DOC_LIBRARY_MCP_URL=...          # 可选；如使用，将工具集默认设为 enabled
+export CN_CONTRACT_STRUCTURE_MCP_URL=...      # 可选；用于 normalizer 步骤的条款结构质检
 ../../scripts/deploy-managed-agent.sh diligence-grid
 ```
 
@@ -37,9 +37,9 @@ export DEFINELY_MCP_URL=...         # 可选；用于 normalizer 步骤的条款
 
 | 层级 | 是否接触不可信文档？ | 工具 | 连接器 |
 |---|---|---|---|
-| **`doc-reader`** | **是**（只读） | `Read`、`Grep` | Box、企业网盘、iManage（只读） |
+| **`doc-reader`** | **是**（只读） | `Read`、`Grep` | 中文数据室、企业网盘、法律文档库（只读） |
 | **`extractor`** | **是**（只读） | `Read`、`Grep` | 无 |
-| `normalizer` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`Agent` | 无（definely 可选，只读） |
+| `normalizer` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`Agent` | 无（中文合同结构分析可选，只读） |
 | **`grid-writer`**（Write 持有者） | 否 | `Read`、`Write` | 无 |
 
 `doc-reader` 和 `extractor` 返回长度受限、符合 Schema 验证的 JSON。编排器和 `normalizer` 仅接触结构化数据。`grid-writer` 产出 `./out/diligence-grid-<date>.csv`、`./out/diligence-grid-<date>_sources.csv` 和 `./out/diligence-grid-<date>-summary.md`。
@@ -52,10 +52,10 @@ export DEFINELY_MCP_URL=...         # 可选；用于 normalizer 步骤的条款
 
 ## 适配说明
 
-- **虚拟数据室 URL。** 设置 `BOX_MCP_URL` / `GDRIVE_MCP_URL` / `IMANAGE_MCP_URL` 以匹配你的数据室。默认启用 Box 和企业网盘；如果以 iManage 或 Datasite 为主，请在 [`agent.yaml`](./agent.yaml) 中切换 `default_config`。如果虚拟数据室使用国内数据室服务(TBD)，在 `mcp_servers` 和 `tools` 中添加条目及匹配的 MCP URL。
+- **虚拟数据室 URL。** 设置 `CN_VDR_MCP_URL` / `ENTERPRISE_DRIVE_MCP_URL` / `LEGAL_DOC_LIBRARY_MCP_URL` 以匹配你的数据室。默认启用中文数据室和企业网盘；如果以法律文档库或其他国内数据室服务为主，请在 [`agent.yaml`](./agent.yaml) 中切换 `default_config`。如果虚拟数据室使用其他国内数据室服务(TBD)，在 `mcp_servers` 和 `tools` 中添加条目及匹配的 MCP URL。
 - **列 Schema。** [`corporate-legal/skills/tabular-review/references/ma-diligence-columns.md`](../../corporate-legal/skills/tabular-review/references/ma-diligence-columns.md) 中的并购尽调标准为默认。根据交易类型自定义——科技/知识产权、医疗、房地产、政府承包商、受监管金融——使用该参考资料中的扩展项。
-- **输出目标。** 输出落地在 `./out/`。通过部署管道接入交易文件夹、企业网盘、iManage 工作区或 Box 文件夹。不要给 `grid-writer` 授予上传的 MCP 权限；交接给上传步骤更干净，且保持 Write 层级隔离。
+- **输出目标。** 输出落地在 `./out/`。通过部署管道接入交易文件夹、企业网盘、法律文档库或中文数据室文件夹。不要给 `grid-writer` 授予上传的 MCP 权限；交接给上传步骤更干净，且保持 Write 层级隔离。
 - **默认模式。** 监控 vs 网格按引导事件选择。如果工作流几乎总是其中一种，在编排器中相应设定引导事件模板。
 - **需求清单分类。** 监控模式根据部署团队 corporate-legal `CLAUDE.md` 配置中的分类进行文档分类。在为实时交易接入监控模式前，在那里重新运行 `/corporate-legal:cold-start-interview`。
 - **工作产出标头。** `grid-writer` 从部署团队的 `## Outputs` 配置添加标头。在部署前与法律团队确认标头——因审查者角色（律师 vs 非律师）而异。
-- **Slack 路由。** 本代理绝不直接发布。报告是文件；`handoff_request` 告诉编排器路由到哪个通道。在部署团队的 `CLAUDE.md` 内部风格部分配置交易通道。
+- **企业协作路由。** 本代理绝不直接发布。报告是文件；`handoff_request` 告诉编排器路由到哪个通道。在部署团队的 `CLAUDE.md` 内部风格部分配置交易通道。

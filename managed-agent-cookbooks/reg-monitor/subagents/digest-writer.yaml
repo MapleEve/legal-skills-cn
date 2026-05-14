@@ -60,10 +60,10 @@ system:
         字段（监管机构名称、案号）。
         信息源曾出现过伪造先例。
 
-    写入文件后，如果部署团队配置要求 Slack 投递，
-    发出命名 `slack_send_message` 的 handoff_request，
+    写入文件后，如果部署团队配置要求企业协作平台投递，
+    发出命名 `cn_collab_send_message` 的 handoff_request，
     通道来自内部风格部分，并附带摘要文件路径。
-    你不自行发送 Slack 消息；编排器负责路由。
+    你不自行发送企业协作消息；编排器负责路由。
 
 tools:
   - type: agent_toolset_20260401

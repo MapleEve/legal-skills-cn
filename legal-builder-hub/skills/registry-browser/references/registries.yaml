@@ -2,13 +2,13 @@
 # Default set. User adds more via /legal-builder-hub:registry-browser.
 
 registries:
-  - name: "lpm-skills"
-    url: "https://github.com/legalopsconsulting/lpm-skills"
-    description: "14 legal project management skills. Practice-area agnostic. From LegalOps Consulting."
-    type: "github-repo"
+  - name: "legal-skills-cn-local"
+    url: "../../.."
+    description: "本仓内置中文法律技能注册表；管理员可替换为内部 Git 或制品库地址。"
+    type: "local-repo"
     last_synced: null
 
   # Add more as the ecosystem grows:
-  # - name: "awesome-legal-skills"
-  #   url: "https://github.com/..."
-  #   type: "github-repo"
+  # - name: "internal-legal-skills"
+  #   url: "TBD-管理员配置入口"
+  #   type: "internal-repo"

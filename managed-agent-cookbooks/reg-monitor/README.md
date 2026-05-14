@@ -15,7 +15,7 @@
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export GDRIVE_MCP_URL=...
+export ENTERPRISE_POLICY_LIBRARY_MCP_URL=...
 ../../scripts/deploy-managed-agent.sh reg-monitor
 ```
 
@@ -30,12 +30,12 @@ export GDRIVE_MCP_URL=...
 | 层级 | 是否接触不可信文档？ | 工具 | 连接器 |
 |---|---|---|---|
 | **`feed-reader`** | **是** | 仅 `Read`、`Grep`、`WebFetch` | 无 |
-| `materiality-filter` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`Agent` | gdrive（仅编排器） |
+| `materiality-filter` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`Agent` | 企业政策库（仅编排器） |
 | **`digest-writer`**（Write 持有者） | 否 | `Read`、`Write`、`Edit` | 无 |
 
-`feed-reader` 返回长度受限、符合 Schema 验证的 JSON。`materiality-filter` 对该 JSON 加磁盘上的监管合规配置做纯计算——无 MCP、无网络。`digest-writer` 产出 `./out/reg-digest-<YYYY-MM-DD>.md` 并发出 `handoff_request` 用于 Slack 投递。
+`feed-reader` 返回长度受限、符合 Schema 验证的 JSON。`materiality-filter` 对该 JSON 加磁盘上的监管合规配置做纯计算——无 MCP、无网络。`digest-writer` 产出 `./out/reg-digest-<YYYY-MM-DD>.md` 并发出 `handoff_request` 用于企业协作平台投递。
 
-**交接：** 编排器将 `digest-writer` 的 `handoff_request` 路由到 Slack 发送工作节点，通道从部署团队的内部风格配置中读取。代理绝不自行发送 Slack 消息。
+**交接：** 编排器将 `digest-writer` 的 `handoff_request` 路由到企业协作平台发送工作节点，通道从部署团队的内部风格配置中读取。代理绝不自行发送企业协作消息。
 
 **不予保证：** 本代理展示变化并标记潜在的制度空白；由律师决定某项监管变化是否需要行动及由谁负责响应。
 
@@ -45,7 +45,7 @@ export GDRIVE_MCP_URL=...
 
 - **将 `feed-reader` 指向你的信息源。** 默认目标为国家法律法规数据库（免费公开 API，无需 MCP）。如果你的律所订阅了北大法宝、威科先行、中国证监会公告或其他监管机构直连信息源，请将端点添加到 feed-reader 的 web_fetch 白名单并调整编排器扫描计划。如果只有免费信息源，国家法律法规数据库 API 单独即可工作。
 - **（可选）设置商业监管信息源 MCP URL。** 商业信息源在清单中默认注释；如果你的团队付费订阅，接入并将 `enabled: true`。
-- **配置摘要投递通道。** digest-writer 发出命名 Slack 通道的 `handoff_request`。编排器从监管合规配置的**内部风格 -> 监管摘要**字段读取通道。在首次定时运行前设置好，否则交接将进入死信队列。希望摘要通过邮件或企业协作平台投递的团队，应相应更换编排器白名单中的交接目标。
+- **配置摘要投递通道。** digest-writer 发出命名企业协作通道的 `handoff_request`。编排器从监管合规配置的**内部风格 -> 监管摘要**字段读取通道。在首次定时运行前设置好，否则交接将进入死信队列。希望摘要通过邮件或其他内部平台投递的团队，应相应更换编排器白名单中的交接目标。
 - **调整重大性阈值。** materiality-filter 读取配置中的 `## 重大性阈值` 部分——始终重大 / 需审查 / 仅供参考。在启用定时运行前确认各层级反映当前风险偏好；阈值过低会淹没摘要，过高则会遗漏有法定期限的义务。
 - **更新监管关注清单。** materiality-filter 同时读取 `## 我们关注的监管机构` 表格。随着业务覆盖范围变化添加或移除监管机构。
 - **确认工作产出标头。** `agent.yaml` 中的 headless append 指示代理添加配置中的工作产出标头。在启用前与法务总监确认标头措辞。

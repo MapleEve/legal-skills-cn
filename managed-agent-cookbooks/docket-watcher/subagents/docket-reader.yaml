@@ -26,11 +26,11 @@ tools:
     configs:
       - { name: read, enabled: true }
       - { name: grep, enabled: true }
-  - { type: mcp_toolset, mcp_server_name: trellis,       default_config: { enabled: true } }
-  - { type: mcp_toolset, mcp_server_name: courtlistener, default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: cn_court_process, default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: cn_judgment_docs, default_config: { enabled: true } }
 mcp_servers:
-  - { type: url, name: trellis,       url: "${TRELLIS_MCP_URL}" }
-  - { type: url, name: courtlistener, url: "${COURTLISTENER_MCP_URL}" }
+  - { type: url, name: cn_court_process, url: "${CN_COURT_PROCESS_MCP_URL}" }
+  - { type: url, name: cn_judgment_docs, url: "${CN_JUDGMENT_DOCS_MCP_URL}" }
 skills: []
 callable_agents: []
 output_schema:

@@ -1,16 +1,16 @@
 {
   "mcpServers": {
-    "Slack": {
+    "企业协作平台": {
       "type": "http",
-      "url": "TBD",
-      "title": "Slack",
-      "description": "搜索消息、阅读频道、查找工作区中的讨论。"
+      "url": "TBD-待定中文数据源",
+      "title": "企业协作平台",
+      "description": "连接企业微信、飞书或内部协作系统，搜索案件群组消息、庭审纪要和协作记录。"
     },
-    "Google Drive": {
+    "企业网盘": {
       "type": "http",
-      "url": "TBD",
-      "title": "Google Drive",
-      "description": "搜索、读取和获取 Google Drive 中的文档。"
+      "url": "TBD-待定中文数据源",
+      "title": "企业网盘",
+      "description": "搜索、读取和获取企业网盘或案件文档库中的诉讼材料。"
     },
     "电子证据平台": {
       "type": "http",

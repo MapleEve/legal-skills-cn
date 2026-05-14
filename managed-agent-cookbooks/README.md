@@ -1,8 +1,8 @@
 # Managed-agent templates for legal
 
-Every agent in this repo ships **two ways**: as a Claude Code plugin you install today (see the vertical directories at repo root), and as a **Claude Managed Agent** template your platform team deploys behind your own workflow engine. **Same agent, same skills — pick your surface.** Each directory below is a deploy manifest that references the canonical system prompt and skills from the matching plugin, so there is one source of truth.
+Every agent in this repo ships **two ways**: as a Claude Code plugin you install today (see the vertical directories at repo root), and as a **Claude Managed Agent** template your platform team deploys behind your own workflow engine. **Same skills, localized managed-agent defaults — pick your surface.** Each directory below is a deploy manifest that references the skills from the matching plugin and carries managed-agent system text where the hosted workflow needs local connector defaults.
 
-These are **cookbooks, not products.** They are starting points. Adapt them to your document management system, your contract repository, your Slack workspace, your notification routing, your review cadence. They will not work out of the box without that adaptation, and they are not supposed to.
+These are **cookbooks, not products.** They are starting points. Adapt them to your document management system, your contract repository, your enterprise collaboration workspace, your notification routing, your review cadence. They will not work without that adaptation, and they are not supposed to.
 
 Run `../scripts/deploy-managed-agent.sh <slug>` to upload skills, create leaf workers, and `POST /v1/agents` with the resolved config. Each template ships with [`steering-examples.json`](./reg-monitor/steering-examples.json) and a per-agent README covering its security tier and handoffs.
 
@@ -11,7 +11,7 @@ Run `../scripts/deploy-managed-agent.sh <slug>` to upload skills, create leaf wo
 | [`reg-monitor`](./reg-monitor/) | regulatory-legal | 国家法律法规数据库、国务院政策文件库、北大法宝/威科先行 | `Check feeds as-of <date>, materiality: <threshold>` | feed-reader · materiality-filter · **digest-writer** |
 | [`renewal-watcher`](./renewal-watcher/) | commercial-legal | 合同管理系统续约与解约期限 | `Scan renewals <X>–<Y> days out, flag playbook deviations` | repo-reader · deadline-calculator · **alert-writer** |
 | [`diligence-grid`](./diligence-grid/) | corporate-legal | 企业网盘、数据室系统、文档管理系统 | `Review folder <path> against schema <schema-id>` | doc-reader · extractor · normalizer · **grid-writer** |
-| [`launch-radar`](./launch-radar/) | product-legal | 项目管理工具（Jira、Linear、Asana）上线跟踪 | `Scan tracker for launches in next <N> weeks` | tracker-reader · risk-classifier · **memo-writer** |
+| [`launch-radar`](./launch-radar/) | product-legal | 飞书多维表格、TAPD、禅道或自部署事项系统上线跟踪 | `Scan tracker for launches in next <N> weeks` | tracker-reader · risk-classifier · **memo-writer** |
 | [`docket-watcher`](./docket-watcher/) | litigation-legal | 中国裁判文书网、北大法宝 | `Watch docket <case-id> in <court>, matter <matter-id>` | docket-reader · deadline-mapper · **tracker-writer** |
 
 **Bold** leaf = the only worker with `Write`.

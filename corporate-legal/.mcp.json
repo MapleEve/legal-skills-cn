@@ -1,55 +1,61 @@
 {
   "mcpServers": {
-    "Slack": {
+    "企业协作平台": {
       "type": "http",
-      "url": "TBD",
-      "title": "Slack",
-      "description": "搜索消息、读取频道、查找工作区中的讨论内容。"
+      "url": "TBD-待定中文数据源",
+      "title": "企业协作平台",
+      "description": "连接企业微信、飞书或内部协作系统，搜索交易群组消息、会议纪要和项目讨论。"
     },
-    "Google Drive": {
+    "企业网盘": {
       "type": "http",
-      "url": "TBD",
-      "title": "Google Drive",
-      "description": "搜索、读取和获取 Google Drive 中的文件。"
+      "url": "TBD-待定中文数据源",
+      "title": "企业网盘",
+      "description": "搜索、读取和获取企业网盘、交易文件夹和内部文档库中的公司法与交易文件。"
     },
-    "Box": {
+    "尽调数据室": {
       "type": "http",
-      "url": "TBD",
-      "title": "Box",
-      "description": "数据室和文件管理。"
+      "url": "TBD-待定中文数据源",
+      "title": "尽调数据室",
+      "description": "读取中文虚拟数据室中的并购尽调文件、披露材料、股权结构表和重大合同。"
     },
-    "iManage": {
+    "法律文档管理系统": {
       "type": "http",
-      "url": "TBD",
-      "title": "iManage",
-      "description": "连接到 Claude 的受管控 iManage 内容 —— 文件留在 iManage 中，访问受权限约束且可审计。"
+      "url": "TBD-待定中文数据源",
+      "title": "法律文档管理系统",
+      "description": "连接受管控的内部法律文档管理系统，访问权限受限且留痕可审计。"
     },
-    "TopCounsel": {
+    "工商信息查询": {
       "type": "http",
-      "url": "TBD",
-      "title": "TopCounsel",
-      "description": "外部律师推荐 —— 来自 5,000+ 名内部法务的社区评价、排名和专业能力证明。"
+      "url": "TBD-待定中文数据源",
+      "title": "工商信息查询",
+      "description": "查询市场主体登记、股东出资、董监高、分支机构、行政许可和经营异常等工商信息。"
     },
-    "Definely": {
+    "证券信息披露": {
       "type": "http",
-      "url": "TBD",
-      "title": "Definely",
-      "description": "实时、确定性访问合同结构 —— 解析定义、验证交叉引用、映射依赖关系、运行结构差异对比。"
+      "url": "TBD-待定中文数据源",
+      "title": "证券信息披露",
+      "description": "检索上市公司公告、招股书、定期报告、临时公告和监管问询回复。"
     },
-    "Solve Intelligence": {
+    "外部律师推荐库": {
       "type": "http",
-      "url": "TBD",
-      "title": "Solve Intelligence",
-      "description": "专利工作流 —— 检索专利和非专利文献、法律文本、SEP 技术标准、现有技术、权利要求分析。"
+      "url": "TBD-待定中文数据源",
+      "title": "外部律师推荐库",
+      "description": "按地域、业务领域、交易经验、报价区间和历史合作记录查询外部律师候选。"
+    },
+    "合同结构分析": {
+      "type": "http",
+      "url": "TBD-待定中文数据源",
+      "title": "合同结构分析",
+      "description": "解析中文合同定义、交叉引用、附表依赖、控制权变更条款和重大合同结构差异。"
     }
   },
   "recommendedCategories": [
-    "legal-document-management",
-    "virtual-data-room",
-    "contract-review",
-    "board-governance",
-    "documents",
-    "chat",
-    "email"
+    "中国公司法",
+    "并购尽调",
+    "证券信息披露",
+    "工商信息查询",
+    "法律文档管理",
+    "企业协作",
+    "合同结构分析"
   ]
 }

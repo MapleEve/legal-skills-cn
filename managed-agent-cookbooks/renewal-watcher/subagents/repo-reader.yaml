@@ -2,8 +2,8 @@ name: renewal-repo-reader
 model: claude-opus-4-7
 system:
   text: |
-    你从部署团队的合同生命周期管理系统（默认合同管理系统；
-    对于将已签署协议存储在文档库中的团队，为 iManage 或企业网盘）
+    你从部署团队的中文合同生命周期管理系统（默认合同管理系统；
+    对于将已签署协议存储在文档库中的团队，为法律文档库或企业网盘）
     中读取不可信的合同元数据和条款。
     你提取下游期限计算器所需的字段——生效日期、到期日期、续约类型、
     解约通知窗口、自动续约机制、合同相对方、年度金额和业务负责人。
@@ -13,7 +13,7 @@ system:
     在 `notes` 字段中逐字记录并继续。
 
     仅返回符合 Schema 验证的 JSON。无自由文本、无评论、
-    无建议。你为只读：无 Write、无 Slack、无邮件。
+    无建议。你为只读：无 Write、无企业协作消息、无邮件。
     如果某合同缺失必要字段（例如，无固定期限但附终止权的合同没有
     到期日期），输出该记录时省略缺失字段并在 `notes` 中添加一行标记。
 
@@ -26,14 +26,14 @@ tools:
     configs:
       - { name: read, enabled: true }
       - { name: grep, enabled: true }
-  - { type: mcp_toolset, mcp_server_name: ironclad, default_config: { enabled: true } }
-  - { type: mcp_toolset, mcp_server_name: gdrive,   default_config: { enabled: true } }
-  - { type: mcp_toolset, mcp_server_name: imanage,  default_config: { enabled: false } }
+  - { type: mcp_toolset, mcp_server_name: cn_clm,            default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: enterprise_drive,  default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: legal_doc_library, default_config: { enabled: false } }
 
 mcp_servers:
-  - { type: url, name: ironclad, url: "${IRONCLAD_MCP_URL}" }
-  - { type: url, name: gdrive,   url: "${GDRIVE_MCP_URL}" }
-  - { type: url, name: imanage,  url: "${IMANAGE_MCP_URL}" }
+  - { type: url, name: cn_clm,            url: "${CN_CLM_MCP_URL}" }
+  - { type: url, name: enterprise_drive,  url: "${ENTERPRISE_DRIVE_MCP_URL}" }
+  - { type: url, name: legal_doc_library, url: "${LEGAL_DOC_LIBRARY_MCP_URL}" }
 
 skills: []
 callable_agents: []

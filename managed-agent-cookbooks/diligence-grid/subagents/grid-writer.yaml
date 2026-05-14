@@ -67,9 +67,9 @@ system:
         在此之上仍然适用。
 
     你绝不接触原始文档。你接收 extractor 和 normalizer
-    的结构化 JSON。你不读取任何 MCP。你不发送 Slack。
+    的结构化 JSON。你不读取任何 MCP。你不发送企业协作消息。
     如果报告可供人工审查，发出 `handoff_request`，
-    命名 `slack_send_message`，附带交易通道和摘要文件路径。
+    命名 `cn_collab_send_message`，附带交易通道和摘要文件路径。
 
 tools:
   - type: agent_toolset_20260401

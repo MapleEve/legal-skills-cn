@@ -24,13 +24,13 @@ tools:
     configs:
       - { name: read, enabled: true }
       - { name: grep, enabled: true }
-  - { type: mcp_toolset, mcp_server_name: box,     default_config: { enabled: true  } }
-  - { type: mcp_toolset, mcp_server_name: gdrive,  default_config: { enabled: true  } }
-  - { type: mcp_toolset, mcp_server_name: imanage, default_config: { enabled: false } }
+  - { type: mcp_toolset, mcp_server_name: cn_vdr,            default_config: { enabled: true  } }
+  - { type: mcp_toolset, mcp_server_name: enterprise_drive,  default_config: { enabled: true  } }
+  - { type: mcp_toolset, mcp_server_name: legal_doc_library, default_config: { enabled: false } }
 mcp_servers:
-  - { type: url, name: box,     url: "${BOX_MCP_URL}" }
-  - { type: url, name: gdrive,  url: "${GDRIVE_MCP_URL}" }
-  - { type: url, name: imanage, url: "${IMANAGE_MCP_URL}" }
+  - { type: url, name: cn_vdr,            url: "${CN_VDR_MCP_URL}" }
+  - { type: url, name: enterprise_drive,  url: "${ENTERPRISE_DRIVE_MCP_URL}" }
+  - { type: url, name: legal_doc_library, url: "${LEGAL_DOC_LIBRARY_MCP_URL}" }
 skills: []
 callable_agents: []
 output_schema:

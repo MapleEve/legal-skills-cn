@@ -4,7 +4,7 @@
 
 监控在办案件组合的法院案件流程。TBD-待定中文数据源覆盖基层及中级法院；裁判文书网/中国审判流程信息公开网覆盖各级人民法院。对于每件在办案件，代理拉取自上次检查以来的新增诉讼文书，将文书类型映射为候选期限，与案件历史及待办事项交叉比对，并生成案件流程状态报告及结构化期限信息源。
 
-与 litigation-legal Claude Code 插件中的 [`docket-watcher`](../../litigation-legal/agents/docket-watcher.md) 代理同一来源——本目录为 `POST /v1/agents` 的托管代理模板。
+本目录为 `POST /v1/agents` 的托管代理模板，技能仍来自 litigation-legal 插件；托管版 system text 在本目录内维护，以保持中国法院流程和本地连接器默认项。
 
 ## 部署前注意事项
 
@@ -17,9 +17,9 @@
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export TRELLIS_MCP_URL=...
-export COURTLISTENER_MCP_URL=...
-export GDRIVE_MCP_URL=...
+export CN_COURT_PROCESS_MCP_URL=...
+export CN_JUDGMENT_DOCS_MCP_URL=...
+export CN_POLICY_LIBRARY_MCP_URL=...
 ../../scripts/deploy-managed-agent.sh docket-watcher
 ```
 
@@ -34,7 +34,7 @@ export GDRIVE_MCP_URL=...
 | 层级 | 是否接触文书？ | 工具 | 连接器 |
 |---|---|---|---|
 | **`docket-reader`** | **是** | 仅 `Read`、`Grep` | 中国审判流程信息公开网、中国裁判文书网（只读） |
-| `deadline-mapper` / 编排器 | 否——仅接触结构化 JSON | `Read`、`Grep`、`Glob`、`Agent` | gdrive（管辖配置，只读） |
+| `deadline-mapper` / 编排器 | 否——仅接触结构化 JSON | `Read`、`Grep`、`Glob`、`Agent` | 企业政策库（管辖配置，只读） |
 | **`tracker-writer`**（Write 持有者） | 否 | `Read`、`Write`、`Edit` | 无 |
 
 `docket-reader` 返回长度受限、符合 Schema 验证的 JSON。`deadline-mapper` 无 MCP、无网络——它应用部署团队配置的规则。`tracker-writer` 产出 `./out/docket-report-<date>.md` 和 `./out/deadlines.yaml`，且从不接触原始文书。
@@ -43,10 +43,10 @@ export GDRIVE_MCP_URL=...
 
 本模板为起点，在以下事项完成前无法投入生产使用：
 
-- **设置 MCP URL。** `TRELLIS_MCP_URL` 和 `COURTLISTENER_MCP_URL` 必须指向你的部署端点，并带有平台所需的认证凭据。`GDRIVE_MCP_URL`（或替代数据源）指向管辖规则表所在位置。
+- **设置 MCP URL。** `CN_COURT_PROCESS_MCP_URL` 和 `CN_JUDGMENT_DOCS_MCP_URL` 必须指向你的部署端点，并带有平台所需的认证凭据。`CN_POLICY_LIBRARY_MCP_URL`（或替代数据源）指向管辖规则表所在位置。
 - **加载案件组合。** 代理从部署团队的 litigation-legal 配置中读取 `matters/_log.yaml` 及各案件的 `docket_id` 和 `court`。如果案件管理系统是真实数据源，请在其前端接入 MCP 或配置定时同步到配置路径。
 - **配置管辖规则。** 为案件组合中的每一个管辖法院向 deadline-mapper 提供地方规则表。全国性规则（如《民事诉讼法》及其司法解释）可一次性编码；基层法院、中级法院及个别法官是暗藏风险之处。未知管辖法院应产出 `confidence: low` + `needs_verification: true`，绝不静默默认。
-- **接入交付渠道。** 确定输出目标：案件管理系统摄取 `./out/deadlines.yaml`；叙述性报告发送到 Slack、邮件或案件管理工作区；关键预警路由给你希望唤醒的人员。
+- **接入交付渠道。** 确定输出目标：案件管理系统摄取 `./out/deadlines.yaml`；叙述性报告发送到邮件、企业协作平台或案件管理工作区；关键预警路由给你希望唤醒的人员。
 - **设定运行周期。** 大多数案件每周运行；以下情况每日运行：14 天内有庭审安排的案件、处于 `trial` 或 `discovery` 后期阶段的案件、或任何 `risk: critical` 案件。
 
 ## 计算出的期限为线索，而非日历日程
