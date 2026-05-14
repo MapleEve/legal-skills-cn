@@ -1,25 +1,25 @@
-# Renewal Register
+# 续约台账
 #
-# Populated by saas-msa-review (handoffs) and renewal-tracker Mode 3 ([CLM] scan).
-# Each entry tracks when a contract renews and when you have to cancel by.
+# 由 saas-msa-review（交接）和 renewal-tracker 模式 3（[CLM] 扫描）填充。
+# 每条记录跟踪合同何时续约，以及最晚何时取消。
 #
-# The renewal-watcher agent reads this weekly and posts what's coming up.
+# renewal-watcher 每周读取本文件并提示即将到期事项。
 
 renewals: []
 
-# Example entry (remove once real data exists):
+# 示例条目（有真实数据后删除）：
 #
-# - counterparty: "Acme SaaS Inc."
-#   agreement: "Acme Platform Subscription Agreement"
+# - counterparty: "星河云软件有限公司"
+#   agreement: "星河云平台订阅协议"
 #   signed_date: 2025-06-15
 #   initial_term_end: 2026-06-15
-#   renewal_mechanism: "auto-renew annual"
+#   renewal_mechanism: "年度自动续约"
 #   notice_period_days: 60
 #   cancel_by: 2026-04-16
-#   price_on_renewal: "then-current list (uncapped)"
+#   price_on_renewal: "按届时目录价，未约定涨幅上限"
 #   annual_value: 48000
-#   business_owner: "jane@company.com"
-#   clm_id: "IC-12345"
+#   business_owner: "legal-ops@example.com"
+#   clm_id: "CN-CLM-12345"
 #   docusign_envelope: "abc-123"
 #   status: "active"
-#   notes: "Pricing uncapped — revisit before renewal"
+#   notes: "续约价格无上限，取消期限前需重新评估"

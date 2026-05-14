@@ -1,15 +1,15 @@
-# Gap Tracker
-# Populated by policy-diff handoffs. Tracks open policy gaps until closed or risk-accepted.
+# Gap 跟踪表
+# 由 policy-diff 交接填充。持续跟踪未关闭或未被风险接受的制度差距。
 
 gaps: []
 
-# Example:
+# 示例：
 # - id: GAP-001
-#   requirement: "Must disclose X at Y point in the flow"
-#   regulation: "State Privacy Act § 4.2"
-#   policy_affected: "Privacy Policy v3.1"
+#   requirement: "在用户提交个人信息前，应以显著方式告知处理目的、方式和范围"
+#   regulation: "个人信息保护法第17条"
+#   policy_affected: "隐私政策 v3.1"
 #   gap_type: "partial"
-#   owner: "privacy-legal@company.com"
+#   owner: "privacy-legal@example.com"
 #   opened: 2026-03-01
 #   due: 2026-06-01
 #   status: "open"

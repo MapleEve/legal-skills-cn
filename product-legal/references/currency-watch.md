@@ -1,8 +1,8 @@
 # 产品合规法规动态关注清单
 
-**Last verified: 2026-05-10.**
+**最近核验：2026-05-10。**
 
-> **Staleness check.** If the last-verified date above is more than 90 days old, treat this file as stale and verify each entry before relying on it. A stale watch list is worse than no watch list — it looks current while being wrong. When a skill reads this file, check the last-verified date first. If stale, say: "The currency watch was last verified [date] — [N] months ago. I'm using it as a checklist of areas to search, not as a source of current status." When you update any entry, also update the last-verified date at the top.
+> **时效检查。** 如果上方最近核验日期距今超过 90 天，应将本文件视为已过期，并在依赖前逐项核验。过期的关注清单比没有清单更危险，因为它看起来仍然有效但实际可能错误。技能读取本文件时，应先检查最近核验日期。若已过期，应提示：“本法规动态关注清单最近核验于 [date]，距今约 [N] 个月；我会把它作为检索领域清单，而不是当前状态来源。” 更新任何条目时，也要同步更新顶部最近核验日期。
 
 产品合规、消费者保护和互联网监管变化快。本文件默认用于中国大陆产品法务审查；跨境触达另见下方"境外扩展关注"。
 
@@ -21,9 +21,9 @@
 
 当产品触达境外用户、面向境外投放、使用境外供应商或承诺境外合规框架时，另行识别并核实适用规则。以下只作为跨境分支的搜索清单，不作为中国默认产品法 reference：
 
-- **EU/UK:** GDPR、DSA、DMA、EU AI Act、UK AADC、ePrivacy 和各成员国消费者/广告规则。
-- **US:** COPPA、FTC Act Section 5、州隐私法、州 AI disclosure law、Section 230、negative option/click-to-cancel、endorsement/fake review 规则。
-- **Cross-border operations:** DPA、SCC、SOC 2、跨境数据传输机制、境外云/AI 供应商条款、当地儿童保护、内容治理和消费者保护规则。
+- **欧盟 / 英国：** GDPR、DSA、DMA、EU AI Act、UK AADC、ePrivacy 和各成员国消费者/广告规则。
+- **美国：** COPPA、FTC Act Section 5、州隐私法、州 AI disclosure law、Section 230、negative option/click-to-cancel、endorsement/fake review 规则。
+- **跨境运营：** DPA、SCC、SOC 2、跨境数据传输机制、境外云/AI 供应商条款、当地儿童保护、内容治理和消费者保护规则。
 
 ## 使用方式
 

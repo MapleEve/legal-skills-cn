@@ -1,10 +1,10 @@
-# M&A Diligence — Standard Column Set
+# M&A 尽调 — 标准字段集
 
 买方视角目标公司合同审查的默认字段。以此为起点，再根据交易结构、尽调清单和并购协议的陈述保证增删字段。本文件不是固定清单；真正重要的字段由交易文件和项目优先级决定。
 
 ```yaml
 schema:
-  name: "M&A Diligence — Standard"
+  name: "M&A 尽调 — 标准"
   columns:
     - id: counterparty
       label: "相对方"

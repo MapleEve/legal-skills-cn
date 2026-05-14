@@ -1,6 +1,6 @@
-# Supervisor Review Queue
-# Everything flagged waits here. Supervisor approves or returns.
-# All actions logged — this is a clinic record.
+# 指导教师复核队列
+# 所有被标记事项都在这里等待处理。指导教师批准或退回。
+# 所有动作都会记录；这是诊所案件记录的一部分。
 
 queue: []
 
@@ -8,4 +8,4 @@ approved: []
 
 log: []
 
-# See SKILL.md for entry structure.
+# 条目结构见 SKILL.md。

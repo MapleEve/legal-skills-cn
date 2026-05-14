@@ -1,37 +1,37 @@
-# Code of Conduct
+# 行为准则
 
-## Our commitment
+## 我们的承诺
 
-We are committed to providing a welcoming and respectful environment for everyone who participates in this project, regardless of age, body size, disability, ethnicity, gender identity and expression, level of experience, nationality, personal appearance, race, religion, or sexual identity and orientation.
+我们致力于为参与本项目的每个人提供友善、尊重的环境，不因年龄、体型、残障、族裔、性别认同与表达、经验水平、国籍、外貌、种族、宗教、性身份或性取向而区别对待。
 
-## Expected behavior
+## 期望行为
 
-* Use welcoming and inclusive language.
-* Respect differing viewpoints and experiences.
-* Accept constructive criticism gracefully.
-* Focus on what is best for the community and the project.
-* Show empathy toward other community members.
+* 使用友善、包容的语言。
+* 尊重不同观点和经历。
+* 以建设性态度接受批评。
+* 关注对社区和项目最有利的做法。
+* 对其他社区成员保持同理心。
 
-## Unacceptable behavior
+## 不可接受行为
 
-* Harassment, intimidation, or discrimination in any form.
-* Trolling, insulting or derogatory comments, and personal or political attacks.
-* Public or private harassment.
-* Publishing others' private information without explicit permission.
-* Other conduct that could reasonably be considered inappropriate in a professional setting.
+* 任何形式的骚扰、恐吓或歧视。
+* 挑衅、侮辱性或贬损性评论，以及人身或政治攻击。
+* 公开或私下骚扰。
+* 未经明确许可发布他人私人信息。
+* 其他在专业环境中可被合理认为不适当的行为。
 
-## Scope
+## 适用范围
 
-This Code of Conduct applies to all project spaces, including issues, pull requests, discussions, and any other communication channels associated with this project. It also applies when an individual is representing the project in public spaces.
+本行为准则适用于所有项目空间，包括 issues、pull requests、discussions，以及与本项目相关的任何其他沟通渠道。个人在公共空间代表本项目发言或行动时，也适用本准则。
 
-## Reporting
+## 报告方式
 
-If you experience or witness unacceptable behavior, contact a project maintainer directly through GitHub, or open an issue if the report does not need to be private. All reports will be reviewed promptly and treated as confidentially as the reporting channel allows.
+如果你遭遇或目睹不可接受行为，请通过 GitHub 直接联系项目维护者；如果报告内容不需要保密，也可以提交 issue。所有报告都会被及时审阅，并在报告渠道允许的范围内尽量保密处理。
 
-## Enforcement
+## 执行
 
-Participants who violate this Code of Conduct may be warned, temporarily banned, or permanently removed from project participation, as determined by the project maintainers. Maintainers who do not follow or enforce this Code of Conduct may face the same consequences.
+违反本行为准则的参与者，可能会被警告、临时禁止参与，或被永久移出项目参与范围，具体由项目维护者决定。未遵守或未执行本行为准则的维护者，也可能面临同样后果。
 
-## Attribution
+## 来源说明
 
-This Code of Conduct is adapted from the Contributor Covenant, version 2.1.
+本行为准则改编自 Contributor Covenant 2.1 版本。
