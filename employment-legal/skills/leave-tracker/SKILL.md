@@ -7,7 +7,7 @@ description: >
 argument-hint: "[无参数——从HR系统或leave-register.yaml运行]"
 ---
 
-# /leave-tracker
+# /employment-legal:leave-tracker
 
 检查所有具有硬性法定截止日期的开放假期，仅揭示需要决定或行动的事项。不是状态看板——告诉您需要做什么以及为什么。
 

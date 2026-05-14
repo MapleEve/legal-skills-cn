@@ -9,11 +9,11 @@ description: >
 argument-hint: "[粘贴请求内容，或描述请求]"
 ---
 
-# /dsar-response
+# /privacy-legal:dsar-response
 
 ## 指示
 
-1. 加载执业画像中的系统清单和权利请求处理流程配置。
+1. 先读取本插件根目录下 `../../references/pipl-core-provisions.md`，再加载执业画像中的系统清单和权利请求处理流程配置。
 2. 按以下工作流程执行。
 3. 分类请求类型。检查升级触发条件——如有触发，先分流处理。
 4. 逐步推进：验证身份 → 遍历系统清单 → 豁免分析 → 起草。

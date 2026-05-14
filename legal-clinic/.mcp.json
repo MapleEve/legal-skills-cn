@@ -1,32 +1,32 @@
 {
   "mcpServers": {
-    "飞书/企业微信": {
+    "feishu_wecom": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "https://example.invalid/mcp/feishu-wecom",
       "title": "即时通讯",
       "description": "搜索消息、读取频道、查找讨论。"
     },
-    "企业网盘": {
+    "enterprise_drive": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "https://example.invalid/mcp/enterprise-drive",
       "title": "文档存储",
       "description": "搜索、读取和获取文档。"
     },
-    "北大法宝": {
+    "pkulaw": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "https://example.invalid/mcp/pkulaw",
       "title": "北大法宝",
       "description": "中国法律法规数据库——法律、行政法规、司法解释、部门规章、地方性法规。"
     },
-    "中国裁判文书网": {
+    "wenshu": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "https://example.invalid/mcp/wenshu",
       "title": "中国裁判文书网",
       "description": "中国法院判决书、裁定书、调解书检索平台。"
     },
-    "法律援助管理系统": {
+    "legal_aid_case_system": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "https://example.invalid/mcp/legal-aid-case-system",
       "title": "法律援助管理系统",
       "description": "法律援助案件管理、期限追踪、当事人信息管理。"
     }

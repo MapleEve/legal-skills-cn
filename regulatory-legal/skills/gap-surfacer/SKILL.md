@@ -1,6 +1,6 @@
 ---
 name: gap-surfacer
-description: 合规差距跟踪框架 — 已识别差距按风险等级（红线/重大/一般/提示）追踪整改进度，定期报告。支撑 /gaps 和 /comments。跟踪开放合规差距及其整改状态，从政策差异对比摄入合规差距，展示开放和超期项目，路由至负责人，并通过企业通讯工具通知合规差距负责人。本技能由合规差距和征求意见技能在做实质工作前加载。
+description: 合规差距跟踪框架 — 已识别差距按风险等级（红线/重大/一般/提示）追踪整改进度，定期报告。支撑 /regulatory-legal:gaps 和 /regulatory-legal:comments。跟踪开放合规差距及其整改状态，从政策差异对比摄入合规差距，展示开放和超期项目，路由至负责人，并通过企业通讯工具通知合规差距负责人。本技能由合规差距和征求意见技能在做实质工作前加载。
 user-invocable: false
 ---
 
@@ -31,6 +31,11 @@ user-invocable: false
 ## 跟踪器
 
 位于 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/gap-tracker.yaml`：
+
+加载规则：
+- 先读取 runtime 路径 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/gap-tracker.yaml`。
+- 如果 runtime 文件不存在，先读取本技能目录下的打包 seed：`references/gap-tracker.yaml`，用该结构初始化 runtime 跟踪器或作为本次会话的空表模板。
+- 不要在未读取 seed 的情况下自行发明字段名、状态值或中文化机器字段。
 
 ```yaml
 合规差距:
@@ -122,7 +127,7 @@ user-invocable: false
 ### 模式3：关闭合规差距
 
 ```
-/gaps --close GAP-001
+/regulatory-legal:gaps --close GAP-001
 整改方案："[政策名称]已修订至v2.3，[date]经[批准人]批准"
 ```
 
@@ -131,7 +136,7 @@ user-invocable: false
 ### 模式4：接受合规差距风险
 
 ```
-/gaps --accept GAP-002
+/regulatory-legal:gaps --accept GAP-002
 理由："该要求仅适用于[企业不满足的条件]。如[触发条件]则重新评估。"
 接受人：[有权人员的姓名]
 ```

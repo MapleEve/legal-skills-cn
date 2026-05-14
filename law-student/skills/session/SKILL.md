@@ -5,10 +5,10 @@ description: >
   主观题（案例分析/论述题）或闪卡。追踪表现并更新学习计划。
   当用户说"给我出10道[subject]的题"、"做个[subject]的训练"、
   "来5张[subject]的闪卡"或想训练固定数量的题目时使用。
-argument-hint: "<subject> <n> [--mbe | --essay | --flashcards]"
+argument-hint: "<subject> <n> [--objective | --essay | --flashcards]"
 ---
 
-# /session
+# /law-student:session
 
 1. 解析 `$ARGUMENTS` — 科目和题数。如缺失，询问：
    > 什么科目，多少道题？（例：`民法 10` 或 `刑法 5 --essay`。）
@@ -18,7 +18,7 @@ argument-hint: "<subject> <n> [--mbe | --essay | --flashcards]"
 3. 如存在则加载学习计划。读取该科目的训练历史以加权薄弱子知识点。
 
 4. 按方法标志路由：
-   - `--mbe`（法考备考默认）：运行N道选择题（含单选/多选/不定项）。
+   - `--objective`（法考备考默认）：运行N道选择题（含单选/多选/不定项）。
    - `--essay`：运行N道案例分析/论述题。按主观题评分标准评估。
    - `--flashcards`：加载闪卡技能，以刷题模式运行N张卡片。
 

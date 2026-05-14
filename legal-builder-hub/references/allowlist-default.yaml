@@ -1,6 +1,6 @@
 # 法律技能市场 · 默认白名单
 # 由 /legal-builder-hub:cold-start-interview 生成 —— 编辑此文件以更改受信任的内容。
-# 完整结构定义见 skill-installer/references/allowlist.md。
+# 完整结构定义见 ../skills/skill-installer/references/allowlist.md。
 #
 # 安全说明：此默认值为 RESTRICTIVE（严格模式）—— 拒绝未知来源。
 # cold-start 面谈会询问是否改为 permissive（宽松模式），适用于没有 IT 管理的
@@ -28,7 +28,7 @@ connectors: []
 licenses:
   # 社区技能可携带的 SPDX 许可证标识符。个人默认值。
   # 由 cold-start 根据部署场景（个人 / 律所内部 / 产品嵌入）设置。
-  # 详见 skill-installer/references/allowlist.md。
+  # 详见 ../skills/skill-installer/references/allowlist.md。
   - MIT
   - Apache-2.0
   - BSD-2-Clause

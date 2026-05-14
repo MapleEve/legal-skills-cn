@@ -10,5 +10,5 @@ registries:
 
   # 生态扩展后可继续添加：
   # - name: "internal-legal-skills"
-  #   url: "TBD-管理员配置入口"
+  #   url: "TBD"
   #   type: "internal-repo"

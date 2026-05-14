@@ -10,7 +10,7 @@ description: >
 argument-hint: "[list | add | edit <id> | classify <id> | show <id>]"
 ---
 
-# /ai-inventory
+# /ai-governance-legal:ai-inventory
 
 ## 触发场景
 
@@ -26,7 +26,7 @@ argument-hint: "[list | add | edit <id> | classify <id> | show <id>]"
 
 ## 执行步骤
 
-1. **读取配置。** 读取实践配置。如不存在或仍有 `[PLACEHOLDER]` 标注，引导用户先运行 `/ai-governance-legal:cold-start-interview`。
+1. **读取配置。** 读取实践配置。如不存在或仍有 `[待填写]` 标注，引导用户先运行 `/ai-governance-legal:cold-start-interview`。
 
 2. **读取清单。** 清单位于实践配置目录下的 `ai-systems.yaml`。如不存在，在第一次 `add` 运行时创建空的 `systems:` 列表。
 

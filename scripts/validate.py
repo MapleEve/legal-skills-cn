@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
-"""Harness-side schema validation for local workflow worker output.
+"""本地工作流 worker 输出的 schema 校验工具。
 
-Usage: validate.py <output.json> <schema.json|schema.yaml>
-Exits 0 on valid, 1 on invalid (message to stderr).
+用法：validate.py <output.json> <schema.json|schema.yaml>
+校验通过返回 0；校验失败返回 1，并将原因写入 stderr。
 
-The CMA API does not enforce structured output today, so the deploy harness
-runs this between a reader subagent and the orchestrator. Schemas live in each
-subagent yaml under `output_schema:` — the deploy script extracts them.
+当前运行接口不强制结构化输出，因此本地部署辅助脚本会在读取型子节点和编排器
+之间运行此校验。Schema 写在各子节点 yaml 的 `output_schema:` 下，由部署脚本提取。
 """
 import json
 import sys
@@ -34,9 +33,9 @@ def main() -> int:
     try:
         jsonschema.validate(instance=instance, schema=schema)
     except jsonschema.ValidationError as e:
-        print(f"INVALID: {e.message} at {'/'.join(str(p) for p in e.absolute_path)}", file=sys.stderr)
+        print(f"无效：{e.message}，位置 {'/'.join(str(p) for p in e.absolute_path)}", file=sys.stderr)
         return 1
-    print("OK")
+    print("通过")
     return 0
 
 

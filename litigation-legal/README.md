@@ -10,7 +10,7 @@
 
 若干功能引用企业邮箱和定时任务集成。这些需要在你的环境中配置 MCP 服务器——它们不随插件打包提供。没有它们时，输出写入文件供手动发送：
 
-- **企业邮箱 MCP** —— `/oc-status` 在已认证时创建邮件草稿；否则回退为 `oc-status/[YYYY-MM-DD]/[slug].md` 中的 Markdown 草稿。
+- **企业邮箱 MCP** —— `/litigation-legal:oc-status` 在已认证时创建邮件草稿；否则回退为 `oc-status/[YYYY-MM-DD]/[slug].md` 中的 Markdown 草稿。
 - **定时任务 MCP** —— 不附带任何自动排程。设置重复日历提醒来调用周度命令。
 
 插件在没有这两者的情况下端到端运行；集成是附加增强。
@@ -142,7 +142,7 @@ litigation-legal/
 - `## 公司档案` 按惯例是 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 的第一节。如果你运行其他 `-legal` 插件，可以复制过去而无需重新输入相同的背景信息。
 - `_log.yaml` 是案件组状态的唯一数据源。保持整洁。
 - 案件历史仅追加。如果之前有误，以新条目方式注明更正——不要编辑过去。
-- 已结案件保留在 `_log.yaml` 中（可检索历史）。`/portfolio-status` 默认将其从活跃汇总中过滤出去。
+- 已结案件保留在 `_log.yaml` 中（可检索历史）。`/litigation-legal:portfolio-status` 默认将其从活跃汇总中过滤出去。
 
 ## 行间标记约定
 

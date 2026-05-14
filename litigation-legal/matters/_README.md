@@ -31,13 +31,13 @@ matters/
 
 | 文件 | 写入者 | 是否可直接编辑 |
 |---|---|---|
-| `_log.yaml` | `/matter-intake`、`/matter-update`、`/matter-close` | 可以，但应在案件的 `history.md` 中反映变化 |
-| `matter.md` | `/matter-intake` 在接案时写入；`/matter-close` 追加 | 可以，用于更新案件理论 / 姿态说明 |
-| `history.md` | `/matter-intake` 初始化；`/matter-update` 和 `/matter-close` 追加 | 实务上仅追加；把既有条目视为记录 |
+| `_log.yaml` | `/litigation-legal:matter-intake`、`/litigation-legal:matter-update`、`/litigation-legal:matter-close` | 可以，但应在案件的 `history.md` 中反映变化 |
+| `matter.md` | `/litigation-legal:matter-intake` 在接案时写入；`/litigation-legal:matter-close` 追加 | 可以，用于更新案件理论 / 姿态说明 |
+| `history.md` | `/litigation-legal:matter-intake` 初始化；`/litigation-legal:matter-update` 和 `/litigation-legal:matter-close` 追加 | 实务上仅追加；把既有条目视为记录 |
 
 ## 已关闭案件
 
-保留在这里，不要删除。`/portfolio-status` 默认会从活跃案件汇总中排除它们；`/portfolio-status --all` 会纳入。已关闭案件是组合判断的训练样本。
+保留在这里，不要删除。`/litigation-legal:portfolio-status` 默认会从活跃案件汇总中排除它们；`/litigation-legal:portfolio-status --all` 会纳入。已关闭案件是组合判断的训练样本。
 
 ## 中国争议解决常见文书类型
 

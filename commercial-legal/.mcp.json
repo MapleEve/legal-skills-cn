@@ -1,55 +1,55 @@
 {
   "mcpServers": {
-    "合同生命周期管理": {
+    "contract-lifecycle-management": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "合同生命周期管理（CLM）",
       "description": "以自然语言搜索合同库及审批流程——到期合同、解除条款、供应商协议等，范围限于用户权限内。"
     },
-    "电子签章": {
+    "e-signature": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "电子签章",
       "description": "合同签署状态追踪及签署流程管理。"
     },
-    "文档管理": {
+    "document-management": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "文档管理",
       "description": "受控法律文档管理，文档留存在系统内，访问受权限约束且可审计。"
     },
-    "外部律师推荐": {
+    "outside-counsel-network": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "外部律师推荐",
       "description": "基于中国法律行业社区评级的合作律所与律师推荐，含专业领域、排名及业绩证据。"
     },
-    "合同结构分析": {
+    "contract-structure-analyzer": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "合同结构分析",
       "description": "合同结构实时分析——解析定义条款、校验交叉引用、映射条款依赖、执行结构差异比对。"
     },
-    "企业微信": {
+    "wecom": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "企业微信",
       "description": "搜索消息、读取群聊、查找讨论记录。"
     },
-    "企业网盘": {
+    "enterprise-drive": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "企业网盘",
       "description": "搜索、读取和获取企业网盘中的文档。"
     }
   },
   "recommendedCategories": [
-    "合同管理",
-    "电子签章",
-    "法律文档管理",
-    "即时通讯",
-    "文档存储",
-    "合同审查",
-    "外部律师网络"
+    "contract-management",
+    "e-signature",
+    "legal-document-management",
+    "chat",
+    "document-storage",
+    "contract-review",
+    "outside-counsel-network"
   ]
 }

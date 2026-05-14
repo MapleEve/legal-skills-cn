@@ -168,7 +168,7 @@ argument-hint: "[可选: --since 日期]"
 ---
 
 **上次检查更新至：** [时间戳]
-**征求意见跟踪器：** [N] 项待决策 — 运行 /comments 审查
+**征求意见跟踪器：** [N] 项待决策 — 运行 /regulatory-legal:comments 审查
 ```
 
 ## 移交

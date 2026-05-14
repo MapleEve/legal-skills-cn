@@ -6,7 +6,7 @@ description: >
 argument-hint: "[案件名称] [question]"
 ---
 
-# /investigation-query
+# /employment-legal:investigation-query
 
 针对调查日志回答问题——证人说了什么、哪些陈述存在矛盾、有什么证据缺口、每个争议点上最强的证据是什么。
 

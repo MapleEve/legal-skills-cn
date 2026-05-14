@@ -4,7 +4,7 @@ description: 为活跃案件组合中的合作律所/外聘律师生成案件进
 argument-hint: "[--all | --slug=foo | --no-email]"
 ---
 
-# /oc-status
+# /litigation-legal:oc-status
 
 如需定期运行，设置提醒调用 `/litigation-legal:oc-status`。建议按案件节奏设置（如每周/每两周），自动化排程需要定时任务集成，不随插件打包。
 
@@ -145,7 +145,7 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 | 案件 | 原因 |
 |---|---|
 | [slug] | 最近更新（上次更新 [date]） |
-| [slug] | 日志中无外聘律师邮箱 —— 用 `/matter-update [slug]` 更新联系方式 |
+| [slug] | 日志中无外聘律师邮箱 —— 用 `/litigation-legal:matter-update [slug]` 更新联系方式 |
 
 ## 异常
 
@@ -159,12 +159,12 @@ argument-hint: "[--all | --slug=foo | --no-email]"
 
 本技能设计为按案件节奏运行（通常每周或每两周）。自动化排程需要定时任务集成，不随插件打包。如需定期运行，设置提醒调用 `/litigation-legal:oc-status`。
 
-临时：随时 `/oc-status`。单个案件：`/oc-status --slug=foo`。
+临时：随时 `/litigation-legal:oc-status`。单个案件：`/litigation-legal:oc-status --slug=foo`。
 
 ## 本技能不做什么
 
 - **发送邮件。** 仅起草。律师审查后发送。
 - **生成其不具备的内容。** 如果 `matter.md` 内容薄，查询函简短并询问宽泛的案件进展问题。技能不会凭空编造具体问题。
 - **重试失败。** 如果邮件草稿创建中途失败，技能记录失败并继续产出markdown。用户可在修复认证后重试。
-- **重写办案日志。** 读取以获取上下文；不修改。（如外聘律师的回复揭示了新事件，用 `/matter-update [slug]` 记录。）
+- **重写办案日志。** 读取以获取上下文；不修改。（如外聘律师的回复揭示了新事件，用 `/litigation-legal:matter-update [slug]` 记录。）
 - **强制执行最低限度模板。** 如果律所沟通风格是"一行，名字，完毕"，草稿遵从并跳过要点结构。匹配 CLAUDE.md。

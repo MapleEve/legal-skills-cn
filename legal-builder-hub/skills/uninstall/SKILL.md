@@ -7,7 +7,7 @@ description: >
 argument-hint: "<skill-name>"
 ---
 
-# /uninstall
+# /legal-builder-hub:uninstall
 
 ## 功能目的
 

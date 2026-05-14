@@ -7,7 +7,7 @@ description: >
 argument-hint: "[案件名称或简码，然后粘贴或附上数据]"
 ---
 
-# /investigation-add
+# /employment-legal:investigation-add
 
 向开放调查日志添加数据。使用证据提取标准处理文档批次、揭示重要项目、记录所有已审查内容以便覆盖验证。
 

@@ -7,7 +7,7 @@ description: >
 argument-hint: "[业务领域 — 如'劳动纠纷'、'婚姻家庭'、'交通事故']"
 ---
 
-# /build-guide
+# /legal-clinic:build-guide
 
 ## 目的
 

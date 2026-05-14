@@ -7,7 +7,7 @@ description: >
 argument-hint: "[当前活动或领域描述]"
 ---
 
-# /related-skills-surfacer
+# /legal-builder-hub:related-skills-surfacer
 
 ## 功能目的
 

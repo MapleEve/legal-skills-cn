@@ -7,7 +7,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /cold-start-interview
+# /ip-legal:cold-start-interview
 
 运行冷启动访谈。首次运行写入执业画像配置；后续使用`--redo`运行重新访谈并在覆盖前显示差异。
 

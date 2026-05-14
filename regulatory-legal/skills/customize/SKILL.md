@@ -12,7 +12,7 @@ argument-hint: "[章节名称，或描述你想更改的内容]"
 
 ## 做什么
 
-1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` 及共享公司档案。如插件配置不存在或包含 `[PLACEHOLDER]` 值，提示先运行冷启动访谈。
+1. **读取配置。** 读取 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` 及共享公司档案。如插件配置不存在或包含 `[待填写]` 值，提示先运行冷启动访谈。
 
 2. **展示可自定义的地图。** 按组列出档案中内容，附当前值的一行摘要：
 

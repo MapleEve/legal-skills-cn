@@ -7,7 +7,7 @@ description: >
 argument-hint: "<--send | --respond | --counter> [上下文或收到的通知路径]"
 ---
 
-# /takedown
+# /ip-legal:takedown
 
 三种模式。选一个：
 

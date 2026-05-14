@@ -1,61 +1,61 @@
 {
   "mcpServers": {
-    "企业协作平台": {
+    "collaboration-platform": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "企业协作平台",
       "description": "连接企业微信、飞书或内部协作系统，搜索交易群组消息、会议纪要和项目讨论。"
     },
-    "企业网盘": {
+    "enterprise-drive": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "企业网盘",
       "description": "搜索、读取和获取企业网盘、交易文件夹和内部文档库中的公司法与交易文件。"
     },
-    "尽调数据室": {
+    "diligence-data-room": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "尽调数据室",
       "description": "读取中文虚拟数据室中的并购尽调文件、披露材料、股权结构表和重大合同。"
     },
-    "法律文档管理系统": {
+    "legal-document-management": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "法律文档管理系统",
       "description": "连接受管控的内部法律文档管理系统，访问权限受限且留痕可审计。"
     },
-    "工商信息查询": {
+    "business-registry-search": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "工商信息查询",
       "description": "查询市场主体登记、股东出资、董监高、分支机构、行政许可和经营异常等工商信息。"
     },
-    "证券信息披露": {
+    "securities-disclosure": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "证券信息披露",
       "description": "检索上市公司公告、招股书、定期报告、临时公告和监管问询回复。"
     },
-    "外部律师推荐库": {
+    "outside-counsel-network": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "外部律师推荐库",
       "description": "按地域、业务领域、交易经验、报价区间和历史合作记录查询外部律师候选。"
     },
-    "合同结构分析": {
+    "contract-structure-analyzer": {
       "type": "http",
-      "url": "TBD-待定中文数据源",
+      "url": "TBD",
       "title": "合同结构分析",
       "description": "解析中文合同定义、交叉引用、附表依赖、控制权变更条款和重大合同结构差异。"
     }
   },
   "recommendedCategories": [
-    "中国公司法",
-    "并购尽调",
-    "证券信息披露",
-    "工商信息查询",
-    "法律文档管理",
-    "企业协作",
-    "合同结构分析"
+    "cn-corporate-law",
+    "ma-diligence",
+    "securities-disclosure",
+    "business-registry-search",
+    "legal-document-management",
+    "collaboration",
+    "contract-structure-analysis"
   ]
 }

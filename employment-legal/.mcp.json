@@ -1,24 +1,24 @@
 {
   "mcpServers": {
-    "飞书": {
+    "feishu": {
       "type": "http",
       "url": "TBD",
       "title": "飞书",
       "description": "搜索消息、读取群聊、查找工作区内的讨论内容。"
     },
-    "企业微信": {
+    "wecom": {
       "type": "http",
       "url": "TBD",
       "title": "企业微信",
       "description": "搜索消息、读取群聊、查找工作区内的讨论内容。"
     },
-    "北大法宝": {
+    "pkulaw": {
       "type": "http",
       "url": "TBD",
       "title": "北大法宝",
       "description": "检索法律法规、司法解释、裁判文书及行政处罚决定。"
     },
-    "中国裁判文书网": {
+    "chinacourt": {
       "type": "http",
       "url": "TBD",
       "title": "中国裁判文书网",

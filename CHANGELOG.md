@@ -1,9 +1,9 @@
-# Changelog
+# 变更日志
 
 ## 2026-05-15
 
 - 修复 150 个 skill frontmatter name 以匹配目录 slug。
-- Bump plugin versions so installed Claude Code users receive update.
+- 提升插件版本，确保已安装的 Claude Code 用户能收到更新。
 - 同步 marketplace version metadata。
 - 修复 skill name、命令标题、可运行示例和用户文档中的伪命令占位。
 - 明确覆盖 command / slash command、machine reference、China-law content、plugin/marketplace version/name、skill frontmatter name 的一致性修复。

@@ -7,7 +7,7 @@ description: >
 argument-hint: "<--send | --receive> [上下文、对方或收到的函件路径]"
 ---
 
-# /cease-desist
+# /ip-legal:cease-desist
 
 两种模式。选一个：
 

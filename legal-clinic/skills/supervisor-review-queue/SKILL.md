@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--approve ID | --return ID '反馈意见' | --edit ID]"
 ---
 
-# /supervisor-review-queue
+# /legal-clinic:supervisor-review-queue
 
 ## 目的
 
@@ -35,12 +35,14 @@ argument-hint: "[--approve ID | --return ID '反馈意见' | --edit ID]"
 
 ## 工作流
 
-1. **按标志路由：**
+1. **先加载队列数据：** 读取 `references/review-queue.yaml` 作为等待审查项目的初始队列；如运行时已有诊所配置目录中的队列副本，则以运行时副本为准，并在输出中标明来源。
+2. **按标志路由：**
    - 无标志 → 显示所有等待审查的项目列表
    - `--approve ID` → 审查通过，批准对外使用/提交
    - `--return ID '反馈意见'` → 退回修改，附具体反馈和指导意见
    - `--edit ID` → 指导教师直接修改后批准（适用于小修小改）
-2. **审查队列优先级排序：** 最接近截止日期的项目排在最前。
+3. **审查队列优先级排序：** 最接近截止日期的项目排在最前。
+4. **记录策略：** approve/return/edit 后写回当前队列来源，并保留审查决定、时间、指导教师和反馈摘要，避免学生材料在正式审查中无留痕流转。
 
 ## 队列视图
 

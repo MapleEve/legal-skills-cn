@@ -8,7 +8,7 @@ description: >
 argument-hint: "[可选：业务领域提示]"
 ---
 
-# /client-intake
+# /legal-clinic:client-intake
 
 ## 目的
 

@@ -6,7 +6,7 @@ description: >
 argument-hint: "[--list | --config <skill> | --allowlist | --status]"
 ---
 
-# /skill-manager
+# /legal-builder-hub:skill-manager
 
 ## 功能目的
 

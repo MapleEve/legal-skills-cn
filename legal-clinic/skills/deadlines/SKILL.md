@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--add | --report(默认) | --update [ID] | --complete [ID] | --close [ID] | --horizon=N]"
 ---
 
-# /deadlines
+# /legal-clinic:deadlines
 
 ## 目的
 

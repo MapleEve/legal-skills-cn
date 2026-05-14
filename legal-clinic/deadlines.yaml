@@ -1,7 +1,7 @@
 # 法律援助诊所期限台账 — legal-clinic
 #
-# 由 /legal-clinic:deadlines --add 填充（或由 /client-intake、
-# /draft、/status 等技能在发现期限时自动提取）。由
+# 由 /legal-clinic:deadlines --add 填充（或由 /legal-clinic:client-intake、
+# /legal-clinic:draft、/legal-clinic:status 等技能在发现期限时自动提取）。由
 # /legal-clinic:deadlines --report 读取以生成跨案件汇总。
 #
 # 诊所工作中错过期限即构成指导教师的执业过失风险。

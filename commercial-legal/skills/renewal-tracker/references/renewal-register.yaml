@@ -1,9 +1,11 @@
-# 续约台账
+# 续约字段初始化模板
 #
-# 由 saas-msa-review（交接）和 renewal-tracker 模式 3（[CLM] 扫描）填充。
+# 由 /commercial-legal:renewal-tracker 在首次运行或 runtime 台账缺失时读取。
+# 用户运行时数据写入：
+# ~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/contract-register.yaml
+# 不要把用户运行时数据写回本文件。
+#
 # 每条记录跟踪合同何时续约，以及最晚何时取消。
-#
-# renewal-watcher 每周读取本文件并提示即将到期事项。
 
 renewals: []
 

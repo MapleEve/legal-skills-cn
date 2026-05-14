@@ -4,7 +4,7 @@ description: 从 _log.yaml 汇总律所案件组合——按案件类型/阶段/
 argument-hint: "[--all | --risk=高 | --stale | --type=诉讼 | --owner=张律师]"
 ---
 
-# /portfolio-status
+# /litigation-legal:portfolio-status
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准（定义如何理解 `risk:` 字段）。
 2. 遵循以下工作流程和参考。

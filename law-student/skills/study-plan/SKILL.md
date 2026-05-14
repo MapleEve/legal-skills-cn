@@ -7,7 +7,7 @@ description: >
 argument-hint: "[--build | --update | --status | --cram]"
 ---
 
-# /study-plan
+# /law-student:study-plan
 
 1. 加载配置文件和学习计划文件（如存在）。
 2. 按标志路由：

@@ -9,7 +9,7 @@ description: >
 argument-hint: '[文件路径 | 云盘链接 | 粘贴文本]'
 ---
 
-# /review
+# /commercial-legal:review
 
 依《民法典》合同编对入站合同进行分类审查。从标题及核心条款识别合同类型，路由至对应技能，整合输出标准格式的合同审查意见书。
 

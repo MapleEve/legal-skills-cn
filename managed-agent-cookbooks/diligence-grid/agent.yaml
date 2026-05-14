@@ -25,7 +25,7 @@ system:
     **模式 2 — 网格。** 对指定文件夹中的文档按列 Schema 执行表格审查。
     严格遵循 `tabular-review` 技能中的工作流：
       1. 加载或确认列 Schema。默认为并购尽调标准列集，位于
-         `skills/tabular-review/references/ma-diligence-columns.md`。
+         `../../corporate-legal/skills/tabular-review/references/ma-diligence-columns.md`。
       2. 在铺开前对 3–5 份文档进行抽样运行。如果 `classify` 列遗漏选项
          或 `verbatim` 列出现偏差，调整 Schema。
       3. 每份文档铺开一个 `extractor` 子代理。每个单元格必须

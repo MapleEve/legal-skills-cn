@@ -9,7 +9,7 @@ description: >
 argument-hint: "[当事人 | 内部 | 律所]"
 ---
 
-# /status
+# /legal-clinic:status
 
 ## 目的
 

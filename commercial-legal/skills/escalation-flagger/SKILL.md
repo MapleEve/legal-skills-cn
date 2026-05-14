@@ -10,7 +10,7 @@ description: >
 argument-hint: "[描述问题，或引用审查备忘录]"
 ---
 
-# /escalation-flagger
+# /commercial-legal:escalation-flagger
 
 依据团队审批矩阵，为合同审查中发现的问题指明正确审批人，并起草审批请求。
 

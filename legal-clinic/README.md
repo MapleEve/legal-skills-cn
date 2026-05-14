@@ -18,26 +18,26 @@
 
 | 角色 | 执行 | 获得 |
 |---|---|---|
-| **指导教师** | `/cold-start-interview`（一次），`/supervisor-review-queue`（如启用正式审查） | 诊所环境配置完成，学生工作得到审查 |
-| **学生** | `/ramp`（学期初），然后 `/client-intake`、`/draft`、`/memo`、`/research-start`、`/status`、`/client-letter` | 起始支架——从来不是最终成果 |
+| **指导教师** | `/legal-clinic:cold-start-interview`（一次），`/legal-clinic:supervisor-review-queue`（如启用正式审查） | 诊所环境配置完成，学生工作得到审查 |
+| **学生** | `/legal-clinic:ramp`（学期初），然后 `/legal-clinic:client-intake`、`/legal-clinic:draft`、`/legal-clinic:memo`、`/legal-clinic:research-start`、`/legal-clinic:status`、`/legal-clinic:client-letter` | 起始支架——从来不是最终成果 |
 
 ## 命令
 
 | 命令 | 做什么 | 不做什么 |
 |---|---|---|
-| `/cold-start-interview` | **指导教师。** 一次性诊所配置：业务领域、管辖地、监督模式、手册/规则上传 | — |
-| `/build-guide` | **指导教师。** 编写按业务领域的指引：接待问题、教学模式（辅助/引导/教学）、审查门槛、跨插件检查 | 不替代 `/cold-start-interview`——这是为某个业务领域调优技能 |
-| `/ramp` | **学生。** 学期入训：诊所流程、工具导览、模拟练习 | 不替代指导教师的入训指导 |
-| `/client-intake` | 结构化接待：业务领域模板、跨领域问题识别、冲突标记、分流 | 不决定是否受理案件 |
-| `/draft [document]` | 初稿起草：劳动仲裁申请、答辩状、人身保护令申请、律师函——管辖地适配 | 不产出最终成果 |
-| `/memo` | IRAC框架的案件分析，检索空白已标记 | 不写分析——搭建分析框架 |
-| `/research-start [question]` | 检索路线图：法条、案例领域、检索关键词 | **线索而非权威引注**——学生须核实一切 |
-| `/status [audience]` | 案件进展摘要：面向当事人、内部或法院 | 不做任何提交 |
-| `/client-letter [type]` | 日常函件：预约确认、材料索取、简要更新 | 不做实质性建议——那是 `/status client` 或当面沟通的事 |
-| `/deadlines` | 案件期限追踪——添加、跨案件汇总、14/7/3/1天预警、逾期标记 | 不从触发事件自动推算期限；学生根据中国法院规则自行计算 |
-| `/client-comms-log [case]` | 按案件的追加式沟通记录——电话、邮件、函件、面谈 | 不存储实质性法律分析；仅沟通记录 |
-| `/semester-handoff` | 学期末移交——为下届学生准备按案件的移交备忘录 | 不结案；学期末结案的案件生成最终 `/status internal` 备忘录并标记为已结案 |
-| `/supervisor-review-queue` | **指导教师，如启用正式审查。** 待审队列，批准/编辑/退回 | 可选——三种监督模式之一 |
+| `/legal-clinic:cold-start-interview` | **指导教师。** 一次性诊所配置：业务领域、管辖地、监督模式、手册/规则上传 | — |
+| `/legal-clinic:build-guide` | **指导教师。** 编写按业务领域的指引：接待问题、教学模式（辅助/引导/教学）、审查门槛、跨插件检查 | 不替代 `/legal-clinic:cold-start-interview`——这是为某个业务领域调优技能 |
+| `/legal-clinic:ramp` | **学生。** 学期入训：诊所流程、工具导览、模拟练习 | 不替代指导教师的入训指导 |
+| `/legal-clinic:client-intake` | 结构化接待：业务领域模板、跨领域问题识别、冲突标记、分流 | 不决定是否受理案件 |
+| `/legal-clinic:draft [document]` | 初稿起草：劳动仲裁申请、答辩状、人身保护令申请、律师函——管辖地适配 | 不产出最终成果 |
+| `/legal-clinic:memo` | 中国案件分析支架，检索空白已标记 | 不写分析——搭建分析框架 |
+| `/legal-clinic:research-start [question]` | 检索路线图：法条、案例领域、检索关键词 | **线索而非权威引注**——学生须核实一切 |
+| `/legal-clinic:status [audience]` | 案件进展摘要：面向当事人、内部或法院 | 不做任何提交 |
+| `/legal-clinic:client-letter [type]` | 日常函件：预约确认、材料索取、简要更新 | 不做实质性建议——那是 `/legal-clinic:status client` 或当面沟通的事 |
+| `/legal-clinic:deadlines` | 案件期限追踪——添加、跨案件汇总、14/7/3/1天预警、逾期标记 | 不从触发事件自动推算期限；学生根据中国法院规则自行计算 |
+| `/legal-clinic:client-comms-log [case]` | 按案件的追加式沟通记录——电话、邮件、函件、面谈 | 不存储实质性法律分析；仅沟通记录 |
+| `/legal-clinic:semester-handoff` | 学期末移交——为下届学生准备按案件的移交备忘录 | 不结案；学期末结案的案件生成最终 `/legal-clinic:status internal` 备忘录并标记为已结案 |
+| `/legal-clinic:supervisor-review-queue` | **指导教师，如启用正式审查。** 待审队列，批准/编辑/退回 | 可选——三种监督模式之一 |
 
 ## 伦理与保密前置条件
 
@@ -57,7 +57,7 @@
 - `[AI辅助草稿——需学生分析及指导教师审查]` — 适用于所有输出的基线标签。审查标签，非面向当事人的内容组成部分；发送前须去除。
 - `[UNCERTAIN: 具体原因]` — 技能对此判断确实不确定（少数观点、有争议的问题、技能不熟悉的管辖地）。用于备忘录、接待、进展、起草。
 - `[VERIFY: 声明 — 请核实来源]` — 陈述为可能正确但未经核验。学生须在依赖前确认——引注、法院规则格式、规则陈述。大量用于检索起点、起草、进展、备忘录。
-- `[RESEARCH NEEDED: ...]` — 备忘录支架标记，表示规则陈述是检索空白而非结论。学生运行 `/research-start` 并填充。
+- `[RESEARCH NEEDED: ...]` — 备忘录支架标记，表示规则陈述是检索空白而非结论。学生运行 `/legal-clinic:research-start` 并填充。
 - `[STUDENT ANALYSIS: ...]` — 备忘录支架标记，分析部分刻意留白。由学生推理填充。
 - `[STUDENT CONCLUSION: ...]` — 备忘录支架标记，结论部分刻意留白。
 - `[FACT NEEDED: ...]` — 起草支架标记，案件笔记中缺失必需事实。学生获取事实；不猜测。
@@ -76,7 +76,7 @@
 
 这些设计旨在强化诊所式教育模式：学生负责思考，插件负责围绕思考的繁重工作。
 
-**检索输出特别注意：** `/research-start` 提供线索和框架供学生核实和发展。它明确**不**提供法律引注作为权威来源。这既是伦理保障也是教学特性——学生仍然学习检索和运用判断力；只是起点更好。
+**检索输出特别注意：** `/legal-clinic:research-start` 提供线索和框架供学生核实和发展。它明确**不**提供法律引注作为权威来源。这既是伦理保障也是教学特性——学生仍然学习检索和运用判断力；只是起点更好。
 
 ## 监督工作流（可配置）
 
@@ -90,11 +90,11 @@
 
 可通过编辑 `~/.claude/plugins/config/claude-for-legal-cn/legal-clinic/CLAUDE.md` 后续更改。你的配置存储在该版本无关路径，插件更新不会覆盖。
 
-## 学期轮换：`/ramp` 方案
+## 学期轮换：`/legal-clinic:ramp` 方案
 
-每学期，诊所从零开始重建。新学生需要数周学习流程、工具、业务领域基础。`/ramp` 是交互式入训——它读取指导教师在设置时上传的诊所手册并进行教学，辅以低压力模拟练习（模拟接待、模拟起草、检索路线图），在学生接触真实案件之前完成。
+每学期，诊所从零开始重建。新学生需要数周学习流程、工具、业务领域基础。`/legal-clinic:ramp` 是交互式入训——它读取指导教师在设置时上传的诊所手册并进行教学，辅以低压力模拟练习（模拟接待、模拟起草、检索路线图），在学生接触真实案件之前完成。
 
-`/ramp --card` 生成单页学生参考卡：命令列表、Claude能帮什么不能帮什么、核验习惯。第一天发放。
+`/legal-clinic:ramp --card` 生成单页学生参考卡：命令列表、Claude能帮什么不能帮什么、核验习惯。第一天发放。
 
 ## 框架：《法律援助法》(2022)及配套法规
 
@@ -111,16 +111,16 @@
 | **ramp** | 学生学期入训——流程、工具、模拟练习 |
 | **client-intake** | 按业务领域的结构化接待，含跨领域问题识别、冲突标记、分流 |
 | **draft** | 初稿生成——业务领域模板、管辖地适配、明确标注为起点 |
-| **memo** | IRAC分析支架，检索空白已标记——分析是学生的 |
+| **memo** | 中国案件分析支架，检索空白已标记——分析是学生的 |
 | **research-start** | 检索路线图——线索而非权威，学生核实和发展 |
 | **status** | 按受众的案件摘要——当事人/内部/法院 |
 | **client-letter** | 基于模板的日常函件 |
 | **supervisor-review-queue** | 可选正式审查工作流——仅当指导教师选择时激活 |
 | **deadlines** | 按案件期限追踪、跨案件汇总、预警周期、逾期标记 |
 | **client-comms-log** | 按案件的追加式沟通记录——电话、邮件、函件、面谈 |
-| **semester-handoff** | 学期末移交备忘录；`/ramp` 的镜像 |
+| **semester-handoff** | 学期末移交备忘录；`/legal-clinic:ramp` 的镜像 |
 
-*（两个已弃用技能——`form-generation`、`plain-language-letters`——分别重定向到 `/draft` 和 `/client-letter` + `/status client`。）*
+*（两个已弃用技能——`form-generation`、`plain-language-letters`——分别重定向到 `/legal-clinic:draft` 和 `/legal-clinic:client-letter` + `/legal-clinic:status client`。）*
 
 ## 连接器与引注核验
 
@@ -132,10 +132,10 @@
 
 随 `.mcp.json` 中的通用连接器一同发布：
 
-- **Slack** — 搜索消息、读取频道、查找讨论
-- **Google Drive** — 搜索、读取和获取文档
+- **企业微信/飞书** — 搜索消息、读取频道、查找讨论
+- **企业网盘/校内文档库** — 搜索、读取和获取文档
 
-法律援助管理系统（如Clio等）标注为可选的未来集成——120+所法学院使用管理系统进行案件管理。目前从文件上传开始；管理系统连接器将使 `/client-intake` 和 `/status` 能直接拉取案件数据。
+中国法律援助管理系统标注为可选的未来集成——用于案件元数据、期限追踪和当事人信息管理。目前从文件上传和本地案件台账开始；管理系统连接器将使 `/legal-clinic:client-intake` 和 `/legal-clinic:status` 能直接拉取案件数据。
 
 账户层级（Team vs. Enterprise）与当事人保密性的关系是每个诊所IT和伦理审查的待解决问题。Cowork的桌面架构在本地处理数据。
 
@@ -168,8 +168,8 @@ legal-clinic/
 │   ├── deadlines/
 │   ├── client-comms-log/
 │   ├── semester-handoff/
-│   ├── form-generation/               # 已弃用 → /draft （仅保留参考）
-│   └── plain-language-letters/        # 已弃用 → /client-letter, /status client（仅保留参考）
+│   ├── form-generation/               # 已弃用 → /legal-clinic:draft （仅保留参考）
+│   └── plain-language-letters/        # 已弃用 → /legal-clinic:client-letter, /legal-clinic:status client（仅保留参考）
 ├── handoffs/                          # NEW — 按学期移交备忘录
 │   └── [YYYY-term]/
 │       ├── _summary.md
@@ -182,4 +182,4 @@ legal-clinic/
 
 ## 前置条件
 
-部分功能引用外部集成（文档管理、上线追踪、电子证据开示、案件管理、法规动态）。这些不是捆绑的——如果你环境中存在对应的MCP服务器，相关功能将使用它们。没有的话，插件回退到文件上传和手动工作流。运行 `/legal-clinicgrations` 查看你环境中可用的集成。
+部分功能引用外部集成（文档管理、案件期限追踪、电子证据材料、案件管理、法规动态）。这些不是捆绑的——如果你环境中存在对应的MCP服务器，相关功能将使用它们。没有的话，插件回退到文件上传和手动工作流。运行 `/legal-clinic:cold-start-interview --check-integrations` 查看你环境中可用的集成。

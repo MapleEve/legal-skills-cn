@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--card 获取一页参考卡]"
 ---
 
-# /ramp
+# /legal-clinic:ramp
 
 ## 目的
 

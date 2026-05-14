@@ -1,6 +1,6 @@
 ---
 name: matter-workspace
-description: 管理事项工作区 — 创建、列表、切换、关闭或分离活跃事项（执业级）。当跨多个客户或事项工作时，需将一个委托的上下文与另一个分开。子命令：new | list | switch | close | none。
+description: 管理事项工作区 — 创建、列表、切换、关闭或分离当前事项（执业级）。当跨多个客户或事项工作时，需将一个委托的上下文与另一个分开。子命令：new | list | switch | close | none。
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
@@ -12,11 +12,11 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 子命令
 
-- `/matter-workspace new <slug>` — 创建新事项工作区，运行信息采集，写入 `matter.md`
-- `/matter-workspace list` — 列出现有事项，含状态和活跃标记
-- `/matter-workspace switch <slug>` — 设置活跃事项
-- `/matter-workspace close <slug>` — 归档事项（移至 `_archived/`，绝不删除）
-- `/matter-workspace none` — 脱离任何活跃事项，仅在执业级工作
+- `/regulatory-legal:matter-workspace new <slug>` — 创建新事项工作区，运行信息采集，写入 `matter.md`
+- `/regulatory-legal:matter-workspace list` — 列出现有事项，含状态和活跃标记
+- `/regulatory-legal:matter-workspace switch <slug>` — 设置当前事项
+- `/regulatory-legal:matter-workspace close <slug>` — 归档事项（移至 `_archived/`，绝不删除）
+- `/regulatory-legal:matter-workspace none` — 脱离任何当前事项，仅在执业级工作
 
 ## 存储布局
 
@@ -35,9 +35,9 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 Slug 使用小写连字符。示例：`alibaba-datacompliance-2026`、`baidu-merger-review`。
 
-## 活跃事项
+## 当前事项
 
-执业级 CLAUDE.md 中 `## 事项工作区` 下的 `Active matter:` 行是唯一真相来源。
+执业级 CLAUDE.md 中 `## 事项工作区` 下的 `当前事项:` 行是唯一真相来源。
 
 ## 子命令逻辑
 
@@ -48,20 +48,20 @@ Slug 使用小写连字符。示例：`alibaba-datacompliance-2026`、`baidu-mer
 4. 不自动切换。询问是否切换。
 
 ### `list`
-枚举所有事项，打印表格，标注活跃事项。已归档事项单独列出。
+枚举所有事项，打印表格，标注当前事项。已归档事项单独列出。
 
 ### `switch <slug>`
-编辑活跃事项行。展示事项摘要以确认。
+编辑当前事项行。展示事项摘要以确认。
 
 ### `close <slug>`
-归档事项。如关闭的为活跃事项，设置为仅执业级。
+归档事项。如关闭的为当前事项，设置为仅执业级。
 
 ### `none`
 设置为仅执业级上下文。
 
 ## 跨事项上下文
 
-默认为关。当为`关`时，在一个事项中工作的技能绝不读取另一事项的文件。当为`开`时，仅在用户明确要求时读取跨事项文件。
+默认为关闭。当为 `关闭` 时，在一个事项中工作的技能绝不读取另一事项的文件。当为 `开启` 时，仅在用户明确要求时读取跨事项文件。
 
 ## 中国执业特别注意
 

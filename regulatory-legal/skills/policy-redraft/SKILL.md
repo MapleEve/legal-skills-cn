@@ -38,7 +38,7 @@ argument-hint: "[GAP-ID 或合规差距描述]"
 ### 1a. 合规差距
 - 来自合规差距追踪器的 `GAP-ID`
 - 用户描述的合规差距
-- 从 `/policy-diff` 输出粘贴的差异对比摘要
+- 从 `/regulatory-legal:policy-diff` 输出粘贴的差异对比摘要
 
 ### 1b. 现行政策文本
 - 文件路径 — 读取后确认是否为最新版本

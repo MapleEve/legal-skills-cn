@@ -10,7 +10,7 @@ description: >
 argument-hint: "[法规名称，或粘贴法规文本，或附上文件]"
 ---
 
-# /reg-gap-analysis
+# /ai-governance-legal:reg-gap-analysis
 
 ## 操作流程
 

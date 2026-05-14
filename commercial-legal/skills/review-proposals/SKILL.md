@@ -8,7 +8,7 @@ description: >
 argument-hint: "[无需参数——从待审批提案文件读取]"
 ---
 
-# /review-proposals
+# /commercial-legal:review-proposals
 
 逐项处理监控代理提出的待审批审查手册更新提案，将批准的变更应用到业务实践档案。
 

@@ -8,7 +8,7 @@ description: >
 argument-hint: "<技能名称 或 技能路径>"
 ---
 
-# /skills-qa
+# /legal-builder-hub:skills-qa
 
 ## 功能目的
 

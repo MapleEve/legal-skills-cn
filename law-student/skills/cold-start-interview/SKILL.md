@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /cold-start-interview
+# /law-student:cold-start-interview
 
 1. 检查 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md`。如已填充且无 `--redo`，覆盖前确认。如有缓存配置则迁移。
 2. 使用以下访谈工作流。

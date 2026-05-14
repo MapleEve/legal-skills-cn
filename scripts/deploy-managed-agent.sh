@@ -1,37 +1,36 @@
 #!/usr/bin/env bash
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
-# Resolve a local automation workflow template to POST /v1/agents.
+# 将本地自动化工作流模板解析为 /v1/agents 请求体。
 #
-# Resolves manifest conveniences before posting:
+# 发送前会解析 manifest 中的便捷写法：
 #   system: {file: ...}                  -> inlined string
 #   skills: [{path: ...}]                -> uploaded, referenced by skill_id
-#   callable_agents: [{manifest: ...}]   -> created first, referenced by agent id
+#   callable_agents: [{manifest: ...}]   -> 先创建，再以资源 id 引用
 #
-# Reader subagents with an `output_schema` block get a thin validation wrapper
-# so their JSON is schema-checked before the orchestrator consumes it.
+# 带 `output_schema` 的读取型子节点会加一层轻量校验，确保 JSON 通过
+# schema 检查后再交给编排器消费。
 #
-# Usage: scripts/deploy-managed-agent.sh <slug>
-#   e.g. scripts/deploy-managed-agent.sh reg-monitor
+# 用法：scripts/deploy-managed-agent.sh <slug>
+#   例如：scripts/deploy-managed-agent.sh reg-monitor
 
 set -euo pipefail
 
-ROLE="${1:?usage: deploy-managed-agent.sh <slug> [--dry-run]}"
+ROLE="${1:?用法：deploy-managed-agent.sh <slug> [--dry-run]}"
 DRY_RUN=0; [[ "${2:-}" == "--dry-run" ]] && DRY_RUN=1
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIR="$ROOT/managed-agent-cookbooks/$ROLE"
 API="${ANTHROPIC_API_BASE:-https://api.anthropic.com}"
-[[ $DRY_RUN -eq 1 ]] || : "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY must be set}"
+[[ $DRY_RUN -eq 1 ]] || : "${ANTHROPIC_API_KEY:?必须设置 ANTHROPIC_API_KEY}"
 
-[[ -f "$DIR/agent.yaml" ]] || { echo "no manifest at $DIR/agent.yaml" >&2; exit 1; }
+[[ -f "$DIR/agent.yaml" ]] || { echo "未找到 manifest：$DIR/agent.yaml" >&2; exit 1; }
 
-# Validate SKILL_TITLE_PREFIX against the same allowlist the YAML env-var
-# substitution uses. This string flows into `curl -F display_title=...`;
-# without validation, a hostile prefix could inject extra multipart fields
-# or smuggle newlines.
+# 使用与 YAML 环境变量替换相同的 allowlist 校验 SKILL_TITLE_PREFIX。
+# 该字符串会进入 `curl -F display_title=...`；如果不校验，恶意前缀
+# 可能注入额外 multipart 字段或夹带换行。
 if [[ -n "${SKILL_TITLE_PREFIX:-}" ]]; then
   if ! [[ "$SKILL_TITLE_PREFIX" =~ ^[A-Za-z0-9._/:@\ -]+$ ]]; then
-    echo "refusing SKILL_TITLE_PREFIX: value contains characters outside [A-Za-z0-9._/:@ -]" >&2
+    echo "拒绝 SKILL_TITLE_PREFIX：值包含 [A-Za-z0-9._/:@ -] 之外的字符" >&2
     exit 1
   fi
 fi
@@ -43,9 +42,9 @@ req() {
            -H "content-type: application/json" "$@"
 }
 
-# jq + python(pyyaml) do the manifest→payload transform
-command -v jq >/dev/null || { echo "requires jq" >&2; exit 1; }
-python3 -c 'import yaml' 2>/dev/null || { echo "requires python3 + pyyaml" >&2; exit 1; }
+# jq + python(pyyaml) 负责 manifest -> payload 转换
+command -v jq >/dev/null || { echo "需要安装 jq" >&2; exit 1; }
+python3 -c 'import yaml' 2>/dev/null || { echo "需要安装 python3 + pyyaml" >&2; exit 1; }
 yaml2json() {
   python3 -c '
 import sys,os,re,yaml,json
@@ -56,7 +55,7 @@ def sub(m):
     if v is None:
         return m.group(0)
     if not SAFE.fullmatch(v):
-        sys.exit(f"refusing ${{{name}}}: value contains characters outside [A-Za-z0-9._/:@-]")
+        sys.exit(f"拒绝 ${{{name}}}：值包含 [A-Za-z0-9._/:@-] 之外的字符")
     return v
 t = open(sys.argv[1]).read()
 t = re.sub(r"\$\{([A-Z0-9_]+)\}", sub, t)
@@ -79,7 +78,7 @@ upload_skill() {
   local resp id zip
   zip="$(mktemp -t skill).zip"
   (cd "$(dirname "$path")" && zip -qr "$zip" "$(basename "$path")")
-  # /v1/skills uses its own beta header and multipart, not the agents JSON path
+  # /v1/skills 使用独立 beta header 和 multipart，不走 agents JSON 路径。
   resp=$(curl -sS "$API/v1/skills" \
     -H "x-api-key: $ANTHROPIC_API_KEY" \
     -H "anthropic-version: 2023-06-01" \
@@ -89,7 +88,7 @@ upload_skill() {
   rm -f "$zip"
   id=$(jq -r '.id // empty' <<<"$resp")
   if [[ -z "$id" ]]; then
-    echo "POST /v1/skills failed for $path:" >&2
+    echo "POST /v1/skills 失败：$path" >&2
     echo "$resp" | jq . >&2 2>/dev/null || echo "$resp" >&2
     exit 1
   fi
@@ -103,7 +102,7 @@ resolve_manifest() {
   base="$(cd "$(dirname "$file")" && pwd)"
   local json
   json=$(yaml2json "$file")
-  # Expand any {from_plugin: <dir>} into one {path: ...} per skills/* under that dir.
+  # 将 {from_plugin: <dir>} 展开为该目录下每个 skills/* 对应的 {path: ...}。
   local fp
   fp=$(jq -r '.skills[]? | select(.from_plugin) | .from_plugin' <<<"$json" | head -1)
   if [[ -n "$fp" ]]; then
@@ -132,7 +131,7 @@ inline_system() {
     append=$(jq -r '.system.append // empty' <<<"$json")
     body="$text"
     if [[ -n "$sysfile" ]]; then
-      [[ -f "$base/$sysfile" ]] || { echo "system.file not found: $base/$sysfile" >&2; exit 1; }
+      [[ -f "$base/$sysfile" ]] || { echo "未找到 system.file：$base/$sysfile" >&2; exit 1; }
       body="$(cat "$base/$sysfile")"
     fi
     [[ -n "$append" ]] && body="${body}"$'\n\n'"${append}"
@@ -151,7 +150,7 @@ create_agent() {
   skills_json="[]"
   while IFS= read -r p; do
     [[ -z "$p" ]] && continue
-    [[ -d "$p" ]] || { echo "skill path not found: $p" >&2; exit 1; }
+    [[ -d "$p" ]] || { echo "未找到 skill path：$p" >&2; exit 1; }
     skills_json=$(jq ". + [$(upload_skill "$p")]" <<<"$skills_json")
   done < <(jq -r '.skills[]? | select(.__upload) | .__upload' <<<"$json")
   json=$(jq --argjson s "$skills_json" '.skills=$s' <<<"$json")
@@ -176,7 +175,7 @@ create_agent() {
   id=$(jq -r '.id // empty' <<<"$resp")
   ver=$(jq -r '.version // 1' <<<"$resp")
   if [[ -z "$id" ]]; then
-    echo "POST /v1/agents failed for $(jq -r .name <<<"$json"):" >&2
+    echo "POST /v1/agents 失败：$(jq -r .name <<<"$json")" >&2
     echo "$resp" | jq . >&2 2>/dev/null || echo "$resp" >&2
     exit 1
   fi
@@ -186,7 +185,7 @@ create_agent() {
 if [[ $DRY_RUN -eq 1 ]]; then
   DRY_OUT="$(mktemp)"
   create_agent "$DIR/agent.yaml" >/dev/null
-  echo "# --dry-run: resolved POST /v1/agents bodies (subagents first, orchestrator last)"
+  echo "# --dry-run：已解析的 POST /v1/agents 请求体（子节点在前，编排器在后）"
   jq -s '.' "$DRY_OUT"
   rm -f "$DRY_OUT"
   exit 0
@@ -194,6 +193,6 @@ fi
 
 OUT=$(create_agent "$DIR/agent.yaml")
 AGENT_ID=${OUT%% *}
-echo "deployed: $ROLE"
-echo "agent id: $AGENT_ID"
-echo "console:  https://console.anthropic.com/agents/$AGENT_ID"
+echo "已创建工作流资源：$ROLE"
+echo "资源 id：$AGENT_ID"
+echo "控制台 URL：https://console.anthropic.com/agents/$AGENT_ID"

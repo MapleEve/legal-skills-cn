@@ -9,7 +9,7 @@ description: >
 argument-hint: "[章节名称，或描述您要修改的内容]"
 ---
 
-# /customize
+# /ai-governance-legal:customize
 
 ## 触发场景
 
@@ -17,7 +17,7 @@ argument-hint: "[章节名称，或描述您要修改的内容]"
 
 ## 执行步骤
 
-1. **读取配置。** 读取实践配置（以及上级目录中的 `company-profile.md`）。如果插件配置不存在或仍包含 `[PLACEHOLDER]` 值，则提示先运行 `/ai-governance-legal:cold-start-interview`。
+1. **读取配置。** 读取实践配置（以及上级目录中的 `company-profile.md`）。如果插件配置不存在或仍包含 `[待填写]` 值，则提示先运行 `/ai-governance-legal:cold-start-interview`。
 
 2. **展示可定制项目总览。** 按组列出：
 

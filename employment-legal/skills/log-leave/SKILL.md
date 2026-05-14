@@ -6,7 +6,7 @@ description: >
 argument-hint: "[描述假期——员工/角色、假期类型、管辖、开始日期]"
 ---
 
-# /log-leave
+# /employment-legal:log-leave
 
 向`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/leave-register.yaml`添加新假期条目，包含开始追踪法定截止日期所需的最低信息。当员工开始休假、您希望追踪器从第一天开始监视各项法定截止时间时使用。
 

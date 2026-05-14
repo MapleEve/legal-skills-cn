@@ -7,7 +7,7 @@ description: >
 argument-hint: "[--report [--days N] | --add | --update | --audit]"
 ---
 
-# /portfolio
+# /ip-legal:portfolio
 
 揭示哪些资产即将到期、添加资产、记录申报、审计登记册。
 

@@ -8,7 +8,7 @@ description: >
 argument-hint: "[省/市名称]"
 ---
 
-# /expansion-kickoff
+# /employment-legal:expansion-kickoff
 
 为中国企业启动国内跨省/市扩张项目——调研目标地域劳动法规、做合规差距分析、起草跨部门待办事项、生成持续追踪器。
 

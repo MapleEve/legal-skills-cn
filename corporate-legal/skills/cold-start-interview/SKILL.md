@@ -105,12 +105,12 @@ argument-hint: "[--redo | --new-deal | --check-integrations | --module [ma | boa
 展示插件定制列表：
 
 > **以下是我在公司法务业务中擅长的：**
-> - 交易尽调问题提取和追踪 — `/diligence-issue-extraction`
-> - 起草董事会/股东会/监事会会议纪要 — `/board-minutes`
-> - 构建重大合同信息披露清单 — `/material-contract-schedule`
-> - 管理投后整合工作流 — `/integration-management`
-> - 主体合规追踪 — `/entity-compliance`
+> - 交易尽调问题提取和追踪 — `/corporate-legal:diligence-issue-extraction`
+> - 起草董事会/股东会/监事会会议纪要 — `/corporate-legal:board-minutes`
+> - 构建重大合同信息披露清单 — `/corporate-legal:material-contract-schedule`
+> - 管理投后整合工作流 — `/corporate-legal:integration-management`
+> - 主体合规追踪 — `/corporate-legal:entity-compliance`
 > - AI尽调工具交接和质检 — `/corporate-legal:ai-tool-handoff`
-> - 交易团队简报 — `/deal-team-summary`
+> - 交易团队简报 — `/corporate-legal:deal-team-summary`
 
 > 完成。你的配置是纯文本文件，可直接阅读和编辑。一个月的使用后，画像读起来会像你自己写的。

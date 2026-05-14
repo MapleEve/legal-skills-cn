@@ -7,7 +7,7 @@ description: >
 argument-hint: "[案件名称] [受众：管理层 / HR / 监事会 / 外部律师]"
 ---
 
-# /investigation-summary
+# /employment-legal:investigation-summary
 
 从律师特权调查备忘录起草精简的、适合受众的摘要。不同受众版本的信息披露边界不同。
 

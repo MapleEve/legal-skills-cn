@@ -158,7 +158,7 @@ scripts/deploy-managed-agent.sh diligence-grid
 scripts/deploy-managed-agent.sh launch-radar
 ```
 
-[`managed-agent-cookbooks/`](./managed-agent-cookbooks) 是本地自动化工作流模板目录。每个模板引用对应插件的系统提示词和技能；脚本解析文件引用、上传技能、创建叶子工作节点，并生成可由你自己的本地调度器或工作流引擎驱动的编排器配置。目录名和脚本名保留为机器路径兼容名称；这些模板不是 hosted/managed agent 服务。
+[`managed-agent-cookbooks/`](./managed-agent-cookbooks) 是本地自动化工作流模板目录。每个模板引用对应插件的系统提示词和技能；脚本解析文件引用、上传技能、创建叶子工作节点，并生成可由你自己的本地调度器或工作流引擎驱动的编排器配置。目录名和脚本名保留为机器路径兼容名称；这些模板面向本机或内网调度运行，不代表任何云端代管服务。
 
 ---
 
@@ -213,7 +213,7 @@ scripts/deploy-managed-agent.sh launch-radar
 
 **仓库结构**
 
-[`external_plugins/`](./external_plugins) 下的插件由其供应商构建和维护。它们像其他插件一样从此市场安装，但供应商拥有代码、连接器和支持渠道。
+合作伙伴插件由其供应商构建和维护。它们像其他插件一样从此市场安装，但供应商拥有代码、连接器和支持渠道；当前仓库尚未包含合作伙伴插件目录。
 
 ```text
 commercial-legal/         企业法务商业合同
@@ -228,7 +228,6 @@ litigation-legal/         争议解决
 legal-clinic/             法律援助工作站
 law-student/              法学生
 legal-builder-hub/        法律技能管理
-external_plugins/         合作伙伴构建的插件
 managed-agent-cookbooks/  本地自动化工作流模板目录
 scripts/                  deploy-managed-agent.sh、validate.py、orchestrate.py、lint-tool-scope.py
 .claude-plugin/           marketplace.json 插件注册表

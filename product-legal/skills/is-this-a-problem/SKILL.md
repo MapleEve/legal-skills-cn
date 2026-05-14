@@ -7,7 +7,7 @@ description: >
 argument-hint: "[问题内容]"
 ---
 
-# /is-this-a-problem
+# /product-legal:is-this-a-problem
 
 ## 操作流程
 
@@ -31,7 +31,7 @@ argument-hint: "[问题内容]"
 
 ## 事项上下文
 
-**事项上下文。** 检查实践级 CLAUDE.md 中的 `## 事项工作区`。如 `启用` 为 `✗`，跳过本段。如已启且无活跃事项，询问事项。
+**事项上下文。** 检查实践级 CLAUDE.md 中的 `## 事项工作区`。如 `已启用` 为 `✗`，跳过本段。如已启用且 `当前事项` 为 `无`，询问事项。
 
 ---
 

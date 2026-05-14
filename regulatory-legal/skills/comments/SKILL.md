@@ -29,6 +29,8 @@ argument-hint: "[可选: --decide CMT-ID]"
 - `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/comment-tracker.yaml` → 所有跟踪的征求意见稿及其状态
 - `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` → 默认征求意见决策负责人
 
+若 runtime `comment-tracker.yaml` 不存在，先读取打包 seed `regulatory-legal/skills/gap-surfacer/references/comment-tracker.yaml`，用该结构初始化 runtime 跟踪器或作为本次会话的空表模板。不要在未读取 seed 的情况下自行发明字段名、状态值或中文化机器字段。
+
 ## 默认视图 — 公开征求意见期
 
 ```markdown
@@ -54,7 +56,7 @@ argument-hint: "[可选: --decide CMT-ID]"
 ## 记录决策
 
 ```
-/comments --decide CMT-001
+/regulatory-legal:comments --decide CMT-001
 决策：[提交反馈意见 / 不提交 / 通过行业协会提交 / 联合其他企业提交]
 理由："[简述]"
 ```

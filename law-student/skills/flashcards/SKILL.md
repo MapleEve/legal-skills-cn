@@ -7,7 +7,7 @@ description: >
 argument-hint: "[subject] [--generate | --drill | --review | --stats | --session <n>]"
 ---
 
-# /flashcards
+# /law-student:flashcards
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 当前课程、薄弱科目、知识体系位置。
 2. 使用以下框架。
@@ -130,7 +130,7 @@ argument-hint: "[subject] [--generate | --drill | --review | --stats | --session
 ## 集成
 
 - 配合知识体系使用（从知识体系提取关键法条/概念生成卡片）
-- 配合学习训练使用（`/session --flashcards` 模式）
+- 配合学习训练使用（`/law-student:session --flashcards` 模式）
 - 配合问答式研习使用（卡住的卡片改为对话式深究）
 
 ## 本技能不做的事

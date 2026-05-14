@@ -4,7 +4,7 @@ description: 按律所风格撰写中国法院诉讼文书章节（代理词/答
 argument-hint: "[章节类型——如'代理词/争议焦点一'、'答辩状/事实与理由']"
 ---
 
-# /brief-section-drafter
+# /litigation-legal:brief-section-drafter
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 案件策略、律所文书风格。
 2. 遵循以下工作流程和参考。

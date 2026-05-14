@@ -5,7 +5,7 @@ description: >
   涵盖：调查范围确定、证据收集（访谈记录/书面材料/电子数据）、
   事实发现、法律分析、结论建议。调查报告为律师受托形成的保密法律服务文件；
   个人信息主体权利请求由个人信息处理者依法受理。
-  由 /investigation-open、/investigation-add、/investigation-query、/investigation-memo 和 /investigation-summary 加载；
+  由 /employment-legal:investigation-open、/employment-legal:investigation-add、/employment-legal:investigation-query、/employment-legal:investigation-memo 和 /employment-legal:investigation-summary 加载；
   不直接调用。
 user-invocable: false
 ---

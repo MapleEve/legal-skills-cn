@@ -71,10 +71,15 @@ argument-hint: "[文件路径，或描述审查范围和所需字段]"
 
 ### 步骤0：确认文件来源和输出格式
 
+先读取本技能目录下的打包参考材料：
+- `references/ma-diligence-columns.md` — M&A 尽调默认字段集；后续 `review-schema.yaml` 以此为起点，再按交易文件和用户目标增删字段。
+- 若用户选择 Excel 输出，先读取 `references/excel-output.md`，并按其中的 workbook 结构、批注、状态颜色和公式注入防护生成。
+- 若用户选择 Google Sheets 输出，先读取 `references/gsheets-output.md`，并按其中的 spreadsheet 创建、notes、分享限制和公式注入防护生成。
+
 确认：
 - 文件来源（数据室路径、本地文件夹、或粘贴的文档列表）
 - 尽调类别范围（全部11个类别或仅特定类别）
-- 输出格式（Markdown表格 + CSV + Excel）
+- 输出格式（Markdown表格 + CSV + Excel，或用户明确选择 Google Sheets）
 
 ### 步骤1：构建并确认审查模式
 

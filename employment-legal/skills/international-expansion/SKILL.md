@@ -3,7 +3,7 @@ name: international-expansion
 description: >
   参考：中国企业出海境外招聘的实施规划框架——雇佣模式选择（EOR/PEO/自建实体）、
   税务/财务/HR的跨职能触发条件、结构化的境外律师简报请求、
-  以及持久缺口追踪器。由/expansion-kickoff和/expansion-update加载；不直接调用。
+  以及持久缺口追踪器。由 /employment-legal:expansion-kickoff 和 /employment-legal:expansion-update 加载；不直接调用。
 user-invocable: false
 ---
 

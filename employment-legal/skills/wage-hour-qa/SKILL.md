@@ -9,7 +9,7 @@ description: >
 argument-hint: "[问题描述]"
 ---
 
-# /wage-hour-qa
+# /employment-legal:wage-hour-qa
 
 1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围。
 2. 使用以下工作流。

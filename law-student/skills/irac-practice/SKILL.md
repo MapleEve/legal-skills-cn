@@ -8,7 +8,7 @@ description: >
 argument-hint: "[粘贴文章 或 草稿路径 或 --generate-hypo]"
 ---
 
-# /irac-practice
+# /law-student:irac-practice
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程、考试格式、知识体系位置、学习风格。
 2. 使用以下框架。

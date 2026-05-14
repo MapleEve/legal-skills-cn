@@ -8,7 +8,7 @@ description: >
 argument-hint: "[部分名称，或描述您想更改的内容]"
 ---
 
-# /customize
+# /ip-legal:customize
 
 ## 何时运行
 

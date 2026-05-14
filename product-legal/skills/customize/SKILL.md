@@ -7,7 +7,7 @@ description: >
 argument-hint: "[章节名称，或描述修改内容]"
 ---
 
-# /customize
+# /product-legal:customize
 
 ## 触发场景
 
@@ -15,7 +15,7 @@ argument-hint: "[章节名称，或描述修改内容]"
 
 ## 执行步骤
 
-1. **读取配置。** 读取实践配置（以及上级目录的 `company-profile.md`）。如插件配置不存在或含 `[PLACEHOLDER]` 值，提示先运行 `/product-legal:cold-start-interview`。
+1. **读取配置。** 读取实践配置（以及上级目录的 `company-profile.md`）。如插件配置不存在或含 `[待填写]` 值，提示先运行 `/product-legal:cold-start-interview`。
 
 2. **展示可定制项目总览。** 按组列出：
    - **公司/主体信息** — 名称、行业、管辖范围、阶段、执业类型、产品范围
@@ -32,7 +32,7 @@ argument-hint: "[章节名称，或描述修改内容]"
 4. **执行修改。** 展示当前值、询问新值、说明下游影响、确认、写入配置。
 
   示例：
-  - *P0阻断标准新增触发条件：* "`/launch-review` 现在会在检测到[新条件]时标注为P0阻断。"
+  - *P0阻断标准新增触发条件：* "`/product-legal:launch-review` 现在会在检测到[新条件]时标注为P0阻断。"
   - *修改升级审批人：* "所有涉及升级路由的技能将更新为新的审批链。"
   - *审查框架新增类别：* "后续审查将包含[新类别]的检查项。"
 

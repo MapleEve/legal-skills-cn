@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /cold-start-interview
+# /legal-clinic:cold-start-interview
 
 ## 目的
 

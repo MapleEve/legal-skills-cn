@@ -1,6 +1,6 @@
 # 业务领域接待模板
 
-由指导教师在冷启动时提供或确认接待表。若未提供，`/client-intake` 使用 `client-intake/SKILL.md` Step 2 中的默认问题集，并在输出中标记需要指导教师复核。
+由指导教师在冷启动时提供或确认接待表。若未提供，`/legal-clinic:client-intake` 使用 `client-intake/SKILL.md` Step 2 中的默认问题集，并在输出中标记需要指导教师复核。
 
 每个业务领域一个文件：
 

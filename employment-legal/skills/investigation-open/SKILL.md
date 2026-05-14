@@ -7,7 +7,7 @@ description: >
 argument-hint: "[调查事项的简要描述]"
 ---
 
-# /investigation-open
+# /employment-legal:investigation-open
 
 以律所受托模式开启新的内部调查案件——确定委托关系、明确调查范围、组成调查组、发出调查通知、创建调查工作日志。
 

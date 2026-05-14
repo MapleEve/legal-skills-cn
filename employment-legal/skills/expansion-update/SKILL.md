@@ -7,7 +7,7 @@ description: >
 argument-hint: "[省/市名称]"
 ---
 
-# /expansion-update
+# /employment-legal:expansion-update
 
 返回一个开放的扩张追踪器，基于上次会话后发生的情况更新事项状态。重新计算现已解锁的事项、标记逾期事项、揭示下一个优先事项。
 

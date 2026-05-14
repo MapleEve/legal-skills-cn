@@ -8,7 +8,7 @@ description: >
 argument-hint: "[文件 | 链接 | 粘贴文本]"
 ---
 
-# /dpa-review
+# /privacy-legal:dpa-review
 
 ## 指示
 

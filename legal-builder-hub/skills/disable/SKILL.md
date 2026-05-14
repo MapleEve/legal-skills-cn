@@ -7,7 +7,7 @@ description: >
 argument-hint: "<skill-name>"
 ---
 
-# /disable
+# /legal-builder-hub:disable
 
 ## 功能目的
 

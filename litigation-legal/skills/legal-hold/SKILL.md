@@ -4,7 +4,7 @@ description: 帮助律师申请诉前/诉中证据保全或财产保全——撰
 argument-hint: "[案件标识] [--evidence | --property] [--pre-suit | --in-suit]"
 ---
 
-# /legal-hold
+# /litigation-legal:legal-hold
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 律所保全实务惯例。
 2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` → 案件类型、管辖法院、标的、对方当事人信息。

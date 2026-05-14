@@ -8,7 +8,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations 仅重新检测集成]"
 ---
 
-# /cold-start-interview
+# /product-legal:cold-start-interview
 
 ## 操作流程
 
@@ -49,7 +49,7 @@ argument-hint: "[--redo] [--check-integrations 仅重新检测集成]"
 >
 > **2分钟**即可获得您的角色、审查框架级别（正式门禁 vs 咨询）和产品/实践背景（消费者、企业或两者），其余使用合理默认值。**15分钟**增加您的风险校准表（什么被阻止 vs 什么可以发版）、升级矩阵、审查框架类别、备忘录格式和上线跟踪器集成。
 >
-> 快速还是完整？（随时可用 `/cold-start-interview --full` 升级。）
+> 快速还是完整？（随时可用 `/product-legal:cold-start-interview --full` 升级。）
 
 **快速启动路径：** 仅询问第0部分和产品领域。其余使用 `[DEFAULT]` 标注。
 

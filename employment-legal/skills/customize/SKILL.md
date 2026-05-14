@@ -8,7 +8,7 @@ description: >
 argument-hint: "[部分名称，或描述您想更改的内容]"
 ---
 
-# /customize
+# /employment-legal:customize
 
 ## 何时运行
 
@@ -44,8 +44,8 @@ argument-hint: "[部分名称，或描述您想更改的内容]"
 4. **进行更改。**显示当前值，询问新值，解释下游的变化，确认，写入配置。
 
    示例：
-   - *将浙江省加入管辖范围：*"`/wage-hour-qa`和`/termination-review`将开始应用浙江的规则。`/handbook-updates`将提示浙江补充。`/hiring-review`现在将标记浙江的竞业限制企图。"
-   - *经济补偿金框架从N改为N+1：*"`/termination-review`将在经济补偿金计算中使用新基线。"
+   - *将浙江省加入管辖范围：*"`/employment-legal:wage-hour-qa`和`/employment-legal:termination-review`将开始应用浙江的规则。`/employment-legal:handbook-updates`将提示浙江补充。`/employment-legal:hiring-review`现在将标记浙江的竞业限制企图。"
+   - *经济补偿金框架从N改为N+1：*"`/employment-legal:termination-review`将在经济补偿金计算中使用新基线。"
    - *风险立场从中间→保守：*"我将标记更多的解除以升级，建议更具保护性的解除协议语言，并在竞业限制上更加严格。对于2N（第87条违法解除）的预防将更为重视。"
 
 5. **对于共享画像的更改**（公司名称、行业、管辖、执业类型、阶段）：写入

@@ -8,7 +8,7 @@ description: >
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
-# /matter-workspace
+# /privacy-legal:matter-workspace
 
 法务人员同时处理多个客户和事项。事项工作区将每个客户或事项的上下文相互隔离。本技能管理这些工作区。
 
@@ -16,25 +16,25 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 - `/privacy-legal:matter-workspace new <slug>` —— 创建一个新的事项工作区，运行简短立案访谈，写入`matter.md`
 - `/privacy-legal:matter-workspace list` —— 列出事项及状态和活跃标记
-- `/privacy-legal:matter-workspace switch <slug>` —— 设置活跃事项
+- `/privacy-legal:matter-workspace switch <slug>` —— 设置当前事项
 - `/privacy-legal:matter-workspace close <slug>` —— 归档事项（移至 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/_archived/`，永不删除）
-- `/privacy-legal:matter-workspace none` —— 脱离任何活跃事项，仅在执业级别工作
+- `/privacy-legal:matter-workspace none` —— 脱离任何当前事项，仅在执业级别工作
 
 ## 指令
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` —— 确认 `## 事项工作区` 节已填充。如果 `Enabled` 为 `✗`，告知用户："事项工作区已关闭——您配置为法务内部执业，含单一客户，因此插件自动从执业级别上下文工作。如果您实际处理多个客户的工作，重新运行 `/privacy-legal:cold-start-interview --redo` 并选择私人执业设置。否则，您不需要 `/matter-workspace`。"不要报错——关闭状态是法务内部用户的预期状态。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` —— 确认 `## 事项工作区` 节已填充。如果 `已启用` 为 `✗`，告知用户："事项工作区已关闭——您配置为法务内部执业，含单一客户，因此插件自动从执业级别上下文工作。如果您实际处理多个客户的工作，重新运行 `/privacy-legal:cold-start-interview --redo` 并选择私人执业设置。否则，您不需要 `/privacy-legal:matter-workspace`。"不要报错——关闭状态是法务内部用户的预期状态。
 2. 使用以下子命令逻辑。
 3. 按 `$ARGUMENTS` 的第一个标记派发：
    - `new` → 运行立案访谈，写入 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<slug>/matter.md`，生成 `history.md` 和 `notes.md`。
-   - `list` → 枚举 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/*/matter.md`，打印表格，标记活跃事项。
-   - `switch` → 更新执业级别 CLAUDE.md 中的 `Active matter:` 行。
+   - `list` → 枚举 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/*/matter.md`，打印表格，标记当前事项。
+   - `switch` → 更新执业级别 CLAUDE.md 中的 `当前事项:` 行。
    - `close` → 将 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<slug>/` 移至 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/_archived/<slug>/`，在 `history.md` 中记录关闭日期。
-   - `none` → 将 `Active matter:` 设置为 `none — practice-level context only`。
+   - `none` → 将 `当前事项:` 设置为 `无 — 仅执业级别上下文`。
 4. 向用户展示变更内容，写入前确认。
 
 ## 注意事项
 
-- 除非执业级别 CLAUDE.md 中 `Cross-matter context` 为 `on`，否则技能绝不跨事项读取。
+- 除非执业级别 CLAUDE.md 中 `跨事项上下文` 为 `开启`，否则技能绝不跨事项读取。
 - 归档不是删除——已关闭事项保持可读，用于留存/利益冲突目的。
 - 标识为小写字母加连字符。如果标识在归档区和活跃区重复使用，归档版保留在 `_archived/<slug>/` 下。
 
@@ -44,7 +44,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 多客户执业的法务人员（私人执业——独立律师、小型律所、大型律所）处理多个事项。一个事项的上下文不得泄露到另一个事项。本技能是使这一点成真的薄文件管理层。
 
-**默认状态为关闭。** 法务内部用户永远不会看到这个——他们仅在执业级别运行。事项工作区在冷启动时对私人执业用户启用，或通过编辑执业级别 CLAUDE.md 中的 `## 事项工作区` 启用。如果 `Enabled` 为 `✗`，本技能不运行；以上工作流程解释关闭状态，并建议实际需要事项隔离的用户运行 `/privacy-legal:cold-start-interview --redo`。
+**默认状态为关闭。** 法务内部用户永远不会看到这个——他们仅在执业级别运行。事项工作区在冷启动时对私人执业用户启用，或通过编辑执业级别 CLAUDE.md 中的 `## 事项工作区` 启用。如果 `已启用` 为 `✗`，本技能不运行；以上工作流程解释关闭状态，并建议实际需要事项隔离的用户运行 `/privacy-legal:cold-start-interview --redo`。
 
 ## 存储布局
 
@@ -58,16 +58,16 @@ argument-hint: "<new | list | switch | close | none> [slug]"
     │   ├── matter.md               # 客户、相对方、事项类型、关键事实、替代规则
     │   ├── history.md              # 日期记录：事件、决策、草稿、审查
     │   ├── notes.md              # 自由格式工作笔记
-    │   └── 输出/                # 本事项的技能输出（可选子文件夹）
+    │   └── outputs/             # 本事项的技能输出（可选子文件夹）
     └── _archived/
         └── <slug>/                 # 已关闭事项——可读但不活跃
 ```
 
 标识为小写字母加连字符。示例：`acme-msa-2026`、`zenith-renewal`、`vendor-xyz-nda`。
 
-## 活跃事项在执业 CLAUDE.md 中
+## 当前事项在执业 CLAUDE.md 中
 
-执业级别 CLAUDE.md 中 `## 事项工作区` 下的 `Active matter:` 行是唯一真实来源。切换事项即编辑该行。无单独状态文件。
+执业级别 CLAUDE.md 中 `## 事项工作区` 下的 `当前事项:` 行是唯一真实来源。切换事项即编辑该行。无单独状态文件。
 
 ## 子命令逻辑
 
@@ -94,12 +94,12 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 | 标识 | 客户 | 事项类型 | 状态 | 立案日期 | 活跃？ |
 |---|---|---|---|---|---|
 
-用 `*` 标记当前活跃事项。如有归档事项，在单独的"已归档"标题下列出 `_archived/*`。
+用 `*` 标记当前事项。如有归档事项，在单独的"已归档"标题下列出 `_archived/*`。
 
 ### `switch <slug>`
 
 1. 确认 `matters/<slug>/matter.md` 存在。如不存在，建议 `/privacy-legal:matter-workspace new <slug>`。
-2. 编辑执业级别 CLAUDE.md 中的 `Active matter:` 行为 `Active matter: <slug>`。
+2. 编辑执业级别 CLAUDE.md 中的 `当前事项:` 行为 `当前事项: <slug>`。
 3. 向用户展示matter.md 摘要，确认事项正确。
 
 ### `close <slug>`
@@ -107,11 +107,11 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 1. 确认 `matters/<slug>/` 存在。
 2. 在 `matters/<slug>/history.md` 中追加一条"已关闭"条目，日期为当日。
 3. 将 `matters/<slug>/` 移至 `matters/_archived/<slug>/`。
-4. 如果已关闭事项为活跃事项，将 `Active matter:` 设置为 `none — practice-level context only`。
+4. 如果已关闭事项为当前事项，将 `当前事项:` 设置为 `无 — 仅执业级别上下文`。
 
 ### `none`
 
-将执业级别 CLAUDE.md 中的 `Active matter:` 设置为 `none — practice-level context only`。与用户确认。
+将执业级别 CLAUDE.md 中的 `当前事项:` 设置为 `无 — 仅执业级别上下文`。与用户确认。
 
 ## `matter.md` 模板
 
@@ -174,9 +174,9 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 跨事项上下文
 
-执业级别 CLAUDE.md 有一个 `Cross-matter context:` 标志。当其为 `off`（默认），在某事项 A 中工作的技能**绝不**读取任何其他 B 事项文件夹中的文件。期间。这是该设置存在的保密保障。
+执业级别 CLAUDE.md 有一个 `跨事项上下文:` 标志。当其为 `关闭`（默认），在某事项 A 中工作的技能**绝不**读取任何其他 B 事项文件夹中的文件。这是该设置存在的保密保障。
 
-当其为 `on`，技能仅在用户明确要求时方可跨事项文件夹读取文件（例如："比较我们最近五个个人信息处理活动事项中关于责任上限的立场"）。即使 `on`，默认仍仅加载活跃事项，除非用户要求跨事项视图。
+当其为 `开启`，技能仅在用户明确要求时方可跨事项文件夹读取文件（例如："比较我们最近五个个人信息处理活动事项中关于责任上限的立场"）。即使 `开启`，默认仍仅加载当前事项，除非用户要求跨事项视图。
 
 ## 本技能不做什么
 

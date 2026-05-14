@@ -8,7 +8,7 @@ description: >
 argument-hint: "[课程名称，附带历年试卷或试卷路径]"
 ---
 
-# /exam-forecast
+# /law-student:exam-forecast
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程、老师、考试格式、教学大纲。
 2. 使用以下工作流。

@@ -9,7 +9,7 @@ description: >
 argument-hint: "[法律问题]"
 ---
 
-# /research-start
+# /legal-clinic:research-start
 
 ## 目的
 

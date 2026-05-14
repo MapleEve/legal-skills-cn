@@ -7,7 +7,7 @@ description: >
 argument-hint: "[章节名称，或描述修改内容]"
 ---
 
-# /customize
+# /law-student:customize
 
 ## 触发场景
 

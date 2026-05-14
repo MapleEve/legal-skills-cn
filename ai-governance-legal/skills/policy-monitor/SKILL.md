@@ -10,7 +10,7 @@ description: >
 argument-hint: "[描述拟议的新AI实践——或省略/使用 --sweep 进入扫描模式]"
 ---
 
-# /policy-monitor
+# /ai-governance-legal:policy-monitor
 
 **扫描模式**（无参数或 `--sweep`）：
 1. 读取实践配置 → 输出文件夹路径、AI政策文件、上次扫描日期。

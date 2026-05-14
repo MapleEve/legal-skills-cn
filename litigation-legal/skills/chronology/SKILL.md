@@ -4,7 +4,7 @@ description: 从案件材料和证据材料中构建案件大事记/时间线—
 argument-hint: "[案件标识] [--format=working|argument|evidence-index]"
 ---
 
-# /chronology
+# /litigation-legal:chronology
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` → 案件策略、关键事实、争议焦点。
 2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 文件存储来源、默认案件文件夹。

@@ -7,7 +7,7 @@ description: >
 argument-hint: "[案例名称，或粘贴案例文本，或阅读材料路径]"
 ---
 
-# /cold-call-prep
+# /law-student:cold-call-prep
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程列表、教授、学习风格。
 2. 使用以下工作流。

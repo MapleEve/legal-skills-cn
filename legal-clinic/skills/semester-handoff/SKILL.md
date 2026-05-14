@@ -8,7 +8,7 @@ description: >
 argument-hint: "[--semester=YYYY-学期(默认：当前)] [--case=[case-id](单个案件)]"
 ---
 
-# /semester-handoff
+# /legal-clinic:semester-handoff
 
 ## 目的
 

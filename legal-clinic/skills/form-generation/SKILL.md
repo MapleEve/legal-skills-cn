@@ -1,15 +1,15 @@
 ---
 name: form-generation
 description: >
-  已废弃 — 请使用 `/draft` 代替。本技能已在v2重构中合并入代书技能，
+  已废弃 — 请使用 `/legal-clinic:draft` 代替。本技能已在v2重构中合并入代书技能，
   后者处理包括起诉状、答辩状、申请书等所有法律援助文书的模板化初稿生成。
   保留为迁移重定向。
 user-invocable: false
 ---
 
-# [已废弃] 格式文书生成 → 请参见 `/draft`
+# [已废弃] 格式文书生成 → 请参见 `/legal-clinic:draft`
 
-本技能在v2重构期间合并入 `skills/draft/`。`/draft` 技能现在处理
+本技能在v2重构期间合并入 `skills/draft/`。`/legal-clinic:draft` 技能现在处理
 所有中国法律援助诊所文书生成，包括格式文书（起诉状/答辩状/上诉状/申请书等）
 的模板化起草。请使用 `/legal-clinic:draft` 代替。
 

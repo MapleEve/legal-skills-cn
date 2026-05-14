@@ -9,7 +9,7 @@ description: >
 argument-hint: "[文书类型 — 如'起诉状'、'上诉状'、'劳动仲裁申请书']"
 ---
 
-# /draft
+# /legal-clinic:draft
 
 ## 目的
 

@@ -15,22 +15,20 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: "CLA Assistant"
-        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
-        # Upstream contributor-assistant/github-action was archived 2026-03-23
-        # still on Node 20 (deprecated 2026-06-02). This fork bumps to Node 24
-        # and adds: an impersonation guard (PR opener must be an author or
-        # co-author of at least one commit), Co-authored-by trailer support,
-        # email-based allowlist matching, automatic retry of transient
-        # GitHub 5xx errors, and actionable unlinked-email guidance.
+        if: (github.event.comment.body == 'recheck' || github.event.comment.body == '我已阅读 CLA 文档并同意签署 CLA') || github.event_name == 'pull_request_target'
+        # 上游 contributor-assistant/github-action 已于 2026-03-23 归档，且仍在使用
+        # Node 20（2026-06-02 弃用）。此 fork 升级到 Node 24，并补充：
+        # 冒签防护（PR 发起人必须是至少一个 commit 的作者或共同作者）、
+        # Co-authored-by trailer 支持、按邮箱 allowlist 匹配、GitHub 5xx 临时错误
+        # 自动重试，以及未绑定邮箱时可执行的提示。
         uses: iainmcgin/cla-github-action@3e58ace6af840f66fcd80f68c08d76559140df5e # v3.0.0 (sha-pinned)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           path-to-document: "https://github.com/${{ github.repository }}/blob/main/CLA.md"
-          path-to-signatures: "signatures/cla.json"
+          path-to-signatures: ".github/signatures/cla.json"
           branch: "cla-signatures"
-          # noreply@anthropic.com is the email AI assistants use on
-          # Co-authored-by trailers (e.g. Claude). Allowlisting it suppresses
-          # the synthetic co-author from the CLA check; the PR opener still
-          # has to sign.
+          # noreply@anthropic.com 是 AI 助手在 Co-authored-by trailer 中使用的邮箱
+          # （例如 Claude）。allowlist 只排除这类合成共同作者的 CLA 检查；
+          # PR 发起人仍然必须签署。
           allowlist: "iainmcgin,dependabot[bot],github-actions[bot],renovate[bot],noreply@anthropic.com"

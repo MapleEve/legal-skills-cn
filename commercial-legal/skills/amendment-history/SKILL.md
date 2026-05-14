@@ -8,7 +8,7 @@ description: >
 argument-hint: "[文件 | [CLM ID（即将推出）] | [文档库链接（即将推出）]] [--provision <条款名称>]"
 ---
 
-# /amendment-history
+# /commercial-legal:amendment-history
 
 加载原始协议及全部补充协议/变更协议，汇总合同历次变更，或针对某一特定条款进行逐版追溯，找到当前有效的条款表述。
 

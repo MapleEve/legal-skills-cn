@@ -3,12 +3,12 @@ name: client-comms-log
 description: >
   记录法律援助当事人沟通——面谈、电话、短信、微信、邮件、信件。
   每案仅追加的记录日志，含带日期的条目、沟通方向、媒介、摘要、待办事项。
-  配合 `/client-letter` 和 `/status` 使用。
+  配合 `/legal-clinic:client-letter` 和 `/legal-clinic:status` 使用。
   当记录与当事人的沟通、查阅沟通日志或问"上次告诉当事人什么"时使用。
 argument-hint: "[case-id] [--add(默认) | --read | --summary | --patterns]"
 ---
 
-# /client-comms-log
+# /legal-clinic:client-comms-log
 
 ## 目的
 

@@ -6,7 +6,7 @@ description: >
 argument-hint: "[--redo] [--check-integrations]"
 ---
 
-# /cold-start-interview
+# /legal-builder-hub:cold-start-interview
 
 ## 功能目的
 

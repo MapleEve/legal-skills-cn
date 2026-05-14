@@ -31,7 +31,7 @@
 | `/regulatory-legal:comments` | 审查公开征求意见中的法规/规章征求意见稿，记录决策，追踪意见提交期限 |
 | `/regulatory-legal:policy-redraft` | 消除某项合规差距的修改建议稿 —— 供内部审查的初稿，非对原始文档的直接编辑 |
 | `/regulatory-legal:matter-workspace` | 管理事项工作区（仅限多客户私人执业场景）—— 新建、列表、切换、关闭、取消 |
-| **gap-surfacer** *(参考)* | `/gaps` 和 `/comments` 加载的共享差距和意见追踪框架 |
+| **gap-surfacer** *(参考)* | `/regulatory-legal:gaps` 和 `/regulatory-legal:comments` 加载的共享差距和意见追踪框架 |
 
 ## 交互技能 vs 定时智能体
 

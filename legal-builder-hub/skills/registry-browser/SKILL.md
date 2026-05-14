@@ -7,7 +7,7 @@ description: >
 argument-hint: "[搜索词 或 --list-all 或 --category <category>]"
 ---
 
-# /registry-browser
+# /legal-builder-hub:registry-browser
 
 ## 功能目的
 
@@ -17,9 +17,10 @@ argument-hint: "[搜索词 或 --list-all 或 --category <category>]"
 
 ## 操作流程
 
-1. 按标志路由：搜索、列表、按类别筛选。
-2. 显示匹配技能：名称、描述、类别、版本、评价。
-3. 用户可选择技能查看详情，然后安装。
+1. 先读取 `references/registries.yaml`，将其作为注册表来源清单；不要凭记忆或模型知识补全注册表。
+2. 按标志路由：搜索、列表、按类别筛选。
+3. 显示匹配技能：名称、描述、类别、版本、评价。
+4. 用户可选择技能查看详情，然后安装。
 
 ## 浏览视图
 

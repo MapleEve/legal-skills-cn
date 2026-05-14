@@ -10,9 +10,9 @@ description: >
 argument-hint: "[描述个人信息处理活动或功能]"
 ---
 
-# /use-case-triage
+# /privacy-legal:use-case-triage
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md`。确认隐私实践已配置——如未配置，停止并引导至设置。
+1. 先读取本插件根目录下 `../../references/pipl-core-provisions.md`，再读取 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md`。确认隐私实践已配置——如未配置，停止并引导至设置。
 2. 按以下工作流执行。如活动描述模糊则澄清。
 3. 内部触发条件检查 → 法定影响评估触发条件检查（《个人信息保护法》第55条[通说]） → 隐私政策/个人信息处理规则冲突检查。
 4. 输出：分类（可继续 / 需要做影响评估 / 法定必须做影响评估 / 暂停），理由，如附条件则附条件表，跨插件交接。
@@ -28,7 +28,7 @@ argument-hint: "[描述个人信息处理活动或功能]"
 
 ## 事项上下文
 
-**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `Enabled` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且无活跃事项，询问："这是哪个事项？运行 `/privacy-legal:matter-workspace switch <slug>` 或说 `执业级别`。"加载活跃事项的 `matter.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<matter-slug>/`。除非 `跨事项上下文` 为 `on`，否则绝不读取其他事项的文件。
+**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `已启用` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且 `当前事项` 为 `无`，询问："这是哪个事项？运行 `/privacy-legal:matter-workspace switch <slug>` 或说 `执业级别`。"加载当前事项的 `matter.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<matter-slug>/`。除非 `跨事项上下文` 为 `开启`，否则绝不读取其他事项的文件。
 
 ---
 
@@ -56,7 +56,7 @@ argument-hint: "[描述个人信息处理活动或功能]"
 
 分诊前，始终读取 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md`。其中的影响评估触发标准、监管覆盖范围和隐私政策/个人信息处理规则承诺是权威的。通用的个人信息保护法推理不能替代这家公司实际承诺的内容。
 
-如果文件缺失或包含 `[PLACEHOLDER]`，显示此弹窗：
+如果文件缺失或包含 `[待填写]`，显示此弹窗：
 
 > 我注意到您尚未配置实践档案——这是我针对您的实践定制影响评估触发标准、监管覆盖范围和隐私政策/个人信息处理规则承诺的方式。
 >

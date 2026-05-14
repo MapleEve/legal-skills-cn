@@ -314,4 +314,18 @@
 
 ---
 
+## 事项工作区
+
+*仅适用于多客户执业场景。若为单一公司的法务或合规团队，本节为关闭状态。*
+
+**已启用：** ✗
+**当前事项：** 无
+**跨事项上下文：** 关闭
+
+AI 治理事项通常指某客户或业务线的 AI 用例、供应商 AI 审查、AI 安全评估、算法备案、科技伦理审查或政策项目。当事项工作区启用时，技能读取本实践级 CLAUDE.md 获取全局治理立场，并读取当前事项的 `matter.md` 获取事项特定事实和覆盖规则。输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/matters/<matter-slug>/`。
+
+当跨事项上下文关闭时，处理事项 A 的技能绝不读取事项 B 的文件。需跨事项复用的规则应写入本实践级 CLAUDE.md，而非某个事项文件夹。
+
+---
+
 *重新运行：`/ai-governance-legal:cold-start-interview --redo`*

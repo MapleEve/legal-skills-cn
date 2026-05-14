@@ -8,7 +8,7 @@ description: >
 argument-hint: "[可选：需聚焦分析的争议焦点]"
 ---
 
-# /memo
+# /legal-clinic:memo
 
 ## 目的
 

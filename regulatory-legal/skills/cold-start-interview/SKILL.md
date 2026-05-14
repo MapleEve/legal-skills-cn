@@ -34,7 +34,7 @@ argument-hint: "[--redo | --check-integrations]"
 读取 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md`：
 - **不存在** → 开始访谈。
 - **包含 `<!-- 设置暂停于： -->`** → 从暂停处继续。
-- **包含 `[PLACEHOLDER]` 但无暂停注释** → 提供重新开始或从占位符处继续。
+- **包含 `[待填写]` 但无暂停注释** → 提供重新开始或从占位符处继续。
 - **已填充（无占位符）** → 已配置完成；跳过除非 `--redo`。
 
 ## 检查共享公司档案
@@ -114,10 +114,10 @@ argument-hint: "[--redo | --check-integrations]"
 展示插件能做什么的定制列表：
 
 > **以下是我在监管合规业务中擅长的：**
-> - 检查监管动态源 — `/reg-feed-watcher`
-> - 对比一项监管变化与企业政策库差异 — `/policy-diff`
-> - 打开合规差距追踪器 — `/gaps`
-> - 跟踪征求意见稿的公开征求意见期 — `/comments`
+> - 检查监管动态源 — `/regulatory-legal:reg-feed-watcher`
+> - 对比一项监管变化与企业政策库差异 — `/regulatory-legal:policy-diff`
+> - 打开合规差距追踪器 — `/regulatory-legal:gaps`
+> - 跟踪征求意见稿的公开征求意见期 — `/regulatory-legal:comments`
 
 > 完成。你的配置位于 `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` — 一个纯文本文件，可直接阅读和编辑。
 > - 直接编辑文件做快速更改

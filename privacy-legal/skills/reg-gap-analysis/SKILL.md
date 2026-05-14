@@ -8,9 +8,9 @@ description: >
 argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 ---
 
-# /reg-gap-analysis
+# /privacy-legal:reg-gap-analysis
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
+1. 先读取本插件根目录下 `../../references/pipl-core-provisions.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
 2. 按以下工作流执行。
 3. 范围确认：该法规是否适用？（管辖范围、适用门槛、行业排除）
 4. 提取实质性要求 → 与当前状态对比 → 差距清单。
@@ -32,7 +32,7 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 
 ## 事项上下文
 
-**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `Enabled` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且无活跃事项，询问："这是哪个事项？运行 `/privacy-legal:matter-workspace switch <slug>` 或说 `执业级别`。"加载活跃事项的 `matter.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<matter-slug>/`。除非 `跨事项上下文` 为 `on`，否则绝不读取其他事项的文件。
+**事项上下文。** 检查执业级别 CLAUDE.md 中的 `## 事项工作区`。如果 `已启用` 为 `✗`（法务内部用户的默认设置），跳过本段其余内容——技能使用执业级别上下文，事项机制不可见。如果已启用且 `当前事项` 为 `无`，询问："这是哪个事项？运行 `/privacy-legal:matter-workspace switch <slug>` 或说 `执业级别`。"加载当前事项的 `matter.md` 获取事项特定上下文和替代规则。将输出写入事项文件夹 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/matters/<matter-slug>/`。除非 `跨事项上下文` 为 `开启`，否则绝不读取其他事项的文件。
 
 ---
 

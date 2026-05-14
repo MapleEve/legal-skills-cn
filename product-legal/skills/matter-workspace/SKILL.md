@@ -6,7 +6,7 @@ description: >
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
-# /matter-workspace
+# /product-legal:matter-workspace
 
 执业者跨多个客户和事务工作。事项工作区将不同客户或委托事务的上下文相互隔离。
 
@@ -14,13 +14,13 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 - `/product-legal:matter-workspace new <slug>` — 创建新事项工作区，运行简短信息采集，写入 `matter.md`
 - `/product-legal:matter-workspace list` — 列出事项及状态
-- `/product-legal:matter-workspace switch <slug>` — 设置活跃事项
+- `/product-legal:matter-workspace switch <slug>` — 设置当前事项
 - `/product-legal:matter-workspace close <slug>` — 归档事项（移至 `_archived/`，永不删除）
-- `/product-legal:matter-workspace none` — 脱离任何活跃事项，仅实践级工作
+- `/product-legal:matter-workspace none` — 脱离任何当前事项，仅实践级工作
 
 ## 操作说明
 
-1. 读取实践配置 — 确认 `## 事项工作区` 已填充。如 `启用` 为 `✗`，告知用户事项工作区已关闭——法务部内部用户的默认状态。
+1. 读取实践配置 — 确认 `## 事项工作区` 已填充。如 `已启用` 为 `✗`，告知用户事项工作区已关闭——法务部内部用户的默认状态。
 2. 根据 `$ARGUMENTS` 首个词分派相应子命令。
 3. 存储结构：`~/.claude/plugins/config/claude-for-legal-cn/product-legal/matters/<slug>/`
 4. 标识使用小写字母加连字符。
@@ -31,16 +31,16 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 确认标识未重复 → 运行信息采集访谈（客户、对方当事人、事项类型、保密级别、关键事实、事项特定覆盖）→ 写入 `matter.md` → 初始化 `history.md` 和 `notes.md` → 不自动切换。
 
 ### `list`
-枚举 `matters/*/matter.md`，打印表格（标识 | 客户 | 事项类型 | 状态 | 开启日期 | 活跃），标注活跃事项。
+枚举 `matters/*/matter.md`，打印表格（标识 | 客户 | 事项类型 | 状态 | 开启日期 | 当前），标注当前事项。
 
 ### `switch <slug>`
-确认存在 → 编辑 `活跃事项:` 行 → 展示摘要。
+确认存在 → 编辑 `当前事项:` 行 → 展示摘要。
 
 ### `close <slug>`
-追加关闭记录 → 移至 `_archived/` → 如是活跃事项则解除。
+追加关闭记录 → 移至 `_archived/` → 如是当前事项则解除。
 
 ### `none`
-设置 `活跃事项:` 为 `无 — 仅实践级上下文`。
+设置 `当前事项:` 为 `无 — 仅实践级上下文`。
 
 ## 跨事项上下文
 

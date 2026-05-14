@@ -7,7 +7,7 @@ description: >
 argument-hint: "<new | list | switch | close | none> [slug]"
 ---
 
-# /matter-workspace
+# /commercial-legal:matter-workspace
 
 执业律师同时处理多个客户和多个事项。事项工作区将客户或委托事项的上下文彼此隔离。本命令管理这些工作区。
 
@@ -21,7 +21,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 ## 操作指引
 
-1. 读取业务实践档案 — 确认 `## 事项工作区` 部分已填充。若 `已启用` 为 `✗`，告知用户："事项工作区已关闭——您被配置为法务内部用户的单一客户模式，插件自动从业务级上下文中工作。如果您实际为多客户服务，请重新运行 `/commercial-legal:cold-start-interview --redo` 并选择私人执业模式。否则，您完全不需要 `/matter-workspace`。"不要报错——禁用状态是法务内部用户的预期状态。
+1. 读取业务实践档案 — 确认 `## 事项工作区` 部分已填充。若 `已启用` 为 `✗`，告知用户："事项工作区已关闭——您被配置为法务内部用户的单一客户模式，插件自动从业务级上下文中工作。如果您实际为多客户服务，请重新运行 `/commercial-legal:cold-start-interview --redo` 并选择私人执业模式。否则，您完全不需要 `/commercial-legal:matter-workspace`。"不要报错——禁用状态是法务内部用户的预期状态。
 2. 使用以下子命令逻辑。
 3. 根据 `$ARGUMENTS` 的首个词分派：
    - `new` → 运行收录访谈，写入 `matters/<slug>/matter.md`，创建 `history.md` 和 `notes.md` 种子文件。
@@ -35,7 +35,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
 
 - 除非业务级 CLAUDE.md 中 `跨事项上下文` 为 `on`，技能绝不跨事项读取。
 - 归档不是删除——已关闭事项保留可读，用于存留/利益冲突审查。
-- slug 为小写字母加连字符。若已归档事项和活跃事项使用同一 slug，已归档保留在 `_archived/<slug>/` 下。
+- slug 为小写英文字母加连字符。若已归档事项和活跃事项使用同一 slug，已归档保留在 `_archived/<slug>/` 下。
 
 ---
 
@@ -62,7 +62,7 @@ argument-hint: "<new | list | switch | close | none> [slug]"
         └── <slug>/                 # 已关闭事项——可读但非活跃
 ```
 
-slug 为小写字母加连字符。示例：`acme-框架协议-2026`、`zenith-续约`、`vendor-xyz-保密协议`。
+slug 为小写英文字母加连字符。示例：`acme-msa-2026`、`zenith-renewal`、`vendor-xyz-nda`。
 
 ## 活跃事项在业务级 CLAUDE.md 中
 

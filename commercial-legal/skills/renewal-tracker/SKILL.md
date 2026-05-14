@@ -9,7 +9,7 @@ description: >
 argument-hint: "[--days N 调整预警窗口 | --missed 查看已错过窗口 | --register 查看完整台账]"
 ---
 
-# /renewal-tracker
+# /commercial-legal:renewal-tracker
 
 维护合同台账，追踪合同全生命周期，在关键节点（提前N天发出续约/终止通知）发出预警。
 
@@ -34,6 +34,8 @@ argument-hint: "[--days N 调整预警窗口 | --missed 查看已错过窗口 | 
 ### 台账存储位置
 
 合同台账存储于 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/contract-register.yaml`（配置目录——插件更新后依然存在）。
+
+首次运行或该 runtime 台账不存在时，先读取/加载本技能目录下的 `references/renewal-register.yaml` 作为续约字段初始化模板，再把需要保留的数据迁移或合并到 runtime `contract-register.yaml`。不要把用户运行时数据写回打包的 `references/renewal-register.yaml`。
 
 ### 台账记录结构
 
@@ -165,7 +167,7 @@ contracts:
 - 近期关注（45-89天）：[N]份
 ```
 
-**`--days N`：** 调整预警窗口，如 `/renewal-tracker --days 180` 查看未来180天。
+**`--days N`：** 调整预警窗口，如 `/commercial-legal:renewal-tracker --days 180` 查看未来180天。
 
 ### 模式3：续约触发处理
 

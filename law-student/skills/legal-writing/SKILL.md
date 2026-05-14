@@ -8,7 +8,7 @@ description: >
 argument-hint: "[粘贴草稿 或 文件路径]"
 ---
 
-# /legal-writing
+# /law-student:legal-writing
 
 1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/law-student/CLAUDE.md` → 课程、写作格式偏好、学习风格。
 2. 使用以下框架。

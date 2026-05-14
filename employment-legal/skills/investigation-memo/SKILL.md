@@ -7,7 +7,7 @@ description: >
 argument-hint: "[案件名称]"
 ---
 
-# /investigation-memo
+# /employment-legal:investigation-memo
 
 从调查日志起草律师受托形成的保密调查备忘录，或当新数据已添加时更新现有草案。
 

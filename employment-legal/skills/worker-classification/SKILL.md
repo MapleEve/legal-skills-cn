@@ -8,7 +8,7 @@ description: >
 argument-hint: "[描述拟议安排，或直接开始我会询问]"
 ---
 
-# /worker-classification
+# /employment-legal:worker-classification
 
 对拟议安排运行适用的分类标准，并标记拟议安排与您试图采用的结构不匹配的地方。仅预期性——对已有关系，咨询律师。
 

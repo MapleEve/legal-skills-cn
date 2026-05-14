@@ -7,7 +7,7 @@ description: >
 argument-hint: "[咨询答复 | 进展告知 | 风险提示 | 文件请求]"
 ---
 
-# /client-letter
+# /legal-clinic:client-letter
 
 ## 目的
 

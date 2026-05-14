@@ -3,12 +3,12 @@ name: cold-start-interview
 description: >
   运行冷启动访谈——学习您的AI治理实践并写入配置文件。从您的AI政策、
   参考影响评估和关键供应商AI协议中提取信息。当实践配置缺失或包含
-  [PLACEHOLDER]标注时使用，或当用户说"设置AI治理插件"、
+  [待填写]标注时使用，或当用户说"设置AI治理插件"、
   "初始化配置"、"配置AI治理"时使用。
 argument-hint: "[--redo | --check-integrations]"
 ---
 
-# /cold-start-interview
+# /ai-governance-legal:cold-start-interview
 
 ## 操作流程
 
