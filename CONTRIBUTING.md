@@ -33,6 +33,7 @@
 ## 工作流注意事项
 
 - **编辑插件中任何技能之前，先阅读该插件的 `CLAUDE.md`。** 业务档案、集成表、共享护栏以及决策立场声明，共同决定了技能应该说什么、省略什么。
+- **新增或修改项目级规则前，先阅读 `CONTEXT-MAP.md` 和 `references/project-skill-location-checklist.md`。** 尤其是涉及 skill、reference、marketplace、MCP、cookbook、公开维护说明或跨插件读取链时，先确认落点、脱敏、命令链和版本要求。
 - **实质性变更时升级插件版本号。** 行为新增为修订号升级；新技能或新必填输入为次版本号升级。
 - **运行校验器。** `scripts/validate.py` 和 `scripts/lint-tool-scope.py` 检查插件加载器所依赖的结构不变量。
 - **不要从 CLAUDE.md 中移除共享护栏。** 安全网保留。目标是写出不需要安全网的技能，而不是写出没有安全网的插件。
