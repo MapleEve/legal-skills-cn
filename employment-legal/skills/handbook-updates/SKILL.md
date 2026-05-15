@@ -8,6 +8,10 @@ description: >
 
 # 规章制度更新
 
+## 前置参考资料
+
+1. 先读取 `../../references/labor-core-rules.md`，再进行员工手册、规章制度或民主程序相关更新审查。
+
 ## 案件上下文
 
 **案件上下文。**检查执业级别CLAUDE.md中的`## 案件工作空间`。如果`已启用`是`✗`（内部法务的默认设置），跳过本段——技能使用执业级别上下文，案件机制不可见。如果已启用且没有活跃案件，询问："这是哪个案件的？运行`/employment-legal:matter-workspace switch <slug>`或者说`执业级别`。"加载活跃案件的`matter.md`获取案件特定的上下文和例外设置。将输出写入案件文件夹`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/matters/<matter-slug>/`。除非`跨案件上下文`是`开`，否则绝不读取其他案件的文件。

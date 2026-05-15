@@ -15,6 +15,10 @@ argument-hint: "<--send | --respond | --counter> [上下文或收到的通知路
 - `/ip-legal:takedown --respond`——对收到的侵权通知进行分诊，识别通知缺陷和应对选项
 - `/ip-legal:takedown --counter`——起草反通知。发送前运行响亮关卡
 
+## 前置参考资料
+
+1. 先读取 `../../references/ip-core-rules.md`，再进行平台通知、反通知或下架分析。
+
 ## 指示
 
 1. 加载执业画像配置。

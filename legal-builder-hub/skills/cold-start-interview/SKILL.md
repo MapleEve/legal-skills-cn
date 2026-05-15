@@ -15,9 +15,10 @@ argument-hint: "[--redo] [--check-integrations]"
 ## 操作流程
 
 1. 访谈：执业领域、管辖区域、工作角色、执业类型。
-2. 搜索社区注册表查找匹配的中国法律技能。
-3. 推荐安装的技能列表。
-4. 写入配置。
+2. 若运行时 allowlist 不存在，先读取 `../../references/allowlist-default.yaml` 作为默认 seed；再读取 `../skill-installer/references/allowlist.md` 解释字段和安全策略。
+3. 搜索社区注册表查找匹配的中国法律技能。
+4. 推荐安装的技能列表。
+5. 写入配置。
 
 ## 访谈内容
 

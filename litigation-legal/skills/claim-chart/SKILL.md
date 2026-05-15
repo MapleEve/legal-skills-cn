@@ -6,7 +6,7 @@ argument-hint: '[--patent | --civil] [--infringement | --invalidity | --review] 
 
 # /litigation-legal:claim-chart
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 角色、工作成果抬头、决策姿态、文件存储。
+1. 先读取 `../../references/evidence-rules-core.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 角色、工作成果抬头、决策姿态、文件存储。
 2. 遵循以下工作流程和参考。
 3. 模式选择：
    - `--patent` → 专利权利要求对照表（侵权比对表/无效比对表）。需要专利号和至少一项主张的权利要求。子模式：`--infringement`、`--invalidity`、`--review`。

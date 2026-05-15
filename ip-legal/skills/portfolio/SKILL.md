@@ -11,6 +11,10 @@ argument-hint: "[--report [--days N] | --add | --update | --audit]"
 
 揭示哪些资产即将到期、添加资产、记录申报、审计登记册。
 
+## 前置参考资料
+
+1. 如问题依赖最新审查标准、司法解释、平台规则或境外 IP 变化，先读取 `../../references/currency-watch.md` 并核验。
+
 ## 指示
 
 1. 遵循工作流并读取portfolio.yaml。

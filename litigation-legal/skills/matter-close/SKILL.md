@@ -6,12 +6,13 @@ argument-hint: "[slug]"
 
 # /litigation-legal:matter-close
 
-1. 遵循以下工作流程和参考。
-2. 确认标识和当前状态。
-3. 记录结果：结案类型、日期、最终敞口/费用、经验教训。
-4. 更新 `_log.yaml`：`状态: 已结案`，添加 `结案日期: 年-月-日` 和 `结果:` 字段。
-5. 追加最终条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`。
-6. 案件保留在 `_log.yaml` 和 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/` 中——不删除。`/litigation-legal:portfolio-status` 将其过滤出活跃汇总。
+1. 如案件处于执行或和解履行阶段，先读取 `../../references/enforcement-core.md`，再判断执行路径、终本恢复、和解履行或结案风险。
+2. 遵循以下工作流程和参考。
+3. 确认标识和当前状态。
+4. 记录结果：结案类型、日期、最终敞口/费用、经验教训。
+5. 更新 `_log.yaml`：`状态: 已结案`，添加 `结案日期: 年-月-日` 和 `结果:` 字段。
+6. 追加最终条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`。
+7. 案件保留在 `_log.yaml` 和 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/` 中——不删除。`/litigation-legal:portfolio-status` 将其过滤出活跃汇总。
 
 ---
 

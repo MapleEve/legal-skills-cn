@@ -6,7 +6,7 @@ argument-hint: "[证据文件路径或文件集合]"
 
 # /litigation-legal:privilege-log-review
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 审查规程、保密清单格式。
+1. 先读取 `../../references/evidence-rules-core.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 审查规程、保密清单格式。
 2. 遵循以下工作流程和参考。
 3. 逐份审查：明显保密 / 明显不保密 / 需律师审阅。标注原因和保密等级。
 4. 输出：已审核保密证据清单。律师在提交法院或证据交换前审阅全部标注。

@@ -6,7 +6,7 @@ argument-hint: "[slug]"
 
 # /litigation-legal:matter-briefing
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准 + 相关利益方。
+1. 先读取 `../../references/civil-procedure-core.md` 和 `../../references/evidence-rules-core.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准 + 相关利益方。
 2. 遵循以下工作流程和参考。
 3. 读取 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/matter.md` + `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md` + `_log.yaml` 中的日志行。
 4. 产出简报：当前态势、自上次更新以来的变化、下一期限、待解决问题、风险重新评估检查（"`风险:` 字段是否仍反映现实？"）。

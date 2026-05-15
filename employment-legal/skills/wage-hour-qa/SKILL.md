@@ -11,10 +11,11 @@ argument-hint: "[问题描述]"
 
 # /employment-legal:wage-hour-qa
 
-1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围。
-2. 使用以下工作流。
-3. 识别问题所涉及的管辖。如果未指定，询问。
-4. 按该管辖的规则回答。引用。标记是否为接近判断或法律在变化。
+1. 先读取 `../../references/labor-core-rules.md`，再加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围。
+2. 如问题涉及近期用工规则、地方口径、社保/工时阈值或执法态势，先读取 `../../references/currency-watch.md` 并核验。
+3. 使用以下工作流。
+4. 识别问题所涉及的管辖。如果未指定，询问。
+5. 按该管辖的规则回答。引用。标记是否为接近判断或法律在变化。
 
 ---
 

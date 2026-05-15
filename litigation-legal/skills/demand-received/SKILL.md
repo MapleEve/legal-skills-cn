@@ -6,7 +6,7 @@ argument-hint: "[接收文件路径] [--slug=自定义标识]"
 
 # /litigation-legal:demand-received
 
-1. 从指定路径读取接收文件。
+1. 如函件涉及执行、和解履行或执行威胁，先读取 `../../references/enforcement-core.md`，再从指定路径读取接收文件。
 2. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` 进行案件组合交叉检索。
 3. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准、执业场景、律师函惯例。
 4. 遵循以下工作流程和参考。

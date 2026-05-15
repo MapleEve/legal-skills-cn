@@ -11,6 +11,10 @@ argument-hint: "[供应商名称，或附上合同]"
 
 # 供应商AI条款审查
 
+## 前置参考资料
+
+1. 先读取 `../../references/ai-governance-core.md`，再执行供应商 AI 条款审查和合规义务对照。
+
 ## 程序步骤
 
 1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md`。确认供应商治理立场已填充——如果没有，停止并引导到设置。

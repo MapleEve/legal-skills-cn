@@ -6,6 +6,11 @@ argument-hint: "[--init | --report [--days N] | --update | --sweep | --audit | -
 
 # 主体合规
 
+## 前置参考资料
+
+1. 先读取 `../../references/company-law-2024-core.md`，再进行公司治理和主体合规判断。
+2. 如问题依赖近期公司法配套规则、登记实务、监管口径或阈值，先读取 `../../references/currency-watch.md` 并核验。
+
 ## 中国主体合规法律框架
 
 依据以下法规管理企业主体合规义务：

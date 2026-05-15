@@ -6,12 +6,13 @@ argument-hint: "[slug] [简要事件描述]"
 
 # /litigation-legal:matter-update
 
-1. 遵循以下工作流程和参考。
-2. 确认标识在 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/` 和 `_log.yaml` 中存在。
-3. 提示事件类型、日期（默认今日）、摘要及任何日志字段更新（风险变更、状态变更、下一期限变动、重要性重分类）。
-4. 追加带日期条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`。
-5. 更新 `_log.yaml` —— 将 `最近更新` 设为今日，应用任何字段更新。
-6. 确认。
+1. 如案件处于执行或和解履行阶段，先读取 `../../references/enforcement-core.md`，再判断执行路径和风险。
+2. 遵循以下工作流程和参考。
+3. 确认标识在 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/` 和 `_log.yaml` 中存在。
+4. 提示事件类型、日期（默认今日）、摘要及任何日志字段更新（风险变更、状态变更、下一期限变动、重要性重分类）。
+5. 追加带日期条目至 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/[slug]/history.md`。
+6. 更新 `_log.yaml` —— 将 `最近更新` 设为今日，应用任何字段更新。
+7. 确认。
 
 ---
 

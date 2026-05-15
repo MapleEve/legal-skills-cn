@@ -12,6 +12,10 @@ argument-hint: "[可选 — 范围提示，如'全所范围'、'仅法务团队'
 
 # /ai-governance-legal:policy-starter
 
+## 前置参考资料
+
+1. 先读取 `../../references/ai-governance-core.md`，再起草 AI 政策章节和法规来源模块。
+
 ## 操作流程
 
 1. 读取实践配置。如果未填充，停止并引导到 `/ai-governance-legal:cold-start-interview`。

@@ -34,6 +34,7 @@ argument-hint: "[--list | --config <skill> | --allowlist | --status]"
 - 查看默认策略（仅允许质量审查通过/允许全部/自定义）
 - 添加/移除许可清单条目
 - 说明许可清单安全管理原则
+- 运行时 allowlist 不存在时，先读取 `../../references/allowlist-default.yaml` 作为默认 seed；再读取 `../skill-installer/references/allowlist.md` 解释字段和安全策略
 
 ### `--status`
 系统健康检查：

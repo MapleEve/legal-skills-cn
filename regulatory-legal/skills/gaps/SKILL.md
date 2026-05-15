@@ -6,6 +6,10 @@ argument-hint: "[可选: --close GAP-ID | --accept GAP-ID]"
 
 # 合规差距
 
+## 前置参考资料
+
+1. 先读取 `../../references/admin-law-core.md`，再查看、关闭或接受行政监管合规差距。
+
 ## 中国合规管理背景
 
 本命令运行在国资委《中央企业合规管理办法》框架下：

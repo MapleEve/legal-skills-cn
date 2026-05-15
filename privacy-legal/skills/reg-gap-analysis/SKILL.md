@@ -10,12 +10,13 @@ argument-hint: "[法规名称，或粘贴法规文本/摘要]"
 
 # /privacy-legal:reg-gap-analysis
 
-1. 先读取本插件根目录下 `../../references/pipl-core-provisions.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
-2. 按以下工作流执行。
-3. 范围确认：该法规是否适用？（管辖范围、适用门槛、行业排除）
-4. 提取实质性要求 → 与当前状态对比 → 差距清单。
-5. 输出附带责任人、日期、优先级的整改计划。
-6. 保存为带日期的文件。即使"无差距"也需要存档。
+1. 先读取本插件根目录下 `../../references/pipl-core-provisions.md` 和 `../../references/currency-watch.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/privacy-legal/CLAUDE.md` → 隐私政策/个人信息处理规则承诺、监管覆盖范围、个人信息主体权利请求系统清单。
+2. 如问题涉及生效日期、出境路径、阈值、备案/认证状态或执法态势，对 `../../references/currency-watch.md` 中的动态项联网核验。
+3. 按以下工作流执行。
+4. 范围确认：该法规是否适用？（管辖范围、适用门槛、行业排除）
+5. 提取实质性要求 → 与当前状态对比 → 差距清单。
+6. 输出附带责任人、日期、优先级的整改计划。
+7. 保存为带日期的文件。即使"无差距"也需要存档。
 
 ```
 /privacy-legal:reg-gap-analysis "《网络数据安全管理条例》"

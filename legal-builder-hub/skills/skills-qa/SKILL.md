@@ -10,6 +10,10 @@ argument-hint: "<技能名称 或 技能路径>"
 
 # /legal-builder-hub:skills-qa
 
+## 前置参考资料
+
+1. 如判断注册库、freshness、安全门禁或社区技能规则是否过期，先读取 `../../references/currency-watch.md` 并核验。
+
 ## 功能目的
 
 中国法律技能社区的技能在上架前需经过质量审查。本技能从五个维度进行系统审查，输出评分和审查意见。

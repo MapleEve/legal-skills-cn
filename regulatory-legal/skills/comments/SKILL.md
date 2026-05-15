@@ -6,6 +6,10 @@ argument-hint: "[可选: --decide CMT-ID]"
 
 # 征求意见
 
+## 前置参考资料
+
+1. 先读取 `../../references/admin-law-core.md`，再分析征求意见稿、起草评论或判断行政监管影响。
+
 ## 中国法规征求意见制度背景
 
 依据《行政法规制定程序条例》和《规章制定程序条例》，行政法规和部门规章在审议通过前，应当向社会公开征求意见（一般不少于30日）。规范性文件虽无强制公开征求意见要求，但实践中行政机关常主动公开征求意见。
@@ -29,7 +33,7 @@ argument-hint: "[可选: --decide CMT-ID]"
 - `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/comment-tracker.yaml` → 所有跟踪的征求意见稿及其状态
 - `~/.claude/plugins/config/claude-for-legal-cn/regulatory-legal/CLAUDE.md` → 默认征求意见决策负责人
 
-若 runtime `comment-tracker.yaml` 不存在，先读取打包 seed `regulatory-legal/skills/gap-surfacer/references/comment-tracker.yaml`，用该结构初始化 runtime 跟踪器或作为本次会话的空表模板。不要在未读取 seed 的情况下自行发明字段名、状态值或中文化机器字段。
+若 runtime `comment-tracker.yaml` 不存在，先读取打包 seed `../gap-surfacer/references/comment-tracker.yaml`，用该结构初始化 runtime 跟踪器或作为本次会话的空表模板。不要在未读取 seed 的情况下自行发明字段名、状态值或中文化机器字段。
 
 ## 默认视图 — 公开征求意见期
 

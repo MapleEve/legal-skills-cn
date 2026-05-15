@@ -10,6 +10,10 @@ argument-hint: "[可选：业务领域提示]"
 
 # /legal-clinic:client-intake
 
+## 前置参考资料
+
+1. 先读取 `references/intake-templates/README.md`；如对应业务领域模板存在再读取具体模板，否则使用本 SKILL 默认问题集并标记需指导教师复核。
+
 ## 目的
 
 高校法律援助诊所在《法律援助法》(2022)框架下接收来访当事人，需要规范化的接案流程。

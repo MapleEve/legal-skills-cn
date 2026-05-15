@@ -6,7 +6,7 @@ argument-hint: "[法院文件路径] [--slug=自定义标识]"
 
 # /litigation-legal:subpoena-triage
 
-1. 从提供路径读取法院文件。
+1. 先读取 `../../references/civil-procedure-core.md`，再从提供路径读取法院文件。
 2. 分类（法院传票/举证通知书 / 调查令 / 协助执行通知书 / 行政调查要求 / 刑事）。
 3. 如刑事 → 停止，按 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` 升级。否则继续。
 4. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/matters/_log.yaml` 用于交叉核对。加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 案件格局、保密惯例、升级规范。

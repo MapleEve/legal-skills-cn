@@ -12,6 +12,11 @@ argument-hint: "[法规名称，或粘贴法规文本，或附上文件]"
 
 # /ai-governance-legal:reg-gap-analysis
 
+## 前置参考资料
+
+1. 先读取 `../../references/ai-governance-core.md`，再执行 AI 法规差距分析。
+2. 如问题涉及生效日期、备案/评估状态或监管动态，先读取 `../../references/currency-watch.md`，并在依赖前联网核验。
+
 ## 操作流程
 
 1. 读取实践配置。确认监管覆盖范围和用例注册表已填充。

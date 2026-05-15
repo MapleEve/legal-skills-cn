@@ -10,6 +10,10 @@ argument-hint: "[描述用例或系统，或传入分诊结果]"
 
 # 人工智能安全评估（算法安全评估）
 
+## 前置参考资料
+
+1. 先读取 `../../references/ai-governance-core.md`，再执行 AI 安全评估、法规对照和影响评估结论。
+
 ## 程序步骤
 
 1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/ai-governance-legal/CLAUDE.md`。确认评估模板已填充。

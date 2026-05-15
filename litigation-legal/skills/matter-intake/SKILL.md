@@ -6,7 +6,7 @@ argument-hint: "[可选 案件名称]"
 
 # /litigation-legal:matter-intake
 
-1. 加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准（用于分诊）、执业场景（利益冲突方法）、利益相关方。
+1. 先读取 `../../references/civil-procedure-core.md`，再加载 `~/.claude/plugins/config/claude-for-legal-cn/litigation-legal/CLAUDE.md` → 风险校准（用于分诊）、执业场景（利益冲突方法）、利益相关方。
 2. 遵循以下工作流程和参考。
 3. 运行统一收案程序：识别、利益冲突检索、来源、风险评估、重要性、委托代理、收费方案、关键日期、初始诉讼策略。
 4. 从案件名称生成标识（小写、连字符、年份）。

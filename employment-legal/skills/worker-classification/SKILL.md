@@ -12,6 +12,10 @@ argument-hint: "[描述拟议安排，或直接开始我会询问]"
 
 对拟议安排运行适用的分类标准，并标记拟议安排与您试图采用的结构不匹配的地方。仅预期性——对已有关系，咨询律师。
 
+## 前置参考资料
+
+1. 先读取 `../../references/labor-core-rules.md`，再进行劳动关系、非全日制、劳务派遣或外包分类审查。
+
 ## 指示
 
 1. 加载`~/.claude/plugins/config/claude-for-legal-cn/employment-legal/CLAUDE.md`→管辖范围、升级表。

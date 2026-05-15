@@ -11,6 +11,10 @@ argument-hint: "[--add | --report(默认) | --update [ID] | --complete [ID] | --
 
 # /legal-clinic:deadlines
 
+## 前置参考资料
+
+1. 在 `--add` 或期限复核时，先读取 `../../references/plausibility-bands/mainland-cn.md`，用作明显异常提示区间；不得替代一手法源。
+
 ## 目的
 
 中国法律援助案件的期限管理涉及多个法律层次的期间规定。错过关键期限可能导致

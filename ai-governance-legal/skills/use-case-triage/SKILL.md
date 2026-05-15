@@ -12,6 +12,11 @@ argument-hint: "[描述用例，或使用'batch'批量分诊列表]"
 
 # /ai-governance-legal:use-case-triage
 
+## 前置参考资料
+
+1. 先读取 `../../references/ai-governance-core.md`，再执行 AI 用例分诊和影响范围判断。
+2. 如问题涉及生效日期、备案/评估状态或监管动态，先读取 `../../references/currency-watch.md`，并在依赖前联网核验。
+
 ## 操作流程
 
 1. 读取实践配置。确认注册表已填充——如果没有，停止并引导到设置。
