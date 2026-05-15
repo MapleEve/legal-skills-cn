@@ -1,5 +1,6 @@
 {
   "name": "claude-for-legal-cn",
+  "description": "面向中国法律实务、法律教育和法律技能管理的 Claude Code 插件市场。",
   "version": "1.0.3",
   "owner": {
     "name": "MapleEve"
@@ -8,7 +9,6 @@
     {
       "name": "commercial-legal",
       "source": "./commercial-legal",
-      "version": "1.0.3",
       "description": "按销售侧或采购侧审查手册审查合同（买卖合同/服务合同/保密协议/框架协议），追踪续约和解除期限，路由升级审批至适当决策者，将法律审查结论转化为业务干系人可读的摘要。",
       "author": {
         "name": "MapleEve"
@@ -17,7 +17,6 @@
     {
       "name": "privacy-legal",
       "source": "./privacy-legal",
-      "version": "1.0.3",
       "description": "对个人信息处理活动进行分类分级，生成个人信息保护影响评估（PIPIA），审查委托处理协议（控制者/处理者双向），在法定期限内响应个人信息主体权利请求，监控隐私政策与实践之间的偏差。",
       "author": {
         "name": "MapleEve"
@@ -26,7 +25,6 @@
     {
       "name": "product-legal",
       "source": "./product-legal",
-      "version": "1.0.3",
       "description": "针对风险校准标准审查产品上线，快速回答'这有没有问题'类问题，检查营销文案中需要事实支撑的宣传语，在任何人提问之前标记即将上线且需要法律审查的产品。",
       "author": {
         "name": "MapleEve"
@@ -35,7 +33,6 @@
     {
       "name": "corporate-legal",
       "source": "./corporate-legal",
-      "version": "1.0.3",
       "description": "规模化执行投融资法律尽调并输出可引用表格化的审查报告，编制披露清单和交割清单，按统一格式起草公司决议和会议纪要，跨管辖地追踪实体合规期限。",
       "author": {
         "name": "MapleEve"
@@ -44,7 +41,6 @@
     {
       "name": "employment-legal",
       "source": "./employment-legal",
-      "version": "1.0.3",
       "description": "审查录用和离职事项的管辖地特定风险标记，按中国法律标准分类认定用工关系，在截止日前追踪假期期限，运行内部调查，起草劳动规章制度及地方差异补充规定。",
       "author": {
         "name": "MapleEve"
@@ -53,7 +49,6 @@
     {
       "name": "regulatory-legal",
       "source": "./regulatory-legal",
-      "version": "1.0.3",
       "description": "监控监管动态源，将新规与政策库进行对照差异分析，追踪公开征求意见截止日和尚待处理的合规差距，编写团队周一早读的监管摘要。",
       "author": {
         "name": "MapleEve"
@@ -62,7 +57,6 @@
     {
       "name": "ai-governance-legal",
       "source": "./ai-governance-legal",
-      "version": "1.0.3",
       "description": "将拟议的 AI 使用场景对照登记册进行分类分级，执行涵盖相关监管体系的 AI 影响评估，审查供应商 AI 条款中的数据训练和免责缺口，保持 AI 政策与实践同步更新。",
       "author": {
         "name": "MapleEve"
@@ -71,7 +65,6 @@
     {
       "name": "litigation-legal",
       "source": "./litigation-legal",
-      "version": "1.0.3",
       "description": "管理诉讼/仲裁案件组合——案件、期限、财产保全、律师函、外部律师——并完成具体工作：要件对照表、大事记、庭审准备、证据审查、法律文书起草。适用于企业法务、律所、个人执业三种场景。",
       "author": {
         "name": "MapleEve"
@@ -80,7 +73,6 @@
     {
       "name": "law-student",
       "source": "./law-student",
-      "version": "1.0.3",
       "description": "法考训练（客观题/主观题）、案例研习（指导性案例/公报案例）、法条速记、法学论文写作反馈、学习计划制定——绝不代写。",
       "author": {
         "name": "MapleEve"
@@ -89,7 +81,6 @@
     {
       "name": "legal-clinic",
       "source": "./legal-clinic",
-      "version": "1.0.3",
       "description": "高校法律援助工作站管理——学生上岗培训、来访接待与法律咨询记录、代书法律文书、案件期限追踪、指导教师审查、学期末案件交接。学生仅从事咨询代书，不得独立出庭。依据《法律援助法》(2022)及相关规范构建。",
       "author": {
         "name": "MapleEve"
@@ -98,7 +89,6 @@
     {
       "name": "legal-builder-hub",
       "source": "./legal-builder-hub",
-      "version": "1.0.3",
       "description": "内部法律技能生命周期管理——安装、质量审查、更新、禁用、卸载技能。每项技能落地前经过安全审查。当前中国法律科技生态尚无公开社区技能注册表，本插件以内部技能管理为主要功能。",
       "author": {
         "name": "MapleEve"
@@ -107,7 +97,6 @@
     {
       "name": "ip-legal",
       "source": "./ip-legal",
-      "version": "1.0.3",
       "description": "商标初步检索和专利预警分析初筛，起草和审查律师函及平台侵权投诉（发送与响应），检查开源许可证合规性，审查知识产权条款，追踪知识产权登记和续展期限。",
       "author": {
         "name": "MapleEve"

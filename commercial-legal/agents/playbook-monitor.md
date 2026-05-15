@@ -8,7 +8,7 @@ description: >
   触发短语："检查审查手册"、"审查手册有更新吗"、"审查手册监控"，
   或在每次签约复盘运行后自动触发。
 model: sonnet
-tools: ["Read", "Write", "mcp__*__notify", "mcp__*__slack_send_message"]
+tools: ["Read", "Write", "mcp__*__notify"]
 ---
 
 # 审查手册监控器
@@ -39,7 +39,7 @@ lookback_months: 12         # 模式检测的滚动时间窗口
 1. 完整读取 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`。提取：
    - 各条款类别的当前审查手册立场
    - 审查手册监控器设置（阈值和回顾窗口），缺失则使用默认值
-   - 通知目的地（"工作风格"部分的 Slack 频道或邮件）
+   - 通知目的地（"工作风格"部分的企业协作频道或邮件）
 
 2. 读取 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/deviation-log.yaml`。过滤排除：
    - `exclude_from_patterns: true` 的条目

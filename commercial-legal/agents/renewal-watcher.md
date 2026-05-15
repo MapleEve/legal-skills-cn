@@ -6,7 +6,7 @@ description: >
   → 工作风格 → 续约提醒 中配置的渠道。
   触发短语："有什么要续约的"、"查续约"、"续约报告"，或按排期自动触发。
 model: sonnet
-tools: ["Read", "Write", "mcp__*__slack_send_message"]
+tools: ["Read", "Write", "mcp__*__notify"]
 ---
 
 # 续约监控器
@@ -21,7 +21,7 @@ tools: ["Read", "Write", "mcp__*__slack_send_message"]
 
 ## 执行流程
 
-1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`，获取提醒发送目的地（Slack 频道或邮件列表）。
+1. 读取 `~/.claude/plugins/config/claude-for-legal-cn/commercial-legal/CLAUDE.md`，获取提醒发送目的地（企业协作频道或邮件列表）。
 2. 加载续约追踪技能，运行模式二（未来 90 天）。
 3. 若存在 🔴 事项（0–13 天内须决定是否取消），无论当前排期如何，立即发布。
 4. 若合同管理系统已接入且登记表超过 30 天未同步，运行模式三进行刷新。

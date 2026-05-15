@@ -67,9 +67,9 @@
 
 | 来源 | 源URL | 格式 | 覆盖范围 | 权限 | 备注 |
 |---|---|---|---|---|---|
-| GDPR (EDPB) | `https://www.edpb.europa.eu/` | HTML+RSS | 欧盟数据保护委员会指引、执法协作 | 无 | 中国企业服务和产品涉及欧盟须关注。 |
-| EU AI Act (European Commission) | `https://ec.europa.eu/commission/presscorner/` | RSS+邮件 | DSA、DMA、AI法案实施法令 | 无 | 涉及欧盟市场时关注。 |
-| ICO (UK) | `https://ico.org.uk/global/rss-feeds/` | RSS（多源） | 英国数据保护执法、指引 | 无 | |
+| 境外数据保护监管源 | `https://www.edpb.europa.eu/` | HTML+RSS | 数据保护指引、执法协作 | 无 | 仅在产品或服务触达相应市场时关注。 |
+| 境外 AI / 平台监管源 | `https://ec.europa.eu/commission/presscorner/` | RSS+邮件 | AI、平台治理及数字服务实施动态 | 无 | 仅在产品或服务触达相应市场时关注。 |
+| 境外数据保护执法源 | `https://ico.org.uk/global/rss-feeds/` | RSS（多源） | 数据保护执法、指引 | 无 | 仅在产品或服务触达相应市场时关注。 |
 | Singapore PDPC | `https://www.pdpc.gov.sg/` | HTML | 新加坡个人信息保护指引、执法决定 | 无 | 东南亚业务参照。 |
 | 香港个人资料私隐专员公署 | `https://www.pcpd.org.hk/` | HTML | 香港《个人资料（私隐）条例》执法、指引 | 无 | 香港业务及数据中转场景特别关注。 |
 

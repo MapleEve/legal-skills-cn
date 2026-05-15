@@ -6,7 +6,7 @@
 
 这些是 **cookbook，不是成品系统**。它们只是起点。需要按你的文档管理系统、合同库、企业协作空间、通知路由和复核节奏进行适配。未适配前不应直接投入使用；这也是设计预期。
 
-运行 `../scripts/deploy-managed-agent.sh <slug>` 可解析本地工作流模板，在运行时需要时上传技能，创建叶子 worker，并为你自己的编排层准备 `POST /v1/agents` 配置。每个模板都附带 [`steering-examples.json`](./reg-monitor/steering-examples.json) 和单独 README，说明安全分层与交接方式。
+运行 `../scripts/deploy-managed-agent.sh <slug> --dry-run` 可解析本地工作流模板并输出请求体，供你自己的调度器或工作流引擎适配；默认不上传技能、不创建云端资源。若团队已确认可使用 Anthropic Agents API，可显式传入 `--upload` 执行远端创建。每个模板都附带 [`steering-examples.json`](./reg-monitor/steering-examples.json) 和单独 README，说明安全分层与交接方式。
 
 | 工作流 | 业务线插件 | 关注对象 | 触发事件 | 叶子 worker |
 |---|---|---|---|---|
@@ -18,9 +18,9 @@
 
 **加粗**的叶子 worker = 唯一拥有 `Write` 的 worker。
 
-## Manifest 与 API 的对应
+## Manifest 与运行时请求体的对应
 
-`agent.yaml` 文件使用真实 `POST /v1/agents` 字段名，同时包含少量由部署脚本解析的便利写法：
+`agent.yaml` 文件沿用 `POST /v1/agents` 字段名，便于迁移到兼容运行时；在本仓默认流程中，部署脚本只把它解析为本地可审查的请求体。文件还包含少量由部署脚本解析的便利写法：
 
 | Manifest 写法 | 解析为 |
 |---|---|

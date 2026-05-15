@@ -4,7 +4,7 @@ description: >
   定期检查已关注注册库中的新技能和更新技能。按更新偏好发布通知。
   触发词："同步注册库"、"有什么新内容"，或按计划自动运行。
 model: sonnet
-tools: ["Read", "Write", "WebFetch", "mcp__*__slack_send_message"]
+tools: ["Read", "Write", "WebFetch", "mcp__*__notify"]
 ---
 
 # 注册库同步智能体

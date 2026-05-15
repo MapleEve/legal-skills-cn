@@ -1,23 +1,35 @@
 #!/usr/bin/env bash
 # Copyright 2026 Anthropic PBC
 # SPDX-License-Identifier: Apache-2.0
-# 将本地自动化工作流模板解析为 /v1/agents 请求体。
+# 将本地自动化工作流模板解析为本地可审查的 /v1/agents 请求体。
 #
-# 发送前会解析 manifest 中的便捷写法：
+# 输出前会解析 manifest 中的便捷写法：
 #   system: {file: ...}                  -> inlined string
-#   skills: [{path: ...}]                -> uploaded, referenced by skill_id
-#   callable_agents: [{manifest: ...}]   -> 先创建，再以资源 id 引用
+#   skills: [{path: ...}]                -> dry-run 占位；--upload 时上传并引用 skill_id
+#   callable_agents: [{manifest: ...}]   -> dry-run 占位；--upload 时先创建并以资源 id 引用
 #
 # 带 `output_schema` 的读取型子节点会加一层轻量校验，确保 JSON 通过
 # schema 检查后再交给编排器消费。
 #
-# 用法：scripts/deploy-managed-agent.sh <slug>
+# 默认只 dry-run 输出请求体。仅当显式传入 --upload 时才调用 Anthropic API。
+#
+# 用法：scripts/deploy-managed-agent.sh <slug> [--dry-run|--upload]
 #   例如：scripts/deploy-managed-agent.sh reg-monitor
 
 set -euo pipefail
 
-ROLE="${1:?用法：deploy-managed-agent.sh <slug> [--dry-run]}"
-DRY_RUN=0; [[ "${2:-}" == "--dry-run" ]] && DRY_RUN=1
+usage() {
+  echo "用法：deploy-managed-agent.sh <slug> [--dry-run|--upload]" >&2
+}
+
+ROLE="${1:-}"
+[[ -n "$ROLE" ]] || { usage; exit 2; }
+MODE="${2:---dry-run}"
+case "$MODE" in
+  --dry-run) DRY_RUN=1 ;;
+  --upload) DRY_RUN=0 ;;
+  *) usage; exit 2 ;;
+esac
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DIR="$ROOT/managed-agent-cookbooks/$ROLE"
 API="${ANTHROPIC_API_BASE:-https://api.anthropic.com}"
@@ -63,7 +75,7 @@ json.dump(yaml.safe_load(t), sys.stdout)
 ' "$1"
 }
 
-SKILL_CACHE_FILE="$(mktemp -t skillcache)"
+SKILL_CACHE_FILE="$(mktemp "${TMPDIR:-/tmp}/skillcache.XXXXXXXXXX")"
 trap 'rm -f "$SKILL_CACHE_FILE"' EXIT
 upload_skill() {
   local path="$1" key cached
@@ -76,7 +88,7 @@ upload_skill() {
     printf '%s' "$cached"; return
   fi
   local resp id zip
-  zip="$(mktemp -t skill).zip"
+  zip="$(mktemp "${TMPDIR:-/tmp}/skill.XXXXXXXXXX").zip"
   (cd "$(dirname "$path")" && zip -qr "$zip" "$(basename "$path")")
   # /v1/skills 使用独立 beta header 和 multipart，不走 agents JSON 路径。
   resp=$(curl -sS "$API/v1/skills" \

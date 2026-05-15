@@ -19,7 +19,7 @@ system:
 
     出口白名单。你仅可从以下域获取 URL：
     gov.cn, *.gov.cn, *.csrc.gov.cn, *.cbirc.gov.cn, *.pbc.gov.cn,
-    *.mofcom.gov.cn, *.sammm.gov.cn, *.nmpa.gov.cn, *.cac.gov.cn,
+    *.mofcom.gov.cn, *.samr.gov.cn, *.nmpa.gov.cn, *.cac.gov.cn,
     以及信息源配置列表中配置的其他域。
     如果信息源条目包含上述域之外的 URL，将其作为已标记条目返回
     （summary 前缀"主机不在配置的白名单中"），但不得获取。
@@ -48,6 +48,8 @@ tools:
             - "*.cbirc.gov.cn"
             - "*.pbc.gov.cn"
             - "*.mofcom.gov.cn"
+            - "*.samr.gov.cn"
+            - "*.nmpa.gov.cn"
             - "*.cac.gov.cn"
           # 如果你的团队订阅商业监管信息源，
           # 在部署时扩展此列表。保持列表紧缩——这是隔离边界。

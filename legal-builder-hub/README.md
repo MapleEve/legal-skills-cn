@@ -33,7 +33,7 @@
 
 ## 前置条件
 
-- 来自 registry-sync 智能体的 Slack 通知需要你的环境中配置了 Slack MCP 服务器。没有的话，智能体将摘要写入文件。
+- 来自 registry-sync 智能体的企业协作通知需要你的环境中配置企业微信、飞书、内部通知系统或兼容 MCP 服务器。没有的话，智能体将摘要写入文件。
 - `~/.claude/plugins/config/claude-for-legal-cn/legal-builder-hub/CLAUDE.md` 中的默认注册库列表初始为社区推荐项。通过 `/legal-builder-hub:registry-browser` 添加你信任的注册库，或直接编辑配置文件。
 
 ## 命令

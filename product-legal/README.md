@@ -41,7 +41,7 @@
 | **launch-review** | 按维度逐项审查，与你的风险校准表对齐 |
 | **marketing-claims-review** | 文案分类：吹嘘/事实性/比较性/暗示性/绝对化用语 |
 | **feature-risk-assessment** | 针对单一问题的深度分析（上线审查不够用时） |
-| **is-this-a-problem** | 即时分诊，用于快速的Slack/飞书问答 |
+| **is-this-a-problem** | 即时分诊，用于快速的企业协作问答 |
 | **matter-workspace** | 创建、列出、切换、关闭项目工作区 |
 
 ## 交互命令 vs. 定时代理

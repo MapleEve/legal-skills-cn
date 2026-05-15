@@ -68,5 +68,5 @@ output_schema:
           auto_renewal_notice_days:  { type: integer, minimum: 0, maximum: 3650 }
           annual_value_cny:          { type: number, minimum: 0 }
           owner:                     { type: string, maxLength: 120, pattern: "^[A-Za-z0-9 .,@'_-]+$" }
-          url:                       { type: string, maxLength: 512, pattern: "^https://([A-Za-z0-9-]+\\.)*(TBD-chinese-clm)/" }
+          url:                       { type: string, maxLength: 512, pattern: "^https://" }
           notes:                     { type: string, maxLength: 500 }

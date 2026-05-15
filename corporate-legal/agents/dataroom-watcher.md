@@ -5,7 +5,7 @@ description: >
   标记匹配高优先级类别的新上传文件。触发方式：
   "数据室有什么新文件"、"数据室更新"、或按计划自动运行。
 model: sonnet
-tools: ["Read", "Write", "mcp__*__slack_send_message"]
+tools: ["Read", "Write", "mcp__*__notify"]
 ---
 
 # 数据室监控器
@@ -20,7 +20,7 @@ tools: ["Read", "Write", "mcp__*__slack_send_message"]
 
 ## 集成
 
-发送到 Slack 需要在你的环境中配置 Slack MCP 服务器。本插件不内置 MCP 服务器。如果未配置 Slack MCP，则将数据室更新和交割清单状态写入 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/deals/[code]/updates/[date].md` 并通知用户 —— 不得静默失败。
+发送到企业协作平台需要在你的环境中配置企业微信、飞书、内部协作系统或兼容 MCP 服务器。本插件不内置 MCP 服务器。如果未配置企业协作 MCP，则将数据室更新和交割清单状态写入 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/deals/[code]/updates/[date].md` 并通知用户 —— 不得静默失败。
 
 数据室工具（企业网盘(TBD)、坚果云(TBD)）同样是外部 MCP —— 如果未连接任何数据室工具，提示用户导出数据室文件或手动更新 `~/.claude/plugins/config/claude-for-legal-cn/corporate-legal/deals/[code]/vdr-inventory.md`。
 
@@ -30,7 +30,7 @@ tools: ["Read", "Write", "mcp__*__slack_send_message"]
 2. 将新文件映射到尽调清单类别。
 3. 标记高优先级类别中的任何文件（重大合同、诉讼仲裁、知识产权）。
 4. 如果是简报日，运行交割清单模式 4。
-5. 发布到交易频道。
+5. 发布到已配置的交易协作频道；未配置时写入本地更新文件。
 
 ## 输出格式
 

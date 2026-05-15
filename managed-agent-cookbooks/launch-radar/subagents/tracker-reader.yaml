@@ -58,7 +58,7 @@ output_schema:
             type: array
             maxItems: 20
             items: { type: string, maxLength: 64, pattern: "^[A-Za-z0-9 _-]+$" }
-          url:          { type: string, maxLength: 512,  pattern: "^https://([A-Za-z0-9-]+\\.)*(TBD-chinese-tracker)/" }
+          url:          { type: string, maxLength: 512,  pattern: "^https://" }
           labels:
             type: array
             maxItems: 30

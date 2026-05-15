@@ -1,13 +1,13 @@
-# Google Sheets 输出规范
+# 在线表格输出规范
 
-适用于使用 Google Workspace 的团队。结构与 Excel 输出相同，生成机制不同。如果 Excel 和 Sheets 路径都可用，应询问用户偏好，不要根据自己的环境猜测。
+适用于已配置在线表格连接器的团队。结构与 Excel 输出相同，生成机制不同。如果 Excel 和在线表格路径都可用，应询问用户偏好，不要根据自己的环境猜测。
 
 ## 写入方式
 
 按优先级依次尝试三种路径：
 
-1. **Google Sheets MCP**（如果已连接具备写入/创建能力的 `gdrive` 或 `gsheets` MCP）。创建 spreadsheet，写入各 sheet，并通过 API 设置格式。
-2. **通过 ADC 使用 Google Sheets API**（如果用户已配置 `gcloud auth application-default login --enable-gdrive-access`，且 Python 环境有 `google-api-python-client`）。使用 `sheets.spreadsheets().create()` 创建，并用 `batchUpdate` 设置格式。
+1. **在线表格 MCP**（如果已连接具备写入/创建能力的 `gdrive` 或 `gsheets` MCP）。创建 spreadsheet，写入各 sheet，并通过 API 设置格式。
+2. **通过用户自配 API 凭据写入**（如果用户已配置相应授权，且 Python 环境有对应 API client）。使用表格 API 创建，并用批量更新接口设置格式。
 3. **降级：CSV + 手动导入。** 写出 CSV，提示用户导入 Sheets。同时写出 `format-instructions.md`，让用户可手动应用颜色编码和数据验证。
 
 不要假设自己拥有未验证的写入权限。先检查；不可用时平稳降级。
