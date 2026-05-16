@@ -230,6 +230,7 @@ legal-builder-hub/        法律技能管理
 managed-agent-cookbooks/  本地自动化工作流模板目录
 scripts/                  deploy-managed-agent.sh、validate.py、orchestrate.py、lint-tool-scope.py
 .claude-plugin/           marketplace.json 插件注册表
+.codex/skills/legal-skills-cn-maintenance/  本仓维护、审计和提交前复核用的 repo-local Codex skill
 ```
 
 插件目录共享核心入口，但 `agents/`、`hooks/` 和 `.mcp.json` 按插件能力可选：
@@ -673,10 +674,7 @@ scripts/                  deploy-managed-agent.sh、validate.py、orchestrate.py
 
 仓库以 Markdown 为主，另含 JSON/YAML 配置与 Python/Shell 校验脚本。创建你的工作副本、编辑并提 PR 即可。
 
-- **新增技能**：添加至 `<plugin>/skills/<skill-name>/SKILL.md`，使用与已有技能相同的 frontmatter（`name`、`description`、`argument-hint`）。描述保持在 1024 字符以内，这是触发信号。技能可通过 `/<plugin>:<skill-name>` 调用。纯参考类技能标记 `user-invocable: false`。
-- **新增智能体**：添加 `<plugin>/agents/<name>.md`，含调度 frontmatter 和系统提示词。如需本地自动化工作流模板，添加匹配的 `managed-agent-cookbooks/<name>/`。
-- **社区技能**：使用 `/legal-builder-hub:skill-installer` 在你的环境中测试社区技能。技能市场在安装每项技能前运行 `/legal-builder-hub:skills-qa`，依据法律技能设计框架（9 个设计参数、3 种法律失败模式、信任面检查）评分，拒绝任何不通过的技能。
-- **推送前验证手册**：运行 `bash scripts/test-cookbooks.sh`，干跑每个自动化工作流手册并检查编排器工具范围。
+贡献者请先读 [CONTRIBUTING.md](./CONTRIBUTING.md)。维护跨插件关系、公开说明或项目内 Codex maintenance skill 时，请看 [CONTEXT-MAP.md](./CONTEXT-MAP.md) 和 `.codex/skills/legal-skills-cn-maintenance/SKILL.md`。
 
 公开文档、示例和截图不要写入真实凭据、客户材料、完整案件事实、完整转写、数据库、来源私有数据或本地私有路径。
 

@@ -12,7 +12,7 @@
 | 根级 Claude 指令入口 | 当前根目录未设置；已存在的 Claude 指令入口均在各插件目录。 | 插件级 `CLAUDE.md` 是各领域的实务画像、共享护栏、输出规范和冷启动目标。 |
 | `CONTRIBUTING.md` | 贡献规则，强调 `SKILL.md` 应编码正确行为，`CLAUDE.md` 只作安全网。 | 编辑任何插件技能前先读对应插件 `CLAUDE.md`；实质变更后运行校验器。 |
 | `.codex/skills/legal-skills-cn-maintenance/SKILL.md` | 项目内 Codex skill，用于本仓维护、审计和提交前复核。 | 新增或修改 skill、reference、marketplace、MCP、cookbook、公开维护说明前先读；只适用于本仓维护，不属于 Claude Code 插件包，也不得放入任一业务插件 `skills/` 目录。 |
-| `.claude-plugin/marketplace.json` | marketplace 注册表，登记 12 个插件的 `name`、`source`、`version`、`description`。 | 每个 `source` 指向一个插件目录；插件目录再通过插件 manifest、MCP 配置和 skills 发布。 |
+| `.claude-plugin/marketplace.json` | marketplace 注册表；root 字段登记 marketplace 自身 `version`，12 个 plugin entry 当前登记 `name`、`source`、`description`、`author`，未双写 per-entry `version`。 | 每个 `source` 指向一个插件目录；实际插件版本以 `<plugin>/.claude-plugin/plugin.json` 为真源。若项目规范要求 marketplace entry 展示 version，需要同步该展示字段，但当前 live JSON 未双写。 |
 | `managed-agent-cookbooks/README.md` | 本地自动化工作流 cookbook 总入口。 | `reg-monitor`、`renewal-watcher`、`diligence-grid`、`launch-radar`、`docket-watcher` 分别引用对应插件能力。 |
 | `scripts/deploy-managed-agent.sh` | 解析 cookbook manifest，展开 skills，创建本地自动化工作流请求体。 | 读取各 cookbook 的 manifest、子 worker yaml 和插件 skills。 |
 | `scripts/orchestrate.py` | 本地工作流交接参考事件循环。 | 校验 `handoff_request`，只允许 allowlist 中的 cookbook 目标。 |
