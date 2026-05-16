@@ -1,7 +1,8 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "claude-for-legal-cn",
   "description": "面向中国法律实务、法律教育和法律技能管理的 Claude Code 插件市场。",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "owner": {
     "name": "MapleEve"
   },
@@ -97,7 +98,7 @@
     {
       "name": "ip-legal",
       "source": "./ip-legal",
-      "description": "商标初步检索和专利预警分析初筛，起草和审查律师函及平台侵权投诉（发送与响应），检查开源许可证合规性，审查知识产权条款，追踪知识产权登记和续展期限。",
+      "description": "商标初步检索、专利预警分析初筛和发明披露可专利性初评，起草和审查律师函及平台侵权投诉（发送与响应），检查开源许可证合规性，审查知识产权条款，追踪知识产权登记和续展期限。",
       "author": {
         "name": "MapleEve"
       }

@@ -34,7 +34,7 @@ export FEISHU_BITABLE_MCP_URL=... TAPD_MCP_URL=... ZENTAO_MCP_URL=... SELF_HOSTE
 | 层级 | 是否接触不可信跟踪系统内容？ | 工具 | 连接器 |
 |---|---|---|---|
 | **`tracker-reader`** | **是** | 仅 `Read`、`Grep` | 飞书多维表格、TAPD、禅道、自部署事项系统（只读） |
-| `risk-classifier` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`WebFetch`、`Agent` | 仅编排器：企业跟踪系统与配置库（只读） |
+| `risk-classifier` / 编排器 | 否 | `Read`、`Grep`、`Glob`、`Agent` | 仅编排器：企业跟踪系统与配置库（只读） |
 | **`memo-writer`**（Write 持有者） | 否 | `Read`、`Write`、`Edit` | 无 |
 
 `tracker-reader` 返回长度受限、符合 Schema 验证的 JSON 上线列表。`risk-classifier` 无 MCP 和网络；它使用已验证列表加用户校准文件工作。`memo-writer` 是唯一持有 Write 权限的工作节点，产出 `./out/launch-radar-<date>.md`。编排器不持有 Write 权限，也绝不自行解析原始工单正文。

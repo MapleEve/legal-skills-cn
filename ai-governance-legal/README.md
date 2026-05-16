@@ -26,6 +26,7 @@
 | 命令 | 功能 |
 |---|---|
 | `/ai-governance-legal:cold-start-interview` | 冷启动访谈——写入你的实务配置 |
+| `/ai-governance-legal:ai-inventory [list \| add \| edit \| classify \| show]` | 管理 AI 系统清单，记录系统角色、备案/评估状态、风险等级和责任人 |
 | `/ai-governance-legal:use-case-triage [use-case]` | 对照用例登记表对新用例进行分类（批准/有条件/禁止） |
 | `/ai-governance-legal:aia-generation [use-case]` | 按你的文书格式进行人工智能安全评估 |
 | `/ai-governance-legal:vendor-ai-review [vendor-or-file]` | 对照你的立场审查供应商AI协议 |
@@ -39,6 +40,7 @@
 | 技能 | 用途 |
 |---|---|
 | **cold-start-interview** | 通过访谈+参考文件写入实务配置 |
+| **ai-inventory** | 维护 AI 系统清单，跟踪服务提供者/使用者等角色、备案/评估状态、风险等级和责任人 |
 | **use-case-triage** | 对照登记表分类用例；标记缺失的评估 |
 | **aia-generation** | 按标准格式输出人工智能安全评估 |
 | **vendor-ai-review** | 对照治理立场审查AI供应商合同 |

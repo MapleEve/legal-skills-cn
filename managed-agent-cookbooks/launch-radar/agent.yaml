@@ -32,7 +32,7 @@ system:
     做出任何上线决策。不得在备忘录中弱化前述限定。
 
 tools:
-  # 编排器仅限本地工具；MCP 和 web_fetch 由子代理叶子节点持有（见 callable_agents）。
+  # 编排器仅限本地工具；MCP 由子代理叶子节点持有（见 callable_agents）。
   - type: agent_toolset_20260401
     default_config: { enabled: false }
     configs:

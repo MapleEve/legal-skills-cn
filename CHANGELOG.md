@@ -1,5 +1,10 @@
 # 变更日志
 
+## 2026-05-17
+
+- 手工吸收上游清理提交中适合 CN 分叉的文档和命令链修复：补充 `ai-inventory`、`invention-intake`、`test-cookbooks.sh` 入口，修正 `launch-radar` 工具声明和监管自定义示例中的命令引用。
+- marketplace root 版本升至 `1.0.4`；涉及插件文档/技能内容的 `ai-governance-legal`、`regulatory-legal` 升至 `1.0.4`。
+
 ## 2026-05-15
 
 - 修复 150 个 skill frontmatter name 以匹配目录 slug。
